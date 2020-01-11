@@ -4,13 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white">
+    android:background="@color/pagebackground">
 
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingBottom="10dp"
+        android:layout_marginBottom="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -53,7 +55,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|top"
                     android:layout_marginStart="10dp"
-                    android:background="@color/white"
+                    android:background="@color/pagebackground"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/text_general"
@@ -93,7 +95,8 @@
                         <Spinner
                             android:id="@+id/filingDateSpinner"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:entries="@array/list_for_filing_date"/>
 
                     </LinearLayout>
 
@@ -108,13 +111,14 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/text_filing_date"
+                            android:text="@string/text_trade_date"
                             android:textSize="18sp" />
 
                         <Spinner
                             android:id="@+id/tradeDateSpinner"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content" />
+                            android:layout_height="wrap_content"
+                            android:entries="@array/list_for_filing_date"/>
 
                     </LinearLayout>
 
@@ -125,7 +129,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|top"
                     android:layout_marginStart="10dp"
-                    android:background="@color/white"
+                    android:background="@color/pagebackground"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/text_date"
@@ -181,11 +185,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|top"
                     android:layout_marginStart="10dp"
-                    android:background="@color/white"
+                    android:background="@color/pagebackground"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/text_transaction_filing"
-                    android:textSize="18sp" />
+                    android:textSize="18sp"
+                    />
 
             </FrameLayout>
 
@@ -212,7 +217,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|top"
                     android:layout_marginStart="10dp"
-                    android:background="@color/white"
+                    android:background="@color/pagebackground"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/text_insider_title"
@@ -243,7 +248,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start|top"
                     android:layout_marginStart="10dp"
-                    android:background="@color/white"
+                    android:background="@color/pagebackground"
                     android:paddingStart="5dp"
                     android:paddingEnd="5dp"
                     android:text="@string/text_group_and_sort"

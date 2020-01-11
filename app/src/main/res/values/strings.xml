@@ -30,6 +30,24 @@
     <string name="text_group_by">Group by</string>
     <string name="text_group_and_sort">Group and Sort</string>
     <string name="text_sort_by">Sort by</string>
+    <string name="text_trade_date">Trade Date</string>
+    
+    <string-array name="list_for_filing_date">
+        <item>All dates</item>
+        <item>Custom</item>
+        <item>Latest day</item>
+        <item>Last 3 days</item>
+        <item>Last 1 week</item>
+        <item>Last 2 weeks</item>
+        <item>Last 1 month</item>
+        <item>Last 2 months</item>
+        <item>Last 3 months</item>
+        <item>Last 6 months</item>
+        <item>Last 1 year</item>
+        <item>Last 2 years</item>
+        <item>Last 3 years</item>
+        <item>Last 4 years</item>
+    </string-array>
 
     <string-array name="list_for_grouping">
         <item>Filing</item>
