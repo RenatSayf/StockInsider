@@ -4,10 +4,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.SearchRequest
+import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment()
 {
@@ -28,5 +31,22 @@ class HomeFragment : Fragment()
 
 
         return root
+    }
+
+    override fun onActivityCreated(savedInstanceState : Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+        val tickerArray = activity?.resources?.getStringArray(R.array.ticker_list)
+        val tickerListAdapter = tickerArray?.let {
+            ArrayAdapter<String>(
+                    activity!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, it
+                                )
+        }
+        ticker_ET.setAdapter(tickerListAdapter)
+        //ticker_ET.threshold = 1
+
+        search_button.setOnClickListener {
+            SearchRequest("")
+        }
     }
 }

@@ -39,14 +39,15 @@
                         android:text="@string/text_ticker"
                         android:textSize="18sp" />
 
-                    <EditText
-                        android:id="@+id/tickerET"
+                    <AutoCompleteTextView
+                        android:id="@+id/ticker_ET"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:autofillHints=""
                         android:inputType="textAutoComplete"
-                        android:labelFor="@id/tickerET"
-                        tools:targetApi="o" />
+                        android:labelFor="@id/ticker_ET"
+                        tools:targetApi="o"
+                        android:completionThreshold="1"/>
 
                 </LinearLayout>
 
@@ -266,6 +267,7 @@
     </ScrollView>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/search_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_search_white"
