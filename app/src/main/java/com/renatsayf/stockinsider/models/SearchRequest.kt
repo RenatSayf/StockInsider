@@ -1,18 +1,47 @@
 package com.renatsayf.stockinsider.models
 
-data class SearchRequest(val ticker: String)
+import com.renatsayf.stockinsider.network.OpenInsiderService
+
+data class SearchRequest(
+        private val openInsiderService : OpenInsiderService
+                        )
 {
-    var filingDate: String = "fd="
-    var tradeDate: String = "td="
-    var isPurchase: String = "xp="
-    var isSale: String = "xs="
-    var tradedMin: String = "vl="
-    var tradedMax: String = "vh="
-    var isOfficer: String = "isofficer=1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1"
-    var isDirector: String = "isdirector="
-    var isTenPercent: String = "istenpercent="
-    var groupBy: String = "grp="
-    var sortBy: String = "sortcol="
+    lateinit var tickers: String
+    lateinit var filingDate: String
+    lateinit var tradeDate: String
+    lateinit var isPurchase: String
+    lateinit var isSale: String
+    lateinit var tradedMin: String
+    lateinit var tradedMax: String
+    lateinit var isOfficer: String
+    lateinit var isDirector: String
+    lateinit var isTenPercent: String
+    lateinit var groupBy: String
+    lateinit var sortBy: String
 
-
+    suspend fun fetchTradingScreen() : String
+    {
+        val res = openInsiderService.getInsiderTrading(
+                tickers,
+                filingDate,
+                tradeDate,
+                isPurchase,
+                isSale,
+                tradedMin,
+                tradedMax,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isOfficer,
+                isDirector,
+                isTenPercent,
+                groupBy,
+                sortBy
+                                            ).await()
+        return res
+    }
 }

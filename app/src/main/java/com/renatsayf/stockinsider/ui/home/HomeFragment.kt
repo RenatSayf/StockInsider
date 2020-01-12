@@ -10,7 +10,12 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.SearchRequest
+import com.renatsayf.stockinsider.network.OpenInsiderService
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import okhttp3.Interceptor
+import okhttp3.Response
 
 class HomeFragment : Fragment()
 {
@@ -46,7 +51,22 @@ class HomeFragment : Fragment()
         //ticker_ET.threshold = 1
 
         search_button.setOnClickListener {
-            SearchRequest("")
+
+                val async = GlobalScope.async {
+                    val screen = fetchTradingScreen()
+                    screen
+                }
+
         }
+    }
+
+    suspend fun fetchTradingScreen() : String
+    {
+        val searchRequest = SearchRequest(OpenInsiderService.invoke(Interceptor { chain ->
+            Response.Builder().build()
+        }))
+        searchRequest.tickers = ticker_ET.text.toString()
+        val screen = searchRequest.fetchTradingScreen()
+        return screen
     }
 }
