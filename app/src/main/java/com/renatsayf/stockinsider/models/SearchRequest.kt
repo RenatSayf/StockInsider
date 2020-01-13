@@ -1,11 +1,22 @@
 package com.renatsayf.stockinsider.models
 
 import com.renatsayf.stockinsider.network.OpenInsiderService
+import dagger.Module
+import okhttp3.Interceptor
+import okhttp3.Response
+import javax.inject.Inject
 
-data class SearchRequest(
-        private val openInsiderService : OpenInsiderService
-                        )
+@Module
+class SearchRequest @Inject constructor()
 {
+    var openInsiderService: OpenInsiderService
+    init
+    {
+        openInsiderService = OpenInsiderService.invoke(Interceptor {
+            chain -> Response.Builder().build()
+        })
+    }
+
     lateinit var tickers: String
     lateinit var filingDate: String
     lateinit var tradeDate: String
@@ -21,6 +32,7 @@ data class SearchRequest(
 
     suspend fun fetchTradingScreen() : String
     {
+
         val res = openInsiderService.getInsiderTrading(
                 tickers,
                 filingDate,

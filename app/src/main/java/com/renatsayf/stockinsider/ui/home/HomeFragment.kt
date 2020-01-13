@@ -5,17 +5,14 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.models.SearchRequest
-import com.renatsayf.stockinsider.network.OpenInsiderService
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.async
-import okhttp3.Interceptor
-import okhttp3.Response
 
 class HomeFragment : Fragment()
 {
@@ -30,9 +27,7 @@ class HomeFragment : Fragment()
     {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-        homeViewModel.text.observe(this, Observer {
 
-        })
 
 
         return root
@@ -50,6 +45,13 @@ class HomeFragment : Fragment()
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
 
+        homeViewModel.ticker.observe(this, Observer {
+            ticker_ET.setText(it)
+        })
+        ticker_ET.doOnTextChanged { text, start, count, after ->
+            homeViewModel.setTicker(text.toString())
+        }
+
         search_button.setOnClickListener {
 
                 val async = GlobalScope.async {
@@ -60,13 +62,11 @@ class HomeFragment : Fragment()
         }
     }
 
-    suspend fun fetchTradingScreen() : String
+    suspend fun fetchTradingScreen() : String?
     {
-        val searchRequest = SearchRequest(OpenInsiderService.invoke(Interceptor { chain ->
-            Response.Builder().build()
-        }))
-        searchRequest.tickers = ticker_ET.text.toString()
-        val screen = searchRequest.fetchTradingScreen()
-        return screen
+//        val searchRequest = SearchRequest()
+//        searchRequest.tickers = ticker_ET.text.toString()
+//        val screen = searchRequest.fetchTradingScreen()
+        return null
     }
 }

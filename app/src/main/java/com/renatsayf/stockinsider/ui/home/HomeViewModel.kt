@@ -3,11 +3,25 @@ package com.renatsayf.stockinsider.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.renatsayf.stockinsider.models.SearchRequest
+import javax.inject.Inject
 
 class HomeViewModel : ViewModel() {
 
-    private val _text = MutableLiveData<String>().apply {
-        value = "This is home Fragment"
+    @Inject
+    lateinit var searchRequest : SearchRequest
+    init
+    {
+        //App().component.inject(this)
     }
-    val text: LiveData<String> = _text
+
+    private val _ticker = MutableLiveData<String>().apply {
+        value = ticker?.value
+    }
+    var ticker: LiveData<String> = _ticker
+
+    fun setTicker(value: String)
+    {
+        _ticker.value = value
+    }
 }
