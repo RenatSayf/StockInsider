@@ -11,6 +11,8 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.R
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 
 class HomeFragment : Fragment()
 {
@@ -25,9 +27,6 @@ class HomeFragment : Fragment()
     {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
-
-
-
         return root
     }
 
@@ -44,29 +43,19 @@ class HomeFragment : Fragment()
         //ticker_ET.threshold = 1
 
         homeViewModel.ticker.observe(this, Observer {
-            ticker_ET.setText(it)
+
         })
         ticker_ET.doOnTextChanged { text, start, count, after ->
-            //homeViewModel.setTicker(text.toString())
+
         }
 
-//        search_button.setOnClickListener {
-//
-//                val async = GlobalScope.async {
-//                    val screen = fetchTradingScreen()
-//                    screen
-//                }
-//
-//        }
+        search_button.setOnClickListener {
+            GlobalScope.async {
+                val screen = homeViewModel.fetchTradingScreen()
+                screen
+            }
+        }
     }
 
-//    suspend fun fetchTradingScreen() : String
-//    {
-//        val searchRequest = SearchRequest(OpenInsiderService.invoke(Interceptor { chain ->
-//            Response.Builder().build()
-//        }))
-//        searchRequest.tickers = ticker_ET.text.toString()
-//        val screen = searchRequest.fetchTradingScreen()
-//        return screen
-//    }
+
 }

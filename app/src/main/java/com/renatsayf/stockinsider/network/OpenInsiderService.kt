@@ -1,6 +1,11 @@
 package com.renatsayf.stockinsider.network
 
+import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
 import kotlinx.coroutines.Deferred
+import okhttp3.Interceptor
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -29,26 +34,26 @@ interface OpenInsiderService
                 @Query("sortcol") sortBy: String
                          ): Deferred<String>
 
-//    companion object
-//    {
-//        operator fun invoke(
-//                interceptor: Interceptor
-//                           ) : OpenInsiderService
-//        {
-//            val requestInterceptor = Interceptor { chain ->
-//                val url = chain.request().url().newBuilder().build()
-//                val request = chain.request().newBuilder().url(url).build()
-//                return@Interceptor chain.proceed(request)
-//            }
-//
-//            val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor)
-//                .addInterceptor(interceptor).build()
-//            return Retrofit.Builder().client(okHttpClient)
-//                .baseUrl("http://openinsider.com/")
-//                .addCallAdapterFactory(CoroutineCallAdapterFactory())
-//                .addConverterFactory(GsonConverterFactory.create())
-//                .build()
-//                .create(OpenInsiderService::class.java)
-//        }
-//    }
+    companion object
+    {
+        operator fun invoke(
+                interceptor: Interceptor
+                           ) : OpenInsiderService
+        {
+            val requestInterceptor = Interceptor { chain ->
+                val url = chain.request().url().newBuilder().build()
+                val request = chain.request().newBuilder().url(url).build()
+                return@Interceptor chain.proceed(request)
+            }
+
+            val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor)
+                .addInterceptor(interceptor).build()
+            return Retrofit.Builder().client(okHttpClient)
+                .baseUrl("http://openinsider.com/")
+                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+                .addConverterFactory(GsonConverterFactory.create())
+                .build()
+                .create(OpenInsiderService::class.java)
+        }
+    }
 }
