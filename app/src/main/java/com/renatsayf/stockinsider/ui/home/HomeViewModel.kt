@@ -7,8 +7,9 @@ import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.SearchRequest
 import javax.inject.Inject
 
-class HomeViewModel @Inject constructor() : ViewModel() {
+class HomeViewModel : ViewModel() {
 
+    @Inject
     lateinit var searchRequest : SearchRequest
 
     init
@@ -27,10 +28,6 @@ class HomeViewModel @Inject constructor() : ViewModel() {
         searchRequest.tickers = _ticker.value.toString()
     }
 
-    suspend fun fetchTradingScreen(): String
-    {
-        val searchRequest = SearchRequest()
-        val screen = searchRequest.fetchTradingScreen()
-        return screen
-    }
+
+
 }

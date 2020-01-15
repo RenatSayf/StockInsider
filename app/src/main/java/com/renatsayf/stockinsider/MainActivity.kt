@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider
 
 import android.os.Bundle
 import android.view.Menu
+import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
@@ -51,4 +52,67 @@ class MainActivity : AppCompatActivity()
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
+
+
+    fun getFilingOrTradeValue(position : Int) : String
+    {
+        val filingValue : String
+        return try
+        {
+            val filingValues = this.resources?.getIntArray(R.array.value_for_filing_date)
+            filingValue = filingValues?.get(position).toString()
+            filingValue
+        }
+        catch (e : Exception)
+        {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    fun getGroupingValue(position : Int) : String
+    {
+        val groupingValue : String
+        return try
+        {
+            val groupingValues = this.resources?.getIntArray(R.array.value_for_grouping)
+            groupingValue = groupingValues?.get(position).toString()
+            groupingValue
+        }
+        catch (e : Exception)
+        {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    fun getSortingValue(position : Int) : String
+    {
+        val sortingValue : String
+        return try
+        {
+            val sortingValues = this.resources?.getIntArray(R.array.value_for_sorting)
+            sortingValue = sortingValues?.get(position).toString()
+            sortingValue
+        }
+        catch (e : Exception)
+        {
+            e.printStackTrace()
+            ""
+        }
+    }
+
+    fun getCheckBoxValue(checkBox : CheckBox) : String
+    {
+        return if(checkBox.isChecked)
+        {
+            "1"
+        }
+        else
+        {
+            ""
+        }
+    }
+
+
 }

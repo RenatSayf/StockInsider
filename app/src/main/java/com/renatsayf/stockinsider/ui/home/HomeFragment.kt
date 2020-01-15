@@ -7,12 +7,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import kotlinx.android.synthetic.main.fragment_home.*
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
+import kotlinx.android.synthetic.main.group_layout.*
+import kotlinx.android.synthetic.main.insider_layout.*
+import kotlinx.android.synthetic.main.traded_layout.*
 
 class HomeFragment : Fragment()
 {
@@ -42,20 +43,30 @@ class HomeFragment : Fragment()
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
 
-        homeViewModel.ticker.observe(this, Observer {
-
-        })
         ticker_ET.doOnTextChanged { text, start, count, after ->
 
         }
 
         search_button.setOnClickListener {
-            GlobalScope.async {
-                val screen = homeViewModel.fetchTradingScreen()
-                screen
-            }
+            val mainActivity = activity as MainActivity
+            homeViewModel.searchRequest.tickers = ticker_ET.text.toString()
+            homeViewModel.searchRequest.filingDate = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
+            homeViewModel.searchRequest.tradeDate = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
+            homeViewModel.searchRequest.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
+            homeViewModel.searchRequest.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
+            homeViewModel.searchRequest.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
+            homeViewModel.searchRequest.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
+            homeViewModel.searchRequest.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
+            homeViewModel.searchRequest.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
+            homeViewModel.searchRequest.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
+            homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
+            homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
+            //val screen = homeViewModel.fetchTrading_Screen()
+            homeViewModel.searchRequest.fetchTradingScreen()
+            return@setOnClickListener
         }
     }
+
 
 
 }

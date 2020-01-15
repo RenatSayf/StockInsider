@@ -52,14 +52,32 @@
         <item>Last 6 months</item>
         <item>Last 1 year</item>
         <item>Last 2 years</item>
-        <item>Last 3 years</item>
         <item>Last 4 years</item>
     </string-array>
+    <integer-array name="value_for_filing_date">
+        <item>0</item>
+        <item>-1</item>
+        <item>1</item>
+        <item>3</item>
+        <item>7</item>
+        <item>14</item>
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>180</item>
+        <item>365</item>
+        <item>730</item>
+        <item>1461</item>
+    </integer-array>
 
     <string-array name="list_for_grouping">
         <item>Filing</item>
         <item>Company</item>
     </string-array>
+    <integer-array name="value_for_grouping">
+        <item>0</item>
+        <item>2</item>
+    </integer-array>
 
     <string-array name="list_for_sorting">
         <item>Filing Date</item>
@@ -67,5 +85,11 @@
         <item>Ticker Symbol</item>
         <item>Trade Value</item>
     </string-array>
+    <integer-array name="value_for_sorting">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>8</item>
+    </integer-array>
     
 </resources>

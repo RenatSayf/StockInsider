@@ -97,7 +97,8 @@
                             android:id="@+id/filingDateSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:entries="@array/list_for_filing_date"/>
+                            android:entries="@array/list_for_filing_date"
+                            />
 
                     </LinearLayout>
 
@@ -159,7 +160,8 @@
                         app:layout_constraintTop_toTopOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintHorizontal_chainStyle="spread"
-                        android:text="@string/text_purchase"/>
+                        android:text="@string/text_purchase"
+                        android:checked="true"/>
 
                     <CheckBox
                         android:id="@+id/saleCheckBox"

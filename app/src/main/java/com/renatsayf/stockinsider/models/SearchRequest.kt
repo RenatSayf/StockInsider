@@ -1,34 +1,28 @@
 package com.renatsayf.stockinsider.models
 
 import com.renatsayf.stockinsider.network.OpenInsiderService
-import okhttp3.Interceptor
-import okhttp3.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import javax.inject.Inject
 
 class SearchRequest @Inject constructor()
 {
-    var openInsiderService: OpenInsiderService
-    init
-    {
-        openInsiderService = OpenInsiderService.invoke(Interceptor {
-            chain -> Response.Builder().build()
-        })
-    }
+    var openInsiderService: OpenInsiderService = OpenInsiderService.create()
 
-    lateinit var tickers: String
-    lateinit var filingDate: String
-    lateinit var tradeDate: String
-    lateinit var isPurchase: String
-    lateinit var isSale: String
-    lateinit var tradedMin: String
-    lateinit var tradedMax: String
-    lateinit var isOfficer: String
-    lateinit var isDirector: String
-    lateinit var isTenPercent: String
-    lateinit var groupBy: String
-    lateinit var sortBy: String
+    var tickers: String = ""
+    var filingDate: String = "0"
+    var tradeDate: String = "0"
+    var isPurchase: String = ""
+    var isSale: String = ""
+    var tradedMin: String = ""
+    var tradedMax: String = ""
+    var isOfficer: String = ""
+    var isDirector: String = ""
+    var isTenPercent: String = ""
+    var groupBy: String = ""
+    var sortBy: String = ""
 
-    suspend fun fetchTradingScreen() : String
+    fun fetchTradingScreen() //: String
     {
         val res = openInsiderService.getInsiderTrading(
                 tickers,
@@ -50,7 +44,18 @@ class SearchRequest @Inject constructor()
                 isTenPercent,
                 groupBy,
                 sortBy
-                                            ).await()
-        return res
+                                            )//.await()
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.newThread())
+            .subscribe({ result ->
+                            val string = result.toString()
+                       }, { error ->
+                           error.printStackTrace()
+                       })
     }
+
+        //return res.toString()
+
+
+
 }

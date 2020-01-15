@@ -1,10 +1,9 @@
 package com.renatsayf.stockinsider.network
 
-import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
-import kotlinx.coroutines.Deferred
-import okhttp3.Interceptor
-import okhttp3.OkHttpClient
+import io.reactivex.Observable
+import org.jsoup.nodes.Document
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
@@ -32,28 +31,21 @@ interface OpenInsiderService
                 @Query("istenpercent") isTenPercent: String,
                 @Query("grp") groupBy: String,
                 @Query("sortcol") sortBy: String
-                         ): Deferred<String>
+                         ): Observable<Document>
 
-    companion object
+    companion object Factory
     {
-        operator fun invoke(
-                interceptor: Interceptor
-                           ) : OpenInsiderService
+        fun create() : OpenInsiderService
         {
-            val requestInterceptor = Interceptor { chain ->
-                val url = chain.request().url().newBuilder().build()
-                val request = chain.request().newBuilder().url(url).build()
-                return@Interceptor chain.proceed(request)
-            }
-
-            val okHttpClient = OkHttpClient.Builder().addInterceptor(requestInterceptor)
-                .addInterceptor(interceptor).build()
-            return Retrofit.Builder().client(okHttpClient)
-                .baseUrl("http://openinsider.com/")
-                .addCallAdapterFactory(CoroutineCallAdapterFactory())
+            val retrofit = Retrofit.Builder()
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(GsonConverterFactory.create())
-                .build()
-                .create(OpenInsiderService::class.java)
+
+                .baseUrl("http://openinsider.com/").build()
+
+            return retrofit.create(OpenInsiderService::class.java)
         }
+
+
     }
 }

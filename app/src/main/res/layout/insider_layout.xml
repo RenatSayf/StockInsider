@@ -10,14 +10,16 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/text_officer"/>
+        android:text="@string/text_officer"
+        android:checked="true"/>
 
     <CheckBox
         android:id="@+id/director_CheBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:text="@string/text_director"/>
+        android:text="@string/text_director"
+        android:checked="true"/>
 
     <CheckBox
         android:id="@+id/owner10_CheBox"
@@ -25,6 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="1.5"
         android:text="@string/text_10_owner"
+        android:checked="true"
         />
 
 </LinearLayout>
