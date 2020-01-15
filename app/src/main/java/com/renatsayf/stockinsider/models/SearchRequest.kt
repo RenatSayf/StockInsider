@@ -3,6 +3,8 @@ package com.renatsayf.stockinsider.models
 import com.renatsayf.stockinsider.network.OpenInsiderService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
 import javax.inject.Inject
 
 class SearchRequest @Inject constructor()
@@ -54,7 +56,11 @@ class SearchRequest @Inject constructor()
                        })
     }
 
-        //return res.toString()
+    fun getTradeDocument(): Document
+    {
+        val url = "http://openinsider.com/screener?fd=0&td=0&s=&o=&sicMin=&sicMax=&t=&minprice=&maxprice=&v=25000&sortcol=0&maxresults=500"
+        return Jsoup.connect(url).get()
+    }
 
 
 

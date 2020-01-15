@@ -10,15 +10,22 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.network.CallableAction
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
+import org.jsoup.nodes.Document
 
 class HomeFragment : Fragment()
 {
 
     private lateinit var homeViewModel : HomeViewModel
+    private lateinit var disposable : Disposable
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -61,12 +68,23 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
             homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
             homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
-            //val screen = homeViewModel.fetchTrading_Screen()
-            homeViewModel.searchRequest.fetchTradingScreen()
+
+            val callable = Observable.fromCallable(CallableAction(homeViewModel.searchRequest))
+            disposable = callable.subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe({ doc : Document? ->
+                                                                         val title = doc?.title()
+                                                                     }, { err : Throwable? ->
+                                                                         err?.printStackTrace()
+                                                                     })
+
             return@setOnClickListener
         }
     }
 
-
+    override fun onDestroy()
+    {
+        disposable.dispose()
+        super.onDestroy()
+    }
 
 }
