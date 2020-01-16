@@ -47,6 +47,7 @@ class SearchRequest @Inject constructor()
         interface IDocumentListener
         {
             fun onDocumentReady(document : Document)
+            fun onDocumentError(throwable : Throwable)
         }
         private var documentListener: IDocumentListener? = null
     }
@@ -84,8 +85,10 @@ class SearchRequest @Inject constructor()
             .subscribe({ result ->
                            documentListener?.onDocumentReady(result)
                            return@subscribe
-                       }, { error ->
-                           error.printStackTrace()
+                       }, { error : Throwable ->
+                           error.runCatching {
+                               documentListener?.onDocumentError(error)
+                           }
                        })
     }
 

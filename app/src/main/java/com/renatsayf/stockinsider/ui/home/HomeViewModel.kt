@@ -55,7 +55,12 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 
     override fun onDocumentReady(document : Document)
     {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return
+    }
+
+    override fun onDocumentError(throwable : Throwable)
+    {
+        return
     }
 
 }
