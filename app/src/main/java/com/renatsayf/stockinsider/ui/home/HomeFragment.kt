@@ -25,7 +25,7 @@ class HomeFragment : Fragment()
 {
 
     private lateinit var homeViewModel : HomeViewModel
-    private lateinit var disposable : Disposable
+    private var disposable : Disposable? = null
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -69,10 +69,13 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
             homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
 
+            //homeViewModel.searchRequest.fetchTradingScreen()
+
             val callable = Observable.fromCallable(CallableAction(homeViewModel.searchRequest))
             disposable = callable.subscribeOn(Schedulers.newThread())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe({ doc : Document? ->
-                                                                         val title = doc?.title()
+                                                                         val body = doc?.body()
+                    return@subscribe
                                                                      }, { err : Throwable? ->
                                                                          err?.printStackTrace()
                                                                      })
@@ -83,7 +86,7 @@ class HomeFragment : Fragment()
 
     override fun onDestroy()
     {
-        disposable.dispose()
+        disposable?.dispose()
         super.onDestroy()
     }
 

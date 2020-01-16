@@ -4,7 +4,6 @@ import io.reactivex.Observable
 import org.jsoup.nodes.Document
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
 
@@ -39,8 +38,7 @@ interface OpenInsiderService
         {
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(GsonConverterFactory.create())
-
+                .addConverterFactory(DocumAdapter.FACTORY)
                 .baseUrl("http://openinsider.com/").build()
 
             return retrofit.create(OpenInsiderService::class.java)

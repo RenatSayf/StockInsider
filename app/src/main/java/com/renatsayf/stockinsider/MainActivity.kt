@@ -104,7 +104,12 @@ class MainActivity : AppCompatActivity()
 
     fun getCheckBoxValue(checkBox : CheckBox) : String
     {
-        return if(checkBox.isChecked)
+        val id = checkBox.id
+        return if(checkBox.isChecked && id == R.id.officer_CheBox)
+        {
+            "1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1"
+        }
+        else if (checkBox.isChecked && id != R.id.officer_CheBox)
         {
             "1"
         }
