@@ -4,7 +4,7 @@ import com.renatsayf.stockinsider.models.SearchRequest
 import org.jsoup.nodes.Document
 import java.util.concurrent.Callable
 
-class CallableAction constructor(private val searchRequest : SearchRequest) : Callable<Document>
+class GetHtmlDocAction constructor(private val searchRequest : SearchRequest) : Callable<Document>
 {
     override fun call() : Document
     {
