@@ -40,7 +40,7 @@ class SearchRequest @Inject constructor()
 
     private lateinit var paramsSet: String
 
-    fun fetchTradingScreen() //: String
+    fun fetchTradingScreen()
     {
         val res = openInsiderService.getInsiderTrading(
                 tickers,
@@ -62,11 +62,14 @@ class SearchRequest @Inject constructor()
                 isTenPercent,
                 groupBy,
                 sortBy
-                                            )//.await()
+                                            )
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.newThread())
             .subscribe({ result ->
-                            val string = result.toString()
+                            val document = result
+                           val body = document.body()
+                           val tbody = body.select("#tablewrapper > table > tbody")
+                           return@subscribe
                        }, { error ->
                            error.printStackTrace()
                        })
