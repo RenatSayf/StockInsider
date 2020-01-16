@@ -75,4 +75,5 @@ class HomeFragment : Fragment()
         super.onDestroy()
     }
 
+
 }

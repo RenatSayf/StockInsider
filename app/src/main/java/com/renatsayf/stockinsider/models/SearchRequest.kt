@@ -42,6 +42,20 @@ class SearchRequest @Inject constructor()
     private lateinit var paramsSet: String
     private var disposable : Disposable? = null
 
+    companion object
+    {
+        interface IDocumentListener
+        {
+            fun onDocumentReady(document : Document)
+        }
+        private var documentListener: IDocumentListener? = null
+    }
+
+    fun setOnDocumentReadyListener(iDocumentListener : IDocumentListener)
+    {
+        documentListener =  iDocumentListener
+    }
+
     fun fetchTradingScreen()
     {
         disposable = openInsiderService.getInsiderTrading(
@@ -68,9 +82,7 @@ class SearchRequest @Inject constructor()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.newThread())
             .subscribe({ result ->
-                           val document = result
-                           val body = document.body()
-                           val tbody = body.select("#tablewrapper > table > tbody")
+                           documentListener?.onDocumentReady(result)
                            return@subscribe
                        }, { error ->
                            error.printStackTrace()

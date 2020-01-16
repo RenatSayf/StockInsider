@@ -14,7 +14,8 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
+{
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -24,6 +25,7 @@ class HomeViewModel : ViewModel() {
     init
     {
         App().component.inject(this)
+        searchRequest.setOnDocumentReadyListener(this)
     }
 
     private val _ticker = MutableLiveData<String>().apply {
@@ -49,6 +51,11 @@ class HomeViewModel : ViewModel() {
                        }, { err : Throwable? ->
                            err?.printStackTrace()
                        })
+    }
+
+    override fun onDocumentReady(document : Document)
+    {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
 }
