@@ -7,7 +7,9 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import io.reactivex.disposables.Disposable
@@ -67,6 +69,10 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.fetchTradingScreen()
             return@setOnClickListener
         }
+
+        homeViewModel.networkError.observe(this, Observer {
+            Snackbar.make(search_button, it.getContentIfNotHandledOrReturnNull()?.message.toString(), Snackbar.LENGTH_LONG).show()
+        })
     }
 
     override fun onDestroy()

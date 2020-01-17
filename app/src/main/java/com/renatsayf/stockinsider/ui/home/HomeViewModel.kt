@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.SearchRequest
 import com.renatsayf.stockinsider.network.GetHtmlDocAction
+import com.renatsayf.stockinsider.utils.Event
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -16,6 +17,7 @@ import javax.inject.Inject
 
 class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 {
+    val networkError = MutableLiveData<Event<Throwable>>()
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -48,8 +50,8 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
                            body = doc?.body()
                            val tableBody = body?.select("#tablewrapper > table > tbody")
                 return@subscribe
-                       }, { err : Throwable? ->
-                           err?.printStackTrace()
+                       }, { err : Throwable ->
+                           err.printStackTrace()
                        })
     }
 
@@ -60,7 +62,7 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 
     override fun onDocumentError(throwable : Throwable)
     {
-        return
+        networkError.value = Event(throwable)
     }
 
 }
