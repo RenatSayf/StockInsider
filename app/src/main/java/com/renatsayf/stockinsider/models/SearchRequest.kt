@@ -1,12 +1,9 @@
 package com.renatsayf.stockinsider.models
 
-import android.app.Activity
-import android.view.View
 import com.renatsayf.stockinsider.network.OpenInsiderService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.android.synthetic.main.load_progress_layout.*
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import javax.inject.Inject
@@ -60,9 +57,8 @@ class SearchRequest @Inject constructor()
         documentListener =  iDocumentListener
     }
 
-    fun fetchTradingScreen(activity : Activity)
+    fun fetchTradingScreen()
     {
-        activity.loadProgreesBar.visibility = View.VISIBLE
         disposable = openInsiderService.getInsiderTrading(
                 tickers,
                 filingDate,
@@ -87,12 +83,10 @@ class SearchRequest @Inject constructor()
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.newThread())
             .subscribe({ result ->
-                            activity.loadProgreesBar?.visibility = View.GONE
-                           documentListener?.onDocumentReady(result)
+                            documentListener?.onDocumentReady(result)
                            return@subscribe
                        }, { error : Throwable ->
                            error.runCatching {
-                               activity.loadProgreesBar?.visibility = View.GONE
                                documentListener?.onDocumentError(error)
                            }
                        })

@@ -32,8 +32,14 @@ class ResultFragment : Fragment()
         viewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
 
         val array = arguments?.getStringArrayList(TAG)
-        val s = array?.get(0)
-        resTextView.text = s
+        array.let {
+            if (it?.size!! > 0)
+            {
+                val s = array?.get(0)
+                resTextView.text = s
+            }
+        }
+
 
     }
 

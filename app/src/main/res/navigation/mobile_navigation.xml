@@ -26,10 +26,11 @@
         android:name="com.renatsayf.stockinsider.ui.share.ShareFragment"
         android:label="@string/menu_share"
         tools:layout="@layout/fragment_share" />
+
     <fragment
         android:id="@+id/resultFragment"
         android:name="com.renatsayf.stockinsider.result.ResultFragment"
-        android:label="fragment_result"
+        android:label="@string/text_trading_screen"
         tools:layout="@layout/fragment_result" >
         <action android:id="@+id/action_resultFragment_to_nav_home" />
     </fragment>

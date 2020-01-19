@@ -77,21 +77,23 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
             homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
             //homeViewModel.getHtmlDocument()
-            homeViewModel.searchRequest.fetchTradingScreen(mainActivity)
+            mainActivity.loadProgreesBar.visibility = View.VISIBLE
+            homeViewModel.searchRequest.fetchTradingScreen()
             return@setOnClickListener
         }
 
         homeViewModel.networkError.observe(this, Observer {
+            activity?.loadProgreesBar?.visibility = View.GONE
             Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
         })
 
         homeViewModel.networkSuccess.observe(this, Observer {
+            activity?.loadProgreesBar?.visibility = View.GONE
             val bundle = Bundle()
-            bundle.putStringArrayList(ResultFragment.TAG, it.getContent())
             if (!it.hasBeenHandled)
             {
+                bundle.putStringArrayList(ResultFragment.TAG, it.getContent())
                 activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, bundle)
-
             }
         })
     }
