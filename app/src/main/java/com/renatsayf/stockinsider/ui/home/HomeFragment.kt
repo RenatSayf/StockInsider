@@ -9,13 +9,16 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.result.ResultFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
+import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
 
 class HomeFragment : Fragment()
@@ -32,7 +35,13 @@ class HomeFragment : Fragment()
     {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
         val root = inflater.inflate(R.layout.fragment_home, container, false)
+
         return root
+    }
+
+    override fun onViewCreated(view : View, savedInstanceState : Bundle?)
+    {
+        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onActivityCreated(savedInstanceState : Bundle?)
@@ -51,6 +60,8 @@ class HomeFragment : Fragment()
 
         }
 
+        activity?.loadProgreesBar?.visibility = View.GONE
+
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
             homeViewModel.searchRequest.tickers = ticker_ET.text.toString()
@@ -66,12 +77,22 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
             homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
             //homeViewModel.getHtmlDocument()
-            homeViewModel.searchRequest.fetchTradingScreen()
+            homeViewModel.searchRequest.fetchTradingScreen(mainActivity)
             return@setOnClickListener
         }
 
         homeViewModel.networkError.observe(this, Observer {
-            Snackbar.make(search_button, it.getContentIfNotHandledOrReturnNull()?.message.toString(), Snackbar.LENGTH_LONG).show()
+            Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
+        })
+
+        homeViewModel.networkSuccess.observe(this, Observer {
+            val bundle = Bundle()
+            bundle.putStringArrayList(ResultFragment.TAG, it.getContent())
+            if (!it.hasBeenHandled)
+            {
+                activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, bundle)
+
+            }
         })
     }
 

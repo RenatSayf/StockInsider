@@ -18,6 +18,7 @@ import javax.inject.Inject
 class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 {
     val networkError = MutableLiveData<Event<Throwable>>()
+    val networkSuccess = MutableLiveData<Event<ArrayList<String>>>()
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -57,7 +58,16 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 
     override fun onDocumentReady(document : Document)
     {
-        return
+        val listTr: ArrayList<String> = ArrayList()
+        val body = document.body()
+        val tableBody = body?.select("#tablewrapper > table > tbody")
+        tableBody?.forEach { element ->
+            val trs = element.children()
+            trs.forEach { tr ->
+                listTr.add(tr.toString())
+            }
+        }
+        networkSuccess.value = Event(listTr)
     }
 
     override fun onDocumentError(throwable : Throwable)

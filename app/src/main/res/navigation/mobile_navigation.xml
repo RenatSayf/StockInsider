@@ -9,7 +9,11 @@
         android:id="@+id/nav_home"
         android:name="com.renatsayf.stockinsider.ui.home.HomeFragment"
         android:label="SEC Form 4 search"
-        tools:layout="@layout/fragment_home" />
+        tools:layout="@layout/fragment_home" >
+        <action
+            android:id="@+id/action_nav_home_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
 
     <fragment
         android:id="@+id/nav_tools"
@@ -22,5 +26,12 @@
         android:name="com.renatsayf.stockinsider.ui.share.ShareFragment"
         android:label="@string/menu_share"
         tools:layout="@layout/fragment_share" />
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="com.renatsayf.stockinsider.result.ResultFragment"
+        android:label="fragment_result"
+        tools:layout="@layout/fragment_result" >
+        <action android:id="@+id/action_resultFragment_to_nav_home" />
+    </fragment>
 
 </navigation>
