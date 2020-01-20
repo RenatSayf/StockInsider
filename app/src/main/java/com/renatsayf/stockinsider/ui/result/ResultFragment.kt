@@ -31,14 +31,25 @@ class ResultFragment : Fragment()
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
 
-        val array = arguments?.getStringArrayList(TAG)
-        array.let {
-            if (it?.size!! > 0)
-            {
-                val s = array?.get(0)
-                val document = Jsoup.parse(s)
 
-            }
+
+        val strTable = arguments?.getString(TAG)
+        strTable.let {
+//            if (it?.size!! > 0)
+//            {
+//                val linearLayoutManager = LinearLayoutManager(activity)
+//                val dealListAdapter = DealListAdapter(it)
+//                tradeListRV.apply {
+//                    setHasFixedSize(true)
+//                    layoutManager = linearLayoutManager
+//                    adapter = dealListAdapter
+//                }
+//
+//                return@let
+//            }
+            val parseBodyFragment = Jsoup.parseBodyFragment(strTable)
+            val document = Jsoup.parse(strTable)
+            document
         }
 
 

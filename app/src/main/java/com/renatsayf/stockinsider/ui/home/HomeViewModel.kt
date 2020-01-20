@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.di.App
-import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.network.GetHtmlDocAction
+import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.utils.Event
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -13,12 +13,13 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
+import org.jsoup.select.Elements
 import javax.inject.Inject
 
 class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 {
     val networkError = MutableLiveData<Event<Throwable>>()
-    val networkSuccess = MutableLiveData<Event<ArrayList<String>>>()
+    val networkSuccess = MutableLiveData<Event<Elements>>()
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -61,13 +62,14 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
         val listTr: ArrayList<String> = ArrayList()
         val body = document.body()
         val tableBody = body?.select("#tablewrapper > table > tbody")
-        tableBody?.forEach { element ->
-            val trs = element.children()
-            trs.forEach { tr ->
-                listTr.add(tr.toString())
-            }
+        tableBody?.forEach {
+
         }
-        networkSuccess.value = Event(listTr)
+        val elements = tableBody?.select("tr:nth-child(1) > td:nth-child(2) > div > a")
+        tableBody?.let { element ->
+            networkSuccess.value = Event(tableBody)
+        }
+
     }
 
     override fun onDocumentError(throwable : Throwable)

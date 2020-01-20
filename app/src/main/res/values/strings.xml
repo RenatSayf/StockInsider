@@ -32,7 +32,7 @@
     <string name="text_sort_by">Sort by</string>
     <string name="text_trade_date">Trade Date</string>
     <string name="text_trading_screen">Trading Screen</string>
-    <string name="text_deal_value">Deal Value</string>
+    <string name="text_deal_value">Deal Value $</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

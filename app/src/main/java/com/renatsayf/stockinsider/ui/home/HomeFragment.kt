@@ -92,7 +92,7 @@ class HomeFragment : Fragment()
             val bundle = Bundle()
             if (!it.hasBeenHandled)
             {
-                bundle.putStringArrayList(ResultFragment.TAG, it.getContent())
+                bundle.putString(ResultFragment.TAG, it.getContent().toString())
                 activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, bundle)
             }
         })
