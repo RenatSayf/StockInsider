@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.result
+package com.renatsayf.stockinsider.ui.result
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.renatsayf.stockinsider.R
-import kotlinx.android.synthetic.main.fragment_result.*
+import org.jsoup.Jsoup
 
 class ResultFragment : Fragment()
 {
@@ -36,7 +36,8 @@ class ResultFragment : Fragment()
             if (it?.size!! > 0)
             {
                 val s = array?.get(0)
-                resTextView.text = s
+                val document = Jsoup.parse(s)
+
             }
         }
 

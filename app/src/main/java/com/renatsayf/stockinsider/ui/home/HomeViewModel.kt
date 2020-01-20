@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.di.App
-import com.renatsayf.stockinsider.models.SearchRequest
+import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.network.GetHtmlDocAction
 import com.renatsayf.stockinsider.utils.Event
 import io.reactivex.Observable

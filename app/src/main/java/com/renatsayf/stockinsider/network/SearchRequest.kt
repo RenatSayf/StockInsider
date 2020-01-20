@@ -1,6 +1,5 @@
-package com.renatsayf.stockinsider.models
+package com.renatsayf.stockinsider.network
 
-import com.renatsayf.stockinsider.network.OpenInsiderService
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers

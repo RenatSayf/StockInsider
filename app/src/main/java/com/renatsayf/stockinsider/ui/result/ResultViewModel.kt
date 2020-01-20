@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.result
+package com.renatsayf.stockinsider.ui.result
 
 import androidx.lifecycle.ViewModel
 

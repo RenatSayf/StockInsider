@@ -29,7 +29,7 @@
 
     <fragment
         android:id="@+id/resultFragment"
-        android:name="com.renatsayf.stockinsider.result.ResultFragment"
+        android:name="com.renatsayf.stockinsider.ui.result.ResultFragment"
         android:label="@string/text_trading_screen"
         tools:layout="@layout/fragment_result" >
         <action android:id="@+id/action_resultFragment_to_nav_home" />
