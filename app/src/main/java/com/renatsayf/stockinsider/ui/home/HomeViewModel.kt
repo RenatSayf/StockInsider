@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.GetHtmlDocAction
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.utils.Event
@@ -49,23 +50,41 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
         disposable = callable.subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ doc : Document? ->
-                           body = doc?.body()
-                           val tableBody = body?.select("#tablewrapper > table > tbody")
+                           doc?.let { onDocumentReady(it) }
                 return@subscribe
                        }, { err : Throwable ->
-                           err.printStackTrace()
+                           onDocumentError(err)
                        })
     }
 
     override fun onDocumentReady(document : Document)
     {
-        val listTr: ArrayList<String> = ArrayList()
+        val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
         val tableBody = body?.select("#tablewrapper > table > tbody")
-        tableBody?.forEach {
-
+        val table = tableBody?.get(0)
+        var i: Int = 1
+        table?.children()?.forEach { element: Element? ->
+            val filingDate = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.text()
+            val deal = Deal(filingDate)
+            deal.filingDateRefer = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.attr("href")
+            deal.tradeDate = element?.select("tr:nth-child($i) > td:nth-child(3) > div")?.text()
+            deal.ticker = element?.select("tr:nth-child($i) > td:nth-child(4) > b > a")?.text()
+            deal.tickerRefer = deal.ticker
+            deal.company = element?.select("tr:nth-child($i) > td:nth-child(5) > a")?.text()
+            deal.companyRefer = deal.ticker
+            deal.insiderName = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.text()
+            deal.insiderNameRefer = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.attr("href")
+            deal.insiderTitle = element?.select("tr:nth-child($i) > td:nth-child(7)")?.text()
+            deal.tradeType = element?.select("tr:nth-child($i) > td:nth-child(8)")?.text()
+            deal.price = element?.select("tr:nth-child($i) > td:nth-child(9)")?.text()
+            val strVol = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text()
+            val doubleVol = strVol?.replace(",", "")?.toDouble()
+            deal.volume = doubleVol
+            listDeal.add(deal)
+            i++
         }
-        val elements = tableBody?.select("tr:nth-child(1) > td:nth-child(2) > div > a")
+
         tableBody?.let { element ->
             networkSuccess.value = Event(tableBody)
         }

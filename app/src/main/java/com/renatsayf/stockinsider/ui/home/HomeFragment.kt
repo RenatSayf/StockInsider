@@ -76,8 +76,8 @@ class HomeFragment : Fragment()
             homeViewModel.searchRequest.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
             homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
             homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
-            //homeViewModel.getHtmlDocument()
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
+            //homeViewModel.getHtmlDocument()
             homeViewModel.searchRequest.fetchTradingScreen()
             return@setOnClickListener
         }
