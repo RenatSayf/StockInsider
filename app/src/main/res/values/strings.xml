@@ -33,6 +33,11 @@
     <string name="text_trade_date">Trade Date</string>
     <string name="text_trading_screen">Trading Screen</string>
     <string name="text_deal_value">Deal Value $</string>
+    <string name="text_company_name">Company Name</string>
+    <string name="text_date_20_20_2020">20.20.2020</string>
+    <string name="text_p_purchase">P - Purchase</string>
+    <string name="text_10000000">10000000</string>
+    <string name="text_insider_name">Insider Name</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

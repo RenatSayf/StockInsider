@@ -34,6 +34,7 @@ class DealListAdapter(private val dealList : ArrayList<Deal>) : RecyclerView.Ada
         itemView.filingDateTV.text = deal.filingDate
         itemView.tickerTV.text = deal.ticker
         itemView.companyNameTV.text = deal.company
+        itemView.tradeTypeTV.text = deal.tradeType
         itemView.dealValueTV.text = deal.volume.toString()
         itemView.insiderNameTV.text = deal.insiderName
         itemView.insiderTitleTV.text = deal.insiderTitle

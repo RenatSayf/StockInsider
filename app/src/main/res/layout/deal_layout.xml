@@ -22,8 +22,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="JPM"
-                    android:textAlignment="center"
+                    android:text="@string/text_ticker"
+                    android:textAlignment="textStart"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
@@ -32,8 +32,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="4"
-                    android:text="Jpmorgan Chase &amp; Co"
-                    android:textAlignment="center"
+                    android:text="@string/text_company_name"
+                    android:textAlignment="textEnd"
                     android:textSize="18sp"
                     android:textStyle="bold"/>
 
@@ -57,7 +57,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="20.20.20" />
+                    android:text="@string/text_date_20_20_2020" />
+
+                <TextView
+                    android:id="@+id/tradeTypeTV"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="@string/text_p_purchase"
+                    android:textAlignment="textEnd"/>
 
             </LinearLayout>
 
@@ -79,7 +87,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="10000000"
+                    android:text="@string/text_10000000"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     />
@@ -99,14 +107,15 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="2"
-                    android:text="Hobson Mellody L" />
+                    android:text="@string/text_insider_name" />
 
                 <TextView
                     android:id="@+id/insiderTitleTV"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Director"
+                    android:text="@string/text_insider_title"
+                    android:textAlignment="textEnd"
                     />
 
             </LinearLayout>
