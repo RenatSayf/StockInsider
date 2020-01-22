@@ -14,18 +14,16 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
-import org.jsoup.select.Elements
 import javax.inject.Inject
 
 class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
 {
     val networkError = MutableLiveData<Event<Throwable>>()
-    val networkSuccess = MutableLiveData<Event<Elements>>()
+    val networkSuccess = MutableLiveData<Event<ArrayList<Deal>>>()
 
     @Inject
     lateinit var searchRequest : SearchRequest
     private var disposable : Disposable? = null
-    private var body : Element? = null
 
     init
     {
@@ -63,7 +61,7 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
         val body = document.body()
         val tableBody = body?.select("#tablewrapper > table > tbody")
         val table = tableBody?.get(0)
-        var i: Int = 1
+        var i = 1
         table?.children()?.forEach { element: Element? ->
             val filingDate = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.text()
             val deal = Deal(filingDate)
@@ -79,14 +77,15 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
             deal.tradeType = element?.select("tr:nth-child($i) > td:nth-child(8)")?.text()
             deal.price = element?.select("tr:nth-child($i) > td:nth-child(9)")?.text()
             val strVol = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text()
-            val doubleVol = strVol?.replace(",", "")?.toDouble()
-            deal.volume = doubleVol
+            val regex = Regex("""\D""")
+            val strNum = strVol?.replace(regex, "")
+            deal.volume = strNum?.toDouble()
             listDeal.add(deal)
             i++
         }
 
-        tableBody?.let { element ->
-            networkSuccess.value = Event(tableBody)
+        listDeal.let { _ ->
+            networkSuccess.value = Event(listDeal)
         }
 
     }

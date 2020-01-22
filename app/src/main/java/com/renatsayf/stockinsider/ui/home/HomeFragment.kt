@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -34,14 +33,7 @@ class HomeFragment : Fragment()
                              ) : View?
     {
         homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_home, container, false)
-
-        return root
-    }
-
-    override fun onViewCreated(view : View, savedInstanceState : Bundle?)
-    {
-        super.onViewCreated(view, savedInstanceState)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState : Bundle?)
@@ -55,12 +47,6 @@ class HomeFragment : Fragment()
         }
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
-
-        ticker_ET.doOnTextChanged { text, start, count, after ->
-
-        }
-
-        activity?.loadProgreesBar?.visibility = View.GONE
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
@@ -92,7 +78,7 @@ class HomeFragment : Fragment()
             val bundle = Bundle()
             if (!it.hasBeenHandled)
             {
-                bundle.putString(ResultFragment.TAG, it.getContent().toString())
+                bundle.putParcelableArrayList(ResultFragment.TAG, it.getContent())
                 activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, bundle)
             }
         })

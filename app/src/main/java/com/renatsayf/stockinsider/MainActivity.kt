@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider
 
 import android.os.Bundle
 import android.view.Menu
+import android.view.View
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -12,6 +13,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import kotlinx.android.synthetic.main.load_progress_layout.*
 
 class MainActivity : AppCompatActivity()
 {
@@ -38,6 +40,7 @@ class MainActivity : AppCompatActivity()
                                                  )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        loadProgreesBar.visibility = View.GONE
     }
 
     override fun onCreateOptionsMenu(menu : Menu) : Boolean

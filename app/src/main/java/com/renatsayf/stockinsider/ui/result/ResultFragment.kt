@@ -6,8 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.renatsayf.stockinsider.R
-import org.jsoup.Jsoup
+import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
+import kotlinx.android.synthetic.main.fragment_result.*
 
 class ResultFragment : Fragment()
 {
@@ -32,24 +35,21 @@ class ResultFragment : Fragment()
         viewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
 
 
+        val dealList = arguments?.getParcelableArrayList<Deal>(TAG)
+        dealList.let {
+            if (it?.size!! > 0)
+            {
+                val linearLayoutManager = LinearLayoutManager(activity)
+                val dealListAdapter = DealListAdapter(it)
+                tradeListRV.apply {
+                    setHasFixedSize(true)
+                    layoutManager = linearLayoutManager
+                    adapter = dealListAdapter
+                }
 
-        val strTable = arguments?.getString(TAG)
-        strTable.let {
-//            if (it?.size!! > 0)
-//            {
-//                val linearLayoutManager = LinearLayoutManager(activity)
-//                val dealListAdapter = DealListAdapter(it)
-//                tradeListRV.apply {
-//                    setHasFixedSize(true)
-//                    layoutManager = linearLayoutManager
-//                    adapter = dealListAdapter
-//                }
-//
-//                return@let
-//            }
-            val parseBodyFragment = Jsoup.parseBodyFragment(strTable)
-            val document = Jsoup.parse(strTable)
-            document
+                return@let
+            }
+
         }
 
 

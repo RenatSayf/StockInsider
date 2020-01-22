@@ -6,15 +6,12 @@ import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.Deal
 import kotlinx.android.synthetic.main.deal_layout.view.*
-import org.jsoup.Jsoup
 
-class DealListAdapter(private val dealList : ArrayList<String>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+class DealListAdapter(private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
-    {
-
-    }
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
@@ -32,10 +29,14 @@ class DealListAdapter(private val dealList : ArrayList<String>) : RecyclerView.A
 
     override fun onBindViewHolder(holder : ViewHolder, position : Int)
     {
-        val strItem = dealList.get(position)
-        val document = Jsoup.parse(strItem)
-        val filingDate = document.select("td:nth-child(2) > div > a")
-        holder.itemView.filingDateTV.text = filingDate.toString()
+        val itemView = holder.itemView
+        val deal = dealList[position]
+        itemView.filingDateTV.text = deal.filingDate
+        itemView.tickerTV.text = deal.ticker
+        itemView.companyNameTV.text = deal.company
+        itemView.dealValueTV.text = deal.volume.toString()
+        itemView.insiderNameTV.text = deal.insiderName
+        itemView.insiderTitleTV.text = deal.insiderTitle
     }
 
 }
