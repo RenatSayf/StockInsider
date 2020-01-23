@@ -31,7 +31,7 @@ data class Deal(val filingDate : String?) : Parcelable
     var qty : Double? = 0.0
     var owned : Double? = 0.0
     var deltaOwn : String? = ""
-    var volume : Double? = 0.0
+    var volume : Double = 0.0
 
     constructor(parcel : Parcel) : this(parcel.readString())
     {
@@ -46,7 +46,7 @@ data class Deal(val filingDate : String?) : Parcelable
         qty = parcel.readValue(Double::class.java.classLoader) as? Double
         owned = parcel.readValue(Double::class.java.classLoader) as? Double
         deltaOwn = parcel.readString()
-        volume = parcel.readValue(Double::class.java.classLoader) as? Double
+        volume = parcel.readValue(Double::class.java.classLoader) as Double
     }
 
     override fun writeToParcel(parcel : Parcel, flags : Int)

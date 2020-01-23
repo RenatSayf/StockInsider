@@ -79,7 +79,7 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
             val strVol = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text()
             val regex = Regex("""\D""")
             val strNum = strVol?.replace(regex, "")
-            deal.volume = strNum?.toDouble()
+            if (strNum != null) deal.volume = strNum.toDouble()
             listDeal.add(deal)
             i++
         }
