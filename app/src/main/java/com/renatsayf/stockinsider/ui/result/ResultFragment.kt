@@ -11,6 +11,8 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import kotlinx.android.synthetic.main.fragment_result.*
+import kotlinx.android.synthetic.main.no_result_layout.*
+import kotlinx.android.synthetic.main.no_result_layout.view.*
 
 class ResultFragment : Fragment()
 {
@@ -26,7 +28,9 @@ class ResultFragment : Fragment()
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
                              ) : View?
     {
-        return inflater.inflate(R.layout.fragment_result, container, false)
+        val root = inflater.inflate(R.layout.fragment_result, container, false)
+        root.noResultLayout.visibility = View.GONE
+        return root
     }
 
     override fun onActivityCreated(savedInstanceState : Bundle?)
@@ -49,11 +53,13 @@ class ResultFragment : Fragment()
             }
             else
             {
-
+                noResultLayout.visibility = View.VISIBLE
             }
         }
 
-
+        backButton.setOnClickListener {
+            activity?.onBackPressed()
+        }
     }
 
 }

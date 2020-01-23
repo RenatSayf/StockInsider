@@ -38,6 +38,9 @@
     <string name="text_p_purchase">P - Purchase</string>
     <string name="text_10000000">10000000</string>
     <string name="text_insider_name">Insider Name</string>
+    <string name="text_nothing_found">Nothing found</string>
+    <string name="text_change_parameters">Try changing your search parameters</string>
+    <string name="text_back_to_search">Back to search</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

@@ -4,12 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.result.ResultFragment">
+    tools:context=".ui.result.ResultFragment"
+    android:background="@color/pagebackground">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/tradeListRV"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scrollbars="vertical" />
+
+    <include layout="@layout/no_result_layout" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
