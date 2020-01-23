@@ -86,7 +86,14 @@ class SearchRequest @Inject constructor()
                            return@subscribe
                        }, { error : Throwable ->
                            error.runCatching {
-                               documentListener?.onDocumentError(error)
+                               if (error is IndexOutOfBoundsException)
+                               {
+                                   documentListener?.onDocumentReady(Document(""))
+                               }
+                               else
+                               {
+                                   documentListener?.onDocumentError(error)
+                               }
                            }
                        })
     }

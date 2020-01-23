@@ -34,10 +34,9 @@ class ResultFragment : Fragment()
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ResultViewModel::class.java)
 
-
         val dealList = arguments?.getParcelableArrayList<Deal>(TAG)
         dealList.let {
-            if (it?.size!! > 0)
+            if (it != null && it.size > 0)
             {
                 val linearLayoutManager = LinearLayoutManager(activity)
                 val dealListAdapter = DealListAdapter(it)
@@ -46,10 +45,12 @@ class ResultFragment : Fragment()
                     layoutManager = linearLayoutManager
                     adapter = dealListAdapter
                 }
-
                 return@let
             }
+            else
+            {
 
+            }
         }
 
 
