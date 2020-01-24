@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -23,6 +24,7 @@ class ResultFragment : Fragment()
     }
 
     private lateinit var viewModel : ResultViewModel
+
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
@@ -44,7 +46,7 @@ class ResultFragment : Fragment()
             {
                 resultTV.text = it.size.toString()
                 val linearLayoutManager = LinearLayoutManager(activity)
-                val dealListAdapter = DealListAdapter(it)
+                val dealListAdapter = DealListAdapter(activity as MainActivity, it)
                 tradeListRV.apply {
                     setHasFixedSize(true)
                     layoutManager = linearLayoutManager

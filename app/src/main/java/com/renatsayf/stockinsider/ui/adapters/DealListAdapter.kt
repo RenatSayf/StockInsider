@@ -6,13 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import kotlinx.android.synthetic.main.deal_layout.view.*
 
-class DealListAdapter(private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     private lateinit var context: Context
+
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
@@ -97,6 +99,10 @@ class DealListAdapter(private val dealList : ArrayList<Deal>) : RecyclerView.Ada
             {
                 itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000000)
             }
+        }
+
+        itemView.dealConstrLayout.setOnClickListener {
+
         }
     }
 
