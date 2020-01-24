@@ -25,6 +25,10 @@ data class Deal(val filingDate : String?) : Parcelable
         private set
     var insiderName : String? = ""
     var insiderNameRefer : String? = ""
+        set(value)
+        {
+            field = "http://openinsider.com$value"
+        }
     var insiderTitle : String? = ""
     var tradeType : String? = ""
         set(value)

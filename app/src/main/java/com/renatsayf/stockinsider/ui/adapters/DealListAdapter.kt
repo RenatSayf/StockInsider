@@ -1,14 +1,17 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context
+import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.ui.deal.DealFragment
 import kotlinx.android.synthetic.main.deal_layout.view.*
 
 class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
@@ -102,7 +105,9 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         }
 
         itemView.dealConstrLayout.setOnClickListener {
-
+            val bundle = Bundle()
+            bundle.putParcelable(DealFragment.TAG, deal)
+            activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
         }
     }
 

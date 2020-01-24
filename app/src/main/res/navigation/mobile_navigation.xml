@@ -33,6 +33,15 @@
         android:label="@string/text_trading_screen"
         tools:layout="@layout/fragment_result" >
         <action android:id="@+id/action_resultFragment_to_nav_home" />
+        <action
+            android:id="@+id/action_resultFragment_to_dealFragment"
+            app:destination="@id/dealFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/dealFragment"
+        android:name="com.renatsayf.stockinsider.ui.deal.DealFragment"
+        android:label="@string/text_deal_details"
+        tools:layout="@layout/fragment_deal" />
 
 </navigation>
