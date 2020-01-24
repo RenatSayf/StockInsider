@@ -8,30 +8,51 @@ data class Deal(val filingDate : String?) : Parcelable
     var filingDateRefer : String? = ""
     var tradeDate: String? = ""
     var ticker : String? = ""
+        set(value)
+        {
+            field = value
+            tickerRefer = "https://www.profitspi.com/stock/stock-charts.ashx?chart=$value"
+        }
     var tickerRefer : String? = ""
-        set(value)
-        {
-            field = "https://www.profitspi.com/stock/stock-charts.ashx?chart=$value"
-        }
+        private set
     var company : String? = ""
-    var companyRefer : String? = ""
         set(value)
         {
-            field = "http://openinsider.com/$value"
+            field = value
+            companyRefer = "http://openinsider.com/$value"
         }
+    var companyRefer : String? = ""
+        private set
     var insiderName : String? = ""
     var insiderNameRefer : String? = ""
-        set(value)
-        {
-            field = "http://openinsider.com$value"
-        }
     var insiderTitle : String? = ""
     var tradeType : String? = ""
+        set(value)
+        {
+            field = value
+            when(value)
+            {
+                "P - Purchase" -> tradeTypeInt = 1
+                "S - Sale" -> tradeTypeInt = -1
+                "S - Sale+OE" -> tradeTypeInt = -2
+            }
+        }
+    var tradeTypeInt : Int = 0
+        private set
     var price : String? = ""
     var qty : Double? = 0.0
     var owned : Double? = 0.0
     var deltaOwn : String? = ""
+    var volumeStr : String = ""
+        set(value)
+        {
+            field = value
+            val regex = Regex("""\D""")
+            val strNum = field.replace(regex, "")
+            volume = strNum.toDouble()
+        }
     var volume : Double = 0.0
+        private set
 
     constructor(parcel : Parcel) : this(parcel.readString())
     {
@@ -42,6 +63,7 @@ data class Deal(val filingDate : String?) : Parcelable
         insiderName = parcel.readString()
         insiderTitle = parcel.readString()
         tradeType = parcel.readString()
+        tradeTypeInt = parcel.readInt()
         price = parcel.readString()
         qty = parcel.readValue(Double::class.java.classLoader) as? Double
         owned = parcel.readValue(Double::class.java.classLoader) as? Double
@@ -59,6 +81,7 @@ data class Deal(val filingDate : String?) : Parcelable
         parcel.writeString(insiderName)
         parcel.writeString(insiderTitle)
         parcel.writeString(tradeType)
+        parcel.writeInt(tradeTypeInt)
         parcel.writeString(price)
         parcel.writeValue(qty)
         parcel.writeValue(owned)

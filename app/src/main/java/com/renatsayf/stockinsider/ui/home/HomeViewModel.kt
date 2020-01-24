@@ -68,18 +68,13 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
             deal.filingDateRefer = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.attr("href")
             deal.tradeDate = element?.select("tr:nth-child($i) > td:nth-child(3) > div")?.text()
             deal.ticker = element?.select("tr:nth-child($i) > td:nth-child(4) > b > a")?.text()
-            deal.tickerRefer = deal.ticker
             deal.company = element?.select("tr:nth-child($i) > td:nth-child(5) > a")?.text()
-            deal.companyRefer = deal.ticker
             deal.insiderName = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.text()
             deal.insiderNameRefer = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.attr("href")
             deal.insiderTitle = element?.select("tr:nth-child($i) > td:nth-child(7)")?.text()
             deal.tradeType = element?.select("tr:nth-child($i) > td:nth-child(8)")?.text()
             deal.price = element?.select("tr:nth-child($i) > td:nth-child(9)")?.text()
-            val strVol = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text()
-            val regex = Regex("""\D""")
-            val strNum = strVol?.replace(regex, "")
-            if (strNum != null) deal.volume = strNum.toDouble()
+            deal.volumeStr = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text().toString()
             listDeal.add(deal)
             i++
         }

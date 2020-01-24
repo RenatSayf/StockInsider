@@ -41,21 +41,62 @@ class DealListAdapter(private val dealList : ArrayList<Deal>) : RecyclerView.Ada
         itemView.dealValueTV.text = deal.volume.toString()
         itemView.insiderNameTV.text = deal.insiderName
         itemView.insiderTitleTV.text = deal.insiderTitle
-        if (deal.volume <= 999)
+        if (deal.tradeTypeInt > 0)
         {
-            itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000)
+            if (deal.volume <= 999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000)
+            }
+            if (deal.volume > 999 && deal.volume <= 9999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy10000)
+            }
+            if (deal.volume > 9999 && deal.volume <= 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy100000)
+            }
+            if (deal.volume > 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000000)
+            }
         }
-        if (deal.volume > 999 && deal.volume <= 9999)
+        else if (deal.tradeTypeInt == -1)
         {
-            itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy10000)
+            if (deal.volume <= 999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000)
+            }
+            if (deal.volume > 999 && deal.volume <= 9999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale10000)
+            }
+            if (deal.volume > 9999 && deal.volume <= 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale100000)
+            }
+            if (deal.volume > 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000000)
+            }
         }
-        if (deal.volume > 9999 && deal.volume <= 99999)
+        else if (deal.tradeTypeInt == -2)
         {
-            itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy100000)
-        }
-        if (deal.volume > 99999)
-        {
-            itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000000)
+            if (deal.volume <= 999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000)
+            }
+            if (deal.volume > 999 && deal.volume <= 9999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe10000)
+            }
+            if (deal.volume > 9999 && deal.volume <= 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe100000)
+            }
+            if (deal.volume > 99999)
+            {
+                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000000)
+            }
         }
     }
 

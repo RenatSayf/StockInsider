@@ -2,11 +2,11 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:state_pressed="true">
-        <color android:color="@color/buyPressed" />
+        <color android:color="@color/sale_oePressed" />
     </item>
 
     <item>
-        <color android:color="@color/buy1000" />
+        <color android:color="@color/sale_oe1000000" />
     </item>
 
 </selector>

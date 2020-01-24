@@ -9,5 +9,16 @@
     <color name="buy1000000">#e1ffe1</color>
     <color name="buy100000">#edffed</color>
     <color name="buy10000">#f8fff8</color>
+    <color name="buy1000">#F7FAF6</color>
     <color name="buyPressed">#06B106</color>
+    <color name="sale1000000">#ffdfdf</color>
+    <color name="sale100000">#ffe9e9</color>
+    <color name="sale10000">#fff8f8</color>
+    <color name="sale1000">#fff8f6</color>
+    <color name="salePressed">#F57676</color>
+    <color name="sale_oe1000">#fffff5</color>
+    <color name="sale_oe10000">#ffffe2</color>
+    <color name="sale_oe100000">#ffffe9</color>
+    <color name="sale_oe1000000">#FAFAB7</color>
+    <color name="sale_oePressed">#DBDB07</color>
 </resources>
