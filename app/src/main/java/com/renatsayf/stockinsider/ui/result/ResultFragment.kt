@@ -42,6 +42,7 @@ class ResultFragment : Fragment()
         dealList.let {
             if (it != null && it.size > 0)
             {
+                resultTV.text = it.size.toString()
                 val linearLayoutManager = LinearLayoutManager(activity)
                 val dealListAdapter = DealListAdapter(it)
                 tradeListRV.apply {
@@ -53,6 +54,7 @@ class ResultFragment : Fragment()
             }
             else
             {
+                resultTV.text = it?.size.toString()
                 noResultLayout.visibility = View.VISIBLE
             }
         }

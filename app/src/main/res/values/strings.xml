@@ -41,6 +41,8 @@
     <string name="text_nothing_found">Nothing found</string>
     <string name="text_change_parameters">Try changing your search parameters</string>
     <string name="text_back_to_search">Back to search</string>
+    <string name="text_0">0</string>
+    <string name="text_results">results</string>
 
     <string-array name="ticker_list">
         <item>AA</item>
