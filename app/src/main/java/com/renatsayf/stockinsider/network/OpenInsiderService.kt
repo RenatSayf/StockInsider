@@ -1,11 +1,13 @@
 package com.renatsayf.stockinsider.network
 
 import io.reactivex.Observable
+import okhttp3.OkHttpClient
 import org.jsoup.nodes.Document
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.util.concurrent.TimeUnit
 
 interface OpenInsiderService
 {
@@ -36,10 +38,14 @@ interface OpenInsiderService
     {
         fun create() : OpenInsiderService
         {
+            val okHttpClient = OkHttpClient().newBuilder().connectTimeout(60, TimeUnit.SECONDS)
+                .readTimeout(60, TimeUnit.SECONDS).writeTimeout(60, TimeUnit.SECONDS).build()
+
             val retrofit = Retrofit.Builder()
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .addConverterFactory(DocumAdapter.FACTORY)
-                .baseUrl("http://openinsider.com/").build()
+                .baseUrl("http://openinsider.com/")
+                .client(okHttpClient).build()
 
             return retrofit.create(OpenInsiderService::class.java)
         }

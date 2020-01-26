@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.RoomSearchSetDB
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -19,6 +20,8 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment()
 {
@@ -48,6 +51,7 @@ class HomeFragment : Fragment()
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
 
+
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
             homeViewModel.searchRequest.tickers = ticker_ET.text.toString()
@@ -65,15 +69,20 @@ class HomeFragment : Fragment()
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
             //homeViewModel.getHtmlDocument()
             homeViewModel.searchRequest.fetchTradingScreen()
+
+            val db = context?.let { it1 -> RoomSearchSetDB.getInstance(it1).searchSetDao() }
+            GlobalScope.launch {
+
+            }
             return@setOnClickListener
         }
 
-        homeViewModel.networkError.observe(this, Observer {
+        homeViewModel.networkError.observe(viewLifecycleOwner, Observer {
             activity?.loadProgreesBar?.visibility = View.GONE
             Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
         })
 
-        homeViewModel.networkSuccess.observe(this, Observer {
+        homeViewModel.networkSuccess.observe(viewLifecycleOwner, Observer {
             activity?.loadProgreesBar?.visibility = View.GONE
             val bundle = Bundle()
             if (!it.hasBeenHandled)
