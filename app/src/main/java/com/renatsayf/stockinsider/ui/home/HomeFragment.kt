@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
@@ -53,7 +53,7 @@ class HomeFragment : Fragment()
             savedInstanceState : Bundle?
                              ) : View?
     {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel::class.java)
+        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -68,7 +68,6 @@ class HomeFragment : Fragment()
         }
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
-
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
