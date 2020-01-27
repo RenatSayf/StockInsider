@@ -9,6 +9,9 @@ data class RoomSearchSet(
         @ColumnInfo(name = "creation_date")
         val creationDate : String,
 
+        @ColumnInfo(name = "set_name")
+        val setName : String,
+
         @ColumnInfo(name = "company_name")
         val companyName : String,
 
@@ -28,10 +31,10 @@ data class RoomSearchSet(
         val isSale : Boolean,
 
         @ColumnInfo(name = "trade_min")
-        val tradedMin : Int,
+        val tradedMin : String,
 
         @ColumnInfo(name = "trade_max")
-        val tradedMax : Int,
+        val tradedMax : String,
 
         @ColumnInfo(name = "is_officer")
         val isOfficer : Boolean,
@@ -43,10 +46,10 @@ data class RoomSearchSet(
         val isTenPercent : Boolean,
 
         @ColumnInfo(name = "group_by")
-        val groupBy : String,
+        val groupBy : Int,
 
         @ColumnInfo(name = "sort_by")
-        val sortBy : String
+        val sortBy : Int
                         )
 {
 

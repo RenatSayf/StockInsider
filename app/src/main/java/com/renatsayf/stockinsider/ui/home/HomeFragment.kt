@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.db.RoomSearchSetDB
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import io.reactivex.disposables.Disposable
@@ -22,6 +23,7 @@ import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import java.util.*
 
 class HomeFragment : Fragment()
 {
@@ -54,32 +56,54 @@ class HomeFragment : Fragment()
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
-            homeViewModel.searchRequest.tickers = ticker_ET.text.toString()
-            homeViewModel.searchRequest.filingDate = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
-            homeViewModel.searchRequest.tradeDate = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
-            homeViewModel.searchRequest.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
-            homeViewModel.searchRequest.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-            homeViewModel.searchRequest.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
-            homeViewModel.searchRequest.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
-            homeViewModel.searchRequest.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
-            homeViewModel.searchRequest.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
-            homeViewModel.searchRequest.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
-            homeViewModel.searchRequest.tradedMin = traded_min_ET.text.toString()
-            homeViewModel.searchRequest.tradedMax = traded_max_ET.text.toString()
+            val request = homeViewModel.searchRequest
+            request.tickers = ticker_ET.text.toString()
+            request.filingDate = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
+            request.tradeDate = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
+            request.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
+            request.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
+            request.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
+            request.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
+            request.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
+            request.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
+            request.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
+            request.tradedMin = traded_min_ET.text.toString()
+            request.tradedMax = traded_max_ET.text.toString()
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
             //homeViewModel.getHtmlDocument()
-            homeViewModel.searchRequest.fetchTradingScreen()
+            request.fetchTradingScreen()
 
             val db = context?.let { it1 -> RoomSearchSetDB.getInstance(it1).searchSetDao() }
             GlobalScope.launch {
-
+                val set = RoomSearchSet(
+                        Date().time.toString(),
+                        "custom set",
+                        "",
+                        ticker_ET.text.toString(),
+                        filingDateSpinner.selectedItemPosition,
+                        tradeDateSpinner.selectedItemPosition,
+                        purchaseCheckBox.isChecked,
+                        saleCheckBox.isChecked,
+                        traded_min_ET.text.toString(),
+                        traded_max_ET.text.toString(),
+                        officer_CheBox.isChecked,
+                        director_CheBox.isChecked,
+                        owner10_CheBox.isChecked,
+                        group_spinner.selectedItemPosition,
+                        sort_spinner.selectedItemPosition
+                                       )
+                val res = db?.insertOrUpdateSearchSet(set)
+                return@launch
             }
             return@setOnClickListener
         }
 
         homeViewModel.networkError.observe(viewLifecycleOwner, Observer {
             activity?.loadProgreesBar?.visibility = View.GONE
-            Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
+            if (!it.hasBeenHandled)
+            {
+                Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
+            }
         })
 
         homeViewModel.networkSuccess.observe(viewLifecycleOwner, Observer {

@@ -79,7 +79,7 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
             i++
         }
 
-        listDeal.let { _ ->
+        listDeal.let {
             networkSuccess.value = Event(listDeal)
         }
 
