@@ -9,7 +9,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
-import androidx.room.Room
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -22,7 +21,9 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -31,6 +32,20 @@ class HomeFragment : Fragment()
 
     private lateinit var homeViewModel : HomeViewModel
     private var disposable : Disposable? = null
+    private var db : RoomSearchSetDB? = null
+
+    override fun onCreate(savedInstanceState : Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        db = activity?.applicationContext?.let { RoomSearchSetDB.getInstance(it) }
+
+        CoroutineScope(IO).launch {
+            val list = async {
+                db?.searchSetDao()?.getSearchSets()
+            }.await()
+        }
+
+    }
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -74,8 +89,7 @@ class HomeFragment : Fragment()
             //homeViewModel.getHtmlDocument()
             request.fetchTradingScreen()
 
-            val db = Room.databaseBuilder(mainActivity.applicationContext, RoomSearchSetDB::class.java, "stock-insider").build()
-            GlobalScope.launch {
+            CoroutineScope(IO).launch {
                 val setName = filingDateSpinner.selectedItem.toString() +
                         tradeDateSpinner.selectedItem.toString() +
                         purchaseCheckBox.isChecked.toString() +
@@ -104,10 +118,10 @@ class HomeFragment : Fragment()
                         group_spinner.selectedItemPosition,
                         sort_spinner.selectedItemPosition
                                        )
-                val res = db.searchSetDao().insertOrUpdateSearchSet(set)
-                return@launch
+                val res = async {
+                    db?.searchSetDao()?.insertOrUpdateSearchSet(set)
+                }.await()
             }
-            return@setOnClickListener
         }
 
         homeViewModel.networkError.observe(viewLifecycleOwner, Observer {
