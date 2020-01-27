@@ -1,8 +1,10 @@
 package com.renatsayf.stockinsider.db
 
-import androidx.room.*
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.Index
+import androidx.room.PrimaryKey
 
-@Fts4
 @Entity(tableName = "search_set", indices = [Index("creation_date")])
 data class RoomSearchSet(
         @PrimaryKey

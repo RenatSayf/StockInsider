@@ -9,6 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.findNavController
+import androidx.room.Room
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -73,11 +74,22 @@ class HomeFragment : Fragment()
             //homeViewModel.getHtmlDocument()
             request.fetchTradingScreen()
 
-            val db = context?.let { it1 -> RoomSearchSetDB.getInstance(it1).searchSetDao() }
+            val db = Room.databaseBuilder(mainActivity.applicationContext, RoomSearchSetDB::class.java, "stock-insider").build()
             GlobalScope.launch {
+                val setName = filingDateSpinner.selectedItem.toString() +
+                        tradeDateSpinner.selectedItem.toString() +
+                        purchaseCheckBox.isChecked.toString() +
+                        saleCheckBox.isChecked.toString() +
+                        traded_min_ET.text.toString() +
+                        traded_max_ET.text.toString() +
+                        officer_CheBox.isChecked.toString() +
+                        director_CheBox.isChecked.toString() +
+                        owner10_CheBox.isChecked.toString() +
+                        group_spinner.selectedItem.toString() +
+                        sort_spinner.selectedItem.toString()
                 val set = RoomSearchSet(
                         Date().time.toString(),
-                        "custom set",
+                        setName,
                         "",
                         ticker_ET.text.toString(),
                         filingDateSpinner.selectedItemPosition,
@@ -92,7 +104,7 @@ class HomeFragment : Fragment()
                         group_spinner.selectedItemPosition,
                         sort_spinner.selectedItemPosition
                                        )
-                val res = db?.insertOrUpdateSearchSet(set)
+                val res = db.searchSetDao().insertOrUpdateSearchSet(set)
                 return@launch
             }
             return@setOnClickListener
