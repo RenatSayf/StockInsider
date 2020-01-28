@@ -8,11 +8,14 @@ interface SearchSetDao
     @Query("SELECT * FROM search_set")
     suspend fun getSearchSets() : List<RoomSearchSet>
 
-    @Query("SELECT * FROM search_set WHERE creation_date = :creationDate")
-    suspend fun getSetById(creationDate : String) : RoomSearchSet
+    @Query("SELECT * FROM search_set WHERE set_name = :setName")
+    suspend fun getSetByName(setName : String) : RoomSearchSet
+
+    @Query("DELETE FROM search_set")
+    suspend fun deleteAll() : Int
 
     @Delete
-    suspend fun deleteSet(set : RoomSearchSet)
+    suspend fun deleteSet(set : RoomSearchSet) : Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long

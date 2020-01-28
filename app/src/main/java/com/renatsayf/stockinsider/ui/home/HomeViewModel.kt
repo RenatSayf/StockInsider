@@ -61,28 +61,27 @@ class HomeViewModel : ViewModel(), SearchRequest.Companion.IDocumentListener
         val body = document.body()
         val tableBody = body?.select("#tablewrapper > table > tbody")
         val table = tableBody?.get(0)
-        var i = 1
+        var trIndex = 1
         table?.children()?.forEach { element: Element? ->
-            val filingDate = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.text()
+            val filingDate = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.text()
             val deal = Deal(filingDate)
-            deal.filingDateRefer = element?.select("tr:nth-child($i) > td:nth-child(2) > div > a")?.attr("href")
-            deal.tradeDate = element?.select("tr:nth-child($i) > td:nth-child(3) > div")?.text()
-            deal.ticker = element?.select("tr:nth-child($i) > td:nth-child(4) > b > a")?.text()
-            deal.company = element?.select("tr:nth-child($i) > td:nth-child(5) > a")?.text()
-            deal.insiderName = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.text()
-            deal.insiderNameRefer = element?.select("tr:nth-child($i) > td:nth-child(6) > a")?.attr("href")
-            deal.insiderTitle = element?.select("tr:nth-child($i) > td:nth-child(7)")?.text()
-            deal.tradeType = element?.select("tr:nth-child($i) > td:nth-child(8)")?.text()
-            deal.price = element?.select("tr:nth-child($i) > td:nth-child(9)")?.text()
-            deal.volumeStr = element?.select("tr:nth-child($i) > td:nth-child(13)")?.text().toString()
+            deal.filingDateRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.attr("href")
+            deal.tradeDate = element?.select("tr:nth-child($trIndex) > td:nth-child(3) > div")?.text()
+            deal.ticker = element?.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a")?.text()
+            val tdIndex = if(_ticker.value == "" || _ticker.value == null) 0 else -1
+            deal.company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
+            deal.insiderName = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.text()
+            deal.insiderNameRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.attr("href")
+            deal.insiderTitle = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 7})")?.text()
+            deal.tradeType = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 8})")?.text()
+            deal.price = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 9})")?.text()
+            deal.volumeStr = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 13})")?.text().toString()
             listDeal.add(deal)
-            i++
+            trIndex++
         }
-
         listDeal.let {
             networkSuccess.value = Event(listDeal)
         }
-
     }
 
     override fun onDocumentError(throwable : Throwable)

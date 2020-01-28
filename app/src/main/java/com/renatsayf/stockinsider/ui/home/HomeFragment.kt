@@ -25,7 +25,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers.IO
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import java.util.*
 
 class HomeFragment : Fragment()
 {
@@ -38,13 +37,6 @@ class HomeFragment : Fragment()
     {
         super.onCreate(savedInstanceState)
         db = activity?.applicationContext?.let { RoomSearchSetDB.getInstance(it) }
-
-        CoroutineScope(IO).launch {
-            val list = async {
-                db?.searchSetDao()?.getSearchSets()
-            }.await()
-        }
-
     }
 
     override fun onCreateView(
@@ -60,6 +52,7 @@ class HomeFragment : Fragment()
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+
         val tickerArray = activity?.resources?.getStringArray(R.array.ticker_list)
         val tickerListAdapter = tickerArray?.let {
             ArrayAdapter<String>(
@@ -69,7 +62,43 @@ class HomeFragment : Fragment()
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
 
+        CoroutineScope(IO).launch {
+            try
+            {
+                val customSet = async {
+                    db?.searchSetDao()?.getSetByName("custom set")
+                }.await()
+                if (customSet != null)
+                {
+                    try
+                    {
+                        ticker_ET.setText(customSet.ticker)
+                        filingDateSpinner.setSelection(customSet.filingPeriod)
+                        tradeDateSpinner.setSelection(customSet.tradePeriod)
+                        purchaseCheckBox.isChecked = customSet.isPurchase
+                        saleCheckBox.isChecked = customSet.isSale
+                        traded_min_ET.setText(customSet.tradedMin)
+                        traded_max_ET.setText(customSet.tradedMax)
+                        officer_CheBox.isChecked = customSet.isOfficer
+                        director_CheBox.isChecked = customSet.isDirector
+                        owner10_CheBox.isChecked = customSet.isTenPercent
+                        group_spinner.setSelection(customSet.groupBy)
+                        sort_spinner.setSelection(customSet.sortBy)
+                    }
+                    catch (e : Exception)
+                    {
+                        e.printStackTrace()
+                    }
+                }
+            }
+            catch (e : Exception)
+            {
+                e.printStackTrace()
+            }
+        }
+
         search_button.setOnClickListener {
+            homeViewModel.setTicker(ticker_ET.text.toString())
             val mainActivity = activity as MainActivity
             val request = homeViewModel.searchRequest
             request.tickers = ticker_ET.text.toString()
@@ -101,8 +130,8 @@ class HomeFragment : Fragment()
                         group_spinner.selectedItem.toString() +
                         sort_spinner.selectedItem.toString()
                 val set = RoomSearchSet(
-                        Date().time.toString(),
-                        setName,
+                        "",
+                        "custom set",
                         "",
                         ticker_ET.text.toString(),
                         filingDateSpinner.selectedItemPosition,
