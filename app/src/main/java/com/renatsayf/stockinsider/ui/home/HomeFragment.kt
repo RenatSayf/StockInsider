@@ -14,6 +14,8 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.db.RoomSearchSetDB
+import com.renatsayf.stockinsider.models.DataTransferModel
+import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -30,6 +32,7 @@ class HomeFragment : Fragment()
 {
 
     private lateinit var homeViewModel : HomeViewModel
+    private lateinit var dataTransferModel : DataTransferModel
     private var disposable : Disposable? = null
     private var db : RoomSearchSetDB? = null
 
@@ -46,6 +49,9 @@ class HomeFragment : Fragment()
                              ) : View?
     {
         homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        dataTransferModel = activity?.run {
+            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
+        }!!
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -114,6 +120,21 @@ class HomeFragment : Fragment()
             request.tradedMin = traded_min_ET.text.toString()
             request.tradedMax = traded_max_ET.text.toString()
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
+            val searchSet = SearchSet("custom set")
+            searchSet.ticker = ticker_ET.text.toString()
+            searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
+            searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
+            searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
+            searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
+            searchSet.tradedMin = traded_min_ET.text.toString()
+            searchSet.tradedMax = traded_max_ET.text.toString()
+            searchSet.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
+            searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
+            searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
+            searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
+            searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
+            dataTransferModel.setSearchSet(searchSet)
+
             //homeViewModel.getHtmlDocument()
             request.fetchTradingScreen()
 
