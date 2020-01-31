@@ -50,6 +50,5 @@ interface OpenInsiderService
             return retrofit.create(OpenInsiderService::class.java)
         }
 
-
     }
 }

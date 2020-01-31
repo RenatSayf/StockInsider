@@ -11,7 +11,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
@@ -19,15 +18,8 @@ import kotlinx.android.synthetic.main.no_result_layout.view.*
 
 class ResultFragment : Fragment()
 {
-
-    companion object
-    {
-        val TAG: String? = "result_fragment"
-    }
-
     private lateinit var viewModel : ResultViewModel
     private lateinit var dataTransferModel : DataTransferModel
-
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
@@ -46,35 +38,32 @@ class ResultFragment : Fragment()
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
 
-        dataTransferModel.getSearchSet().observe(viewLifecycleOwner, Observer {
-            val searchSet = it
-            return@Observer
-        })
-
-        val dealList = arguments?.getParcelableArrayList<Deal>(TAG)
-        dealList.let {
-            if (it != null && it.size > 0)
-            {
-                resultTV.text = it.size.toString()
-                val linearLayoutManager = LinearLayoutManager(activity)
-                val dealListAdapter = DealListAdapter(activity as MainActivity, it)
-                tradeListRV.apply {
-                    setHasFixedSize(true)
-                    layoutManager = linearLayoutManager
-                    adapter = dealListAdapter
+        dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
+            it.let {
+                if (it.size > 0)
+                {
+                    resultTV.text = it.size.toString()
+                    val linearLayoutManager = LinearLayoutManager(activity)
+                    val dealListAdapter = DealListAdapter(activity as MainActivity, it)
+                    tradeListRV.apply {
+                        setHasFixedSize(true)
+                        layoutManager = linearLayoutManager
+                        adapter = dealListAdapter
+                    }
+                    return@let
                 }
-                return@let
+                else
+                {
+                    resultTV.text = it.size.toString()
+                    noResultLayout.visibility = View.VISIBLE
+                }
             }
-            else
-            {
-                resultTV.text = it?.size.toString()
-                noResultLayout.visibility = View.VISIBLE
-            }
-        }
+        })
 
         backButton.setOnClickListener {
             activity?.onBackPressed()
         }
     }
+
 
 }

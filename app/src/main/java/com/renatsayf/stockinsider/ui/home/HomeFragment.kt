@@ -6,7 +6,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -14,21 +13,22 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.db.RoomSearchSetDB
+import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
+import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.network.SearchRequest
 import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
-import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.*
 import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class HomeFragment : Fragment()
+class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 {
 
     private lateinit var homeViewModel : HomeViewModel
@@ -36,9 +36,14 @@ class HomeFragment : Fragment()
     private var disposable : Disposable? = null
     private var db : RoomSearchSetDB? = null
 
+    @Inject
+    lateinit var searchRequest : SearchRequest
+
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
+        App().component.inject(this)
+        searchRequest.setOnDocumentReadyListener(this)
         db = activity?.applicationContext?.let { RoomSearchSetDB.getInstance(it) }
     }
 
@@ -104,21 +109,7 @@ class HomeFragment : Fragment()
         }
 
         search_button.setOnClickListener {
-            homeViewModel.setTicker(ticker_ET.text.toString())
             val mainActivity = activity as MainActivity
-            val request = homeViewModel.searchRequest
-            request.tickers = ticker_ET.text.toString()
-            request.filingDate = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
-            request.tradeDate = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
-            request.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
-            request.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-            request.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
-            request.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
-            request.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
-            request.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
-            request.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
-            request.tradedMin = traded_min_ET.text.toString()
-            request.tradedMax = traded_max_ET.text.toString()
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
             val searchSet = SearchSet("custom set")
             searchSet.ticker = ticker_ET.text.toString()
@@ -133,23 +124,9 @@ class HomeFragment : Fragment()
             searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-            dataTransferModel.setSearchSet(searchSet)
-
-            //homeViewModel.getHtmlDocument()
-            request.fetchTradingScreen()
+            searchRequest.getTradingScreen(searchSet)
 
             CoroutineScope(IO).launch {
-                val setName = filingDateSpinner.selectedItem.toString() +
-                        tradeDateSpinner.selectedItem.toString() +
-                        purchaseCheckBox.isChecked.toString() +
-                        saleCheckBox.isChecked.toString() +
-                        traded_min_ET.text.toString() +
-                        traded_max_ET.text.toString() +
-                        officer_CheBox.isChecked.toString() +
-                        director_CheBox.isChecked.toString() +
-                        owner10_CheBox.isChecked.toString() +
-                        group_spinner.selectedItem.toString() +
-                        sort_spinner.selectedItem.toString()
                 val set = RoomSearchSet(
                         "",
                         "custom set",
@@ -167,35 +144,30 @@ class HomeFragment : Fragment()
                         group_spinner.selectedItemPosition,
                         sort_spinner.selectedItemPosition
                                        )
-                val res = async {
+                withContext(Dispatchers.Default) {
                     db?.searchSetDao()?.insertOrUpdateSearchSet(set)
-                }.await()
+                }
             }
         }
-
-        homeViewModel.networkError.observe(viewLifecycleOwner, Observer {
-            activity?.loadProgreesBar?.visibility = View.GONE
-            if (!it.hasBeenHandled)
-            {
-                Snackbar.make(search_button, it.getContent()?.message.toString(), Snackbar.LENGTH_LONG).show()
-            }
-        })
-
-        homeViewModel.networkSuccess.observe(viewLifecycleOwner, Observer {
-            activity?.loadProgreesBar?.visibility = View.GONE
-            val bundle = Bundle()
-            if (!it.hasBeenHandled)
-            {
-                bundle.putParcelableArrayList(ResultFragment.TAG, it.getContent())
-                activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, bundle)
-            }
-        })
     }
 
     override fun onDestroy()
     {
         disposable?.dispose()
         super.onDestroy()
+    }
+
+    override fun onDocumentError(throwable : Throwable)
+    {
+        activity?.loadProgreesBar?.visibility = View.GONE
+        Snackbar.make(search_button, throwable.message.toString(), Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun onDealListReady(dealList : ArrayList<Deal>)
+    {
+        activity?.loadProgreesBar?.visibility = View.GONE
+        dataTransferModel.setDealList(dealList)
+        activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
     }
 
 
