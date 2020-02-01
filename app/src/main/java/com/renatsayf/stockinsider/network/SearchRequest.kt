@@ -60,16 +60,19 @@ class SearchRequest @Inject constructor()
             .subscribe({ document ->
                            dealList = doParseDocument(document)
                            documentListener?.onDealListReady(dealList)
+                           disposable?.dispose()
                            return@subscribe
                        }, { error : Throwable ->
                            error.runCatching {
                                if (error is IndexOutOfBoundsException)
                                {
                                    documentListener?.onDealListReady(dealList)
+                                   disposable?.dispose()
                                }
                                else
                                {
                                    documentListener?.onDocumentError(error)
+                                   disposable?.dispose()
                                }
                            }
                        })

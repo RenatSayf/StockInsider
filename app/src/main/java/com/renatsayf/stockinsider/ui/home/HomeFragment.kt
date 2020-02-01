@@ -18,7 +18,6 @@ import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
-import io.reactivex.disposables.Disposable
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
@@ -33,7 +32,6 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 
     private lateinit var homeViewModel : HomeViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private var disposable : Disposable? = null
     private var db : RoomSearchSetDB? = null
 
     @Inject
@@ -63,6 +61,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+
 
         val tickerArray = activity?.resources?.getStringArray(R.array.ticker_list)
         val tickerListAdapter = tickerArray?.let {
@@ -149,12 +148,6 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                 }
             }
         }
-    }
-
-    override fun onDestroy()
-    {
-        disposable?.dispose()
-        super.onDestroy()
     }
 
     override fun onDocumentError(throwable : Throwable)
