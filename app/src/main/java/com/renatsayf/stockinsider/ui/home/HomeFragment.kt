@@ -11,8 +11,9 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.db.RoomSearchSetDB
+import com.renatsayf.stockinsider.db.SearchSetDao
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
@@ -32,17 +33,20 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 
     private lateinit var homeViewModel : HomeViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private var db : RoomSearchSetDB? = null
+    private var db : SearchSetDao? = null
 
     @Inject
     lateinit var searchRequest : SearchRequest
+
+    @Inject
+    lateinit var dbProvider : RoomDBProvider
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
         App().component.inject(this)
         searchRequest.setOnDocumentReadyListener(this)
-        db = activity?.applicationContext?.let { RoomSearchSetDB.getInstance(it) }
+        db = context?.let { dbProvider.getDataBase(context as MainActivity) }
     }
 
     override fun onCreateView(
@@ -76,7 +80,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             try
             {
                 val customSet = async {
-                    db?.searchSetDao()?.getSetByName("custom set")
+                    db?.getSetByName("custom set")
                 }.await()
                 if (customSet != null)
                 {
@@ -144,7 +148,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                         sort_spinner.selectedItemPosition
                                        )
                 withContext(Dispatchers.Default) {
-                    db?.searchSetDao()?.insertOrUpdateSearchSet(set)
+                    db?.insertOrUpdateSearchSet(set)
                 }
             }
         }
