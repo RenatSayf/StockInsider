@@ -46,7 +46,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         super.onCreate(savedInstanceState)
         App().component.inject(this)
         searchRequest.setOnDocumentReadyListener(this)
-        db = context?.let { dbProvider.getDataBase(context as MainActivity) }
+        db = context?.let { dbProvider.getDao(context as MainActivity) }
     }
 
     override fun onCreateView(

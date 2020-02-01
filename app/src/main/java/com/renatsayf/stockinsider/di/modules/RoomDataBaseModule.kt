@@ -1,6 +1,6 @@
 package com.renatsayf.stockinsider.di.modules
 
-import android.app.Activity
+import android.content.Context
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.SearchSetDao
 import dagger.Module
@@ -10,8 +10,8 @@ import dagger.Provides
 class RoomDataBaseModule
 {
     @Provides
-    fun provideRoomDataBase(activity : Activity) : SearchSetDao
+    fun provideRoomDataBase(context : Context) : SearchSetDao
     {
-        return RoomDBProvider().getDataBase(activity)
+        return RoomDBProvider().getDao(context)
     }
 }
