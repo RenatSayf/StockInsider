@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -24,8 +25,11 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
@@ -33,7 +37,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 
     private lateinit var homeViewModel : HomeViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private var db : SearchSetDao? = null
+    private lateinit var db : SearchSetDao
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -46,7 +50,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         super.onCreate(savedInstanceState)
         App().component.inject(this)
         searchRequest.setOnDocumentReadyListener(this)
-        db = context?.let { dbProvider.getDao(context as MainActivity) }
+        db = dbProvider.getDao(context as MainActivity)
     }
 
     override fun onCreateView(
@@ -76,40 +80,25 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
 
-        CoroutineScope(IO).launch {
-            try
+
+        homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
+            if (it != null)
             {
-                val customSet = async {
-                    db?.getSetByName("custom set")
-                }.await()
-                if (customSet != null)
-                {
-                    try
-                    {
-                        ticker_ET.setText(customSet.ticker)
-                        filingDateSpinner.setSelection(customSet.filingPeriod)
-                        tradeDateSpinner.setSelection(customSet.tradePeriod)
-                        purchaseCheckBox.isChecked = customSet.isPurchase
-                        saleCheckBox.isChecked = customSet.isSale
-                        traded_min_ET.setText(customSet.tradedMin)
-                        traded_max_ET.setText(customSet.tradedMax)
-                        officer_CheBox.isChecked = customSet.isOfficer
-                        director_CheBox.isChecked = customSet.isDirector
-                        owner10_CheBox.isChecked = customSet.isTenPercent
-                        group_spinner.setSelection(customSet.groupBy)
-                        sort_spinner.setSelection(customSet.sortBy)
-                    }
-                    catch (e : Exception)
-                    {
-                        e.printStackTrace()
-                    }
-                }
+                ticker_ET.setText(it.ticker)
+                filingDateSpinner.setSelection(it.filingPeriod)
+                tradeDateSpinner.setSelection(it.tradePeriod)
+                purchaseCheckBox.isChecked = it.isPurchase
+                saleCheckBox.isChecked = it.isSale
+                traded_min_ET.setText(it.tradedMin)
+                traded_max_ET.setText(it.tradedMax)
+                officer_CheBox.isChecked = it.isOfficer
+                director_CheBox.isChecked = it.isDirector
+                owner10_CheBox.isChecked = it.isTenPercent
+                group_spinner.setSelection(it.groupBy)
+                sort_spinner.setSelection(it.sortBy)
             }
-            catch (e : Exception)
-            {
-                e.printStackTrace()
-            }
-        }
+        })
+        homeViewModel.getSearchSetByName(db, "custom set")
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
@@ -147,7 +136,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                         group_spinner.selectedItemPosition,
                         sort_spinner.selectedItemPosition
                                        )
-                withContext(Dispatchers.Default) {
+                withContext(Dispatchers.Main) {
                     db?.insertOrUpdateSearchSet(set)
                 }
             }
