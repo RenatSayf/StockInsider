@@ -38,6 +38,18 @@ class HomeViewModel : ViewModel()
         }
     }
 
+    fun saveSearchByName(db : SearchSetDao, setName : RoomSearchSet) : Long
+    {
+        var res : Long = Long.MIN_VALUE
+        CoroutineScope(Dispatchers.IO).launch {
+            res = withContext(Dispatchers.Main) {
+                db.insertOrUpdateSearchSet(setName)
+            }
+        }
+        return res
+    }
+
+
 
 
 }

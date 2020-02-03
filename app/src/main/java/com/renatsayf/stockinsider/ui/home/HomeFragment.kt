@@ -25,11 +25,6 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.traded_layout.*
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Dispatchers.IO
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
@@ -118,27 +113,29 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
             searchRequest.getTradingScreen(searchSet)
 
-            CoroutineScope(IO).launch {
-                val set = RoomSearchSet(
-                        "",
-                        "custom set",
-                        "",
-                        ticker_ET.text.toString(),
-                        filingDateSpinner.selectedItemPosition,
-                        tradeDateSpinner.selectedItemPosition,
-                        purchaseCheckBox.isChecked,
-                        saleCheckBox.isChecked,
-                        traded_min_ET.text.toString(),
-                        traded_max_ET.text.toString(),
-                        officer_CheBox.isChecked,
-                        director_CheBox.isChecked,
-                        owner10_CheBox.isChecked,
-                        group_spinner.selectedItemPosition,
-                        sort_spinner.selectedItemPosition
-                                       )
-                withContext(Dispatchers.Main) {
-                    db?.insertOrUpdateSearchSet(set)
-                }
+            val set = RoomSearchSet(
+                    "",
+                    "custom set",
+                    "",
+                    ticker_ET.text.toString(),
+                    filingDateSpinner.selectedItemPosition,
+                    tradeDateSpinner.selectedItemPosition,
+                    purchaseCheckBox.isChecked,
+                    saleCheckBox.isChecked,
+                    traded_min_ET.text.toString(),
+                    traded_max_ET.text.toString(),
+                    officer_CheBox.isChecked,
+                    director_CheBox.isChecked,
+                    owner10_CheBox.isChecked,
+                    group_spinner.selectedItemPosition,
+                    sort_spinner.selectedItemPosition
+                                   )
+            val res = homeViewModel.saveSearchByName(db, set)
+            if (res == Long.MIN_VALUE)
+            {
+                Throwable(it.javaClass.simpleName.plus("->")
+                                  + homeViewModel.javaClass.simpleName
+                                  + " Write to database is failed").printStackTrace()
             }
         }
     }
