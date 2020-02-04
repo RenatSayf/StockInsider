@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.result
 
+import android.app.PendingIntent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,13 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
+import com.renatsayf.stockinsider.network.ScheduleReceiver
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
+import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
+import kotlinx.android.synthetic.main.set_alert_layout.*
 
 class ResultFragment : Fragment()
 {
@@ -59,6 +64,31 @@ class ResultFragment : Fragment()
                 }
             }
         })
+
+        val confirmationDialog = ConfirmationDialog(getString(R.string.text_confirm_search))
+        addAlertImgView.setOnClickListener {
+            confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
+        }
+
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
+            if (!it.hasBeenHandled)
+            {
+                it.getContent().let {
+                    val scheduleReceiver = ScheduleReceiver()
+                    val intent = context?.let { context -> scheduleReceiver.setAlarm(context) }
+                    if (intent is PendingIntent)
+                    {
+                        addAlertImgView.visibility = View.GONE
+                        alarmOnImgView.visibility = View.VISIBLE
+                        Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
+                    }
+                }
+            }
+        })
+
+        alarmOnImgView.setOnClickListener {
+
+        }
 
         backButton.setOnClickListener {
             activity?.onBackPressed()

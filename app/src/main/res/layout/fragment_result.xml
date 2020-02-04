@@ -18,24 +18,27 @@
 
         <TextView
             android:id="@+id/resultTV"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:layout_marginEnd="5dp"
+            android:layout_marginStart="5dp"
             android:text="@string/text_0"
             android:textAlignment="textEnd"
             android:textSize="18sp"
             android:textColor="@color/white"/>
 
         <TextView
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginStart="5dp"
             android:text="@string/text_results"
             android:textAlignment="textStart"
             android:textSize="18sp"
             android:textColor="@color/white"/>
+
+        <include layout="@layout/set_alert_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"/>
 
     </LinearLayout>
 
@@ -45,7 +48,7 @@
         android:layout_height="match_parent"
         android:scrollbars="vertical"
         app:layout_constraintTop_toBottomOf="@id/resultsNumberLayout"
-        android:layout_marginTop="35dp"
+        android:layout_marginTop="45dp"
         app:layout_constraintBottom_toBottomOf="parent"
         />
 

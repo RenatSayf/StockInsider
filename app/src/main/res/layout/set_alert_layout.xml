@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorTransparent">
+
+    <ImageView
+        android:id="@+id/addAlertImgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_add_alert_white"
+        android:contentDescription="@string/app_name"
+        android:layout_gravity="end"
+        android:background="@drawable/selector_circle_background"
+        />
+
+    <ImageView
+        android:id="@+id/alarmOnImgView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/ic_alarm_on_white"
+        android:contentDescription="@string/app_name"
+        android:layout_gravity="end"
+        android:visibility="gone"
+        android:background="@drawable/selector_circle_background"/>
+
+</FrameLayout>
