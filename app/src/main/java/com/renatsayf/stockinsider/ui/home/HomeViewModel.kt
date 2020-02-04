@@ -25,28 +25,33 @@ class HomeViewModel : ViewModel()
     {
         CoroutineScope(Dispatchers.IO).launch {
             val set = withContext(Dispatchers.Main) {
-                db.getSetByName(setName)
+                try
+                {
+                    db.getSetByName(setName)
+                }
+                catch (e : Exception)
+                {
+                    e.printStackTrace()
+                }
             }
-            try
-            {
-                _searchSet.postValue(set)
-            }
-            catch (e : Exception)
-            {
-                e.printStackTrace()
-            }
+            _searchSet.postValue(set as RoomSearchSet)
         }
     }
 
-    fun saveSearchByName(db : SearchSetDao, setName : RoomSearchSet) : Long
+    fun saveSearchByName(db : SearchSetDao, setName : RoomSearchSet)
     {
-        var res : Long = Long.MIN_VALUE
         CoroutineScope(Dispatchers.IO).launch {
-            res = withContext(Dispatchers.Main) {
-                db.insertOrUpdateSearchSet(setName)
+            withContext(Dispatchers.Main) {
+                try
+                {
+                    db.insertOrUpdateSearchSet(setName)
+                }
+                catch (e : Exception)
+                {
+                    e.printStackTrace()
+                }
             }
         }
-        return res
     }
 
 

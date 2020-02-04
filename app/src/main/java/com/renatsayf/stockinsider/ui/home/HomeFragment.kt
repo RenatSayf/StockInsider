@@ -130,13 +130,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     group_spinner.selectedItemPosition,
                     sort_spinner.selectedItemPosition
                                    )
-            val res = homeViewModel.saveSearchByName(db, set)
-            if (res == Long.MIN_VALUE)
-            {
-                Throwable(it.javaClass.simpleName.plus("->")
-                                  + homeViewModel.javaClass.simpleName
-                                  + " Write to database is failed").printStackTrace()
-            }
+            homeViewModel.saveSearchByName(db, set)
         }
     }
 
