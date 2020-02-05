@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.ScheduleReceiver
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -20,11 +21,21 @@ import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
+import javax.inject.Inject
 
 class ResultFragment : Fragment()
 {
     private lateinit var viewModel : ResultViewModel
     private lateinit var dataTransferModel : DataTransferModel
+
+    @Inject
+    lateinit var scheduleReceiver : ScheduleReceiver
+
+    override fun onCreate(savedInstanceState : Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        App().component.inject(this)
+    }
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
@@ -74,7 +85,6 @@ class ResultFragment : Fragment()
             if (!it.hasBeenHandled)
             {
                 it.getContent().let {
-                    val scheduleReceiver = ScheduleReceiver()
                     val intent = context?.let { context -> scheduleReceiver.setAlarm(context) }
                     if (intent is PendingIntent)
                     {

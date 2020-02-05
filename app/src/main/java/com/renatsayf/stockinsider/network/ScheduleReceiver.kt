@@ -7,12 +7,14 @@ import android.content.Context
 import android.content.Intent
 import android.os.SystemClock
 import java.util.*
+import javax.inject.Inject
 
 
-class ScheduleReceiver : BroadcastReceiver()
+class ScheduleReceiver @Inject constructor() : BroadcastReceiver()
 {
-    override fun onReceive(p0 : Context?, p1 : Intent?)
+    override fun onReceive(context : Context?, intent : Intent?)
     {
+
         return
     }
 
