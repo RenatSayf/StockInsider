@@ -46,6 +46,8 @@
     <string name="text_deal_details">Deal Details</string>
     <string name="text_confirm_search">You wanna get the daily notifications by these searching parameters?</string>
     <string name="text_searching_is_created">The searching by schedule has been created</string>
+    <string name="text_cancel_search">You wish cancelled these searching notifications?</string>
+    <string name="text_search_is_disabled">Search notification is disabled</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

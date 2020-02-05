@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.di
 
+import com.renatsayf.stockinsider.di.modules.ConfirmationDialogModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.di.modules.ScheduleReceiverModule
 import com.renatsayf.stockinsider.di.modules.SearchRequestModule
@@ -10,7 +11,9 @@ import dagger.Component
 import javax.inject.Singleton
 
 @Singleton
-@Component(modules = [SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class])
+@Component(
+        modules = [SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class, ConfirmationDialogModule::class]
+          )
 interface AppComponent
 {
     fun inject(homeFragment : HomeFragment)

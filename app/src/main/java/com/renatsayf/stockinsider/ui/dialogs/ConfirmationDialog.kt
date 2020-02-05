@@ -6,20 +6,29 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.utils.Event
+import javax.inject.Inject
 
-class ConfirmationDialog constructor(private val message : String) : DialogFragment()
+class ConfirmationDialog @Inject constructor(var message : String, var flag : String) : DialogFragment()
 {
     companion object{
         const val TAG = "confirmation_dialog"
+        const val FLAG_CANCEL = "cancel"
     }
-    val eventOk : MutableLiveData<Event<Unit>> = MutableLiveData()
+    val eventOk : MutableLiveData<Event<String>> = MutableLiveData()
 
     override fun onCreateDialog(savedInstanceState : Bundle?) : Dialog
     {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage(message)
             .setPositiveButton("Ok") { _, _ ->
-                eventOk.value = Event(Unit)
+                if (flag != FLAG_CANCEL)
+                {
+                    eventOk.value = Event("")
+                }
+                else
+                {
+                    eventOk.value = Event(FLAG_CANCEL)
+                }
             }
             .setNegativeButton("Cancel"){ _, _ ->
                 dismiss()

@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.result
 
-import android.app.PendingIntent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -30,6 +29,9 @@ class ResultFragment : Fragment()
 
     @Inject
     lateinit var scheduleReceiver : ScheduleReceiver
+
+    @Inject
+    lateinit var confirmationDialog : ConfirmationDialog
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -76,28 +78,45 @@ class ResultFragment : Fragment()
             }
         })
 
-        val confirmationDialog = ConfirmationDialog(getString(R.string.text_confirm_search))
         addAlertImgView.setOnClickListener {
+            confirmationDialog.message = getString(R.string.text_confirm_search)
+            confirmationDialog.flag = ""
             confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
         confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
             if (!it.hasBeenHandled)
             {
-                it.getContent().let {
-                    val intent = context?.let { context -> scheduleReceiver.setAlarm(context) }
-                    if (intent is PendingIntent)
+                it.getContent().let {flag ->
+                    when
                     {
-                        addAlertImgView.visibility = View.GONE
-                        alarmOnImgView.visibility = View.VISIBLE
-                        Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
+                        flag != ConfirmationDialog.FLAG_CANCEL ->
+                        {
+                            context?.let { context ->
+                                scheduleReceiver.setAlarm(context)
+                                addAlertImgView.visibility = View.GONE
+                                alarmOnImgView.visibility = View.VISIBLE
+                                Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
+                            }
+                        }
+                        else ->
+                        {
+                            context?.let { it1 ->
+                                scheduleReceiver.cancelAlarm(it1)
+                                addAlertImgView.visibility = View.VISIBLE
+                                alarmOnImgView.visibility = View.GONE
+                                Snackbar.make(addAlertImgView, getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
+                            }
+                        }
                     }
                 }
             }
         })
 
         alarmOnImgView.setOnClickListener {
-
+            confirmationDialog.message = getString(R.string.text_cancel_search)
+            confirmationDialog.flag = ConfirmationDialog.FLAG_CANCEL
+            confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
         backButton.setOnClickListener {
