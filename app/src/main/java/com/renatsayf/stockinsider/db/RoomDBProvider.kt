@@ -7,6 +7,6 @@ class RoomDBProvider @Inject constructor()
 {
     fun getDao(context : Context) : SearchSetDao
     {
-        return RoomSearchSetDB.getInstance(context).searchSetDao()
+        return DataBase.getInstance(context).searchSetDao()
     }
 }

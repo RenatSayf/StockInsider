@@ -17,6 +17,9 @@ interface SearchSetDao
     @Delete
     suspend fun deleteSet(set : RoomSearchSet) : Int
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
+
+//    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Companies::class)
+//    suspend fun insertCompanies(list : List<Companies>)
 }

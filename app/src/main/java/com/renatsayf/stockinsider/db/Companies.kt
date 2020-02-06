@@ -1,0 +1,18 @@
+package com.renatsayf.stockinsider.db
+
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "companies")
+data class Companies(
+        @PrimaryKey
+        @ColumnInfo(name = "_id")
+        val _id : Int,
+
+        @ColumnInfo(name = "ticker")
+        val ticker : String?,
+
+        @ColumnInfo(name = "company_name")
+        val company : String?
+                    )
