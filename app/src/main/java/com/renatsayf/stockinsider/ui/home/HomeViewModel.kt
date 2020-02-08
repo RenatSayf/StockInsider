@@ -3,8 +3,8 @@ package com.renatsayf.stockinsider.ui.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import kotlinx.coroutines.*
 
 class HomeViewModel : ViewModel()
@@ -48,6 +48,25 @@ class HomeViewModel : ViewModel()
                 {
                     e.printStackTrace()
                 }
+            }
+        }
+    }
+
+    private var _tickers = MutableLiveData<List<String>>().apply {
+        value = tickers?.value
+    }
+    var tickers : LiveData<List<String>> = _tickers
+
+    fun getTickersArray(db : AppDao) = CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.Main){
+            try
+            {
+                val tickersList = db.getAllTickers()
+                _tickers.postValue(tickersList)
+            }
+            catch (e : Exception)
+            {
+                e.printStackTrace()
             }
         }
     }

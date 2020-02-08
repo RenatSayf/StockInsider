@@ -14,12 +14,17 @@ interface AppDao
     @Query("DELETE FROM search_set")
     suspend fun deleteAll() : Int
 
-    @Delete
+    @Delete(entity = RoomSearchSet::class)
     suspend fun deleteSet(set : RoomSearchSet) : Int
 
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 
-//    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Companies::class)
-//    suspend fun insertCompanies(list : List<Companies>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Companies::class)
+    suspend fun insertCompanies(list : List<Companies>)
+
+    @Query("SELECT ticker FROM companies")
+    suspend fun getAllTickers() : List<String>
+
+
 }

@@ -12,9 +12,9 @@ import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
@@ -68,14 +68,16 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     {
         super.onActivityCreated(savedInstanceState)
 
-        val tickerArray = activity?.resources?.getStringArray(R.array.ticker_list)
-        val tickerListAdapter = tickerArray?.let {
-            ArrayAdapter<String>(
-                    activity!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, it
-                                )
-        }
-        ticker_ET.setAdapter(tickerListAdapter)
-        //ticker_ET.threshold = 1
+        homeViewModel.tickers.observe(viewLifecycleOwner, Observer {
+            if (it == null) homeViewModel.getTickersArray(db)
+            val tickerListAdapter = it?.let {
+                ArrayAdapter<String>(
+                        activity!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, it
+                                    )
+            }
+            ticker_ET.setAdapter(tickerListAdapter)
+            //ticker_ET.threshold = 1
+        })
 
         homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)
