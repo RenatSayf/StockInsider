@@ -14,7 +14,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.db.SearchSetDao
+import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
@@ -29,10 +29,13 @@ import javax.inject.Inject
 
 class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 {
-
+    companion object
+    {
+        const val DEFAULT_SET : String = "default set"
+    }
     private lateinit var homeViewModel : HomeViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private lateinit var db : SearchSetDao
+    private lateinit var db : AppDao
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -65,7 +68,6 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     {
         super.onActivityCreated(savedInstanceState)
 
-
         val tickerArray = activity?.resources?.getStringArray(R.array.ticker_list)
         val tickerListAdapter = tickerArray?.let {
             ArrayAdapter<String>(
@@ -74,7 +76,6 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         }
         ticker_ET.setAdapter(tickerListAdapter)
         //ticker_ET.threshold = 1
-
 
         homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)
@@ -93,19 +94,19 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        homeViewModel.getSearchSetByName(db, "custom set")
+        homeViewModel.getSearchSetByName(db, DEFAULT_SET)
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
             val searchSet = SearchSet("custom set")
-            searchSet.ticker = ticker_ET.text.toString()
+            searchSet.ticker = ticker_ET.text.toString().trim()
             searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
             searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
             searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
             searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
-            searchSet.tradedMin = traded_min_ET.text.toString()
-            searchSet.tradedMax = traded_max_ET.text.toString()
+            searchSet.tradedMin = traded_min_ET.text.toString().trim()
+            searchSet.tradedMax = traded_max_ET.text.toString().trim()
             searchSet.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
             searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
             searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
@@ -114,23 +115,22 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             searchRequest.getTradingScreen(searchSet)
 
             val set = RoomSearchSet(
+                    DEFAULT_SET,
                     "",
-                    "custom set",
-                    "",
-                    ticker_ET.text.toString(),
+                    ticker_ET.text.toString().trim(),
                     filingDateSpinner.selectedItemPosition,
                     tradeDateSpinner.selectedItemPosition,
                     purchaseCheckBox.isChecked,
                     saleCheckBox.isChecked,
-                    traded_min_ET.text.toString(),
-                    traded_max_ET.text.toString(),
+                    traded_min_ET.text.toString().trim(),
+                    traded_max_ET.text.toString().trim(),
                     officer_CheBox.isChecked,
                     director_CheBox.isChecked,
                     owner10_CheBox.isChecked,
                     group_spinner.selectedItemPosition,
                     sort_spinner.selectedItemPosition
                                    )
-            homeViewModel.saveSearchByName(db, set)
+            homeViewModel.saveDefaultSearch(db, set)
         }
     }
 

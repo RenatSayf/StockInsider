@@ -2,7 +2,7 @@ package com.renatsayf.stockinsider.di.modules
 
 import android.content.Context
 import com.renatsayf.stockinsider.db.RoomDBProvider
-import com.renatsayf.stockinsider.db.SearchSetDao
+import com.renatsayf.stockinsider.db.AppDao
 import dagger.Module
 import dagger.Provides
 
@@ -10,7 +10,7 @@ import dagger.Provides
 class RoomDataBaseModule
 {
     @Provides
-    fun provideRoomDataBase(context : Context) : SearchSetDao
+    fun provideRoomDataBase(context : Context) : AppDao
     {
         return RoomDBProvider().getDao(context)
     }

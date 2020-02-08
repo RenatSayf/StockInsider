@@ -5,12 +5,10 @@ import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "search_set", indices = [Index("creation_date")])
+@Entity(tableName = "search_set", indices = [Index("set_name")])
 data class RoomSearchSet(
-        @PrimaryKey
-        @ColumnInfo(name = "creation_date")
-        val creationDate : String,
 
+        @PrimaryKey
         @ColumnInfo(name = "set_name")
         val setName : String,
 
@@ -27,10 +25,10 @@ data class RoomSearchSet(
         val tradePeriod : Int,
 
         @ColumnInfo(name = "is_purchase")
-        val isPurchase : Boolean,
+        val isPurchase : Boolean = true,
 
         @ColumnInfo(name = "is_sale")
-        val isSale : Boolean,
+        val isSale : Boolean = false,
 
         @ColumnInfo(name = "trade_min")
         val tradedMin : String,

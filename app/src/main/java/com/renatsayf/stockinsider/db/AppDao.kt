@@ -3,7 +3,7 @@ package com.renatsayf.stockinsider.db
 import androidx.room.*
 
 @Dao
-interface SearchSetDao
+interface AppDao
 {
     @Query("SELECT * FROM search_set")
     suspend fun getSearchSets() : List<RoomSearchSet>

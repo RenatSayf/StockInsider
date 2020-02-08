@@ -5,8 +5,8 @@ import javax.inject.Inject
 
 class RoomDBProvider @Inject constructor()
 {
-    fun getDao(context : Context) : SearchSetDao
+    fun getDao(context : Context) : AppDao
     {
-        return DataBase.getInstance(context).searchSetDao()
+        return AppDataBase.getInstance(context).searchSetDao()
     }
 }

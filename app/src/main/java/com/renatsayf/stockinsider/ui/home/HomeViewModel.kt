@@ -4,11 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.db.SearchSetDao
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.renatsayf.stockinsider.db.AppDao
+import kotlinx.coroutines.*
 
 class HomeViewModel : ViewModel()
 {
@@ -21,30 +18,31 @@ class HomeViewModel : ViewModel()
         _searchSet.value = set
     }
 
-    fun getSearchSetByName(db : SearchSetDao, setName : String)
+    fun getSearchSetByName(db : AppDao, setName : String)
     {
-        CoroutineScope(Dispatchers.IO).launch {
-            val set = withContext(Dispatchers.Main) {
+        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
+            withContext(Dispatchers.Main) {
                 try
                 {
-                    db.getSetByName(setName)
+                    val set = db.getSetByName(setName)
+                    _searchSet.postValue(set)
                 }
                 catch (e : Exception)
                 {
                     e.printStackTrace()
                 }
             }
-            _searchSet.postValue(set as RoomSearchSet)
         }
     }
 
-    fun saveSearchByName(db : SearchSetDao, setName : RoomSearchSet)
+    fun saveDefaultSearch(db : AppDao, set : RoomSearchSet)
     {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
                 try
                 {
-                    db.insertOrUpdateSearchSet(setName)
+                    val res = db.insertOrUpdateSearchSet(set)
+                    res
                 }
                 catch (e : Exception)
                 {
