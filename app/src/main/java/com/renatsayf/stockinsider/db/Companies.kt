@@ -6,13 +6,11 @@ import androidx.room.PrimaryKey
 
 @Entity(tableName = "companies")
 data class Companies(
-        @PrimaryKey
-        @ColumnInfo(name = "_id")
-        val _id : Int,
 
+        @PrimaryKey
         @ColumnInfo(name = "ticker")
-        val ticker : String?,
+        val ticker : String,
 
         @ColumnInfo(name = "company_name")
-        val company : String?
+        val company : String
                     )
