@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import androidx.core.widget.doBeforeTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -20,6 +20,7 @@ import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
@@ -68,16 +69,31 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     {
         super.onActivityCreated(savedInstanceState)
 
-        homeViewModel.tickers.observe(viewLifecycleOwner, Observer {
-            if (it == null) homeViewModel.getTickersArray(db)
-            val tickerListAdapter = it?.let {
-                ArrayAdapter<String>(
-                        activity!!.applicationContext, R.layout.support_simple_spinner_dropdown_item, it
-                                    )
+        homeViewModel.tickers.observe(viewLifecycleOwner, Observer { tickers ->
+            if (tickers == null)
+            {
+                homeViewModel.getTickersArray(db)
+            }
+
+            val tickerListAdapter = tickers?.let {
+                context?.let { context ->
+                    TickersListAdapter(activity as MainActivity, android.R.layout.simple_list_item_1, it)
+                }
             }
             ticker_ET.setAdapter(tickerListAdapter)
             //ticker_ET.threshold = 1
         })
+
+        var tickerText = ""
+        ticker_ET.doBeforeTextChanged { text, start, count, after ->
+            tickerText = text.toString()
+        }
+
+        ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
+            val item = adapterView.adapter.getItem(i).toString()
+            ticker_ET.setText(tickerText.plus(item))
+        }
+
 
         homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)

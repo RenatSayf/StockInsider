@@ -52,16 +52,16 @@ class HomeViewModel : ViewModel()
         }
     }
 
-    private var _tickers = MutableLiveData<List<String>>().apply {
+    private var _tickers = MutableLiveData<Array<String>>().apply {
         value = tickers?.value
     }
-    var tickers : LiveData<List<String>> = _tickers
+    var tickers : LiveData<Array<String>> = _tickers
 
     fun getTickersArray(db : AppDao) = CoroutineScope(Dispatchers.IO).launch {
         withContext(Dispatchers.Main){
             try
             {
-                val tickersList = db.getAllTickers()
+                val tickersList = db.getAllTickers().toTypedArray()
                 _tickers.postValue(tickersList)
             }
             catch (e : Exception)
