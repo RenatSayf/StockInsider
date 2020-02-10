@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.widget.doBeforeTextChanged
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -85,13 +85,28 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         })
 
         var tickerText = ""
-        ticker_ET.doBeforeTextChanged { text, start, count, after ->
-            tickerText = text.toString()
+
+        ticker_ET.doOnTextChanged { text, start, count, after ->
+            if (text != null)
+            {
+                if (text.isNotEmpty())
+                {
+                    val c = text[text.length - 1]
+                    if (c.isWhitespace())
+                    {
+                        tickerText = text.toString()
+                        ticker_ET.showDropDown()
+                    }
+                }
+            }
+            return@doOnTextChanged
         }
 
         ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
             val item = adapterView.adapter.getItem(i).toString()
-            ticker_ET.setText(tickerText.plus(item))
+            val str = (tickerText.plus(item)).trim()
+            ticker_ET.setText(str)
+            ticker_ET.setSelection(str.length)
         }
 
 
@@ -164,6 +179,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         dataTransferModel.setDealList(dealList)
         activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
     }
+
 
 
 }

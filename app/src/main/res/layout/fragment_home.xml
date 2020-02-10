@@ -47,7 +47,8 @@
                         android:inputType="textAutoComplete"
                         android:labelFor="@id/ticker_ET"
                         tools:targetApi="o"
-                        android:completionThreshold="1"/>
+                        android:completionThreshold="1"
+                        />
 
                 </LinearLayout>
 
