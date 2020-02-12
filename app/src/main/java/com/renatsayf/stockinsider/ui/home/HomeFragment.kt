@@ -80,6 +80,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     TickersListAdapter(activity as MainActivity, android.R.layout.simple_list_item_1, it)
                 }
             }
+            val filter = tickerListAdapter?.filter
             ticker_ET.setAdapter(tickerListAdapter)
             //ticker_ET.threshold = 1
         })
@@ -95,7 +96,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     if (c.isWhitespace())
                     {
                         tickerText = text.toString()
-                        ticker_ET.showDropDown()
+                        //ticker_ET.showDropDown()
                     }
                 }
             }
