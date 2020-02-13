@@ -4,12 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import kotlinx.coroutines.*
 
 class HomeViewModel : ViewModel()
 {
-     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
+    private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }
     var searchSet : LiveData<RoomSearchSet> = _searchSet
@@ -67,6 +68,30 @@ class HomeViewModel : ViewModel()
             catch (e : Exception)
             {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    private var _companies = MutableLiveData<Array<Companies>>().apply {
+        value = companies?.value
+    }
+    var companies : LiveData<Array<Companies>> = _companies
+
+    fun getCompaniesArray(db : AppDao)
+    {
+        var companies = MutableLiveData<Array<Companies>>()
+        CoroutineScope(Dispatchers.IO).launch {
+            withContext(Dispatchers.Main)
+            {
+                try
+                {
+                    val array = db.getAllCompanies().toTypedArray()
+                    _companies.postValue(array)
+                }
+                catch (e : Exception)
+                {
+                    e.printStackTrace()
+                }
             }
         }
     }

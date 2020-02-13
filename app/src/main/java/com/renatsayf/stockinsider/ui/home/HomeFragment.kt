@@ -69,6 +69,14 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     {
         super.onActivityCreated(savedInstanceState)
 
+        homeViewModel.companies.observe(viewLifecycleOwner, Observer {companies ->
+            if (companies == null)
+            {
+                homeViewModel.getCompaniesArray(db)
+            }
+            return@Observer
+        })
+
         homeViewModel.tickers.observe(viewLifecycleOwner, Observer { tickers ->
             if (tickers == null)
             {

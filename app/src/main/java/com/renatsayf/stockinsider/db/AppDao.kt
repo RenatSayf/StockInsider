@@ -26,5 +26,8 @@ interface AppDao
     @Query("SELECT ticker FROM companies")
     suspend fun getAllTickers() : List<String>
 
+    @Query("SELECT * FROM companies")
+    suspend fun getAllCompanies() : List<Companies>
+
 
 }
