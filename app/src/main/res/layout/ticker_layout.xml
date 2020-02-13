@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="horizontal"
+    android:id="@+id/tickerLayout"
+    android:padding="10dp">
+
+    <TextView
+        android:id="@+id/tickerTV"
+        android:layout_width="40dp"
+        android:layout_height="wrap_content"
+        tools:text="MSFT"
+        />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="-"
+        android:paddingStart="10dp"
+        android:paddingEnd="20dp"/>
+
+    <TextView
+        android:id="@+id/companyNameTV"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="Microsoft Corp"/>
+
+</LinearLayout>

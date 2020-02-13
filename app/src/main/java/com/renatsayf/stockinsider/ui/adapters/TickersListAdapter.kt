@@ -1,20 +1,31 @@
 package com.renatsayf.stockinsider.ui.adapters
 
+import android.app.Activity
 import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.Filter
+import android.widget.Filterable
+import android.widget.LinearLayout
+import com.renatsayf.stockinsider.R
+import kotlinx.android.synthetic.main.ticker_layout.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TickersListAdapter(
-        context : Context, resource : Int, items : Array<String> = arrayOf()
-                        ) : ArrayAdapter<String>(context, resource, items)
+        context : Activity, items : Array<String> = arrayOf()
+                        ) : ArrayAdapter<String>(context, R.layout.ticker_layout), Filterable
 {
+    internal var _context : Context? = null
+
     internal var tempItems : MutableList<Any> = mutableListOf()
     internal var suggestions : MutableList<Any> = arrayListOf()
 
     init
     {
+        _context = context
         tempItems = items.toMutableList()
         suggestions = ArrayList()
     }
@@ -71,6 +82,11 @@ class TickersListAdapter(
         return suggestions[position].toString()
     }
 
+    override fun getItemId(position : Int) : Long
+    {
+        return position.toLong()
+    }
+
     override fun getFilter() : Filter
     {
 
@@ -80,6 +96,15 @@ class TickersListAdapter(
     override fun getCount() : Int
     {
         return suggestions.size
+    }
+
+    override fun getView(position : Int, convertView : View?, parent : ViewGroup) : View
+    {
+        val inflater= LayoutInflater.from(context)
+        val convertView = inflater.inflate(R.layout.ticker_layout, parent, false) as LinearLayout
+        convertView.tickerTV.text = suggestions[position].toString()
+        convertView.companyNameTV.text = "Microsoft Corp"
+        return convertView
     }
 
 

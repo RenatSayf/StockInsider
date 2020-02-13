@@ -77,7 +77,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 
             val tickerListAdapter = tickers?.let {
                 context?.let { context ->
-                    TickersListAdapter(activity as MainActivity, android.R.layout.simple_list_item_1, it)
+                    TickersListAdapter(activity as MainActivity, it)
                 }
             }
             val filter = tickerListAdapter?.filter
