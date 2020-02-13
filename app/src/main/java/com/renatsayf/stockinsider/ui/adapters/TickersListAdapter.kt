@@ -1,7 +1,9 @@
 package com.renatsayf.stockinsider.ui.adapters
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,19 +11,21 @@ import android.widget.ArrayAdapter
 import android.widget.Filter
 import android.widget.Filterable
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.Companies
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TickersListAdapter(
-        context : Activity, items : Array<String> = arrayOf()
-                        ) : ArrayAdapter<String>(context, R.layout.ticker_layout), Filterable
+        context : Activity, items : Array<Companies> = arrayOf()
+                        ) : ArrayAdapter<Any>(context, R.layout.ticker_layout), Filterable
 {
-    internal var _context : Context? = null
+    private var _context : Context? = null
 
-    internal var tempItems : MutableList<Any> = mutableListOf()
-    internal var suggestions : MutableList<Any> = arrayListOf()
+    internal var tempItems : MutableList<Companies> = mutableListOf()
+    internal var suggestions : MutableList<Companies> = mutableListOf()
 
     init
     {
@@ -32,27 +36,27 @@ class TickersListAdapter(
 
     private var filter : Filter = object : Filter()
     {
-
+        @RequiresApi(Build.VERSION_CODES.N)
         override fun performFiltering(constraint : CharSequence?) : FilterResults
         {
             return if (constraint != null)
             {
-                val listConstraint = constraint.split(" ")
+                val listConstraint = constraint.split(" ").toMutableList()
                 val lastConstraint = listConstraint[listConstraint.size - 1]
                 suggestions.clear()
 
-                tempItems.forEach {
-                    val isContains = it.toString().toLowerCase(Locale.getDefault()).contains(lastConstraint.toLowerCase(Locale.getDefault()))
+                tempItems.forEach {company ->
+                    val isContains = company.ticker.toLowerCase(Locale.getDefault()).contains(lastConstraint.toLowerCase(Locale.getDefault()))
                     if (isContains)
                     {
-                        suggestions.add(it)
+                        suggestions.add(company)
                     }
                 }
 
-                listConstraint.forEach {
-                    if (suggestions.contains(it))
-                    {
-                        suggestions.remove(it)
+                for (ticker in listConstraint)
+                {
+                    suggestions.removeIf{company ->
+                        company.ticker == ticker
                     }
                 }
 
@@ -71,7 +75,7 @@ class TickersListAdapter(
         {
             val values = results.values
             values?.let {
-                suggestions = results.values as MutableList<Any>
+                suggestions = results.values as MutableList<Companies>
                 notifyDataSetChanged()
             }
         }
@@ -98,13 +102,14 @@ class TickersListAdapter(
         return suggestions.size
     }
 
+    @SuppressLint("ViewHolder")
     override fun getView(position : Int, convertView : View?, parent : ViewGroup) : View
     {
         val inflater= LayoutInflater.from(context)
-        val convertView = inflater.inflate(R.layout.ticker_layout, parent, false) as LinearLayout
-        convertView.tickerTV.text = suggestions[position].toString()
-        convertView.companyNameTV.text = "Microsoft Corp"
-        return convertView
+        val layout = inflater.inflate(R.layout.ticker_layout, parent, false) as LinearLayout
+        layout.tickerTV.text = suggestions[position].ticker
+        layout.companyNameTV.text = suggestions[position].company
+        return layout
     }
 
 

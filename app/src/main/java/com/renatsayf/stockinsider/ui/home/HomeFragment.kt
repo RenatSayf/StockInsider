@@ -25,6 +25,7 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
+import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
 
@@ -74,27 +75,16 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             {
                 homeViewModel.getCompaniesArray(db)
             }
-            return@Observer
-        })
-
-        homeViewModel.tickers.observe(viewLifecycleOwner, Observer { tickers ->
-            if (tickers == null)
-            {
-                homeViewModel.getTickersArray(db)
-            }
-
-            val tickerListAdapter = tickers?.let {
+            val tickerListAdapter = companies?.let {
                 context?.let { context ->
                     TickersListAdapter(activity as MainActivity, it)
                 }
             }
-            val filter = tickerListAdapter?.filter
             ticker_ET.setAdapter(tickerListAdapter)
             //ticker_ET.threshold = 1
         })
 
         var tickerText = ""
-
         ticker_ET.doOnTextChanged { text, start, count, after ->
             if (text != null)
             {
@@ -104,20 +94,22 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     if (c.isWhitespace())
                     {
                         tickerText = text.toString()
-                        //ticker_ET.showDropDown()
                     }
                 }
             }
-            return@doOnTextChanged
+            else
+            {
+                tickerText = ""
+            }
         }
 
         ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
-            val item = adapterView.adapter.getItem(i).toString()
-            val str = (tickerText.plus(item)).trim()
+            val tickerLayout = view.tickerLayout
+            val ticker = tickerLayout.tickerTV.text
+            val str = (tickerText.plus(ticker)).trim()
             ticker_ET.setText(str)
             ticker_ET.setSelection(str.length)
         }
-
 
         homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)

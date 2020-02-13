@@ -79,7 +79,6 @@ class HomeViewModel : ViewModel()
 
     fun getCompaniesArray(db : AppDao)
     {
-        var companies = MutableLiveData<Array<Companies>>()
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main)
             {
