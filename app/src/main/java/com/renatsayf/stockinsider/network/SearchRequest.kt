@@ -82,7 +82,24 @@ class SearchRequest @Inject constructor()
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
+        val bodyText = body.text()
+        if (bodyText != null && bodyText.contains("ERROR:"))
+        {
+            val deal = Deal("")
+            deal.error = "Data is not available, please, try later"
+            listDeal.add(deal)
+            return listDeal
+        }
+        val error = body?.select("#tablewrapper")?.text()
+        if (error != null && error.contains("ERROR:"))
+        {
+            val deal = Deal("")
+            deal.error = "Data is not available, please, try later"
+            listDeal.add(deal)
+            return listDeal
+        }
         val tableBody = body?.select("#tablewrapper > table > tbody")
+
         val table = tableBody?.get(0)
         var trIndex = 1
         table?.children()?.forEach { element: Element? ->

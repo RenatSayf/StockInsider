@@ -96,11 +96,13 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                         tickerText = text.toString()
                     }
                 }
+                else
+                {
+                    tickerText = ""
+                }
             }
-            else
-            {
-                tickerText = ""
-            }
+
+
         }
 
         ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
@@ -134,7 +136,8 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             val mainActivity = activity as MainActivity
             mainActivity.loadProgreesBar.visibility = View.VISIBLE
             val searchSet = SearchSet("custom set")
-            searchSet.ticker = ticker_ET.text.toString().trim()
+            val tickersString = ticker_ET.text.toString().trim()
+            searchSet.ticker = mainActivity.getTickersString(tickersString)
             searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
             searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
             searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)

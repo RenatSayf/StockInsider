@@ -58,7 +58,7 @@ class ResultFragment : Fragment()
 
         dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
             it.let {
-                if (it.size > 0)
+                if (it.size > 0 && it[0].error!!.isEmpty())
                 {
                     resultTV.text = it.size.toString()
                     val linearLayoutManager = LinearLayoutManager(activity)
@@ -69,6 +69,12 @@ class ResultFragment : Fragment()
                         adapter = dealListAdapter
                     }
                     return@let
+                }
+                else if (it.size == 1 && it[0].error!!.isNotEmpty())
+                {
+                    resultTV.text = 0.toString()
+                    recommendationsTV.text = it[0].error
+                    noResultLayout.visibility = View.VISIBLE
                 }
                 else
                 {

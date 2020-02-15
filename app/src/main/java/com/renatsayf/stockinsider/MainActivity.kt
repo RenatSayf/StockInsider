@@ -122,5 +122,14 @@ class MainActivity : AppCompatActivity()
         }
     }
 
+    fun getTickersString(string : String) : String
+    {
+        val pattern = Regex("\\s")
+        val str = string.trim().replace(pattern, "+")
+
+        //val newString = str.replace(pattern, "+")
+        return str
+    }
+
 
 }
