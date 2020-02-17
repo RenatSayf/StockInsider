@@ -101,8 +101,6 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     tickerText = ""
                 }
             }
-
-
         }
 
         ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
@@ -167,6 +165,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     group_spinner.selectedItemPosition,
                     sort_spinner.selectedItemPosition
                                    )
+            mainActivity.hideKeyBoard(ticker_ET)
             homeViewModel.saveDefaultSearch(db, set)
         }
     }

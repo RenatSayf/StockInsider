@@ -1,8 +1,10 @@
 package com.renatsayf.stockinsider
 
+import android.content.Context
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -125,10 +127,13 @@ class MainActivity : AppCompatActivity()
     fun getTickersString(string : String) : String
     {
         val pattern = Regex("\\s")
-        val str = string.trim().replace(pattern, "+")
+        return string.trim().replace(pattern, "+")
+    }
 
-        //val newString = str.replace(pattern, "+")
-        return str
+    fun hideKeyBoard(view : View)
+    {
+        val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
 

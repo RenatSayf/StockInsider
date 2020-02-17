@@ -48,6 +48,7 @@
                         android:labelFor="@id/ticker_ET"
                         tools:targetApi="o"
                         android:completionThreshold="1"
+                        android:textLocale="en-US"
                         />
 
                 </LinearLayout>
