@@ -111,6 +111,11 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             ticker_ET.setSelection(str.length)
         }
 
+        clearTicketImView.setOnClickListener {
+            ticker_ET.setText("")
+            tickerText = ""
+        }
+
         homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)
             {

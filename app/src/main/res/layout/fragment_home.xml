@@ -36,20 +36,37 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
                         android:text="@string/text_ticker"
                         android:textSize="18sp" />
 
-                    <AutoCompleteTextView
-                        android:id="@+id/ticker_ET"
+                    <FrameLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:autofillHints=""
-                        android:inputType="textAutoComplete"
-                        android:labelFor="@id/ticker_ET"
-                        tools:targetApi="o"
-                        android:completionThreshold="1"
-                        android:textLocale="en-US"
-                        />
+                        android:layout_gravity="center_vertical">
+
+                        <AutoCompleteTextView
+                            android:id="@+id/ticker_ET"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:autofillHints=""
+                            android:completionThreshold="1"
+                            android:inputType="textAutoComplete|textMultiLine"
+                            android:labelFor="@id/ticker_ET"
+                            android:paddingStart="5dp"
+                            android:paddingEnd="30dp"
+                            android:textLocale="@string/locale_en_US"
+                            tools:targetApi="o" />
+
+                        <ImageView
+                            android:id="@+id/clearTicketImView"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="end|center_vertical"
+                            android:src="@drawable/ic_clear_grey"
+                            android:contentDescription="@string/app_name"
+                            />
+                    </FrameLayout>
 
                 </LinearLayout>
 
