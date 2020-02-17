@@ -14,11 +14,12 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver()
 {
     override fun onReceive(context : Context?, intent : Intent?)
     {
+        val action = intent?.action
 
         return
     }
 
-    fun setAlarm(context : Context) : PendingIntent
+    fun setNetSchedule(context : Context) : PendingIntent
     {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
@@ -40,7 +41,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver()
         return alarmIntent
     }
 
-    fun cancelAlarm(context : Context)
+    fun cancelNetSchedule(context : Context)
     {
         val intent = Intent(context, ScheduleReceiver::class.java)
         val sender = PendingIntent.getBroadcast(context, 0, intent, 0)
