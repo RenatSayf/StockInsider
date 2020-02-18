@@ -14,7 +14,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.ScheduleReceiver
-import com.renatsayf.stockinsider.receivers.BootCompletedReceiver
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_result.*
@@ -104,7 +103,7 @@ class ResultFragment : Fragment()
                         {
                             context?.let { context ->
                                 scheduleReceiver.setNetSchedule(context)
-                                BootCompletedReceiver.enable(context)
+                                //BootCompletedReceiver.enable(context)
                                 addAlertImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
                                 Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
