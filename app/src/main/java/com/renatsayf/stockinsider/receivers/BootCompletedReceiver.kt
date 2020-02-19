@@ -8,22 +8,10 @@ import com.renatsayf.stockinsider.R
 
 class BootCompletedReceiver : BroadcastReceiver()
 {
-//    companion object
-//    {
-//        fun enable(context : Context)
-//        {
-//            val receiver = ComponentName(context, BootCompletedReceiver::class.java)
-//            context.packageManager.setComponentEnabledSetting(
-//                    receiver,
-//                    PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
-//                    PackageManager.DONT_KILL_APP
-//                                                             )
-//        }
-//    }
     override fun onReceive(context : Context?, intent : Intent?)
     {
         val action = intent?.action
-        if (action.equals("android.intent.action.ACTION_BOOT_COMPLETED") ||
+        if (action.equals("android.intent.action.BOOT_COMPLETED") ||
                 action.equals("android.intent.action.QUICKBOOT_POWERON") ||
                 action.equals("com.htc.intent.action.QUICKBOOT_POWERON")) {
             context?.let {
