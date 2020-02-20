@@ -23,23 +23,11 @@ class SearchRequest @Inject constructor()
             fun onDealListReady(dealList : ArrayList<Deal>)
         }
         private var documentListener: IDocumentListener? = null
-
-        interface ITradingScreenListener
-        {
-            fun onDocumentError(throwable : Throwable)
-            fun onDealListReady(dealList : ArrayList<Deal>)
-        }
-        private var  tradingScreenListener : ITradingScreenListener? = null
     }
 
     fun setOnDocumentReadyListener(iDocumentListener : IDocumentListener)
     {
         documentListener =  iDocumentListener
-    }
-
-    fun setOnTradingScreenListener(iTradingScreenListener : ITradingScreenListener)
-    {
-        tradingScreenListener = iTradingScreenListener
     }
 
     fun getTradingScreen(set : SearchSet)
@@ -72,7 +60,6 @@ class SearchRequest @Inject constructor()
             .subscribe({ document ->
                            dealList = doParseDocument(document)
                            documentListener?.onDealListReady(dealList)
-                           tradingScreenListener?.onDealListReady(dealList)
                            disposable?.dispose()
                            return@subscribe
                        }, { error : Throwable ->
@@ -80,13 +67,11 @@ class SearchRequest @Inject constructor()
                                if (error is IndexOutOfBoundsException)
                                {
                                    documentListener?.onDealListReady(dealList)
-                                   tradingScreenListener?.onDealListReady(dealList)
                                    disposable?.dispose()
                                }
                                else
                                {
                                    documentListener?.onDocumentError(error)
-                                   tradingScreenListener?.onDocumentError(error)
                                    disposable?.dispose()
                                }
                            }

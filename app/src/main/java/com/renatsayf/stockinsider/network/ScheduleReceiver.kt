@@ -22,7 +22,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchRequest.Companion.ITradingScreenListener
+class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchRequest.Companion.IDocumentListener
 {
     @Inject
     lateinit var dbProvider : RoomDBProvider
@@ -30,7 +30,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     @Inject
     lateinit var utils : Utils
 
-    //@Inject
+    @Inject
     lateinit var searchRequest : SearchRequest
 
     private lateinit var db : AppDao
@@ -40,14 +40,14 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     init
     {
         App().component.inject(this)
-        searchRequest = SearchRequest()
+        //searchRequest = SearchRequest()
     }
 
     override fun onReceive(context : Context?, intent : Intent?)
     {
         val action = intent?.action
         context?.let {
-            searchRequest.setOnTradingScreenListener(this)
+            searchRequest.setOnDocumentReadyListener(this)
             this.context = context
             db = dbProvider.getDao(it)
             val roomSearchSet = getSearchSetByName(db, HomeFragment.DEFAULT_SET)
