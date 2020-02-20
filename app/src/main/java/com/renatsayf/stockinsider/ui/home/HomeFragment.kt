@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.home
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -40,6 +41,9 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     private lateinit var db : AppDao
 
     @Inject
+    lateinit var appContext : Context
+
+    @Inject
     lateinit var searchRequest : SearchRequest
 
     @Inject
@@ -51,6 +55,8 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
         App().component.inject(this)
         searchRequest.setOnDocumentReadyListener(this)
         db = dbProvider.getDao(context as MainActivity)
+        val appContext1 = appContext
+        return
     }
 
     override fun onCreateView(

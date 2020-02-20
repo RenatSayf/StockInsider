@@ -10,7 +10,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class, ConfirmationDialogModule::class, UtilsModule::class]
+        modules = [AppContextModule::class, SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class, ConfirmationDialogModule::class, UtilsModule::class]
           )
 interface AppComponent
 {

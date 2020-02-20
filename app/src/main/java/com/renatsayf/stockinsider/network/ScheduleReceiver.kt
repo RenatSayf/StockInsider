@@ -40,7 +40,6 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     init
     {
         App().component.inject(this)
-        //searchRequest = SearchRequest()
     }
 
     override fun onReceive(context : Context?, intent : Intent?)
