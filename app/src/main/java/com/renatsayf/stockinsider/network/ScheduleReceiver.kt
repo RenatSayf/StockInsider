@@ -22,31 +22,38 @@ import java.util.*
 import javax.inject.Inject
 
 
-class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchRequest.Companion.IDocumentListener
+class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchRequest.Companion.IBackWorkerListener
 {
+    companion object
+    {
+        val TAG : String = this.hashCode().toString()
+    }
+
     @Inject
     lateinit var dbProvider : RoomDBProvider
 
     @Inject
     lateinit var utils : Utils
 
-    @Inject
-    lateinit var searchRequest : SearchRequest
+//    @Inject
+//    lateinit var searchRequest : SearchRequest
 
     private lateinit var db : AppDao
 
     private lateinit var context : Context
+    private lateinit var searchRequest : SearchRequest
 
     init
     {
         App().component.inject(this)
+        searchRequest = SearchRequest()
     }
 
     override fun onReceive(context : Context?, intent : Intent?)
     {
         val action = intent?.action
         context?.let {
-            searchRequest.setOnDocumentReadyListener(this)
+            searchRequest.setBackWorkerListener(this)
             this.context = context
             db = dbProvider.getDao(it)
             val roomSearchSet = getSearchSetByName(db, HomeFragment.DEFAULT_SET)
@@ -64,7 +71,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 groupBy = utils.getGroupingValue(context, roomSearchSet.groupBy)
                 sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
             }
-            searchRequest.getTradingScreen(requestParams)
+
+            searchRequest.getTradingScreen(TAG, requestParams)
         }
         return
     }

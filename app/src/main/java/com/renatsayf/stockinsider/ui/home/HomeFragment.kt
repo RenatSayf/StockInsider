@@ -34,6 +34,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 {
     companion object
     {
+        val TAG : String = this.hashCode().toString()
         const val DEFAULT_SET : String = "default set"
     }
     private lateinit var homeViewModel : HomeViewModel
@@ -156,7 +157,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-            searchRequest.getTradingScreen(searchSet)
+            searchRequest.getTradingScreen(TAG, searchSet)
 
             val set = RoomSearchSet(
                     DEFAULT_SET,

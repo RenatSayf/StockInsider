@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import com.renatsayf.stockinsider.ui.home.HomeFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -23,14 +24,26 @@ class SearchRequest @Inject constructor()
             fun onDealListReady(dealList : ArrayList<Deal>)
         }
         private var documentListener: IDocumentListener? = null
+
+        interface IBackWorkerListener
+        {
+            fun onDocumentError(throwable : Throwable)
+            fun onDealListReady(dealList : ArrayList<Deal>)
+        }
+        private var backWorkerListener : IBackWorkerListener? = null
     }
 
     fun setOnDocumentReadyListener(iDocumentListener : IDocumentListener)
     {
-        documentListener =  iDocumentListener
+        documentListener = iDocumentListener
     }
 
-    fun getTradingScreen(set : SearchSet)
+    fun setBackWorkerListener(iBackWorkerListener : IBackWorkerListener)
+    {
+        backWorkerListener = iBackWorkerListener
+    }
+
+    fun getTradingScreen(tag : String, set : SearchSet)
     {
         var dealList : ArrayList<Deal> = arrayListOf()
         searchTicker = set.ticker
@@ -59,19 +72,31 @@ class SearchRequest @Inject constructor()
             .subscribeOn(Schedulers.newThread())
             .subscribe({ document ->
                            dealList = doParseDocument(document)
-                           documentListener?.onDealListReady(dealList)
+                           when (tag)
+                           {
+                               ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
+                               HomeFragment.TAG -> documentListener?.onDealListReady(dealList)
+                           }
                            disposable?.dispose()
                            return@subscribe
                        }, { error : Throwable ->
                            error.runCatching {
                                if (error is IndexOutOfBoundsException)
                                {
-                                   documentListener?.onDealListReady(dealList)
+                                   when (tag)
+                                   {
+                                       ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
+                                       HomeFragment.TAG -> documentListener?.onDealListReady(dealList)
+                                   }
                                    disposable?.dispose()
                                }
                                else
                                {
-                                   documentListener?.onDocumentError(error)
+                                   when (tag)
+                                   {
+                                       ScheduleReceiver.TAG -> backWorkerListener?.onDocumentError(error)
+                                       HomeFragment.TAG -> documentListener?.onDocumentError(error)
+                                   }
                                    disposable?.dispose()
                                }
                            }
