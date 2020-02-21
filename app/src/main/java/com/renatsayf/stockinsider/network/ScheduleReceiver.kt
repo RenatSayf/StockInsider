@@ -69,11 +69,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         return
     }
 
-    fun setNetSchedule(context : Context) : PendingIntent
+    fun setNetSchedule(context : Context, requestCode : Int) : PendingIntent
     {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, 0, intent, 0)
+            PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
 
         val calendar = Calendar.getInstance().apply {
@@ -88,15 +88,19 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 60000L,
                 alarmIntent
                                  )
+        val creatorUid = alarmIntent.creatorUid
         return alarmIntent
     }
 
-    fun cancelNetSchedule(context : Context)
+    fun cancelNetSchedule(context : Context, requestCode : Int)
     {
-        val intent = Intent(context, ScheduleReceiver::class.java)
-        val sender = PendingIntent.getBroadcast(context, 0, intent, 0)
+        val intent = Intent(context, ScheduleReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE)
+        }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.cancel(sender)
+        intent?.let {
+            alarmManager.cancel(intent)
+        }
     }
 
     private fun getSearchSetByName(db : AppDao, name : String) : RoomSearchSet = runBlocking {

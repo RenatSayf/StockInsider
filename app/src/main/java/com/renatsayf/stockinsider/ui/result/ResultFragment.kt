@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.ui.result
 
+import android.app.PendingIntent
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -102,7 +104,7 @@ class ResultFragment : Fragment()
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                scheduleReceiver.setNetSchedule(context)
+                                scheduleReceiver.setNetSchedule(context, 5555)
                                 //BootCompletedReceiver.enable(context)
                                 addAlertImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
@@ -112,7 +114,7 @@ class ResultFragment : Fragment()
                         else ->
                         {
                             context?.let { it1 ->
-                                scheduleReceiver.cancelNetSchedule(it1)
+                                scheduleReceiver.cancelNetSchedule(it1, 5555)
                                 addAlertImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
                                 Snackbar.make(addAlertImgView, getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
@@ -132,6 +134,15 @@ class ResultFragment : Fragment()
         backButton.setOnClickListener {
             activity?.onBackPressed()
         }
+
+        val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
+            PendingIntent.getBroadcast(context, 5555, intent, PendingIntent.FLAG_NO_CREATE)
+        }
+        alarmIntent?.let {
+            addAlertImgView.visibility = View.GONE
+            alarmOnImgView.visibility = View.VISIBLE
+        }
+        return
     }
 
 
