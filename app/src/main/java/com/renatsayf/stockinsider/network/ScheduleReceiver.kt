@@ -1,12 +1,17 @@
 package com.renatsayf.stockinsider.network
 
 import android.app.AlarmManager
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.os.Build
 import android.os.SystemClock
 import android.widget.Toast
+import androidx.core.app.NotificationCompat
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -35,18 +40,16 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     @Inject
     lateinit var utils : Utils
 
-//    @Inject
-//    lateinit var searchRequest : SearchRequest
+    @Inject
+    lateinit var searchRequest : SearchRequest
 
     private lateinit var db : AppDao
-
     private lateinit var context : Context
-    private lateinit var searchRequest : SearchRequest
+    private val chanelId: String = "channel_com.renatsayf.stockinsider.network"
 
     init
     {
         App().component.inject(this)
-        searchRequest = SearchRequest()
     }
 
     override fun onReceive(context : Context?, intent : Intent?)
@@ -73,6 +76,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             }
 
             searchRequest.getTradingScreen(TAG, requestParams)
+
+
         }
         return
     }
@@ -126,7 +131,32 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
     override fun onDealListReady(dealList : ArrayList<Deal>)
     {
-        Toast.makeText(context, "Запрос выполнен " + dealList.toString(), Toast.LENGTH_LONG).show()
+        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        {
+            val name = context.getString(R.string.app_name).plus(chanelId)
+            val descriptionText = "XXXXXXXXXXXX"
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(chanelId, name, importance).apply {
+                description = descriptionText
+            }
+            // Register the channel with the system
+            notificationManager.createNotificationChannel(channel)
+        }
+        val builder = NotificationCompat.Builder(context, chanelId)
+            .setSmallIcon(R.drawable.ic_menu_send)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setContentText("Запрос выполнен")
+            .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+
+        notificationManager.notify(1111, builder.build())
+        //Toast.makeText(context, "Запрос выполнен " + dealList.toString(), Toast.LENGTH_LONG).show()
         return
     }
+
+
+
+
 }
