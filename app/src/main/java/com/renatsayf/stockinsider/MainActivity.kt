@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider
 
+import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
@@ -134,6 +136,21 @@ class MainActivity : AppCompatActivity()
     {
         val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
+    }
+
+    fun isServiceRunning() : Boolean
+    {
+        val activityManager = this.getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
+        val services = activityManager.getRunningServices(Int.MAX_VALUE)
+        services.forEach {
+            when(it.service.packageName)
+            {
+                this.packageName -> {
+                    return true
+                }
+            }
+        }
+        return false
     }
 
 

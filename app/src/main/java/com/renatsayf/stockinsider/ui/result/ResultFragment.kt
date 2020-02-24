@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.result
 
-import android.app.PendingIntent
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -16,6 +15,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import kotlinx.android.synthetic.main.fragment_result.*
@@ -23,6 +23,7 @@ import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
 import javax.inject.Inject
+
 
 class ResultFragment : Fragment()
 {
@@ -104,8 +105,9 @@ class ResultFragment : Fragment()
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                scheduleReceiver.setNetSchedule(context, 5555)
-                                //BootCompletedReceiver.enable(context)
+                                //scheduleReceiver.setNetSchedule(context, 5555)
+                                val serviceIntent = Intent(context, StockInsiderService::class.java)
+                                context.startService(serviceIntent)
                                 addAlertImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
                                 Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
@@ -114,7 +116,9 @@ class ResultFragment : Fragment()
                         else ->
                         {
                             context?.let { it1 ->
-                                scheduleReceiver.cancelNetSchedule(it1, 5555)
+                                //scheduleReceiver.cancelNetSchedule(it1, 5555)
+                                val serviceIntent = Intent(context, StockInsiderService::class.java)
+                                it1.stopService(serviceIntent)
                                 addAlertImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
                                 Snackbar.make(addAlertImgView, getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
@@ -135,13 +139,15 @@ class ResultFragment : Fragment()
             activity?.onBackPressed()
         }
 
-        val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
-            PendingIntent.getBroadcast(context, 5555, intent, PendingIntent.FLAG_NO_CREATE)
+        when((activity as MainActivity).isServiceRunning())
+        {
+            true ->
+            {
+                addAlertImgView.visibility = View.GONE
+                alarmOnImgView.visibility = View.VISIBLE
+            }
         }
-        alarmIntent?.let {
-            addAlertImgView.visibility = View.GONE
-            alarmOnImgView.visibility = View.VISIBLE
-        }
+
         return
     }
 
