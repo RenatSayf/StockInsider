@@ -50,6 +50,7 @@ class StockInsiderService : Service()
     {
         super.onCreate()
         App().component.inject(this)
+        scheduleReceiver.setNetSchedule(this, ScheduleReceiver.REQUEST_CODE)
         iShowMessage?.showMessage(this.getString(R.string.text_searching_is_created))
     }
 
@@ -73,7 +74,11 @@ class StockInsiderService : Service()
         when(iShowMessage)
         {
             null -> throw Throwable("${this.javaClass.simpleName} setMessageListener() not enabled ")
-            else -> iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
+            else ->
+            {
+                scheduleReceiver.cancelNetSchedule(this, ScheduleReceiver.REQUEST_CODE)
+                iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
+            }
         }
 
     }

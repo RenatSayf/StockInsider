@@ -19,6 +19,7 @@ import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.ui.home.HomeFragment
+import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -32,6 +33,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     companion object
     {
         val TAG : String = this.hashCode().toString()
+        val REQUEST_CODE : Int = 245455456
     }
 
     @Inject
@@ -54,7 +56,12 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
     override fun onReceive(context : Context?, intent : Intent?)
     {
-        val action = intent?.action
+        val calendar = Calendar.getInstance()
+        val hour = calendar.time.hours
+        if (hour >= 4) context?.let {
+            cancelNetSchedule(it, REQUEST_CODE)
+            setNetSchedule(it, REQUEST_CODE)
+        }
         context?.let {
             searchRequest.setBackWorkerListener(this)
             this.context = context
@@ -89,8 +96,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
         val calendar = Calendar.getInstance().apply {
             timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 20)
-            set(Calendar.MINUTE, 53)
+            set(Calendar.HOUR_OF_DAY, 21)
+            set(Calendar.MINUTE, 1)
         }
 
         alarmManager.setRepeating(
@@ -99,7 +106,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 60000L,
                 alarmIntent
                                  )
-        val creatorUid = alarmIntent.creatorUid
+
+        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
         return alarmIntent
     }
 
@@ -141,13 +149,20 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             // Register the channel with the system
             notificationManager.createNotificationChannel(channel)
         }
+
+        val intent = Intent(context, ResultFragment::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
         val notification = NotificationCompat.Builder(context, chanelId)
             .setSmallIcon(R.drawable.ic_public_green)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText("Запрос выполнен нажмите что бы посмотреть результат")
             .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setPriority(NotificationCompat.PRIORITY_MAX).build()
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setContentIntent(pendingIntent)
+            .build()
 
         notificationManager.notify(1111, notification)
         return
