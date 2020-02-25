@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.service
 
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
 import android.content.Intent
 import android.os.IBinder
 import androidx.core.app.NotificationCompat
@@ -10,7 +11,7 @@ import com.renatsayf.stockinsider.R
 
 class StockInsiderService : Service()
 {
-    val serviceId : Int = this.hashCode()
+    private val serviceId : Int = this.hashCode()
     private val chanelId: String = "channel_com.renatsayf.stockinsider.network"
 
     override fun onBind(p0 : Intent?) : IBinder?
@@ -40,5 +41,16 @@ class StockInsiderService : Service()
             .setContentIntent(pendingIntent).build()
 
         startForeground(serviceId, notification)
+    }
+
+    override fun onLowMemory()
+    {
+        super.onLowMemory()
+
+    }
+
+    override fun startService(service : Intent?) : ComponentName?
+    {
+        return super.startService(service)
     }
 }

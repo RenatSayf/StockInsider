@@ -105,7 +105,6 @@ class ResultFragment : Fragment()
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                //scheduleReceiver.setNetSchedule(context, 5555)
                                 val serviceIntent = Intent(context, StockInsiderService::class.java)
                                 context.startService(serviceIntent)
                                 addAlertImgView.visibility = View.GONE
@@ -115,10 +114,9 @@ class ResultFragment : Fragment()
                         }
                         else ->
                         {
-                            context?.let { it1 ->
-                                //scheduleReceiver.cancelNetSchedule(it1, 5555)
+                            context?.let { context ->
                                 val serviceIntent = Intent(context, StockInsiderService::class.java)
-                                it1.stopService(serviceIntent)
+                                context.stopService(serviceIntent)
                                 addAlertImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
                                 Snackbar.make(addAlertImgView, getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()

@@ -76,8 +76,6 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             }
 
             searchRequest.getTradingScreen(TAG, requestParams)
-
-
         }
         return
     }
