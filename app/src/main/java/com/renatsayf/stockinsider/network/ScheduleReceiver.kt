@@ -141,16 +141,15 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             // Register the channel with the system
             notificationManager.createNotificationChannel(channel)
         }
-        val builder = NotificationCompat.Builder(context, chanelId)
-            .setSmallIcon(R.drawable.ic_menu_send)
+        val notification = NotificationCompat.Builder(context, chanelId)
+            .setSmallIcon(R.drawable.ic_public_green)
             .setContentTitle(context.getString(R.string.app_name))
-            .setContentText("Запрос выполнен")
+            .setContentText("Запрос выполнен нажмите что бы посмотреть результат")
             .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setPriority(NotificationCompat.PRIORITY_MAX).build()
 
-        notificationManager.notify(1111, builder.build())
-        //Toast.makeText(context, "Запрос выполнен " + dealList.toString(), Toast.LENGTH_LONG).show()
+        notificationManager.notify(1111, notification)
         return
     }
 

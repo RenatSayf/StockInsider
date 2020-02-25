@@ -1,10 +1,12 @@
 package com.renatsayf.stockinsider.ui.result
 
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
@@ -25,7 +27,7 @@ import kotlinx.android.synthetic.main.set_alert_layout.*
 import javax.inject.Inject
 
 
-class ResultFragment : Fragment()
+class ResultFragment : Fragment(), StockInsiderService.IShowMessage
 {
     private lateinit var viewModel : ResultViewModel
     private lateinit var dataTransferModel : DataTransferModel
@@ -51,6 +53,7 @@ class ResultFragment : Fragment()
         return root
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
@@ -105,21 +108,22 @@ class ResultFragment : Fragment()
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                val serviceIntent = Intent(context, StockInsiderService::class.java)
+                                val serviceIntent = Intent(context, StockInsiderService()::class.java)
+                                StockInsiderService.setMessageListener(this)
                                 context.startService(serviceIntent)
                                 addAlertImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
-                                Snackbar.make(addAlertImgView, getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                             }
                         }
                         else ->
                         {
                             context?.let { context ->
+                                StockInsiderService.setMessageListener(this)
                                 val serviceIntent = Intent(context, StockInsiderService::class.java)
+                                StockInsiderService.isStopService = true
                                 context.stopService(serviceIntent)
                                 addAlertImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
-                                Snackbar.make(addAlertImgView, getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -147,6 +151,11 @@ class ResultFragment : Fragment()
         }
 
         return
+    }
+
+    override fun showMessage(text : String)
+    {
+        Snackbar.make(addAlertImgView, text, Snackbar.LENGTH_LONG).show()
     }
 
 

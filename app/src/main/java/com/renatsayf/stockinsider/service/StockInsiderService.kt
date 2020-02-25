@@ -1,18 +1,40 @@
 package com.renatsayf.stockinsider.service
 
-import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
 import android.content.Intent
 import android.os.IBinder
-import androidx.core.app.NotificationCompat
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.network.ScheduleReceiver
+import javax.inject.Inject
 
 class StockInsiderService : Service()
 {
+
     private val serviceId : Int = this.hashCode()
     private val chanelId: String = "channel_com.renatsayf.stockinsider.network"
+
+
+    @Inject
+    lateinit var scheduleReceiver : ScheduleReceiver
+
+    @Inject
+    lateinit var serviceNotification : ServiceNotification
+
+    companion object
+    {
+        var isStopService = false
+        var iShowMessage : IShowMessage? = null
+        fun setMessageListener(iMessageListener : IShowMessage)
+        {
+            iShowMessage = iMessageListener
+        }
+    }
+
+    interface IShowMessage
+    {
+        fun showMessage(text : String)
+    }
 
     override fun onBind(p0 : Intent?) : IBinder?
     {
@@ -27,30 +49,35 @@ class StockInsiderService : Service()
     override fun onCreate()
     {
         super.onCreate()
-
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 1, intent, PendingIntent.FLAG_ONE_SHOT)
-
-        val notification = NotificationCompat.Builder(this, chanelId)
-            .setSmallIcon(R.drawable.ic_menu_send)
-            .setContentTitle(this.getString(R.string.app_name))
-            .setContentText("Press to open the app")
-            .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentIntent(pendingIntent).build()
-
-        startForeground(serviceId, notification)
+        App().component.inject(this)
+        iShowMessage?.showMessage(this.getString(R.string.text_searching_is_created))
     }
 
     override fun onLowMemory()
     {
         super.onLowMemory()
-
+        isStopService = true
     }
 
-    override fun startService(service : Intent?) : ComponentName?
+    override fun onDestroy()
     {
-        return super.startService(service)
+        super.onDestroy()
+        when(isStopService)
+        {
+            false -> {
+                val serviceIntent = Intent(this, StockInsiderService::class.java)
+                this.startService(serviceIntent)
+                return
+            }
+        }
+        when(iShowMessage)
+        {
+            null -> throw Throwable("${this.javaClass.simpleName} setMessageListener() not enabled ")
+            else -> iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
+        }
+
     }
+
+
+
 }
