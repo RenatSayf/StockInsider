@@ -1,6 +1,9 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
+import android.icu.util.Calendar
+import android.icu.util.TimeZone
+import android.os.Build
 import android.widget.CheckBox
 import com.renatsayf.stockinsider.R
 
@@ -87,5 +90,15 @@ class Utils
         {
             ""
         }
+    }
+
+    fun washingtonTimeHour(context : Context) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+    {
+        val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
+        Calendar.getInstance(timeZone).get(Calendar.HOUR_OF_DAY) + 1
+    }
+    else
+    {
+        0
     }
 }

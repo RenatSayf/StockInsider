@@ -7,8 +7,9 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.icu.util.Calendar
+import android.icu.util.TimeZone
 import android.os.Build
-import android.os.SystemClock
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.R
@@ -56,21 +57,20 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
     override fun onReceive(context : Context?, intent : Intent?)
     {
-        val calendar = Calendar.getInstance()
-        val hour = calendar.time.hours
-        if (hour >= 4) context?.let {
-            cancelNetSchedule(it, REQUEST_CODE)
-            setNetSchedule(it, REQUEST_CODE)
-        }
         context?.let {
+            if (utils.washingtonTimeHour(context) >= 18)
+            {
+                cancelNetSchedule(it, REQUEST_CODE)
+                setNetSchedule(it, REQUEST_CODE)
+            }
             searchRequest.setBackWorkerListener(this)
             this.context = context
             db = dbProvider.getDao(it)
             val roomSearchSet = getSearchSetByName(db, HomeFragment.DEFAULT_SET)
             val requestParams = SearchSet(HomeFragment.DEFAULT_SET).apply {
                 ticker = roomSearchSet.ticker
-                filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
-                tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)
+                filingPeriod = 1.toString()
+                tradePeriod = 1.toString()
                 isPurchase = utils.converBoolToString(roomSearchSet.isPurchase)
                 isSale = utils.converBoolToString(roomSearchSet.isSale)
                 tradedMin = roomSearchSet.tradedMin
@@ -93,21 +93,32 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
-
-        val calendar = Calendar.getInstance().apply {
-            timeInMillis = System.currentTimeMillis()
-            set(Calendar.HOUR_OF_DAY, 21)
-            set(Calendar.MINUTE, 1)
+        val washingtonTimeHour = utils.washingtonTimeHour(context)
+        if (washingtonTimeHour > 9)
+        {
+            val calendar = Calendar.getInstance().apply {
+                clear()
+                timeInMillis = System.currentTimeMillis()
+            }
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
         }
-
-        alarmManager.setRepeating(
-                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                SystemClock.elapsedRealtime() + 30000L,
-                60000L,
-                alarmIntent
-                                 )
-
-        //alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
+        else if (washingtonTimeHour <= 9)
+        {
+            val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
+            val calendar = Calendar.getInstance(timeZone).apply {
+                clear()
+                timeInMillis = System.currentTimeMillis()
+                set(Calendar.HOUR_OF_DAY, 9)
+                set(Calendar.MINUTE, 5)
+            }
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
+        }
+//        alarmManager.setRepeating(
+//                AlarmManager.ELAPSED_REALTIME_WAKEUP,
+//                SystemClock.elapsedRealtime() + 30000L,
+//                60000L,
+//                alarmIntent
+//                                 )
         return alarmIntent
     }
 
@@ -132,39 +143,44 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     override fun onDocumentError(throwable : Throwable)
     {
         Toast.makeText(context, throwable.message, Toast.LENGTH_LONG).show()
+        throwable.printStackTrace()
         return
     }
 
     override fun onDealListReady(dealList : ArrayList<Deal>)
     {
-        val notificationManager: NotificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+        if (dealList.size > 0)
         {
-            val name = context.getString(R.string.app_name).plus(chanelId)
-            val descriptionText = "XXXXXXXXXXXX"
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(chanelId, name, importance).apply {
-                description = descriptionText
+            val intent = Intent(context, ResultFragment::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
-            // Register the channel with the system
-            notificationManager.createNotificationChannel(channel)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            val notification = NotificationCompat.Builder(context, chanelId)
+                .setSmallIcon(R.drawable.ic_public_green)
+                .setContentTitle(context.getString(R.string.app_name))
+                .setContentText("Запрос выполнен нажмите что бы посмотреть результат\n" +
+                                        "Washington time - ${utils.washingtonTimeHour(context)}")
+                .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
+                .setPriority(NotificationCompat.PRIORITY_HIGH).setPriority(NotificationCompat.PRIORITY_MAX)
+                .setContentIntent(pendingIntent)
+                .build()
+
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            {
+                val name = context.getString(R.string.app_name).plus(chanelId)
+                val descriptionText = "XXXXXXXXXXXX"
+                val importance = NotificationManager.IMPORTANCE_HIGH
+                val channel = NotificationChannel(chanelId, name, importance).apply {
+                    description = descriptionText
+                }
+                // Register the channel with the system
+                notificationManager.createNotificationChannel(channel)
+            }
+            notificationManager.cancelAll()
+            notificationManager.notify(1111, notification)
         }
 
-        val intent = Intent(context, ResultFragment::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-        val notification = NotificationCompat.Builder(context, chanelId)
-            .setSmallIcon(R.drawable.ic_public_green)
-            .setContentTitle(context.getString(R.string.app_name))
-            .setContentText("Запрос выполнен нажмите что бы посмотреть результат")
-            .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
-            .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setContentIntent(pendingIntent)
-            .build()
-
-        notificationManager.notify(1111, notification)
         return
     }
 
