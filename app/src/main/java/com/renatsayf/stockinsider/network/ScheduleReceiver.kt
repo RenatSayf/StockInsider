@@ -12,6 +12,7 @@ import android.icu.util.TimeZone
 import android.os.Build
 import android.widget.Toast
 import androidx.core.app.NotificationCompat
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
@@ -20,11 +21,11 @@ import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.ui.home.HomeFragment
-import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -34,7 +35,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     companion object
     {
         val TAG : String = this.hashCode().toString()
-        val REQUEST_CODE : Int = 245455456
+        const val REQUEST_CODE : Int = 245455456
     }
 
     @Inject
@@ -58,7 +59,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     override fun onReceive(context : Context?, intent : Intent?)
     {
         context?.let {
-            if (utils.washingtonTimeHour(context) >= 18)
+            if (utils.chicagoTimeHour(context) >= 18)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
                 setNetSchedule(it, REQUEST_CODE)
@@ -93,25 +94,35 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
-        val washingtonTimeHour = utils.washingtonTimeHour(context)
-        if (washingtonTimeHour > 9)
+
+        val startHour = 10
+        val interval : Long = AlarmManager.INTERVAL_HOUR
+        val chicagoTimeHour = utils.chicagoTimeHour(context)
+        if (chicagoTimeHour > startHour)
         {
             val calendar = Calendar.getInstance().apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
             }
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
         }
-        else if (washingtonTimeHour <= 9)
+        else if (chicagoTimeHour <= startHour)
         {
             val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
             val calendar = Calendar.getInstance(timeZone).apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, 9)
-                set(Calendar.MINUTE, 5)
+                set(Calendar.HOUR_OF_DAY, startHour)
+                set(Calendar.MINUTE, 1)
             }
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, AlarmManager.INTERVAL_HOUR, alarmIntent)
+
+            val patternDateTime = "dd.MM.yyyy  HH:mm"
+            val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
+            val startTime = dateFormat.format(calendar.time)
+            val currentTime = Date(System.currentTimeMillis())
+            val currentTimeMillis = System.currentTimeMillis()
+            val timeInMillis = calendar.timeInMillis
+            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
         }
 //        alarmManager.setRepeating(
 //                AlarmManager.ELAPSED_REALTIME_WAKEUP,
@@ -151,15 +162,15 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     {
         if (dealList.size > 0)
         {
-            val intent = Intent(context, ResultFragment::class.java).apply {
+            val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
             val notification = NotificationCompat.Builder(context, chanelId)
                 .setSmallIcon(R.drawable.ic_public_green)
                 .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("Запрос выполнен нажмите что бы посмотреть результат\n" +
-                                        "Washington time - ${utils.washingtonTimeHour(context)}")
+                .setContentText("Request performed: found ${dealList.size} results\n" +
+                                        "Washington time - ${utils.chicagoTimeHour(context)}")
                 .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
                 .setPriority(NotificationCompat.PRIORITY_HIGH).setPriority(NotificationCompat.PRIORITY_MAX)
                 .setContentIntent(pendingIntent)

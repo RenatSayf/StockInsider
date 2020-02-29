@@ -92,10 +92,11 @@ class Utils
         }
     }
 
-    fun washingtonTimeHour(context : Context) = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+    fun chicagoTimeHour(context : Context) : Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
     {
         val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-        Calendar.getInstance(timeZone).get(Calendar.HOUR_OF_DAY) + 1
+        val time = Calendar.getInstance(timeZone).time
+        Calendar.getInstance(timeZone).get(Calendar.HOUR_OF_DAY)
     }
     else
     {

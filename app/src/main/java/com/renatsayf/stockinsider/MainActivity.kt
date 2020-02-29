@@ -3,9 +3,6 @@ package com.renatsayf.stockinsider
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.icu.util.Calendar
-import android.icu.util.TimeZone
-import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
