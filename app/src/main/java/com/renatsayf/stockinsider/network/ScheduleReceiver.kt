@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -33,8 +34,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     {
         val TAG : String = this.hashCode().toString()
         const val REQUEST_CODE : Int = 245455456
-        const val Notification_CHANEL_ID: String = "channel_com.renatsayf.stockinsider.network"
-        const val NOTIFICATION_ID : Int = 111123545
+        const val KEY_DEAL_LIST : String = "key_deal_list"
     }
 
     @Inject
@@ -51,6 +51,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
     private lateinit var db : AppDao
     private lateinit var context : Context
+    private lateinit var dataTransferModel : DataTransferModel
 
 
     init
@@ -97,7 +98,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
 
-        val startHour = 9
+        val startHour = 6
         val interval : Long = 60000
         val chicagoTime = utils.chicagoTime(context)
         if (chicagoTime.hour > startHour)
@@ -158,6 +159,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         {
             val intent = Intent(context, MainActivity::class.java).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                putParcelableArrayListExtra(KEY_DEAL_LIST, dealList)
             }
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
 

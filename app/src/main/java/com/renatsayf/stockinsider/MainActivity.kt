@@ -11,18 +11,24 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.renatsayf.stockinsider.models.DataTransferModel
+import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.network.ScheduleReceiver
 import kotlinx.android.synthetic.main.load_progress_layout.*
 
 class MainActivity : AppCompatActivity()
 {
 
     private lateinit var appBarConfiguration : AppBarConfiguration
+    private lateinit var dataTransferModel : DataTransferModel
+    private var dealList : ArrayList<Deal>? = null
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -45,6 +51,15 @@ class MainActivity : AppCompatActivity()
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         loadProgreesBar.visibility = View.GONE
+
+        dataTransferModel = this.run {
+            ViewModelProvider(this)[DataTransferModel::class.java]
+        }
+        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(ScheduleReceiver.KEY_DEAL_LIST)
+        dealList?.let {
+            dataTransferModel.setDealList(dealList)
+            navController.navigate(R.id.resultFragment, null)
+        }
     }
 
     override fun onCreateOptionsMenu(menu : Menu) : Boolean
