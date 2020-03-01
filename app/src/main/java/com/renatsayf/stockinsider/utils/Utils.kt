@@ -3,9 +3,9 @@ package com.renatsayf.stockinsider.utils
 import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
-import android.os.Build
 import android.widget.CheckBox
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.DailyTime
 
 class Utils
 {
@@ -92,14 +92,14 @@ class Utils
         }
     }
 
-    fun chicagoTimeHour(context : Context) : Int = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+    fun chicagoTime(context : Context) : DailyTime
     {
         val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-        val time = Calendar.getInstance(timeZone).time
-        Calendar.getInstance(timeZone).get(Calendar.HOUR_OF_DAY)
+        val calendar = Calendar.getInstance(timeZone)
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        val second = calendar.get(Calendar.SECOND)
+        return DailyTime(hour, minute, second)
     }
-    else
-    {
-        0
-    }
+
 }

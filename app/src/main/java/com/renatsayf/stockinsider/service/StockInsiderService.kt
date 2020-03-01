@@ -10,16 +10,16 @@ import javax.inject.Inject
 
 class StockInsiderService : Service()
 {
-
     private val serviceId : Int = this.hashCode()
-    private val chanelId: String = "channel_com.renatsayf.stockinsider.network"
-
 
     @Inject
     lateinit var scheduleReceiver : ScheduleReceiver
 
     @Inject
     lateinit var serviceNotification : ServiceNotification
+
+    @Inject
+    lateinit var notification : ServiceNotification
 
     companion object
     {
@@ -58,6 +58,7 @@ class StockInsiderService : Service()
     {
         super.onLowMemory()
         isStopService = true
+        notification.notify(this, null, this.getString(R.string.text_not_memory), R.drawable.ic_public_green)
     }
 
     override fun onDestroy()
@@ -80,7 +81,6 @@ class StockInsiderService : Service()
                 iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
             }
         }
-
     }
 
 

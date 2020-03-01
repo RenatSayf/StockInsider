@@ -1,17 +1,13 @@
 package com.renatsayf.stockinsider.network
 
 import android.app.AlarmManager
-import android.app.NotificationChannel
-import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
-import android.os.Build
 import android.widget.Toast
-import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
@@ -20,6 +16,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.home.HomeFragment
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
@@ -36,6 +33,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     {
         val TAG : String = this.hashCode().toString()
         const val REQUEST_CODE : Int = 245455456
+        const val Notification_CHANEL_ID: String = "channel_com.renatsayf.stockinsider.network"
+        const val NOTIFICATION_ID : Int = 111123545
     }
 
     @Inject
@@ -47,9 +46,12 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     @Inject
     lateinit var searchRequest : SearchRequest
 
+    @Inject
+    lateinit var notification : ServiceNotification
+
     private lateinit var db : AppDao
     private lateinit var context : Context
-    private val chanelId: String = "channel_com.renatsayf.stockinsider.network"
+
 
     init
     {
@@ -59,7 +61,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     override fun onReceive(context : Context?, intent : Intent?)
     {
         context?.let {
-            if (utils.chicagoTimeHour(context) >= 18)
+            if (utils.chicagoTime(context).hour >= 21)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
                 setNetSchedule(it, REQUEST_CODE)
@@ -95,10 +97,10 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
 
-        val startHour = 10
-        val interval : Long = AlarmManager.INTERVAL_HOUR
-        val chicagoTimeHour = utils.chicagoTimeHour(context)
-        if (chicagoTimeHour > startHour)
+        val startHour = 9
+        val interval : Long = 60000
+        val chicagoTime = utils.chicagoTime(context)
+        if (chicagoTime.hour > startHour)
         {
             val calendar = Calendar.getInstance().apply {
                 clear()
@@ -106,30 +108,22 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             }
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
         }
-        else if (chicagoTimeHour <= startHour)
+        else if (chicagoTime.hour <= startHour)
         {
             val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
             val calendar = Calendar.getInstance(timeZone).apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
                 set(Calendar.HOUR_OF_DAY, startHour)
-                set(Calendar.MINUTE, 1)
+                set(Calendar.MINUTE, chicagoTime.minute)
             }
 
             val patternDateTime = "dd.MM.yyyy  HH:mm"
             val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
             val startTime = dateFormat.format(calendar.time)
             val currentTime = Date(System.currentTimeMillis())
-            val currentTimeMillis = System.currentTimeMillis()
-            val timeInMillis = calendar.timeInMillis
             alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
         }
-//        alarmManager.setRepeating(
-//                AlarmManager.ELAPSED_REALTIME_WAKEUP,
-//                SystemClock.elapsedRealtime() + 30000L,
-//                60000L,
-//                alarmIntent
-//                                 )
         return alarmIntent
     }
 
@@ -166,30 +160,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
             val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
-            val notification = NotificationCompat.Builder(context, chanelId)
-                .setSmallIcon(R.drawable.ic_public_green)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("Request performed: found ${dealList.size} results\n" +
-                                        "Washington time - ${utils.chicagoTimeHour(context)}")
-                .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
-                .setPriority(NotificationCompat.PRIORITY_HIGH).setPriority(NotificationCompat.PRIORITY_MAX)
-                .setContentIntent(pendingIntent)
-                .build()
 
-            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            {
-                val name = context.getString(R.string.app_name).plus(chanelId)
-                val descriptionText = "XXXXXXXXXXXX"
-                val importance = NotificationManager.IMPORTANCE_HIGH
-                val channel = NotificationChannel(chanelId, name, importance).apply {
-                    description = descriptionText
-                }
-                // Register the channel with the system
-                notificationManager.createNotificationChannel(channel)
-            }
-            notificationManager.cancelAll()
-            notificationManager.notify(1111, notification)
+            val message : String = "Request performed: found ${dealList.size} results\n" +
+                    "Washington time - ${utils.chicagoTime(context).hour + 1} : ${utils.chicagoTime(context).minute}"
+
+            notification.notify(context, pendingIntent, message, R.drawable.ic_public_green)
         }
 
         return
