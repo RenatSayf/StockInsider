@@ -35,7 +35,7 @@ class ServiceNotification @Inject constructor()
         if (VERSION.SDK_INT >= VERSION_CODES.O)
         {
             val name = context.getString(R.string.app_name).plus(CHANEL_ID)
-            val descriptionText = "XXXXXXXXXXXX"
+            val descriptionText = context.getString(R.string.discription_text_to_notification)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
                 description = descriptionText
@@ -44,6 +44,12 @@ class ServiceNotification @Inject constructor()
         }
         notificationManager.cancelAll()
         notificationManager.notify(NOTIFICATION_ID, notification)
+    }
+
+    fun cancelNotifications(context : Context)
+    {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        notificationManager.cancelAll()
     }
 
 }

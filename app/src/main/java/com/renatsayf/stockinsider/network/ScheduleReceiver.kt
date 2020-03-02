@@ -14,7 +14,6 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.App
-import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -51,8 +50,6 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
     private lateinit var db : AppDao
     private lateinit var context : Context
-    private lateinit var dataTransferModel : DataTransferModel
-
 
     init
     {
@@ -73,8 +70,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             val roomSearchSet = getSearchSetByName(db, HomeFragment.DEFAULT_SET)
             val requestParams = SearchSet(HomeFragment.DEFAULT_SET).apply {
                 ticker = roomSearchSet.ticker
-                filingPeriod = 1.toString()
-                tradePeriod = 1.toString()
+                filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
+                tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)
                 isPurchase = utils.converBoolToString(roomSearchSet.isPurchase)
                 isSale = utils.converBoolToString(roomSearchSet.isSale)
                 tradedMin = roomSearchSet.tradedMin
@@ -161,7 +158,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
                 putParcelableArrayListExtra(KEY_DEAL_LIST, dealList)
             }
-            val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
 
             val message : String = "Request performed: found ${dealList.size} results\n" +
                     "Washington time - ${utils.chicagoTime(context).hour + 1} : ${utils.chicagoTime(context).minute}"

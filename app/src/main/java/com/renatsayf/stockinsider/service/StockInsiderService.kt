@@ -78,6 +78,7 @@ class StockInsiderService : Service()
             else ->
             {
                 scheduleReceiver.cancelNetSchedule(this, ScheduleReceiver.REQUEST_CODE)
+                notification.cancelNotifications(this)
                 iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
             }
         }
