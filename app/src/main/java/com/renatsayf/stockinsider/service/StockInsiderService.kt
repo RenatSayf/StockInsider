@@ -10,8 +10,6 @@ import javax.inject.Inject
 
 class StockInsiderService : Service()
 {
-    private val serviceId : Int = this.hashCode()
-
     @Inject
     lateinit var scheduleReceiver : ScheduleReceiver
 

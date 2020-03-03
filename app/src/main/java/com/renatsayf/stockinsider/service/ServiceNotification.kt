@@ -14,11 +14,16 @@ class ServiceNotification @Inject constructor()
 {
     companion object
     {
-        const val CHANEL_ID: String = "channel_com.renatsayf.stockinsider.service"
-        const val NOTIFICATION_ID : Int = 159123545
+        private const val CHANEL_ID : String = "channel_com.renatsayf.stockinsider.service"
+        private const val NOTIFICATION_ID : Int = 159123545
     }
 
-    fun notify(context : Context, pendingIntent : PendingIntent?, text : String, iconResource : Int)
+    fun notify(context : Context,
+               pendingIntent : PendingIntent?,
+               text : String, iconResource : Int,
+               chanelId : String = CHANEL_ID,
+               notificationId : Int = NOTIFICATION_ID
+              )
     {
         val notification = NotificationCompat.Builder(context, CHANEL_ID)
             .setSmallIcon(iconResource)

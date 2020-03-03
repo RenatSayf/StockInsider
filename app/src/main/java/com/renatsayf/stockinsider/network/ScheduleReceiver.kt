@@ -18,6 +18,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.home.HomeFragment
+import com.renatsayf.stockinsider.utils.IsWeekEnd
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -83,7 +84,14 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
             }
 
-            searchRequest.getTradingScreen(TAG, requestParams)
+            val isWeekEnd = IsWeekEnd.checking(
+                    Date(System.currentTimeMillis()),
+                    TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
+                                             )
+            when(isWeekEnd)
+            {
+                false -> searchRequest.getTradingScreen(TAG, requestParams)
+            }
         }
         return
     }
@@ -96,8 +104,9 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         }
 
         val startHour = 6
-        val interval : Long = 60000
+        val interval : Long = AlarmManager.INTERVAL_HOUR
         val chicagoTime = utils.chicagoTime(context)
+        println("chicagoTime.hour = ${chicagoTime.hour}")
         if (chicagoTime.hour > startHour)
         {
             val calendar = Calendar.getInstance().apply {
