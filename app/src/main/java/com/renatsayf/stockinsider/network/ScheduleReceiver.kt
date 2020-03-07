@@ -35,6 +35,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         val TAG : String = this.hashCode().toString()
         const val REQUEST_CODE : Int = 245455456
         const val KEY_DEAL_LIST : String = "key_deal_list"
+        private const val START_HOUR : Int = 6
+        private const val END_HOUR : Int = 21
     }
 
     @Inject
@@ -60,10 +62,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     override fun onReceive(context : Context?, intent : Intent?)
     {
         context?.let {
-            if (utils.chicagoTime(context).hour >= 21)
+            if (utils.chicagoTime(context).hour > END_HOUR || utils.chicagoTime(context).hour < START_HOUR)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
                 setNetSchedule(it, REQUEST_CODE)
+                return
             }
             searchRequest.setBackWorkerListener(this)
             this.context = context
@@ -103,11 +106,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
 
-        val startHour = 6
+        val startHour = START_HOUR
         val interval : Long = AlarmManager.INTERVAL_HOUR
         val chicagoTime = utils.chicagoTime(context)
         println("chicagoTime.hour = ${chicagoTime.hour}")
-        if (chicagoTime.hour > startHour)
+        if (chicagoTime.hour in (startHour + 1)..END_HOUR)
         {
             val calendar = Calendar.getInstance().apply {
                 clear()
