@@ -35,8 +35,10 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         val TAG : String = this.hashCode().toString()
         const val REQUEST_CODE : Int = 245455456
         const val KEY_DEAL_LIST : String = "key_deal_list"
-        private const val START_HOUR : Int = 6
+        private const val START_HOUR : Int = 5
+        private const val START_MINUTE : Int = 0
         private const val END_HOUR : Int = 21
+        private const val INTERVAL : Long = AlarmManager.INTERVAL_HOUR
     }
 
     @Inject
@@ -62,7 +64,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     override fun onReceive(context : Context?, intent : Intent?)
     {
         context?.let {
-            if (utils.chicagoTime(context).hour > END_HOUR || utils.chicagoTime(context).hour < START_HOUR)
+            val chicagoTime = utils.chicagoTime(context)
+            if (chicagoTime.hour !in (START_HOUR + 1)..END_HOUR)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
                 setNetSchedule(it, REQUEST_CODE)
@@ -93,7 +96,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                                              )
             when(isWeekEnd)
             {
-                false -> searchRequest.getTradingScreen(TAG, requestParams)
+                false ->
+                {
+                    searchRequest.getTradingScreen(TAG, requestParams)
+                    //notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_public_green)
+                }
             }
         }
         return
@@ -106,33 +113,43 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             PendingIntent.getBroadcast(context, requestCode, intent, 0)
         }
 
-        val startHour = START_HOUR
-        val interval : Long = AlarmManager.INTERVAL_HOUR
         val chicagoTime = utils.chicagoTime(context)
         println("chicagoTime.hour = ${chicagoTime.hour}")
-        if (chicagoTime.hour in (startHour + 1)..END_HOUR)
+        if (chicagoTime.hour in (START_HOUR + 1)..END_HOUR)
         {
             val calendar = Calendar.getInstance().apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
             }
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
+            alarmManager.apply {
+                val hour = 60000L * 60
+                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + hour, INTERVAL, alarmIntent)
+                val message = "Расписание установлено. \n" +
+                        "Каждый час мы буде проверять новые сделки"
+                notification.notify(context, null, message, R.drawable.ic_public_green)
+            }
         }
-        else if (chicagoTime.hour <= startHour)
+        else
         {
             val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
             val calendar = Calendar.getInstance(timeZone).apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, startHour)
-                set(Calendar.MINUTE, chicagoTime.minute)
+                set(Calendar.HOUR_OF_DAY, START_HOUR)
+                set(Calendar.MINUTE, START_MINUTE)
             }
 
-            val patternDateTime = "dd.MM.yyyy  HH:mm"
-            val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
-            val startTime = dateFormat.format(calendar.time)
-            val currentTime = Date(System.currentTimeMillis())
-            alarmManager.setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, interval, alarmIntent)
+            alarmManager.apply {
+                setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, alarmIntent)
+                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, INTERVAL, alarmIntent)
+                val patternDateTime = "dd.MM.yyyy  HH:mm"
+                val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
+                val startTime = dateFormat.format(calendar.timeInMillis)
+                val currentTime = Date(System.currentTimeMillis())
+                val message = "Расписание установлено в - $startTime (Чикаго)\n" +
+                        "Текущее время Чикаго - $currentTime"
+                notification.notify(context, null, message, R.drawable.ic_public_green)
+            }
         }
         return alarmIntent
     }
@@ -144,7 +161,9 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent?.let {
-            alarmManager.cancel(intent)
+            alarmManager.cancel {
+                notification.notify(context, null, "Расписание отменено...", R.drawable.ic_public_green)
+            }
         }
     }
 
