@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.ui.home
+package com.renatsayf.stockinsider.ui.main
 
 import android.content.Context
 import android.os.Bundle
@@ -30,14 +30,14 @@ import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
 
-class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
+class MainFragment : Fragment(), SearchRequest.Companion.IDocumentListener
 {
     companion object
     {
         val TAG : String = this.hashCode().toString()
         const val DEFAULT_SET : String = "default set"
     }
-    private lateinit var homeViewModel : HomeViewModel
+    private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
     private lateinit var db : AppDao
 
@@ -64,7 +64,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             savedInstanceState : Bundle?
                              ) : View?
     {
-        homeViewModel = ViewModelProvider(this).get(HomeViewModel::class.java)
+        mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         dataTransferModel = activity?.run {
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
@@ -75,10 +75,10 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     {
         super.onActivityCreated(savedInstanceState)
 
-        homeViewModel.companies.observe(viewLifecycleOwner, Observer {companies ->
+        mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
             if (companies == null)
             {
-                homeViewModel.getCompaniesArray(db)
+                mainViewModel.getCompaniesArray(db)
             }
             val tickerListAdapter = companies?.let {
                 context?.let { context ->
@@ -121,7 +121,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
             tickerText = ""
         }
 
-        homeViewModel.searchSet.observe(viewLifecycleOwner, Observer {
+        mainViewModel.searchSet.observe(viewLifecycleOwner, Observer {
             if (it != null)
             {
                 ticker_ET.setText(it.ticker)
@@ -138,7 +138,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        homeViewModel.getSearchSetByName(db, DEFAULT_SET)
+        mainViewModel.getSearchSetByName(db, DEFAULT_SET)
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
@@ -176,7 +176,7 @@ class HomeFragment : Fragment(), SearchRequest.Companion.IDocumentListener
                     sort_spinner.selectedItemPosition
                                    )
             mainActivity.hideKeyBoard(ticker_ET)
-            homeViewModel.saveDefaultSearch(db, set)
+            mainViewModel.saveDefaultSearch(db, set)
         }
     }
 

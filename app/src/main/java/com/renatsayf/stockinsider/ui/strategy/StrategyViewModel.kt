@@ -1,10 +1,10 @@
-package com.renatsayf.stockinsider.ui.tools
+package com.renatsayf.stockinsider.ui.strategy
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class ToolsViewModel : ViewModel() {
+class StrategyViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
         value = "This is tools Fragment"

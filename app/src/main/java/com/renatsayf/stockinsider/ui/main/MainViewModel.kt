@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.ui.home
+package com.renatsayf.stockinsider.ui.main
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -8,7 +8,7 @@ import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import kotlinx.coroutines.*
 
-class HomeViewModel : ViewModel()
+class MainViewModel : ViewModel()
 {
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value

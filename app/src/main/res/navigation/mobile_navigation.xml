@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.renatsayf.stockinsider.ui.home.HomeFragment"
+        android:name="com.renatsayf.stockinsider.ui.main.MainFragment"
         android:label="@string/text_title_home"
         tools:layout="@layout/fragment_home" >
         <action
@@ -17,9 +17,9 @@
 
     <fragment
         android:id="@+id/nav_strategy"
-        android:name="com.renatsayf.stockinsider.ui.tools.ToolsFragment"
-        android:label="@string/menu_tools"
-        tools:layout="@layout/fragment_tools" />
+        android:name="com.renatsayf.stockinsider.ui.strategy.StrategyFragment"
+        android:label="@string/menu_strategy"
+        tools:layout="@layout/fragment_strategy" />
 
     <fragment
         android:id="@+id/nav_exit"

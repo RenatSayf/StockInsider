@@ -2,7 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.ui.home.HomeFragment
+import com.renatsayf.stockinsider.ui.main.MainFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -75,7 +75,7 @@ class SearchRequest @Inject constructor()
                            when (tag)
                            {
                                ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
-                               HomeFragment.TAG -> documentListener?.onDealListReady(dealList)
+                               MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                            }
                            disposable?.dispose()
                            return@subscribe
@@ -86,7 +86,7 @@ class SearchRequest @Inject constructor()
                                    when (tag)
                                    {
                                        ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
-                                       HomeFragment.TAG -> documentListener?.onDealListReady(dealList)
+                                       MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                                    }
                                    disposable?.dispose()
                                }
@@ -95,7 +95,7 @@ class SearchRequest @Inject constructor()
                                    when (tag)
                                    {
                                        ScheduleReceiver.TAG -> backWorkerListener?.onDocumentError(error)
-                                       HomeFragment.TAG -> documentListener?.onDocumentError(error)
+                                       MainFragment.TAG -> documentListener?.onDocumentError(error)
                                    }
                                    disposable?.dispose()
                                }

@@ -17,7 +17,7 @@ import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.ui.home.HomeFragment
+import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.utils.IsWeekEnd
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
@@ -74,8 +74,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             searchRequest.setBackWorkerListener(this)
             this.context = context
             db = dbProvider.getDao(it)
-            val roomSearchSet = getSearchSetByName(db, HomeFragment.DEFAULT_SET)
-            val requestParams = SearchSet(HomeFragment.DEFAULT_SET).apply {
+            val roomSearchSet = getSearchSetByName(db, MainFragment.DEFAULT_SET)
+            val requestParams = SearchSet(MainFragment.DEFAULT_SET).apply {
                 ticker = roomSearchSet.ticker
                 filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
                 tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)
