@@ -126,7 +126,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + hour, INTERVAL, alarmIntent)
                 val message = "Расписание установлено. \n" +
                         "Каждый час мы буде проверять новые сделки"
-                notification.notify(context, null, message, R.drawable.ic_public_green)
+                notification.notify(context, null, message, R.drawable.ic_stock_hause)
             }
         }
         else
@@ -135,7 +135,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             val calendar = Calendar.getInstance(timeZone).apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, START_HOUR)
+                set(Calendar.HOUR_OF_DAY, START_HOUR + 1)
                 set(Calendar.MINUTE, START_MINUTE)
             }
 
@@ -145,10 +145,10 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 val patternDateTime = "dd.MM.yyyy  HH:mm"
                 val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
                 val startTime = dateFormat.format(calendar.timeInMillis)
-                val currentTime = Date(System.currentTimeMillis())
-                val message = "Расписание установлено в - $startTime (Чикаго)\n" +
-                        "Текущее время Чикаго - $currentTime"
-                notification.notify(context, null, message, R.drawable.ic_public_green)
+                val currentTime = calendar.get(Calendar.HOUR_OF_DAY)
+                val message = "Расписание установлено в - $startTime (вр.мест.)\n" +
+                        "Текущее время Чикаго - ${chicagoTime.hour} : ${chicagoTime.minute}"
+                notification.notify(context, null, message, R.drawable.ic_stock_hause)
             }
         }
         return alarmIntent
@@ -162,7 +162,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent?.let {
             alarmManager.cancel {
-                notification.notify(context, null, "Расписание отменено...", R.drawable.ic_public_green)
+                notification.notify(context, null, "Расписание отменено...", R.drawable.ic_stock_hause)
             }
         }
     }
@@ -194,7 +194,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             val message : String = "Request performed: found ${dealList.size} results\n" +
                     "Washington time - ${utils.chicagoTime(context).hour + 1} : ${utils.chicagoTime(context).minute}"
 
-            notification.notify(context, pendingIntent, message, R.drawable.ic_public_green)
+            notification.notify(context, pendingIntent, message, R.drawable.ic_stock_hause)
         }
 
         return
