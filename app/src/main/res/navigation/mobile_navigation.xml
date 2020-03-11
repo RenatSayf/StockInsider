@@ -8,7 +8,7 @@
     <fragment
         android:id="@+id/nav_home"
         android:name="com.renatsayf.stockinsider.ui.home.HomeFragment"
-        android:label="SEC Form 4 search"
+        android:label="@string/text_title_home"
         tools:layout="@layout/fragment_home" >
         <action
             android:id="@+id/action_nav_home_to_resultFragment"
@@ -16,16 +16,18 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_tools"
+        android:id="@+id/nav_strategy"
         android:name="com.renatsayf.stockinsider.ui.tools.ToolsFragment"
         android:label="@string/menu_tools"
         tools:layout="@layout/fragment_tools" />
 
     <fragment
-        android:id="@+id/nav_share"
-        android:name="com.renatsayf.stockinsider.ui.share.ShareFragment"
-        android:label="@string/menu_share"
-        tools:layout="@layout/fragment_share" />
+        android:id="@+id/nav_exit"
+        android:name="com.renatsayf.stockinsider.ui.finish.FinishFragment"
+        android:label="@string/menu_exit"
+        tools:layout="@layout/fragment_share"
+        >
+    </fragment>
 
     <fragment
         android:id="@+id/resultFragment"

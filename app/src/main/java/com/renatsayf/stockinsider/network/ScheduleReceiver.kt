@@ -65,7 +65,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     {
         context?.let {
             val chicagoTime = utils.chicagoTime(context)
-            if (chicagoTime.hour !in (START_HOUR + 1)..END_HOUR)
+            if (chicagoTime.hour !in (START_HOUR)..END_HOUR)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
                 setNetSchedule(it, REQUEST_CODE)
@@ -115,7 +115,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
 
         val chicagoTime = utils.chicagoTime(context)
         println("chicagoTime.hour = ${chicagoTime.hour}")
-        if (chicagoTime.hour in (START_HOUR + 1)..END_HOUR)
+        if (chicagoTime.hour in (START_HOUR)..END_HOUR)
         {
             val calendar = Calendar.getInstance().apply {
                 clear()
@@ -135,7 +135,7 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             val calendar = Calendar.getInstance(timeZone).apply {
                 clear()
                 timeInMillis = System.currentTimeMillis()
-                set(Calendar.HOUR_OF_DAY, START_HOUR + 1)
+                set(Calendar.HOUR_OF_DAY, START_HOUR)
                 set(Calendar.MINUTE, START_MINUTE)
             }
 

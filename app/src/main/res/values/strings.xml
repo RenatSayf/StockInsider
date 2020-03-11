@@ -11,7 +11,7 @@
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
     <string name="menu_tools">Tools</string>
-    <string name="menu_share">Share</string>
+    <string name="menu_exit">Exit</string>
     <string name="menu_send">Send</string>
     <string name="text_general">General</string>
     <string name="text_ticker">Ticker</string>
@@ -52,6 +52,9 @@
     <string name="locale_en_US">en-US</string>
     <string name="app_time_zone">America/Chicago</string>
     <string name="discription_text_to_notification">Daily notifications about transactions that have occurred on US exchanges</string>
+    <string name="text_title_home">SEC Form 4 search</string>
+    <string name="text_trading_strategy">Trading strategy</string>
+    <string name="text_exit">Exit</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

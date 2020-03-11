@@ -5,6 +5,7 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
@@ -12,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -23,12 +25,13 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.ScheduleReceiver
 import kotlinx.android.synthetic.main.load_progress_layout.*
 
-class MainActivity : AppCompatActivity()
+class MainActivity : AppCompatActivity()//, NavigationView.OnNavigationItemSelectedListener
 {
 
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
     private var dealList : ArrayList<Deal>? = null
+    private var navController : NavController? = null
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -45,11 +48,12 @@ class MainActivity : AppCompatActivity()
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
                 setOf(
-                        R.id.nav_home, R.id.nav_tools, R.id.nav_share
+                        R.id.nav_home, R.id.nav_strategy, R.id.nav_exit
                      ), drawerLayout
                                                  )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        //navView.setNavigationItemSelectedListener(this)
         loadProgreesBar.visibility = View.GONE
 
         dataTransferModel = this.run {
@@ -167,6 +171,16 @@ class MainActivity : AppCompatActivity()
         }
         return false
     }
+
+//    override fun onNavigationItemSelected(item: MenuItem): Boolean
+//    {
+//        when(item.itemId)
+//        {
+//            R.id.nav_strategy -> navController?.navigate(R.id.nav_strategy, null)
+//            R.id.nav_exit -> finish()
+//        }
+//        return false
+//    }
 
 
 }
