@@ -13,6 +13,10 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import kotlinx.android.synthetic.main.deal_layout.view.*
+import java.text.DecimalFormat
+import java.text.NumberFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
@@ -43,7 +47,9 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         itemView.tickerTV.text = deal.ticker
         itemView.companyNameTV.text = deal.company
         itemView.tradeTypeTV.text = deal.tradeType
-        itemView.dealValueTV.text = deal.volume.toString()
+        val numberFormat = NumberFormat.getInstance(Locale.getDefault())
+        val formatedVolume = numberFormat.format(deal.volume)
+        itemView.dealValueTV.text = formatedVolume
         itemView.insiderNameTV.text = deal.insiderName
         itemView.insiderTitleTV.text = deal.insiderTitle
         if (deal.tradeTypeInt > 0)
