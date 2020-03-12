@@ -109,12 +109,12 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         if (IsFilingTime.checking(timeZone))
         {
             val calendar = Calendar.getInstance().apply {
-                clear()
-                timeInMillis = System.currentTimeMillis()
+                timeInMillis = System.currentTimeMillis() + IsFilingTime.INTERVAL
             }
             alarmManager.apply {
-                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis + IsFilingTime.INTERVAL, IsFilingTime.INTERVAL, alarmIntent)
-                val message = "Расписание установлено. \n" +
+                setRepeating(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, IsFilingTime.INTERVAL, alarmIntent)
+                val startTime = "${calendar[Calendar.HOUR_OF_DAY]} : ${calendar[Calendar.MINUTE]}"
+                val message = "Расписание установлено в $startTime. \n" +
                         "Каждый час мы буде проверять новые сделки"
                 notification.notify(context, null, message, R.drawable.ic_stock_hause)
             }
