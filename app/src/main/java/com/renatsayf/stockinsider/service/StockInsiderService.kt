@@ -2,10 +2,12 @@ package com.renatsayf.stockinsider.service
 
 import android.app.Service
 import android.content.Intent
+import android.icu.util.TimeZone
 import android.os.IBinder
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.utils.IsFilingTime
 import javax.inject.Inject
 
 class StockInsiderService : Service()
@@ -48,7 +50,14 @@ class StockInsiderService : Service()
     {
         super.onCreate()
         App().component.inject(this)
-        scheduleReceiver.setNetSchedule(this, ScheduleReceiver.REQUEST_CODE)
+        //scheduleReceiver.setNetSchedule(this, ScheduleReceiver.REQUEST_CODE, false)
+        val timeZone = TimeZone.getTimeZone(this.getString(R.string.app_time_zone))
+        val (_, isAfterFiling) = IsFilingTime.checking(timeZone)
+        when (isAfterFiling)
+        {
+            true -> scheduleReceiver.setNetSchedule(this, ScheduleReceiver.REQUEST_CODE, true)
+            else -> scheduleReceiver.setNetSchedule(this, ScheduleReceiver.REQUEST_CODE, false)
+        }
         iShowMessage?.showMessage(this.getString(R.string.text_searching_is_created))
     }
 

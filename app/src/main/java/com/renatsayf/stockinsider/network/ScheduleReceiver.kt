@@ -62,10 +62,15 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
     {
         context?.let {
             val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-            if (!IsFilingTime.checking(timeZone))
+            val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
+            if (!isFilingTime)
             {
                 cancelNetSchedule(it, REQUEST_CODE)
-                setNetSchedule(it, REQUEST_CODE)
+                when(isAfterFiling)
+                {
+                    true -> setNetSchedule(it, REQUEST_CODE, true)
+                    else -> setNetSchedule(it, REQUEST_CODE, false)
+                }
                 return
             }
             searchRequest.setBackWorkerListener(this)
@@ -91,14 +96,15 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
             {
                 false ->
                 {
-                    searchRequest.getTradingScreen(TAG, requestParams)
+                    //searchRequest.getTradingScreen(TAG, requestParams)
+                    println("Запрос отправлен...")
                 }
             }
         }
         return
     }
 
-    fun setNetSchedule(context : Context, requestCode : Int) : PendingIntent
+    fun setNetSchedule(context : Context, requestCode : Int, isNextDay : Boolean) : PendingIntent
     {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val alarmIntent = Intent(context, ScheduleReceiver::class.java).let { intent ->
@@ -106,7 +112,8 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         }
 
         val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-        if (IsFilingTime.checking(timeZone))
+        val chicagoCalendar = Calendar.getInstance(timeZone)
+        if (IsFilingTime.checking(timeZone).isFilingTime)
         {
             val calendar = Calendar.getInstance().apply {
                 timeInMillis = System.currentTimeMillis() + IsFilingTime.INTERVAL
@@ -122,8 +129,11 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         else
         {
             val calendar = Calendar.getInstance(timeZone).apply {
-                clear()
                 timeInMillis = System.currentTimeMillis()
+                if (isNextDay)
+                {
+                    set(Calendar.DAY_OF_MONTH, this[Calendar.DAY_OF_MONTH] + 1)
+                }
                 set(Calendar.HOUR_OF_DAY, IsFilingTime.START_HOUR)
                 set(Calendar.MINUTE, IsFilingTime.START_MINUTE)
             }
@@ -134,9 +144,9 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
                 val patternDateTime = "dd.MM.yyyy  HH:mm"
                 val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
                 val startTime = dateFormat.format(calendar.timeInMillis)
-                calendar.get(Calendar.HOUR_OF_DAY)
+
                 val message = "Расписание установлено в - $startTime (вр.мест.)\n" +
-                        "Текущее время Чикаго - ${calendar[Calendar.HOUR_OF_DAY]} : ${calendar[Calendar.MINUTE]}"
+                        "Текущее время Чикаго - ${chicagoCalendar[Calendar.HOUR_OF_DAY]} : ${chicagoCalendar[Calendar.MINUTE]}"
                 notification.notify(context, null, message, R.drawable.ic_stock_hause)
             }
         }
@@ -150,9 +160,12 @@ class ScheduleReceiver @Inject constructor() : BroadcastReceiver(), SearchReques
         }
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
         intent?.let {
-            alarmManager.cancel {
-                notification.notify(context, null, "Расписание отменено...", R.drawable.ic_stock_hause)
-            }
+            alarmManager.cancel(intent)
+            println("Расписание отменено...")
+            notification.notify(context, null, "Расписание отменено...", R.drawable.ic_stock_hause)
+//            alarmManager.cancel {
+//                notification.notify(context, null, "Расписание отменено...", R.drawable.ic_stock_hause)
+//            }
         }
     }
 

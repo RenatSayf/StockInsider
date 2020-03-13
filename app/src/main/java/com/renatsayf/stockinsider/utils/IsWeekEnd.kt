@@ -14,7 +14,7 @@ object IsWeekEnd
         }
 //        println(timeZone.displayName)
 //        println(calendar[Calendar.HOUR_OF_DAY])
-//        println("is weekend - ${calendar.isWeekend}")
+        println("is weekend - ${calendar.isWeekend}")
         return calendar.isWeekend
     }
 }
