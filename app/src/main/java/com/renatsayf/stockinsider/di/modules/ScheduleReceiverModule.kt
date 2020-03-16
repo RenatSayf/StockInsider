@@ -1,6 +1,6 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.network.Scheduler
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -10,8 +10,8 @@ class ScheduleReceiverModule
 {
     @Provides
     @Singleton
-    fun provideScheduleReceiver() : ScheduleReceiver
+    fun provideScheduleReceiver() : Scheduler
     {
-        return ScheduleReceiver()
+        return Scheduler()
     }
 }

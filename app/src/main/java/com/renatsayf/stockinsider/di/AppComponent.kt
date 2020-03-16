@@ -1,12 +1,15 @@
 package com.renatsayf.stockinsider.di
 
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.di.modules.*
-import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.network.Scheduler
+import com.renatsayf.stockinsider.service.GetFilingDataTask
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import dagger.Component
+import java.util.*
 import javax.inject.Singleton
 
 @Singleton
@@ -18,6 +21,7 @@ interface AppComponent
     fun inject(mainFragment : MainFragment)
     fun inject(mainViewModel : MainViewModel)
     fun inject(resultFragment : ResultFragment)
-    fun inject(scheduleReceiver : ScheduleReceiver)
+    fun inject(scheduler : Scheduler)
     fun inject(stockInsiderService : StockInsiderService)
+    fun inject(getFilingDataTask : GetFilingDataTask)
 }

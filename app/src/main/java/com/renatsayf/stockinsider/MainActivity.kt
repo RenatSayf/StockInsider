@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
@@ -22,10 +21,11 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.network.Scheduler
 import kotlinx.android.synthetic.main.load_progress_layout.*
+import javax.inject.Inject
 
-class MainActivity : AppCompatActivity()//, NavigationView.OnNavigationItemSelectedListener
+class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView.OnNavigationItemSelectedListener
 {
 
     private lateinit var appBarConfiguration : AppBarConfiguration
@@ -59,7 +59,7 @@ class MainActivity : AppCompatActivity()//, NavigationView.OnNavigationItemSelec
         dataTransferModel = this.run {
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
-        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(ScheduleReceiver.KEY_DEAL_LIST)
+        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(Scheduler.KEY_DEAL_LIST)
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)

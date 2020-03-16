@@ -1,11 +1,13 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
+import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import android.widget.CheckBox
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DailyTime
+import java.util.*
 
 class Utils
 {
@@ -25,7 +27,7 @@ class Utils
         }
     }
 
-    fun converBoolToString(value : Boolean) : String
+    fun convertBoolToString(value : Boolean) : String
     {
         return when
         {
@@ -100,6 +102,41 @@ class Utils
         val minute = calendar.get(Calendar.MINUTE)
         val second = calendar.get(Calendar.SECOND)
         return DailyTime(hour, minute, second)
+    }
+
+    fun getFormattedDateTime(mode: Int, date: Date?): String
+    {
+        val calendar = GregorianCalendar.getInstance()
+        val time: Date?
+        time = date ?: calendar.time
+
+        val patternDateTime = "dd.MM.yyyy  HH:mm"
+        val patternDate = "dd.MM.yyyy"
+        val patternTime = "HH:MM"
+
+        when (mode)
+        {
+            0 ->
+            {
+                val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
+                return dateFormat.format(time)
+            }
+            1 ->
+            {
+                val dateFormat = SimpleDateFormat(patternDate, Locale.getDefault())
+                return dateFormat.format(time)
+            }
+            2 ->
+            {
+                val dateFormat = SimpleDateFormat(patternTime, Locale.getDefault())
+                return dateFormat.format(time)
+            }
+            else ->
+            {
+                val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
+                return dateFormat.format(time)
+            }
+        }
     }
 
 }

@@ -14,7 +14,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.network.ScheduleReceiver
+import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
@@ -31,7 +31,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
     private lateinit var dataTransferModel : DataTransferModel
 
     @Inject
-    lateinit var scheduleReceiver : ScheduleReceiver
+    lateinit var scheduler : Scheduler
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog

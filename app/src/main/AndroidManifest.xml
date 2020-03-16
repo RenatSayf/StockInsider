@@ -39,7 +39,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".network.ScheduleReceiver"/>
+        <receiver android:name=".network.Scheduler"/>
 
         <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>

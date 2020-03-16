@@ -6,13 +6,31 @@ import android.icu.util.TimeZone
 
 object IsFilingTime
 {
-    const val START_HOUR : Int = 7
-    const val START_MINUTE : Int = 0
-    const val END_HOUR : Int = 21
-    const val END_MINUTE : Int = 0
-    const val INTERVAL : Long = AlarmManager.INTERVAL_HOUR
+    var START_HOUR : Int = 7
+    var START_MINUTE : Int = 0
+    var END_HOUR : Int = 21
+    var END_MINUTE : Int = 0
+    var INTERVAL : Long = AlarmManager.INTERVAL_HOUR
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
+
+    init
+    {
+        val zone = "America/Chicago"
+        val timeZone = TimeZone.getTimeZone(zone)
+        val calendar = Calendar.getInstance(timeZone)
+        calendar.apply {
+            timeInMillis += 30000L
+        }
+        START_HOUR = calendar[Calendar.HOUR_OF_DAY]
+        START_MINUTE = calendar[Calendar.MINUTE]
+        calendar.apply {
+            timeInMillis += 120000L
+        }
+        END_HOUR = calendar[Calendar.HOUR_OF_DAY]
+        END_MINUTE = calendar[Calendar.MINUTE]
+        INTERVAL = 30000L
+    }
 
     fun checking(timeZone : TimeZone) : Result
     {

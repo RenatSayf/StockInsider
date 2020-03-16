@@ -74,7 +74,7 @@ class SearchRequest @Inject constructor()
                            dealList = doParseDocument(document)
                            when (tag)
                            {
-                               ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
+                               Scheduler.TAG -> backWorkerListener?.onDealListReady(dealList)
                                MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                            }
                            disposable?.dispose()
@@ -85,7 +85,7 @@ class SearchRequest @Inject constructor()
                                {
                                    when (tag)
                                    {
-                                       ScheduleReceiver.TAG -> backWorkerListener?.onDealListReady(dealList)
+                                       Scheduler.TAG -> backWorkerListener?.onDealListReady(dealList)
                                        MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                                    }
                                    disposable?.dispose()
@@ -94,7 +94,7 @@ class SearchRequest @Inject constructor()
                                {
                                    when (tag)
                                    {
-                                       ScheduleReceiver.TAG -> backWorkerListener?.onDocumentError(error)
+                                       Scheduler.TAG -> backWorkerListener?.onDocumentError(error)
                                        MainFragment.TAG -> documentListener?.onDocumentError(error)
                                    }
                                    disposable?.dispose()
