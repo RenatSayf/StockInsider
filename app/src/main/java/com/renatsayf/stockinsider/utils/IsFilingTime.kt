@@ -14,23 +14,23 @@ object IsFilingTime
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 
-    init
-    {
-        val zone = "America/Chicago"
-        val timeZone = TimeZone.getTimeZone(zone)
-        val calendar = Calendar.getInstance(timeZone)
-        calendar.apply {
-            timeInMillis += 30000L
-        }
-        START_HOUR = calendar[Calendar.HOUR_OF_DAY]
-        START_MINUTE = calendar[Calendar.MINUTE]
-        calendar.apply {
-            timeInMillis += 120000L
-        }
-        END_HOUR = calendar[Calendar.HOUR_OF_DAY]
-        END_MINUTE = calendar[Calendar.MINUTE]
-        INTERVAL = 30000L
-    }
+//    init
+//    {
+//        val zone = "America/Chicago"
+//        val timeZone = TimeZone.getTimeZone(zone)
+//        val calendar = Calendar.getInstance(timeZone)
+//        calendar.apply {
+//            timeInMillis += 30000L
+//        }
+//        START_HOUR = calendar[Calendar.HOUR_OF_DAY]
+//        START_MINUTE = calendar[Calendar.MINUTE]
+//        calendar.apply {
+//            timeInMillis += 120000L
+//        }
+//        END_HOUR = calendar[Calendar.HOUR_OF_DAY]
+//        END_MINUTE = calendar[Calendar.MINUTE]
+//        INTERVAL = 30000L
+//    }
 
     fun checking(timeZone : TimeZone) : Result
     {
