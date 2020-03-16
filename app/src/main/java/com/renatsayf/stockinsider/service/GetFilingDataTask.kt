@@ -17,6 +17,7 @@ import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.utils.IsFilingTime
+import com.renatsayf.stockinsider.utils.IsWeekEnd
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -85,16 +86,16 @@ class GetFilingDataTask @Inject constructor(private val context: Context, privat
                 sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
             }
 
-//            when(IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone))
-//            {
-//                false -> {
-//                    searchRequest.getTradingScreen(Scheduler.TAG, requestParams)
-//                    notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause)
-//                    println("Запрос отправлен...")
-//                }
-//            }
-            notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
-            println("Запрос отправлен...")
+            when(IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone))
+            {
+                false -> {
+                    searchRequest.getTradingScreen(Scheduler.TAG, requestParams)
+                    //notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
+                    println("Запрос отправлен...")
+                }
+            }
+//            notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
+//            println("Запрос отправлен...")
         }
         return
     }
