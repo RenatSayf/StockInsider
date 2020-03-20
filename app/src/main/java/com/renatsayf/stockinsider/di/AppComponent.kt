@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.di
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.di.modules.*
 import com.renatsayf.stockinsider.network.Scheduler
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.GetFilingDataTask
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.main.MainFragment
@@ -24,4 +25,5 @@ interface AppComponent
     fun inject(scheduler : Scheduler)
     fun inject(stockInsiderService : StockInsiderService)
     fun inject(getFilingDataTask : GetFilingDataTask)
+    fun inject(alarmReceiver: AlarmReceiver)
 }

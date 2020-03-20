@@ -12,6 +12,7 @@
     <uses-permission android:name="android.permission.QUICKBOOT_POWERON" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
+
     <!--    TODO Enable multidex. Step 3 - do add attribute called name="androidx.multidex.MultiDexApplication"-->
     <application
         android:name="androidx.multidex.MultiDexApplication"
@@ -39,7 +40,7 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name=".network.Scheduler"/>
+        <receiver android:name=".receivers.AlarmReceiver"/>
 
         <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>

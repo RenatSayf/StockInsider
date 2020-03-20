@@ -5,7 +5,7 @@
     android:background="@color/colorTransparent">
 
     <ImageView
-        android:id="@+id/addAlertImgView"
+        android:id="@+id/addAlarmImgView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/ic_add_alert_white"
