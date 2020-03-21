@@ -1,12 +1,15 @@
 package com.renatsayf.stockinsider.utils
 
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.icu.text.SimpleDateFormat
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import android.widget.CheckBox
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DailyTime
+import com.renatsayf.stockinsider.receivers.RegistrationAlertReceiver
 import java.util.*
 
 class Utils
@@ -136,6 +139,14 @@ class Utils
                 val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
                 return dateFormat.format(time)
             }
+        }
+    }
+
+    fun createPendingIntent(context: Context, cls: Class<*>, action: String, code: Int, flag: Int) : PendingIntent?
+    {
+        return Intent(context, cls).let { intent ->
+            intent.action = action
+            PendingIntent.getBroadcast(context, code, intent, flag)
         }
     }
 

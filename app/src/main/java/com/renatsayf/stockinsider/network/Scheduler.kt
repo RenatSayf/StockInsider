@@ -40,9 +40,9 @@ class Scheduler @Inject constructor()
         if (IsFilingTime.checking(timeZone).isFilingTime)
         {
             val calendar = Calendar.getInstance().apply {
-                timeInMillis = System.currentTimeMillis() + IsFilingTime.INTERVAL
+                timeInMillis = System.currentTimeMillis() + IsFilingTime.LOAD_INTERVAL
             }
-            timer.schedule(GetFilingDataTask(context, timer), calendar.time, IsFilingTime.INTERVAL)
+            timer.schedule(GetFilingDataTask(context, timer), calendar.time, IsFilingTime.LOAD_INTERVAL)
             val startTime = utils.getFormattedDateTime(0, calendar.time)
             val message = "Расписание установлено в $startTime. \n" +
                     "Каждый час мы буде проверять новые сделки"
@@ -67,7 +67,7 @@ class Scheduler @Inject constructor()
                 set(Calendar.HOUR_OF_DAY, IsFilingTime.START_HOUR)
                 set(Calendar.MINUTE, IsFilingTime.START_MINUTE)
             }
-            timer.schedule(GetFilingDataTask(context, timer), tomorrowCalendar.time, IsFilingTime.INTERVAL)
+            timer.schedule(GetFilingDataTask(context, timer), tomorrowCalendar.time, IsFilingTime.LOAD_INTERVAL)
             val startTime = utils.getFormattedDateTime(0, tomorrowCalendar.time)
             val message = "Расписание установлено в - $startTime (вр.мест.)\n" +
                     "Текущее время Чикаго - ${chicagoCalendar[Calendar.HOUR_OF_DAY]} : ${chicagoCalendar[Calendar.MINUTE]}"

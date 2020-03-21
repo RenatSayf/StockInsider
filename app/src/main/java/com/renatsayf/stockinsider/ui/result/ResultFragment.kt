@@ -20,7 +20,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.Scheduler
-import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.receivers.RegistrationAlertReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -113,10 +113,10 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
         })
 
         val existsStartPending: PendingIntent? = context?.let {
-            createPendingIntent(it, AlarmReceiver.ACTION_START_ALARM, startCode, PendingIntent.FLAG_NO_CREATE)
+            createPendingIntent(it, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_NO_CREATE)
         }
         val existsEndPending: PendingIntent? = context?.let {
-            createPendingIntent(it, AlarmReceiver.ACTION_END_ALARM, endCode, PendingIntent.FLAG_NO_CREATE)
+            createPendingIntent(it, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_NO_CREATE)
         }
         when (existsEndPending == null && existsStartPending == null)
         {
@@ -152,7 +152,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                         {
                             context?.let { context ->
                                 alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                startIntent = createPendingIntent(context, AlarmReceiver.ACTION_START_ALARM, startCode, PendingIntent.FLAG_CANCEL_CURRENT)
+                                startIntent = createPendingIntent(context, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_CANCEL_CURRENT)
                                 println("Создан startIntent == $startIntent ********************************************************")
 
                                 val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
@@ -161,9 +161,9 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                     set(Calendar.HOUR_OF_DAY, IsFilingTime.START_HOUR)
                                     set(Calendar.MINUTE, IsFilingTime.START_MINUTE)
                                 }
-                                alarmManager?.apply {
-                                    setRepeating(AlarmManager.RTC_WAKEUP, startCalendar.timeInMillis, IsFilingTime.INTERVAL, startIntent)
-                                }
+                                alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, startCalendar.timeInMillis, IsFilingTime.REGISTRATION_INTERVAL, startIntent)
+                                alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, startCalendar.timeInMillis, startIntent)
+
                                 val startTime = utils.getFormattedDateTime(0, Date(startCalendar.timeInMillis))
 
                                 val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
@@ -174,13 +174,14 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                 }
                                 showMessage(message)
 
-                                endIntent = createPendingIntent(context, AlarmReceiver.ACTION_END_ALARM, endCode, PendingIntent.FLAG_CANCEL_CURRENT)
+                                endIntent = createPendingIntent(context, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_CANCEL_CURRENT)
                                 println("Создан endIntent == $endIntent ********************************************************")
                                 val endCalendar = Calendar.getInstance(timeZone).apply {
                                     set(Calendar.HOUR_OF_DAY, IsFilingTime.END_HOUR)
                                     set(Calendar.MINUTE, IsFilingTime.END_MINUTE)
                                 }
-                                alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, endCalendar.timeInMillis, IsFilingTime.INTERVAL, endIntent)
+                                alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, endCalendar.timeInMillis, IsFilingTime.REGISTRATION_INTERVAL, endIntent)
+                                alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endCalendar.timeInMillis, endIntent)
 
                                 addAlarmImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
@@ -189,29 +190,14 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                         else ->
                         {
                             context?.let { context ->
-                                createPendingIntent(context, AlarmReceiver.ACTION_START_ALARM, startCode, PendingIntent.FLAG_CANCEL_CURRENT).also { startPending ->
+                                createPendingIntent(context, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_CANCEL_CURRENT).also { startPending ->
                                         alarmManager?.cancel(startPending)
                                         startPending?.cancel()
                                     }
-                                createPendingIntent(context, AlarmReceiver.ACTION_END_ALARM, endCode, PendingIntent.FLAG_CANCEL_CURRENT).also { endPending ->
+                                createPendingIntent(context, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_CANCEL_CURRENT).also { endPending ->
                                     alarmManager?.cancel(endPending)
                                     endPending?.cancel()
                                 }
-
-//                                endIntent = Intent(context, AlarmReceiver::class.java).let {endIntent ->
-//                                    endIntent.action = AlarmReceiver.ACTION_END_ALARM
-//                                    val endPending = PendingIntent.getBroadcast(
-//                                        context,
-//                                        endCode,
-//                                        endIntent,
-//                                        PendingIntent.FLAG_CANCEL_CURRENT
-//                                    )
-//                                    endPending.also {
-//                                        alarmManager?.cancel(it)
-//                                        it.cancel()
-//                                    }
-//                                }
-
                                 addAlarmImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
                             }
@@ -250,7 +236,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
 
     private fun createPendingIntent(context: Context, action: String, code: Int, flag: Int) : PendingIntent?
     {
-        return Intent(context, AlarmReceiver::class.java).let { intent ->
+        return Intent(context, RegistrationAlertReceiver::class.java).let { intent ->
             intent.action = action
             PendingIntent.getBroadcast(context, code, intent, flag)
         }

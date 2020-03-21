@@ -10,7 +10,8 @@ object IsFilingTime
     var START_MINUTE : Int = 0
     var END_HOUR : Int = 21
     var END_MINUTE : Int = 0
-    var INTERVAL : Long = AlarmManager.INTERVAL_HOUR
+    var REGISTRATION_INTERVAL = AlarmManager.INTERVAL_DAY
+    var LOAD_INTERVAL : Long = AlarmManager.INTERVAL_HOUR
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 
@@ -20,16 +21,19 @@ object IsFilingTime
         val timeZone = TimeZone.getTimeZone(zone)
         val calendar = Calendar.getInstance(timeZone)
         calendar.apply {
-            timeInMillis += 70000L
+            timeInMillis += 60000L
         }
         START_HOUR = calendar[Calendar.HOUR_OF_DAY]
         START_MINUTE = calendar[Calendar.MINUTE]
+
         calendar.apply {
-            timeInMillis += 240000L
+            timeInMillis += 60000L * 3
         }
         END_HOUR = calendar[Calendar.HOUR_OF_DAY]
         END_MINUTE = calendar[Calendar.MINUTE]
-        INTERVAL = 60000L
+
+        REGISTRATION_INTERVAL = 60000L * 10
+        LOAD_INTERVAL = 60000L
     }
 
     fun checking(timeZone : TimeZone) : Result
