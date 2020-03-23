@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#043A75</color>
-    <color name="colorPrimaryPressed">#CF6903</color>
-    <color name="colorPrimaryDark">#A25403</color>
+    <color name="colorPrimaryPressed">#469EFD</color>
+    <color name="colorPrimaryDark">#022245</color>
     <color name="colorAccent">#303F9F</color>
     <color name="colorTransparent">#00FFFFFF</color>
     <color name="white">#FFFFFF</color>
@@ -22,4 +22,7 @@
     <color name="sale_oe100000">#ffffe9</color>
     <color name="sale_oe1000000">#FAFAB7</color>
     <color name="sale_oePressed">#DBDB07</color>
+    <color name="colorGold">#FFC107</color>
+    <color name="colorLightGreen">#AEEA00</color>
+    <color name="colorRed">#D50000</color>
 </resources>

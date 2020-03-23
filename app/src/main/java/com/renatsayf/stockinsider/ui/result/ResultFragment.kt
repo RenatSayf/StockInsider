@@ -4,8 +4,6 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import android.icu.util.Calendar
-import android.icu.util.TimeZone
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -20,18 +18,15 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.Scheduler
-import com.renatsayf.stockinsider.receivers.RegistrationAlertReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.utils.IsFilingTime
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
-import java.util.*
 import javax.inject.Inject
 
 
@@ -112,30 +107,6 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
             }
         })
 
-        val existsStartPending: PendingIntent? = context?.let {
-            createPendingIntent(it, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_NO_CREATE)
-        }
-        val existsEndPending: PendingIntent? = context?.let {
-            createPendingIntent(it, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_NO_CREATE)
-        }
-        when (existsEndPending == null && existsStartPending == null)
-        {
-            true ->
-            {
-                println("existsStartPending == $existsStartPending ********************************************************")
-                println("existsEndPending == $existsEndPending ********************************************************")
-                addAlarmImgView.visibility = View.VISIBLE
-                alarmOnImgView.visibility = View.GONE
-            }
-            else ->
-            {
-                println("existsStartPending == $existsStartPending ********************************************************")
-                println("existsEndPending == $existsEndPending ********************************************************")
-                addAlarmImgView.visibility = View.GONE
-                alarmOnImgView.visibility = View.VISIBLE
-            }
-        }
-
         addAlarmImgView.setOnClickListener {
             confirmationDialog.message = getString(R.string.text_confirm_search)
             confirmationDialog.flag = ""
@@ -151,55 +122,27 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                startIntent = createPendingIntent(context, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_CANCEL_CURRENT)
-                                println("Создан startIntent == $startIntent ********************************************************")
-
-                                val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-                                val startCalendar = Calendar.getInstance(timeZone).apply {
-                                    timeInMillis = System.currentTimeMillis()
-                                    set(Calendar.HOUR_OF_DAY, IsFilingTime.START_HOUR)
-                                    set(Calendar.MINUTE, IsFilingTime.START_MINUTE)
-                                }
-                                alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, startCalendar.timeInMillis, IsFilingTime.REGISTRATION_INTERVAL, startIntent)
-                                alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, startCalendar.timeInMillis, startIntent)
-
-                                val startTime = utils.getFormattedDateTime(0, Date(startCalendar.timeInMillis))
-
-                                val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
-                                val message = when(isFilingTime)
-                                {
-                                    true -> "The schedule is set. We will check new deals every hour"
-                                    false -> "The schedule is set at $startTime"
-                                }
-                                showMessage(message)
-
-                                endIntent = createPendingIntent(context, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_CANCEL_CURRENT)
-                                println("Создан endIntent == $endIntent ********************************************************")
-                                val endCalendar = Calendar.getInstance(timeZone).apply {
-                                    set(Calendar.HOUR_OF_DAY, IsFilingTime.END_HOUR)
-                                    set(Calendar.MINUTE, IsFilingTime.END_MINUTE)
-                                }
-                                alarmManager?.setRepeating(AlarmManager.RTC_WAKEUP, endCalendar.timeInMillis, IsFilingTime.REGISTRATION_INTERVAL, endIntent)
-                                alarmManager?.setExactAndAllowWhileIdle(AlarmManager.RTC_WAKEUP, endCalendar.timeInMillis, endIntent)
-
                                 addAlarmImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
+                                with(activity?.getPreferences(Context.MODE_PRIVATE)?.edit())
+                                {
+                                    this?.putBoolean(StockInsiderService.PREFERENCE_KEY, true)
+                                    this?.apply()
+                                }
+                                Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                             }
                         }
                         else ->
                         {
                             context?.let { context ->
-                                createPendingIntent(context, RegistrationAlertReceiver.ACTION_START_REGISTRATION, startCode, PendingIntent.FLAG_CANCEL_CURRENT).also { startPending ->
-                                        alarmManager?.cancel(startPending)
-                                        startPending?.cancel()
-                                    }
-                                createPendingIntent(context, RegistrationAlertReceiver.ACTION_END_REGISTRATION, endCode, PendingIntent.FLAG_CANCEL_CURRENT).also { endPending ->
-                                    alarmManager?.cancel(endPending)
-                                    endPending?.cancel()
-                                }
                                 addAlarmImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
+                                with(activity?.getPreferences(Context.MODE_PRIVATE)?.edit())
+                                {
+                                    this?.putBoolean(StockInsiderService.PREFERENCE_KEY, false)
+                                    this?.apply()
+                                }
+                                Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
                         }
                     }
@@ -217,7 +160,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
             activity?.onBackPressed()
         }
 
-        when((activity as MainActivity).isServiceRunning())
+        when((activity as MainActivity).getPreferences(Context.MODE_PRIVATE).getBoolean(StockInsiderService.PREFERENCE_KEY, false))
         {
             true ->
             {
@@ -234,12 +177,5 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
         Snackbar.make(addAlarmImgView, text, Snackbar.LENGTH_LONG).show()
     }
 
-    private fun createPendingIntent(context: Context, action: String, code: Int, flag: Int) : PendingIntent?
-    {
-        return Intent(context, RegistrationAlertReceiver::class.java).let { intent ->
-            intent.action = action
-            PendingIntent.getBroadcast(context, code, intent, flag)
-        }
-    }
 
 }

@@ -46,7 +46,7 @@ class Scheduler @Inject constructor()
             val startTime = utils.getFormattedDateTime(0, calendar.time)
             val message = "Расписание установлено в $startTime. \n" +
                     "Каждый час мы буде проверять новые сделки"
-            notification.notify(context, null, message, R.drawable.ic_stock_hause_cold)
+            notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorGold).show()
             println(message)
         }
         else
@@ -71,7 +71,7 @@ class Scheduler @Inject constructor()
             val startTime = utils.getFormattedDateTime(0, tomorrowCalendar.time)
             val message = "Расписание установлено в - $startTime (вр.мест.)\n" +
                     "Текущее время Чикаго - ${chicagoCalendar[Calendar.HOUR_OF_DAY]} : ${chicagoCalendar[Calendar.MINUTE]}"
-            notification.notify(context, null, message, R.drawable.ic_stock_hause_cold)
+            notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorGold).show()
             println(message)
         }
         return timer
@@ -82,7 +82,7 @@ class Scheduler @Inject constructor()
         timer.cancel()
         timer.purge()
         println("Расписание отменено...")
-        notification.notify(context, null, "Расписание отменено...", R.drawable.ic_stock_hause_cold)
+        notification.createNotification(context, null, "Расписание отменено...", R.drawable.ic_stock_hause_cold, R.color.colorGold).show()
     }
 
 

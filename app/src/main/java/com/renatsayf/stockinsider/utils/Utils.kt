@@ -9,7 +9,6 @@ import android.icu.util.TimeZone
 import android.widget.CheckBox
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DailyTime
-import com.renatsayf.stockinsider.receivers.RegistrationAlertReceiver
 import java.util.*
 
 class Utils

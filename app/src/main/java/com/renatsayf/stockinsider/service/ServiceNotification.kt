@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.service
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
@@ -10,45 +11,63 @@ import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.R
 import javax.inject.Inject
 
-class ServiceNotification @Inject constructor()
+class ServiceNotification @Inject constructor() : Notification()
 {
     companion object
     {
         private const val CHANEL_ID : String = "channel_com.renatsayf.stockinsider.service"
-        private const val NOTIFICATION_ID : Int = 159123545
+        const val NOTIFICATION_ID : Int = 159123545
     }
 
-    fun notify(context : Context,
-               pendingIntent : PendingIntent?,
-               text : String, iconResource : Int,
-               chanelId : String = CHANEL_ID,
-               notificationId : Int = NOTIFICATION_ID
-              )
+    var notification: Notification? = null
+        get() = field
+    private var context: Context? = null
+
+    fun createNotification(context : Context,
+                           pendingIntent : PendingIntent?,
+                           text : String,
+                           iconResource : Int,
+                           iconColor: Int) : ServiceNotification
     {
-        val notification = NotificationCompat.Builder(context, CHANEL_ID)
+        this.context = context
+        notification = NotificationCompat.Builder(context, CHANEL_ID)
+            .setCategory(CATEGORY_SERVICE)
             .setSmallIcon(iconResource)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            .setDefaults(NotificationCompat.DEFAULT_SOUND or NotificationCompat.DEFAULT_VIBRATE)
-            .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setPriority(NotificationCompat.PRIORITY_MAX)
+            .setColor(iconColor)
             .setContentIntent(pendingIntent)
             .build()
+        return this
+    }
 
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        if (VERSION.SDK_INT >= VERSION_CODES.O)
-        {
-            val name = context.getString(R.string.app_name).plus(CHANEL_ID)
-            val descriptionText = context.getString(R.string.discription_text_to_notification)
-            val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
-                description = descriptionText
+    fun show()
+    {
+        when {
+            this.context != null -> {
+                val notificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+                if (VERSION.SDK_INT >= VERSION_CODES.O) {
+                    val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
+                    val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
+                    val importance = NotificationManager.IMPORTANCE_HIGH
+                    val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
+                        description = descriptionText
+                    }
+                    notificationManager.createNotificationChannel(channel)
+                }
+                notificationManager.cancelAll()
+                this.notification?.let {
+                    notificationManager.notify(NOTIFICATION_ID, this.notification)
+                }
             }
-            notificationManager.createNotificationChannel(channel)
+            else ->
+            {
+                val message = "*******${this.javaClass.simpleName}.show() - context is null ***************************"
+                throw Throwable(message)
+            }
         }
-        notificationManager.cancelAll()
-        notificationManager.notify(NOTIFICATION_ID, notification)
     }
 
     fun cancelNotifications(context : Context)

@@ -2,7 +2,9 @@ package com.renatsayf.stockinsider
 
 import android.app.Activity
 import android.app.ActivityManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
@@ -19,19 +21,25 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.Scheduler
+import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.ui.main.MainFragment
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
-class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView.OnNavigationItemSelectedListener
-{
+class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderService.IShowMessage {
 
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
     private var dealList : ArrayList<Deal>? = null
     private var navController : NavController? = null
+
+    @Inject
+    lateinit var notification : ServiceNotification
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -39,6 +47,8 @@ class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView
         setContentView(R.layout.activity_main)
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
+
+        App().component.inject(this)
 
         val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
@@ -64,6 +74,10 @@ class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
         }
+        if (isServiceRunning())
+        {
+            stopService(Intent(this, StockInsiderService::class.java))
+        }
     }
 
     override fun onCreateOptionsMenu(menu : Menu) : Boolean
@@ -79,6 +93,23 @@ class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        with(this.getPreferences(Context.MODE_PRIVATE))
+        {
+            when(this?.getBoolean(StockInsiderService.PREFERENCE_KEY, false))
+            {
+                true ->
+                {
+                    val serviceIntent = Intent(this@MainActivity, StockInsiderService()::class.java)
+                    StockInsiderService.setMessageListener(this@MainActivity)
+                    this@MainActivity.startService(serviceIntent)
+                }
+                else -> return@with
+            }
+        }
+    }
 
     fun getFilingOrTradeValue(position : Int) : String
     {
@@ -172,15 +203,11 @@ class MainActivity @Inject constructor() : AppCompatActivity()//, NavigationView
         return false
     }
 
-//    override fun onNavigationItemSelected(item: MenuItem): Boolean
-//    {
-//        when(item.itemId)
-//        {
-//            R.id.nav_strategy -> navController?.navigate(R.id.nav_strategy, null)
-//            R.id.nav_exit -> finish()
-//        }
-//        return false
-//    }
+    override fun showMessage(text: String)
+    {
+
+    }
+
 
 
 }

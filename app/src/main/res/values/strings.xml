@@ -55,6 +55,7 @@
     <string name="text_title_home">SEC Form 4 search</string>
     <string name="text_trading_strategy">Trading strategy</string>
     <string name="text_exit">Exit</string>
+    <string name="base_notification_text">Every day at 6 to 22 o \'clock Washington time we will check new deals</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

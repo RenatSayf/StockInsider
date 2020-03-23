@@ -127,7 +127,7 @@ class GetFilingDataTask @Inject constructor(private val context: Context, privat
             val message : String = "Request performed: found ${dealList.size} results\n" +
                     "Washington time - ${utils.chicagoTime(context).hour + 1} : ${utils.chicagoTime(context).minute}"
 
-            notification.notify(context, pendingIntent, message, R.drawable.ic_stock_hause_cold)
+            notification.show()
         }
 
         return
