@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import com.renatsayf.stockinsider.service.ServiceTask
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
@@ -74,7 +75,7 @@ class SearchRequest @Inject constructor()
                            dealList = doParseDocument(document)
                            when (tag)
                            {
-                               Scheduler.TAG -> backWorkerListener?.onDealListReady(dealList)
+                               ServiceTask.TAG -> backWorkerListener?.onDealListReady(dealList)
                                MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                            }
                            disposable?.dispose()
@@ -85,7 +86,7 @@ class SearchRequest @Inject constructor()
                                {
                                    when (tag)
                                    {
-                                       Scheduler.TAG -> backWorkerListener?.onDealListReady(dealList)
+                                       ServiceTask.TAG -> backWorkerListener?.onDealListReady(dealList)
                                        MainFragment.TAG -> documentListener?.onDealListReady(dealList)
                                    }
                                    disposable?.dispose()
@@ -94,7 +95,7 @@ class SearchRequest @Inject constructor()
                                {
                                    when (tag)
                                    {
-                                       Scheduler.TAG -> backWorkerListener?.onDocumentError(error)
+                                       ServiceTask.TAG -> backWorkerListener?.onDocumentError(error)
                                        MainFragment.TAG -> documentListener?.onDocumentError(error)
                                    }
                                    disposable?.dispose()

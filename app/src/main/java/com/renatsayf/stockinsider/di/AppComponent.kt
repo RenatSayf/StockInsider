@@ -4,6 +4,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.di.modules.*
 import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.service.GetFilingDataTask
+import com.renatsayf.stockinsider.service.ServiceTask
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -24,4 +25,5 @@ interface AppComponent
     fun inject(stockInsiderService : StockInsiderService)
     fun inject(getFilingDataTask : GetFilingDataTask)
     fun inject(mainActivity: MainActivity)
+    fun inject(serviceTask: ServiceTask)
 }

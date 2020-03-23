@@ -33,7 +33,7 @@ object IsFilingTime
         END_MINUTE = calendar[Calendar.MINUTE]
 
         REGISTRATION_INTERVAL = 60000L * 10
-        LOAD_INTERVAL = 60000L
+        LOAD_INTERVAL = 30000L
     }
 
     fun checking(timeZone : TimeZone) : Result
