@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.service
 
-import android.app.Activity
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
@@ -13,9 +12,7 @@ import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.utils.IsFilingTime
 import com.renatsayf.stockinsider.utils.Utils
-import io.reactivex.Completable
 import java.util.*
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 class StockInsiderService : Service()
@@ -35,7 +32,6 @@ class StockInsiderService : Service()
 
     companion object
     {
-        const val SERVICE_ID = 5879
         const val PREFERENCE_KEY = "com.renatsayf.stockinsider.service.StockInsiderService"
         var isStopService = false
         var iShowMessage : IShowMessage? = null
@@ -57,7 +53,6 @@ class StockInsiderService : Service()
 
     override fun onStartCommand(intent : Intent?, flags : Int, startId : Int) : Int
     {
-
         return START_STICKY
     }
 
@@ -68,7 +63,7 @@ class StockInsiderService : Service()
 
         val intent = Intent(Intent.ACTION_MAIN)
         intent.setClass(this, MainActivity::class.java)
-        intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
+        intent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val appNotification = notification.createNotification(this, pendingIntent, getString(R.string.base_notification_text), R.drawable.ic_stock_hause_cold, R.color.colorGold)
 
@@ -79,8 +74,7 @@ class StockInsiderService : Service()
         timeZone = TimeZone.getTimeZone(this.getString(R.string.app_time_zone))
         calendar = Calendar.getInstance(timeZone)
         timer = Timer("appTimer")
-        timer.schedule(ServiceTask(this, timeZone), 5000, IsFilingTime.LOAD_INTERVAL)
-
+        timer.schedule(ServiceTask(this, timeZone), IsFilingTime.START_DELAY, IsFilingTime.LOAD_INTERVAL)
     }
 
     override fun onLowMemory()

@@ -64,13 +64,13 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
                                                  )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        //navView.setNavigationItemSelectedListener(this)
         loadProgreesBar.visibility = View.GONE
 
         dataTransferModel = this.run {
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
-        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(ServiceTask.KEY_DEAL_LIST)
+        val dealList = intent?.getParcelableArrayListExtra<Deal>(ServiceTask.KEY_DEAL_LIST)
+        println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
