@@ -1,9 +1,12 @@
 package com.renatsayf.stockinsider.service
 
 import android.app.Activity
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
 import android.icu.util.TimeZone
 import com.renatsayf.stockinsider.MainActivity
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -29,6 +32,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     companion object
     {
         const val TAG : String = "com.renatsayf.stockinsider.service.ServiceTask"
+        const val KEY_DEAL_LIST : String = "key_deal_list"
     }
 
     @Inject
@@ -36,6 +40,9 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
 
     @Inject
     lateinit var dbProvider : RoomDBProvider
+
+    @Inject
+    lateinit var notification : ServiceNotification
 
     @Inject
     lateinit var utils : Utils
@@ -51,7 +58,8 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     override fun run()
     {
         val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
-        when(isFilingTime)
+        val isWeekEnd = IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone)
+        when(isFilingTime && !isWeekEnd)
         {
             true ->
             {
@@ -72,14 +80,9 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
                     sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
                 }
                 println("************* ${requestParams.searchName}: параметры запроса получены **************************")
-                when (IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone)) {
-                    false -> {
-                        searchRequest.getTradingScreen(TAG, requestParams)
-                        //notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
-                        println("Запрос отправлен.....................................................")
-                    }
-                }
-
+                searchRequest.getTradingScreen(TAG, requestParams)
+                //notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
+                println("Запрос отправлен.....................................................")
             }
         }
         println("*********************Tick***********************")
@@ -99,7 +102,14 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
 
     override fun onDealListReady(dealList: ArrayList<Deal>)
     {
-        println("********************* ${dealList.size} reslts found *********************************")
+        val message = "${dealList.size} reslts found"
+        println("********************* $message *********************************")
+        val intent = Intent(context, MainActivity::class.java).apply {
+            putParcelableArrayListExtra(KEY_DEAL_LIST, dealList)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, 0)
+        notification.createNotification(context, pendingIntent, message, R.drawable.ic_stock_hause_cold, R.color.colorLightGreen).show()
     }
 
 }

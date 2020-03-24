@@ -26,6 +26,7 @@ import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.ServiceTask
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import kotlinx.android.synthetic.main.load_progress_layout.*
@@ -69,7 +70,7 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
         dataTransferModel = this.run {
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
-        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(Scheduler.KEY_DEAL_LIST)
+        val dealList = this.intent?.getParcelableArrayListExtra<Deal>(ServiceTask.KEY_DEAL_LIST)
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
