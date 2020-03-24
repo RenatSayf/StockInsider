@@ -71,8 +71,9 @@ class StockInsiderService : Service()
         intent.setFlags(Intent.FLAG_ACTIVITY_MULTIPLE_TASK)
         val pendingIntent = PendingIntent.getActivity(this, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val appNotification = notification.createNotification(this, pendingIntent, getString(R.string.base_notification_text), R.drawable.ic_stock_hause_cold, R.color.colorGold)
+
         appNotification.notification?.let{
-            startForeground(SERVICE_ID, appNotification.notification)
+            startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
         }
 
         timeZone = TimeZone.getTimeZone(this.getString(R.string.app_time_zone))

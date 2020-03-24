@@ -16,7 +16,7 @@ class ServiceNotification @Inject constructor() : Notification()
     companion object
     {
         private const val CHANEL_ID : String = "channel_com.renatsayf.stockinsider.service"
-        private const val NOTIFICATION_ID : Int = 159123545
+        const val NOTIFICATION_ID : Int = 1591
         private const val TAG = "com.renatsayf.stockinsider.service.ServiceNotification"
     }
 
@@ -33,6 +33,7 @@ class ServiceNotification @Inject constructor() : Notification()
         this.context = context
         notification = NotificationCompat.Builder(context, CHANEL_ID)
             //.setCategory(CATEGORY_SERVICE)
+
             .setSmallIcon(iconResource)
             .setContentTitle(context.getString(R.string.app_name))
             .setContentText(text)
@@ -58,10 +59,8 @@ class ServiceNotification @Inject constructor() : Notification()
                     }
                     notificationManager.createNotificationChannel(channel)
                 }
-                //notificationManager.cancelAll()
                 this.notification?.let {
-                    notificationManager.cancel(TAG, NOTIFICATION_ID)
-                    notificationManager.notify(TAG, NOTIFICATION_ID, this.notification)
+                    notificationManager.notify(NOTIFICATION_ID, this.notification)
                 }
             }
             else ->
