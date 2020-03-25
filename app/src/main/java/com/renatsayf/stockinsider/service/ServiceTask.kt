@@ -99,11 +99,19 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     {
         println("********************* ${throwable.message} *********************************")
         throwable.printStackTrace()
+        val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
+        val message = "$time (в.мест) \n" +
+                "Во время выполнения запроса произошла ошибка:\n" +
+                "${throwable.message}"
+        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
     }
 
     override fun onDealListReady(dealList: ArrayList<Deal>)
     {
-        val message = "${dealList.size} reslts found"
+        val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
+        val message = "The request has been performed at \n" +
+                "$time (в.мест) \n" +
+                "${dealList.size} reslts found"
         println("********************* $message *********************************")
         val intent = Intent(context, MainActivity::class.java).apply {
             putParcelableArrayListExtra(KEY_DEAL_LIST, dealList)
