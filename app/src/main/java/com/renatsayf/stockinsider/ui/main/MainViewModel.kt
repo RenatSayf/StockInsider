@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.ui.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -11,6 +12,13 @@ import javax.inject.Inject
 
 class MainViewModel @Inject constructor() : ViewModel()
 {
+    @Inject
+    lateinit var db: AppDao
+
+    init {
+        MainActivity.appComponent.inject(this)
+    }
+
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }
@@ -20,7 +28,7 @@ class MainViewModel @Inject constructor() : ViewModel()
         _searchSet.value = set
     }
 
-    fun getSearchSetByName(db : AppDao, setName : String)
+    fun getSearchSetByName(setName : String)
     {
         CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
             withContext(Dispatchers.Main) {
@@ -37,7 +45,7 @@ class MainViewModel @Inject constructor() : ViewModel()
         }
     }
 
-    fun saveDefaultSearch(db : AppDao, set : RoomSearchSet)
+    fun saveDefaultSearch(set : RoomSearchSet)
     {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
@@ -59,7 +67,7 @@ class MainViewModel @Inject constructor() : ViewModel()
     }
     var tickers : LiveData<Array<String>> = _tickers
 
-    fun getTickersArray(db : AppDao) = CoroutineScope(Dispatchers.IO).launch {
+    fun getTickersArray() = CoroutineScope(Dispatchers.IO).launch {
         withContext(Dispatchers.Main){
             try
             {
@@ -78,7 +86,7 @@ class MainViewModel @Inject constructor() : ViewModel()
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    fun getCompaniesArray(db : AppDao)
+    fun getCompaniesArray()
     {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main)

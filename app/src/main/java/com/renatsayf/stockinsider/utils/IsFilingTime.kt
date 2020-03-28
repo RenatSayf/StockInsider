@@ -10,8 +10,8 @@ object IsFilingTime
     var START_MINUTE : Int = 0
     var END_HOUR : Int = 22
     var END_MINUTE : Int = 0
-    var START_DELAY = AlarmManager.INTERVAL_HALF_HOUR
-    var LOAD_INTERVAL : Long = AlarmManager.INTERVAL_HOUR
+    var START_DELAY = 1800000L
+    var LOAD_INTERVAL : Long = 3600000L
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 

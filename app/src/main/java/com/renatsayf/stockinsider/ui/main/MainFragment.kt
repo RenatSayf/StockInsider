@@ -39,12 +39,6 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
     private lateinit var dataTransferModel : DataTransferModel
 
     @Inject
-    lateinit var db : AppDao
-
-    @Inject
-    lateinit var appContext : Context
-
-    @Inject
     lateinit var searchRequest : SearchRequest
 
     override fun onCreate(savedInstanceState : Bundle?)
@@ -74,10 +68,10 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
         mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
             if (companies == null)
             {
-                mainViewModel.getCompaniesArray(db)
+                mainViewModel.getCompaniesArray()
             }
             val tickerListAdapter = companies?.let {
-                context?.let { context ->
+                context?.let { _ ->
                     TickersListAdapter(activity as MainActivity, it)
                 }
             }
@@ -104,7 +98,7 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
             }
         }
 
-        ticker_ET.setOnItemClickListener { adapterView, view, i, l ->
+        ticker_ET.setOnItemClickListener { _, view, i, l ->
             val tickerLayout = view.tickerLayout
             val ticker = tickerLayout.tickerTV.text
             val str = (tickerText.plus(ticker)).trim()
@@ -134,7 +128,7 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        mainViewModel.getSearchSetByName(db, DEFAULT_SET)
+        mainViewModel.getSearchSetByName(DEFAULT_SET)
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
@@ -172,7 +166,7 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
                     sort_spinner.selectedItemPosition
                                    )
             mainActivity.hideKeyBoard(ticker_ET)
-            mainViewModel.saveDefaultSearch(db, set)
+            mainViewModel.saveDefaultSearch(set)
         }
     }
 
