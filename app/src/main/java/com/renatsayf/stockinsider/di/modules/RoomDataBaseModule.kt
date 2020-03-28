@@ -7,6 +7,7 @@ import com.renatsayf.stockinsider.db.RoomDBProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Inject
+import javax.inject.Singleton
 
 @Module
 class RoomDataBaseModule @Inject constructor(private val context: Context)
@@ -18,6 +19,7 @@ class RoomDataBaseModule @Inject constructor(private val context: Context)
     }
 
     @Provides
+    @Singleton
     fun provideRoomDataBase() : AppDao
     {
         return AppDataBase.getInstance(context).searchSetDao()
