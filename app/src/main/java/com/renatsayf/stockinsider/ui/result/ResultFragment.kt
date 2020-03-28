@@ -3,7 +3,6 @@ package com.renatsayf.stockinsider.ui.result
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +14,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -56,7 +54,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
     }
 
     override fun onCreateView(

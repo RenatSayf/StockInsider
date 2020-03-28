@@ -8,7 +8,6 @@ import android.icu.util.TimeZone
 import android.os.IBinder
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.utils.IsFilingTime
 import com.renatsayf.stockinsider.utils.Utils
@@ -59,7 +58,7 @@ class StockInsiderService : Service()
     override fun onCreate()
     {
         super.onCreate()
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
 
         val intent = Intent(Intent.ACTION_MAIN)
         intent.setClass(this, MainActivity::class.java)

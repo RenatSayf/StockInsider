@@ -14,9 +14,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
@@ -30,7 +28,7 @@ import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
 
-class MainFragment : Fragment(), SearchRequest.Companion.IDocumentListener
+class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.IDocumentListener
 {
     companion object
     {
@@ -39,7 +37,9 @@ class MainFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     }
     private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private lateinit var db : AppDao
+
+    @Inject
+    lateinit var db : AppDao
 
     @Inject
     lateinit var appContext : Context
@@ -47,15 +47,11 @@ class MainFragment : Fragment(), SearchRequest.Companion.IDocumentListener
     @Inject
     lateinit var searchRequest : SearchRequest
 
-    @Inject
-    lateinit var dbProvider : RoomDBProvider
-
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
         searchRequest.setOnDocumentReadyListener(this)
-        db = dbProvider.getDao(context as MainActivity)
     }
 
     override fun onCreateView(

@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.service
 
-import android.app.Activity
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -10,10 +9,8 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.utils.IsFilingTime
@@ -23,7 +20,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
 import java.util.*
-import java.util.logging.Handler
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -50,7 +46,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     private var db : AppDao
 
     init {
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
         db = dbProvider.getDao(context)
         searchRequest.setBackWorkerListener(this)
     }

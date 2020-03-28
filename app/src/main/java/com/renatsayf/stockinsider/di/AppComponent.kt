@@ -14,16 +14,16 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-        modules = [AppContextModule::class, SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class, ConfirmationDialogModule::class, UtilsModule::class, NotificationModule::class]
+        modules = [SearchRequestModule::class, RoomDataBaseModule::class, ScheduleReceiverModule::class, ConfirmationDialogModule::class, UtilsModule::class, NotificationModule::class]
           )
 interface AppComponent
 {
+    fun inject(mainActivity: MainActivity)
     fun inject(mainFragment : MainFragment)
     fun inject(mainViewModel : MainViewModel)
     fun inject(resultFragment : ResultFragment)
     fun inject(scheduler : Scheduler)
     fun inject(stockInsiderService : StockInsiderService)
     fun inject(getFilingDataTask : GetFilingDataTask)
-    fun inject(mainActivity: MainActivity)
     fun inject(serviceTask: ServiceTask)
 }

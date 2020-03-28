@@ -2,7 +2,6 @@ package com.renatsayf.stockinsider
 
 import android.app.Activity
 import android.app.ActivityManager
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -21,18 +20,23 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.di.AppComponent
+import com.renatsayf.stockinsider.di.DaggerAppComponent
+import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.ServiceTask
 import com.renatsayf.stockinsider.service.StockInsiderService
-import com.renatsayf.stockinsider.ui.main.MainFragment
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
 class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderService.IShowMessage {
+
+    companion object
+    {
+        lateinit var appComponent : AppComponent
+    }
 
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
@@ -46,10 +50,15 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
     {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        appComponent = DaggerAppComponent.builder()
+            .roomDataBaseModule(RoomDataBaseModule(this))
+            .build()
+
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        App().component.inject(this)
+        appComponent.inject(this)
 
         val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)

@@ -3,8 +3,8 @@ package com.renatsayf.stockinsider.network
 import android.content.Context
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.service.GetFilingDataTask
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.utils.Utils
@@ -29,7 +29,7 @@ class Scheduler @Inject constructor()
 
     init
     {
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
     }
 
     fun setNetSchedule(context : Context, isNextDay : Boolean) : Timer

@@ -2,16 +2,24 @@ package com.renatsayf.stockinsider.di.modules
 
 import android.content.Context
 import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import dagger.Module
 import dagger.Provides
+import javax.inject.Inject
 
 @Module
-class RoomDataBaseModule
+class RoomDataBaseModule @Inject constructor(private val context: Context)
 {
     @Provides
-    fun provideRoomDataBase(context : Context) : AppDao
+    fun provideContext() : Context
     {
-        return RoomDBProvider().getDao(context)
+        return context
+    }
+
+    @Provides
+    fun provideRoomDataBase() : AppDao
+    {
+        return AppDataBase.getInstance(context).searchSetDao()
     }
 }

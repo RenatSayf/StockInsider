@@ -7,8 +7,9 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import kotlinx.coroutines.*
+import javax.inject.Inject
 
-class MainViewModel : ViewModel()
+class MainViewModel @Inject constructor() : ViewModel()
 {
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value

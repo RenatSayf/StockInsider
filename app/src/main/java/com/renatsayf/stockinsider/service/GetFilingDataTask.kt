@@ -10,7 +10,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.di.App
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.Scheduler
@@ -47,7 +46,7 @@ class GetFilingDataTask @Inject constructor(private val context: Context, privat
 
     init
     {
-        App().component.inject(this)
+        MainActivity.appComponent.inject(this)
     }
     override fun run()
     {
