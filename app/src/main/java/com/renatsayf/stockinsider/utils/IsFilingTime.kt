@@ -6,9 +6,9 @@ import android.icu.util.TimeZone
 
 object IsFilingTime
 {
-    var START_HOUR : Int = 6
+    var START_HOUR : Int = 5
     var START_MINUTE : Int = 0
-    var END_HOUR : Int = 21
+    var END_HOUR : Int = 22
     var END_MINUTE : Int = 0
     var START_DELAY = AlarmManager.INTERVAL_HALF_HOUR
     var LOAD_INTERVAL : Long = AlarmManager.INTERVAL_HOUR

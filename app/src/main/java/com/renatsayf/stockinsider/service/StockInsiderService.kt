@@ -74,7 +74,7 @@ class StockInsiderService : Service()
         timeZone = TimeZone.getTimeZone(this.getString(R.string.app_time_zone))
         calendar = Calendar.getInstance(timeZone)
         timer = Timer("appTimer")
-        timer.schedule(ServiceTask(this, timeZone), IsFilingTime.START_DELAY, IsFilingTime.LOAD_INTERVAL)
+        timer.scheduleAtFixedRate(ServiceTask(this, timeZone), IsFilingTime.START_DELAY, IsFilingTime.LOAD_INTERVAL)
     }
 
     override fun onLowMemory()
@@ -99,6 +99,7 @@ class StockInsiderService : Service()
                 iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
             }
         }
+        notification.createNotification(this, null, "Service is closed", R.drawable.ic_stock_hause_cold, R.color.colorRed).show(3333)
     }
 
 

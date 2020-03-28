@@ -59,7 +59,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     {
         val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
         val isWeekEnd = IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone)
-        when(isFilingTime && !isWeekEnd)
+        when(isFilingTime/* && !isWeekEnd*/)
         {
             true ->
             {

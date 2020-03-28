@@ -45,7 +45,7 @@ class ServiceNotification @Inject constructor() : Notification()
         return this
     }
 
-    fun show()
+    fun show(id : Int = NOTIFICATION_ID)
     {
         when {
             this.context != null -> {
@@ -60,7 +60,7 @@ class ServiceNotification @Inject constructor() : Notification()
                     notificationManager.createNotificationChannel(channel)
                 }
                 this.notification?.let {
-                    notificationManager.notify(NOTIFICATION_ID, this.notification)
+                    notificationManager.notify(id, this.notification)
                 }
             }
             else ->
