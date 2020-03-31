@@ -1,7 +1,5 @@
 package com.renatsayf.stockinsider.ui.result
 
-import android.app.AlarmManager
-import android.app.PendingIntent
 import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -15,15 +13,12 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.network.Scheduler
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.Utils
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
@@ -35,9 +30,6 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
 {
     private lateinit var viewModel : ResultViewModel
     private lateinit var dataTransferModel : DataTransferModel
-
-    @Inject
-    lateinit var scheduler : Scheduler
 
     @Inject
     lateinit var searchRequest: SearchRequest
@@ -74,71 +66,36 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
 
-//        dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
-//            it.let {
-//                when
-//                {
-//                    it.size > 0 && it[0].error!!.isEmpty() ->
-//                    {
-//                        resultTV.text = it.size.toString()
-//                        val linearLayoutManager = LinearLayoutManager(activity)
-//                        val dealListAdapter = DealListAdapter(activity as MainActivity, it)
-//                        tradeListRV.apply {
-//                            setHasFixedSize(true)
-//                            layoutManager = linearLayoutManager
-//                            adapter = dealListAdapter
-//                        }
-//                        return@let
-//                    }
-//                    it.size == 1 && it[0].error!!.isNotEmpty() ->
-//                    {
-//                        resultTV.text = 0.toString()
-//                        recommendationsTV.text = it[0].error
-//                        noResultLayout.visibility = View.VISIBLE
-//                    }
-//                    else ->
-//                    {
-//                        resultTV.text = it.size.toString()
-//                        noResultLayout.visibility = View.VISIBLE
-//                    }
-//                }
-//            }
-//        })
-
-        val disposable = searchRequest.observableDealList?.subscribeOn(Schedulers.newThread())
-            ?.observeOn(AndroidSchedulers.mainThread())
-            ?.subscribe({
-                it.let {
-                    when
+        dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
+            it.let {
+                when
+                {
+                    it.size > 0 && it[0].error!!.isEmpty() ->
                     {
-                        it.size > 0 && it[0].error!!.isEmpty() ->
-                        {
-                            resultTV.text = it.size.toString()
-                            val linearLayoutManager = LinearLayoutManager(activity)
-                            val dealListAdapter = DealListAdapter(activity as MainActivity, it)
-                            tradeListRV.apply {
-                                setHasFixedSize(true)
-                                layoutManager = linearLayoutManager
-                                adapter = dealListAdapter
-                            }
-                            return@let
+                        resultTV.text = it.size.toString()
+                        val linearLayoutManager = LinearLayoutManager(activity)
+                        val dealListAdapter = DealListAdapter(activity as MainActivity, it)
+                        tradeListRV.apply {
+                            setHasFixedSize(true)
+                            layoutManager = linearLayoutManager
+                            adapter = dealListAdapter
                         }
-                        it.size == 1 && it[0].error!!.isNotEmpty() ->
-                        {
-                            resultTV.text = 0.toString()
-                            recommendationsTV.text = it[0].error
-                            noResultLayout.visibility = View.VISIBLE
-                        }
-                        else ->
-                        {
-                            resultTV.text = it.size.toString()
-                            noResultLayout.visibility = View.VISIBLE
-                        }
+                        return@let
+                    }
+                    it.size == 1 && it[0].error!!.isNotEmpty() ->
+                    {
+                        resultTV.text = 0.toString()
+                        recommendationsTV.text = it[0].error
+                        noResultLayout.visibility = View.VISIBLE
+                    }
+                    else ->
+                    {
+                        resultTV.text = it.size.toString()
+                        noResultLayout.visibility = View.VISIBLE
                     }
                 }
-            }, { t: Throwable? ->
-                t?.printStackTrace()
-            })
+            }
+        })
 
         addAlarmImgView.setOnClickListener {
             confirmationDialog.message = getString(R.string.text_confirm_search)

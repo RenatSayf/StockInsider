@@ -1,18 +1,13 @@
 package com.renatsayf.stockinsider.network
 
-import android.database.Observable
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.service.ServiceTask
-import com.renatsayf.stockinsider.ui.main.MainFragment
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.internal.operators.observable.ObservableJust
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
-import kotlin.properties.Delegates
 
 class SearchRequest @Inject constructor()
 {
@@ -20,38 +15,12 @@ class SearchRequest @Inject constructor()
     private var disposable : Disposable? = null
     private var searchTicker : String = ""
 
-    companion object
+    fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
-        interface IDocumentListener
-        {
-            fun onDocumentError(throwable : Throwable)
-            fun onDealListReady(dealList : ArrayList<Deal>)
-        }
-        private var documentListener: IDocumentListener? = null
-
-        interface IBackWorkerListener
-        {
-            fun onDocumentError(throwable : Throwable)
-            fun onDealListReady(dealList : ArrayList<Deal>)
-        }
-        private var backWorkerListener : IBackWorkerListener? = null
-    }
-
-    fun setOnDocumentReadyListener(iDocumentListener : IDocumentListener)
-    {
-        documentListener = iDocumentListener
-    }
-
-    fun setBackWorkerListener(iBackWorkerListener : IBackWorkerListener)
-    {
-        backWorkerListener = iBackWorkerListener
-    }
-
-    fun getTradingScreen(tag : String, set : SearchSet)
-    {
-        var dealList : ArrayList<Deal> = arrayListOf()
-        searchTicker = set.ticker
-        disposable = openInsiderService.getInsiderTrading(
+        return io.reactivex.Observable.create {emmiter ->
+            var dealList: ArrayList<Deal> = arrayListOf()
+            searchTicker = set.ticker
+            disposable = openInsiderService.getInsiderTrading(
                 set.ticker,
                 set.filingPeriod,
                 set.tradePeriod,
@@ -71,37 +40,20 @@ class SearchRequest @Inject constructor()
                 set.isTenPercent,
                 set.groupBy,
                 set.sortBy
-                                                         )
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribeOn(Schedulers.newThread())
-            .subscribe({ document ->
-                dealList = doParseDocument(document)
-                observableDealList = io.reactivex.Observable.create {
-                    it.onNext(dealList)
+            )
+                .map { document ->
+                    dealList = doParseDocument(document)
                 }
-                when (tag) {
-                    ServiceTask.TAG -> backWorkerListener?.onDealListReady(dealList)
-                    MainFragment.TAG -> documentListener?.onDealListReady(dealList)
-                }
-                disposable?.dispose()
-                return@subscribe
-            }, { error: Throwable ->
-                error.runCatching {
-                    if (error is IndexOutOfBoundsException) {
-                        when (tag) {
-                            ServiceTask.TAG -> backWorkerListener?.onDealListReady(dealList)
-                            MainFragment.TAG -> documentListener?.onDealListReady(dealList)
-                        }
-                        disposable?.dispose()
-                    } else {
-                        when (tag) {
-                            ServiceTask.TAG -> backWorkerListener?.onDocumentError(error)
-                            MainFragment.TAG -> documentListener?.onDocumentError(error)
-                        }
-                        disposable?.dispose()
-                    }
-                }
-            })
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.newThread())
+                .subscribe({
+                    emmiter.onNext(dealList)
+                    emmiter.onComplete()
+                    return@subscribe
+                }, { error: Throwable ->
+                    emmiter.onError(error)
+                })
+        }
     }
 
     private fun doParseDocument(document : Document) : ArrayList<Deal>
@@ -148,7 +100,7 @@ class SearchRequest @Inject constructor()
         return listDeal
     }
 
-    var observableDealList: io.reactivex.Observable<ArrayList<Deal>>? = io.reactivex.Observable.ambArray()
+
 
 
 

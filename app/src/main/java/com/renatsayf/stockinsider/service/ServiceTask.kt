@@ -7,7 +7,6 @@ import android.icu.util.TimeZone
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.db.RoomDBProvider
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
@@ -16,6 +15,8 @@ import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.utils.IsFilingTime
 import com.renatsayf.stockinsider.utils.IsWeekEnd
 import com.renatsayf.stockinsider.utils.Utils
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withContext
@@ -23,7 +24,7 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
-class ServiceTask @Inject constructor(private val context: Context, private val timeZone: TimeZone) : TimerTask(), SearchRequest.Companion.IBackWorkerListener
+class ServiceTask @Inject constructor(private val context: Context, private val timeZone: TimeZone) : TimerTask()
 {
     companion object
     {
@@ -35,20 +36,16 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
     lateinit var searchRequest : SearchRequest
 
     @Inject
-    lateinit var dbProvider : RoomDBProvider
-
-    @Inject
     lateinit var notification : ServiceNotification
 
     @Inject
     lateinit var utils : Utils
 
-    private var db : AppDao
+    @Inject
+    lateinit var db : AppDao
 
     init {
         MainActivity.appComponent.inject(this)
-        db = dbProvider.getDao(context)
-        searchRequest.setBackWorkerListener(this)
     }
 
     override fun run()
@@ -59,7 +56,6 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
         {
             true ->
             {
-                db = dbProvider.getDao(context)
                 val roomSearchSet = getSearchSetByName(db, MainFragment.DEFAULT_SET)
                 val requestParams = SearchSet(MainFragment.DEFAULT_SET).apply {
                     ticker = roomSearchSet.ticker
@@ -76,7 +72,19 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
                     sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
                 }
                 println("************* ${requestParams.searchName}: параметры запроса получены **************************")
-                searchRequest.getTradingScreen(TAG, requestParams)
+
+               searchRequest.getTradingScreen(requestParams)
+                    .subscribeOn(Schedulers.newThread())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ list: java.util.ArrayList<Deal>? ->
+                        list?.let {
+                            println("==ArrayList<Deal>====${list.size}=====================")
+                            onDealListReady(list)
+                        }
+                    }, { e ->
+                        onDocumentError(e)
+                    })
+
                 //notification.notify(context, null, "Запрос отправлен...", R.drawable.ic_stock_hause_cold)
                 println("Запрос отправлен.....................................................")
             }
@@ -91,7 +99,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
         set
     }
 
-    override fun onDocumentError(throwable: Throwable)
+    private fun onDocumentError(throwable: Throwable)
     {
         println("********************* ${throwable.message} *********************************")
         throwable.printStackTrace()
@@ -102,7 +110,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
         notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
     }
 
-    override fun onDealListReady(dealList: ArrayList<Deal>)
+    private fun onDealListReady(dealList: ArrayList<Deal>)
     {
         val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
         val message = "The request has been performed at \n" +

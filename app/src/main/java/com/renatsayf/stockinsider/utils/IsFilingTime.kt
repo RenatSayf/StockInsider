@@ -8,7 +8,7 @@ object IsFilingTime
 {
     var START_HOUR : Int = 5
     var START_MINUTE : Int = 0
-    var END_HOUR : Int = 22
+    var END_HOUR : Int = 23
     var END_MINUTE : Int = 0
     var START_DELAY = 1800000L
     var LOAD_INTERVAL : Long = 3600000L
@@ -27,13 +27,13 @@ object IsFilingTime
 //        START_MINUTE = calendar[Calendar.MINUTE]
 //
 //        calendar.apply {
-//            timeInMillis += 60000L * 3
+//            timeInMillis += 60000L * 10
 //        }
 //        END_HOUR = calendar[Calendar.HOUR_OF_DAY]
 //        END_MINUTE = calendar[Calendar.MINUTE]
 //
 //        START_DELAY = 5000L
-//        LOAD_INTERVAL = 30000L
+//        LOAD_INTERVAL = 120000L
 //    }
 
     fun checking(timeZone : TimeZone) : Result

@@ -26,13 +26,13 @@ import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
+import java.lang.IndexOutOfBoundsException
 import javax.inject.Inject
 
-class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.IDocumentListener
+class MainFragment @Inject constructor() : Fragment()
 {
     companion object
     {
-        val TAG : String = this.hashCode().toString()
         const val DEFAULT_SET : String = "default set"
     }
     private lateinit var mainViewModel : MainViewModel
@@ -45,7 +45,6 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
     {
         super.onCreate(savedInstanceState)
         MainActivity.appComponent.inject(this)
-        searchRequest.setOnDocumentReadyListener(this)
     }
 
     override fun onCreateView(
@@ -147,7 +146,15 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
             searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-            searchRequest.getTradingScreen(TAG, searchSet)
+
+            searchRequest.getTradingScreen(searchSet)
+                .subscribeOn(Schedulers.newThread())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({list ->
+                    onDealListReady(list)
+                }, {
+                    t -> onDocumentError(t)
+                })
 
             val set = RoomSearchSet(
                     DEFAULT_SET,
@@ -170,13 +177,24 @@ class MainFragment @Inject constructor() : Fragment(), SearchRequest.Companion.I
         }
     }
 
-    override fun onDocumentError(throwable : Throwable)
+    private fun onDocumentError(throwable : Throwable)
     {
         activity?.loadProgreesBar?.visibility = View.GONE
-        Snackbar.make(search_button, throwable.message.toString(), Snackbar.LENGTH_LONG).show()
+        when (throwable) {
+            is IndexOutOfBoundsException ->
+            {
+                val dealList: ArrayList<Deal> = arrayListOf()
+                dataTransferModel.setDealList(dealList)
+                activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
+            }
+            else ->
+            {
+                Snackbar.make(search_button, throwable.message.toString(), Snackbar.LENGTH_LONG).show()
+            }
+        }
     }
 
-    override fun onDealListReady(dealList : ArrayList<Deal>)
+    private fun onDealListReady(dealList : ArrayList<Deal>)
     {
         activity?.loadProgreesBar?.visibility = View.GONE
         dataTransferModel.setDealList(dealList)
