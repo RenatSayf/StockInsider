@@ -1,6 +1,11 @@
 package com.renatsayf.stockinsider.ui.result
 
+import android.app.AlarmManager
+import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.icu.util.Calendar
+import android.icu.util.TimeZone
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,10 +19,13 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.IsFilingTime
 import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
@@ -118,8 +126,17 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                 {
                                     this?.putBoolean(StockInsiderService.PREFERENCE_KEY, true)
                                     this?.apply()
+                                    val (time, intent) = AlarmPendingIntent.create(
+                                            context,
+                                            IsFilingTime.START_HOUR,
+                                            IsFilingTime.START_MINUTE
+                                    )
+                                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                    alarmManager.apply {
+                                        setExact(AlarmManager.RTC, time, intent)
+                                    }
+                                    Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                                 }
-                                Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                             }
                         }
                         else ->
@@ -131,6 +148,10 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                 {
                                     this?.putBoolean(StockInsiderService.PREFERENCE_KEY, false)
                                     this?.apply()
+                                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                    AlarmPendingIntent.intent?.let {
+                                        alarmManager.cancel(it)
+                                    }
                                 }
                                 Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
