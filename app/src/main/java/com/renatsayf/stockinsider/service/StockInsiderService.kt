@@ -5,6 +5,7 @@ import android.app.Service
 import android.content.Intent
 import android.icu.util.TimeZone
 import android.os.IBinder
+import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.network.SearchRequest
@@ -28,6 +29,7 @@ class StockInsiderService : Service()
 
     companion object
     {
+        val TAG = this::class.java.simpleName
         const val PREFERENCE_KEY = "com.renatsayf.stockinsider.service.StockInsiderService"
         var isStopService = false
         var iShowMessage : IShowMessage? = null
@@ -65,6 +67,7 @@ class StockInsiderService : Service()
 
         appNotification.notification?.let{
             startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
+            HyperLog.d(TAG, "Сервис запущен в ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
         }
 
         val timeZone = TimeZone.getTimeZone(this.getString(R.string.app_time_zone))
@@ -77,6 +80,7 @@ class StockInsiderService : Service()
         super.onLowMemory()
         isStopService = true
         notification.createNotification(this, null, this.getString(R.string.text_not_memory), R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+        HyperLog.d(TAG, this.getString(R.string.text_not_memory))
     }
 
     override fun onDestroy()
@@ -93,7 +97,8 @@ class StockInsiderService : Service()
                 iShowMessage?.showMessage(this.getString(R.string.text_search_is_disabled))
             }
         }
-        notification.createNotification(this, null, "Service is closed", R.drawable.ic_stock_hause_cold, R.color.colorRed).show(3333)
+        //notification.createNotification(this, null, "Service is closed", R.drawable.ic_stock_hause_cold, R.color.colorRed).show(3333)
+        HyperLog.d(TAG, "Service is closed...")
     }
 
 

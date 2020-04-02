@@ -5,7 +5,9 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
@@ -20,6 +22,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.di.AppComponent
 import com.renatsayf.stockinsider.di.DaggerAppComponent
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
@@ -40,8 +43,6 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
 
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
-    private var dealList : ArrayList<Deal>? = null
-    private var navController : NavController? = null
 
     @Inject
     lateinit var notification : ServiceNotification
@@ -54,6 +55,10 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
         appComponent = DaggerAppComponent.builder()
             .roomDataBaseModule(RoomDataBaseModule(this))
             .build()
+
+        HyperLog.initialize(this)
+        HyperLog.setLogLevel(Log.VERBOSE)
+        //HyperLog.getDeviceLogsInFile(this)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -94,6 +99,19 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
     {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId)
+        {
+            R.id.action_log_file ->
+            {
+                val deviceLogsFile = HyperLog.getDeviceLogsInFile(this)
+                return true
+            }
+        }
         return true
     }
 

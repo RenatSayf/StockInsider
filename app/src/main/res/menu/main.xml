@@ -6,4 +6,11 @@
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_log_file"
+        android:orderInCategory="100"
+        android:title="Create log's file"
+        app:showAsAction="never"/>
+
 </menu>

@@ -10,8 +10,8 @@ object IsFilingTime
     var START_MINUTE : Int = 0
     var END_HOUR : Int = 23
     var END_MINUTE : Int = 0
-    var START_DELAY = 1800000L
-    var LOAD_INTERVAL : Long = 3600000L
+    var START_DELAY = 900000L
+    var LOAD_INTERVAL : Long = 1800000L
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 

@@ -4,6 +4,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.icu.util.TimeZone
+import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
@@ -28,7 +29,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
 {
     companion object
     {
-        const val TAG : String = "com.renatsayf.stockinsider.service.ServiceTask"
+        val TAG : String = this::class.java.simpleName
         const val KEY_DEAL_LIST : String = "key_deal_list"
     }
 
@@ -50,6 +51,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
 
     override fun run()
     {
+        HyperLog.d(TAG, "********** Сработал метод run() *************")
         val (isFilingTime, isAfterFiling) = IsFilingTime.checking(timeZone)
         val isWeekEnd = IsWeekEnd.checking(Date(System.currentTimeMillis()), timeZone)
         when(isFilingTime/* && !isWeekEnd*/)
@@ -71,14 +73,14 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
                     groupBy = utils.getGroupingValue(context, roomSearchSet.groupBy)
                     sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
                 }
-                println("************* ${requestParams.searchName}: параметры запроса получены **************************")
+                HyperLog.d(TAG, "******* ${requestParams.searchName}: параметры запроса получены *******************")
 
                searchRequest.getTradingScreen(requestParams)
                     .subscribeOn(Schedulers.newThread())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ list: java.util.ArrayList<Deal>? ->
                         list?.let {
-                            println("==ArrayList<Deal>====${list.size}=====================")
+                            HyperLog.d(TAG, "==ArrayList<Deal>====${list.size}=====================")
                             onDealListReady(list)
                         }
                     }, { e ->
@@ -107,6 +109,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
         val message = "$time (в.мест) \n" +
                 "Во время выполнения запроса произошла ошибка:\n" +
                 "${throwable.message}"
+        HyperLog.d(TAG, message)
         notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
     }
 
@@ -116,7 +119,7 @@ class ServiceTask @Inject constructor(private val context: Context, private val 
         val message = "The request has been performed at \n" +
                 "$time (в.мест) \n" +
                 "${dealList.size} reslts found"
-        println("********************* $message *********************************")
+        HyperLog.d(TAG, "********************* $message *********************************")
         val intent = Intent(context, MainActivity::class.java).apply {
             putParcelableArrayListExtra(KEY_DEAL_LIST, dealList)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK

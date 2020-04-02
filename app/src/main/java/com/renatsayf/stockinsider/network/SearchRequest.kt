@@ -48,10 +48,10 @@ class SearchRequest @Inject constructor()
                 .subscribeOn(Schedulers.newThread())
                 .subscribe({
                     emmiter.onNext(dealList)
-                    emmiter.onComplete()
-                    return@subscribe
                 }, { error: Throwable ->
                     emmiter.onError(error)
+                }, {
+                    emmiter.onComplete()
                 })
         }
     }
