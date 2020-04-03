@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.utils
 
-import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
@@ -11,8 +10,8 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 
 object AlarmPendingIntent
 {
-    data class ResultIntent(val time: Long, val intent: PendingIntent)
-    var intent: PendingIntent? = null
+    data class ResultIntent(val time: Long, val instance: PendingIntent)
+    var instance: PendingIntent? = null
 
     private const val requestCode : Int = 1578
     private const val ACTION_START_ALARM = "com.renatsayf.stockinsider.utils.action.START_ALARM"
@@ -28,7 +27,7 @@ object AlarmPendingIntent
             intent.action = ACTION_START_ALARM
             PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_ONE_SHOT)
         }
-        intent = alarmIntent
+        instance = alarmIntent
         return ResultIntent(alarmCalendar.timeInMillis, alarmIntent)
     }
 }

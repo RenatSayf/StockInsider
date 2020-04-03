@@ -39,6 +39,7 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
     companion object
     {
         lateinit var appComponent : AppComponent
+        const val IS_ALARM_KEY = "com.renatsayf.stockinsider.is_alarm_key"
     }
 
     private lateinit var appBarConfiguration : AppBarConfiguration

@@ -33,7 +33,7 @@ object IsFilingTime
 //        END_MINUTE = calendar[Calendar.MINUTE]
 //
 //        START_DELAY = 5000L
-//        LOAD_INTERVAL = 120000L
+//        LOAD_INTERVAL = 60000L
 //    }
 
     fun checking(timeZone : TimeZone) : Result
