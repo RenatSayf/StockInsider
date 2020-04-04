@@ -6,12 +6,12 @@ import android.icu.util.TimeZone
 
 object IsFilingTime
 {
-    var START_HOUR : Int = 5
+    var START_HOUR : Int = 1
     var START_MINUTE : Int = 0
     var END_HOUR : Int = 23
     var END_MINUTE : Int = 0
     var START_DELAY = 900000L
-    var LOAD_INTERVAL : Long = 1800000L
+    var LOAD_INTERVAL : Long = 60 * 15 * 1000
 
     data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 

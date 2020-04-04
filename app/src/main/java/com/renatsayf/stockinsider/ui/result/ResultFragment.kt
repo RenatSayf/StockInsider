@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.ui.result
 
 import android.app.AlarmManager
 import android.content.Context
+import android.icu.util.TimeZone
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +17,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -123,12 +125,14 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                             context?.let { context ->
                                 addAlarmImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
-                                with(activity?.getSharedPreferences(MainActivity.IS_ALARM_KEY, Context.MODE_PRIVATE)?.edit())
+                                with(activity?.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)?.edit())
                                 {
-                                    this?.putBoolean(StockInsiderService.PREFERENCE_KEY, true)
+                                    this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, true)
                                     this?.apply()
+                                    val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
                                     val (time, intent) = AlarmPendingIntent.create(
                                             context,
+                                            timeZone,
                                             IsFilingTime.START_HOUR,
                                             IsFilingTime.START_MINUTE
                                     )
@@ -136,8 +140,9 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                     alarmManager.apply {
                                         setExact(AlarmManager.RTC, time, intent)
                                     }
-                                    //println("************  Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *****************")
-                                    HyperLog.d(TAG, "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************")
+                                    val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
+                                    println(message)
+                                    HyperLog.d(TAG, message)
                                     Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                                 }
                             }
@@ -147,9 +152,9 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                             context?.let { context ->
                                 addAlarmImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
-                                with(activity?.getSharedPreferences(MainActivity.IS_ALARM_KEY, Context.MODE_PRIVATE)?.edit())
+                                with(activity?.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)?.edit())
                                 {
-                                    this?.putBoolean(StockInsiderService.PREFERENCE_KEY, false)
+                                    this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, false)
                                     this?.apply()
                                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                                     AlarmPendingIntent.instance?.let {
@@ -174,7 +179,7 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
             activity?.onBackPressed()
         }
 
-        when((activity as MainActivity).getSharedPreferences(MainActivity.IS_ALARM_KEY, Context.MODE_PRIVATE).getBoolean(StockInsiderService.PREFERENCE_KEY, false))
+        when((activity as MainActivity).getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmReceiver.IS_ALARM_SET_KEY, false))
         {
             true ->
             {
