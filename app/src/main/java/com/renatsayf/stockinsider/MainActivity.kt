@@ -46,6 +46,9 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     @Inject
     lateinit var notification : ServiceNotification
 
+    @Inject
+    lateinit var appLog: AppLog
+
     override fun onCreate(savedInstanceState : Bundle?)
     {
         super.onCreate(savedInstanceState)
@@ -101,7 +104,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         {
             R.id.action_log_file ->
             {
-                val deviceLogsFile = HyperLog.getDeviceLogsInFile(this)
+                val deviceLogsFile = appLog.getDeviceLogsInFile()
                 return true
             }
         }

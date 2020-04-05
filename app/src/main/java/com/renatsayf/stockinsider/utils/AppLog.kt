@@ -3,9 +3,10 @@ package com.renatsayf.stockinsider.utils
 import android.content.Context
 import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
+import java.io.File
 import javax.inject.Inject
 
-class AppLog @Inject constructor(context: Context)
+class AppLog @Inject constructor(private val context: Context)
 {
     companion object
     {
@@ -23,9 +24,21 @@ class AppLog @Inject constructor(context: Context)
 
     fun print(tag: String, message: String)
     {
-        if (isLog)
+        when
         {
-            HyperLog.d(tag, message)
+            isLog ->
+            {
+                HyperLog.d(tag, message)
+            }
+        }
+    }
+
+    fun getDeviceLogsInFile() : File?
+    {
+        return when(isLog)
+        {
+            true -> HyperLog.getDeviceLogsInFile(context)
+            else -> null
         }
     }
 }
