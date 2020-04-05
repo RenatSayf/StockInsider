@@ -95,5 +95,12 @@ dependencies {
     //hypertrack/hyperlog-android
     implementation 'com.hypertrack:hyperlog:0.0.10'
 
+    //Mockito
+    testImplementation "org.mockito:mockito-core:3.3.3"
+    androidTestImplementation "org.mockito:mockito-android:3.3.3"
+
+    //Mockito-Kotlin
+    testImplementation "com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0"
+
 
 }

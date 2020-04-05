@@ -3,9 +3,7 @@ package com.renatsayf.stockinsider
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
-import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -15,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -25,17 +22,18 @@ import com.google.android.material.navigation.NavigationView
 import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.di.AppComponent
 import com.renatsayf.stockinsider.di.DaggerAppComponent
+import com.renatsayf.stockinsider.di.modules.AppCalendarModule
+import com.renatsayf.stockinsider.di.modules.AppLogModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.service.ServiceTask
-import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
-class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderService.IShowMessage {
-
+class MainActivity @Inject constructor() : AppCompatActivity()
+{
     companion object
     {
         lateinit var appComponent : AppComponent
@@ -55,11 +53,11 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
 
         appComponent = DaggerAppComponent.builder()
             .roomDataBaseModule(RoomDataBaseModule(this))
+            .appCalendarModule(AppCalendarModule(this))
+            .appLogModule(AppLogModule(this))
             .build()
 
-        HyperLog.initialize(this)
-        HyperLog.setLogLevel(Log.VERBOSE)
-        //HyperLog.getDeviceLogsInFile(this)
+        AppLog.isLog = true
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -84,15 +82,11 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
         dataTransferModel = this.run {
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
-        val dealList = intent?.getParcelableArrayListExtra<Deal>(ServiceTask.KEY_DEAL_LIST)
+        val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
         println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
-        }
-        if (isServiceRunning())
-        {
-            stopService(Intent(this, StockInsiderService::class.java))
         }
     }
 
@@ -120,24 +114,6 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
     {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        with(this.getPreferences(Context.MODE_PRIVATE))
-        {
-            when(this?.getBoolean(StockInsiderService.PREFERENCE_KEY, false))
-            {
-                true ->
-                {
-                    val serviceIntent = Intent(this@MainActivity, StockInsiderService()::class.java)
-                    StockInsiderService.setMessageListener(this@MainActivity)
-                    this@MainActivity.startService(serviceIntent)
-                }
-                else -> return@with
-            }
-        }
     }
 
     fun getFilingOrTradeValue(position : Int) : String
@@ -231,12 +207,6 @@ class MainActivity @Inject constructor() : AppCompatActivity(), StockInsiderServ
         }
         return false
     }
-
-    override fun showMessage(text: String)
-    {
-
-    }
-
 
 
 }

@@ -12,19 +12,15 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import com.renatsayf.stockinsider.utils.IsFilingTime
-import com.renatsayf.stockinsider.utils.Utils
+import com.renatsayf.stockinsider.utils.*
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
@@ -33,7 +29,7 @@ import java.util.*
 import javax.inject.Inject
 
 
-class ResultFragment : Fragment(), StockInsiderService.IShowMessage
+class ResultFragment : Fragment()
 {
     companion object
     {
@@ -53,6 +49,9 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
 
     @Inject
     lateinit var utils: Utils
+
+    @Inject
+    lateinit var appLog: AppLog
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -133,16 +132,15 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
                                     val (time, intent) = AlarmPendingIntent.create(
                                             context,
                                             timeZone,
-                                            IsFilingTime.START_HOUR,
-                                            IsFilingTime.START_MINUTE
+                                            AppCalendar.START_HOUR,
+                                            AppCalendar.START_MINUTE
                                     )
                                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                                     alarmManager.apply {
                                         setExact(AlarmManager.RTC, time, intent)
                                     }
                                     val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
-                                    println(message)
-                                    HyperLog.d(TAG, message)
+                                    appLog.print(TAG, message)
                                     Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                                 }
                             }
@@ -189,11 +187,6 @@ class ResultFragment : Fragment(), StockInsiderService.IShowMessage
         }
 
         return
-    }
-
-    override fun showMessage(text : String)
-    {
-        Snackbar.make(addAlarmImgView, text, Snackbar.LENGTH_LONG).show()
     }
 
 

@@ -2,16 +2,20 @@ package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
+import javax.inject.Inject
 
-class AppCalendar constructor(private val timeZone: TimeZone)
+class AppCalendar @Inject constructor(private val timeZone: TimeZone)
 {
-    private var startHour : Int = 1
-    private var startMinute : Int = 0
-    private var endHour : Int = 23
-    private var endMinute : Int = 0
-    private var loadInterval : Long = 60 * 15 * 1000
+    companion object
+    {
+        const val START_HOUR : Int = 5
+        const val START_MINUTE : Int = 0
+        const val END_HOUR : Int = 9
+        private const val END_MINUTE : Int = 0
+        private const val LOAD_INTERVAL : Long = 60 * 15 * 1000
+    }
 
-    private val isCheckWeekend = true
+    private val isCheckWeekend = false
 
     private data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 
@@ -21,49 +25,49 @@ class AppCalendar constructor(private val timeZone: TimeZone)
         if (calendar.isWeekend && isCheckWeekend)
         {
             return calendar.apply {
-                var amount = 1
+                var day = 1
                 while (this.isWeekend)
                 {
-                    this.add(Calendar.DATE, amount)
-                    this.set(Calendar.HOUR_OF_DAY, startHour)
-                    this.set(Calendar.MINUTE, startMinute)
-                    amount++
+                    this.add(Calendar.DATE, day)
+                    this.set(Calendar.HOUR_OF_DAY, START_HOUR)
+                    this.set(Calendar.MINUTE, START_MINUTE)
+                    day++
                 }
             }
         }
-        if (isFilingTime().isFilingTime)
+        if (checkFilingTime().isFilingTime)
         {
             return calendar.apply {
-                this.timeInMillis += loadInterval
+                this.timeInMillis += LOAD_INTERVAL
             }
         }
-        if (!isFilingTime().isFilingTime && isFilingTime().isAfterFiling)
+        if (!checkFilingTime().isFilingTime && checkFilingTime().isAfterFiling)
         {
             return calendar.apply {
                 this.add(Calendar.DATE, 1)
-                this.set(Calendar.HOUR_OF_DAY, startHour)
-                this.set(Calendar.MINUTE, startMinute)
+                this.set(Calendar.HOUR_OF_DAY, START_HOUR)
+                this.set(Calendar.MINUTE, START_MINUTE)
             }
         }
-        if (!isFilingTime().isFilingTime && !isFilingTime().isAfterFiling)
+        if (!checkFilingTime().isFilingTime && !checkFilingTime().isAfterFiling)
         {
             return calendar.apply {
-                this.set(Calendar.HOUR_OF_DAY, startHour)
-                this.set(Calendar.MINUTE, startMinute)
+                this.set(Calendar.HOUR_OF_DAY, START_HOUR)
+                this.set(Calendar.MINUTE, START_MINUTE)
             }
         }
         return calendar
     }
 
-    private fun isFilingTime() : Result
+    private fun checkFilingTime() : Result
     {
         val startCalendar = Calendar.getInstance(timeZone).apply {
-            set(Calendar.HOUR_OF_DAY, startHour)
-            set(Calendar.MINUTE, startMinute)
+            set(Calendar.HOUR_OF_DAY, START_HOUR)
+            set(Calendar.MINUTE, START_MINUTE)
         }
         val endCalendar = Calendar.getInstance(timeZone).apply {
-            set(Calendar.HOUR_OF_DAY, endHour)
-            set(Calendar.MINUTE, endMinute)
+            set(Calendar.HOUR_OF_DAY, END_HOUR)
+            set(Calendar.MINUTE, END_MINUTE)
         }
         val currentCalendar = Calendar.getInstance(timeZone)
         val isFilingTime = currentCalendar.after(startCalendar) && currentCalendar.before(endCalendar)

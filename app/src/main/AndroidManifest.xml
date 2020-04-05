@@ -51,11 +51,6 @@
         <receiver android:name=".receivers.AlarmReceiver">
         </receiver>
 
-        <service android:name=".service.StockInsiderService"
-            android:enabled="true"
-            android:exported="false"
-            android:permission="no"/>
-
     </application>
 
 </manifest>

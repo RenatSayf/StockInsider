@@ -103,6 +103,7 @@ data class Deal(val filingDate : String?) : Parcelable
 
     companion object CREATOR : Parcelable.Creator<Deal>
     {
+        var KEY_DEAL_LIST : String = "key_deal_list"
         override fun createFromParcel(parcel : Parcel) : Deal
         {
             return Deal(parcel)
