@@ -10,12 +10,12 @@ class AppCalendar @Inject constructor(private val timeZone: TimeZone)
     {
         const val START_HOUR : Int = 5
         const val START_MINUTE : Int = 0
-        const val END_HOUR : Int = 9
+        const val END_HOUR : Int = 23
         private const val END_MINUTE : Int = 0
-        private const val LOAD_INTERVAL : Long = 60 * 15 * 1000
+        private const val LOAD_INTERVAL : Long = 60 * 60 * 1000
     }
 
-    private val isCheckWeekend = false
+    private val isCheckWeekend = true
 
     private data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
 

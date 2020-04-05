@@ -48,6 +48,9 @@ class ResultFragment : Fragment()
     lateinit var notification : ServiceNotification
 
     @Inject
+    lateinit var appCalendar: AppCalendar
+
+    @Inject
     lateinit var utils: Utils
 
     @Inject
@@ -128,13 +131,8 @@ class ResultFragment : Fragment()
                                 {
                                     this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, true)
                                     this?.apply()
-                                    val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
-                                    val (time, intent) = AlarmPendingIntent.create(
-                                            context,
-                                            timeZone,
-                                            AppCalendar.START_HOUR,
-                                            AppCalendar.START_MINUTE
-                                    )
+                                    val nextCalendar = appCalendar.getNextCalendar()
+                                    val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
                                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                                     alarmManager.apply {
                                         setExact(AlarmManager.RTC, time, intent)
