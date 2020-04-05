@@ -5,17 +5,20 @@ import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
 import javax.inject.Inject
 
-class AppLog @Inject constructor(private val context: Context)
+class AppLog @Inject constructor(context: Context)
 {
     companion object
     {
-        var isLog: Boolean = true
+       private const val isLog: Boolean = true
     }
 
     init
     {
-        HyperLog.initialize(context)
-        HyperLog.setLogLevel(Log.VERBOSE)
+        if (isLog)
+        {
+            HyperLog.initialize(context)
+            HyperLog.setLogLevel(Log.VERBOSE)
+        }
     }
 
     fun print(tag: String, message: String)

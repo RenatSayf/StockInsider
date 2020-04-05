@@ -57,8 +57,6 @@ class MainActivity @Inject constructor() : AppCompatActivity()
             .appLogModule(AppLogModule(this))
             .build()
 
-        AppLog.isLog = true
-
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
