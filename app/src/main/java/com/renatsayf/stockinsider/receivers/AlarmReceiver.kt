@@ -77,13 +77,13 @@ class AlarmReceiver : BroadcastReceiver()
             {
                 true ->
                 {
-                    runAlarmTask(it)
                     val nextCalendar = appCalendar.getNextCalendar()
                     AlarmPendingIntent.create(context, nextCalendar).let { result ->
                         alarmManager.apply {
-                            setExact(AlarmManager.RTC, result.time, result.instance)
+                            setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
                         }
                     }
+                    runAlarmTask(it)
                 }
                 else ->
                 {

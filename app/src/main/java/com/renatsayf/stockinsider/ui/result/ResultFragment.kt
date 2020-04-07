@@ -135,7 +135,7 @@ class ResultFragment : Fragment()
                                     val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
                                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                                     alarmManager.apply {
-                                        setExact(AlarmManager.RTC, time, intent)
+                                        setExact(AlarmManager.RTC_WAKEUP, time, intent)
                                     }
                                     val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
                                     appLog.print(TAG, message)
@@ -153,10 +153,12 @@ class ResultFragment : Fragment()
                                     this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, false)
                                     this?.apply()
                                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                    AlarmPendingIntent.instance?.let {
-                                        alarmManager.cancel(it)
-                                    }
+                                    AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+//                                    AlarmPendingIntent.instance?.let {
+//                                        alarmManager.cancel(it)
+//                                    }
                                 }
+
                                 Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
                         }
@@ -175,12 +177,14 @@ class ResultFragment : Fragment()
             activity?.onBackPressed()
         }
 
-        when((activity as MainActivity).getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmReceiver.IS_ALARM_SET_KEY, false))
-        {
-            true ->
+        context?.let{
+            when (AlarmPendingIntent.isAlarmSetup(it))
             {
-                addAlarmImgView.visibility = View.GONE
-                alarmOnImgView.visibility = View.VISIBLE
+                true ->
+                {
+                    addAlarmImgView.visibility = View.GONE
+                    alarmOnImgView.visibility = View.VISIBLE
+                }
             }
         }
 

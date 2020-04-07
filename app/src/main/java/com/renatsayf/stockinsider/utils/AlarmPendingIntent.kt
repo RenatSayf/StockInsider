@@ -23,7 +23,7 @@ object AlarmPendingIntent
         }
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             intent.action = ACTION_START_ALARM
-            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_ONE_SHOT)
+            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
         instance = alarmIntent
         return ResultIntent(alarmCalendar.timeInMillis, alarmIntent)
@@ -33,10 +33,25 @@ object AlarmPendingIntent
     {
         val alarmIntent = Intent(context, AlarmReceiver::class.java).let { intent ->
             intent.action = ACTION_START_ALARM
-            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_ONE_SHOT)
+            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
         instance = alarmIntent
         return ResultIntent(calendar.timeInMillis, alarmIntent)
+    }
+
+    fun getAlarmIntent(context: Context) : PendingIntent?
+    {
+        return Intent(context, AlarmReceiver::class.java).let { intent ->
+            intent.action = ACTION_START_ALARM
+            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE)
+        }
+    }
+
+    fun isAlarmSetup(context: Context) : Boolean
+    {
+        val intent = getAlarmIntent(context)
+        println("********  AlarmPendingIntent = ${intent.toString()}  **************")
+        return intent != null
     }
 
 
