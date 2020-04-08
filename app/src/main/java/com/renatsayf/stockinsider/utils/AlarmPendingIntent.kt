@@ -10,10 +10,10 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 object AlarmPendingIntent
 {
     data class ResultIntent(val time: Long, val instance: PendingIntent)
-    var instance: PendingIntent? = null
 
     private const val requestCode : Int = 1578
     private const val ACTION_START_ALARM = "com.renatsayf.stockinsider.utils.action.START_ALARM"
+    private val TAG = this.javaClass.simpleName
 
     fun create(context: Context, timeZone: TimeZone, startHour : Int, startMinute : Int) : ResultIntent
     {
@@ -25,7 +25,6 @@ object AlarmPendingIntent
             intent.action = ACTION_START_ALARM
             PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-        instance = alarmIntent
         return ResultIntent(alarmCalendar.timeInMillis, alarmIntent)
     }
 
@@ -35,7 +34,6 @@ object AlarmPendingIntent
             intent.action = ACTION_START_ALARM
             PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
-        instance = alarmIntent
         return ResultIntent(calendar.timeInMillis, alarmIntent)
     }
 
@@ -50,7 +48,7 @@ object AlarmPendingIntent
     fun isAlarmSetup(context: Context) : Boolean
     {
         val intent = getAlarmIntent(context)
-        println("********  AlarmPendingIntent = ${intent.toString()}  **************")
+        AppLog(context).print(TAG, "********  AlarmPendingIntent = ${intent.toString()}  **************")
         return intent != null
     }
 

@@ -63,7 +63,7 @@ class AlarmReceiver : BroadcastReceiver()
     override fun onReceive(context: Context?, intent: Intent?)
     {
         context?.let {
-            var message = "******  Alarm has been fired at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}  **************************"
+            var message = "******  ${this.javaClass.simpleName}  Alarm has been fired at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}  **************************"
             appLog.print(TAG, message)
             notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
 
@@ -81,16 +81,16 @@ class AlarmReceiver : BroadcastReceiver()
                     AlarmPendingIntent.create(context, nextCalendar).let { result ->
                         alarmManager.apply {
                             setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
+                            message = "**********  Следующий запрос будет выполнен в ${utils.getFormattedDateTime(0, nextCalendar.time)}  **************"
+                            appLog.print(TAG, message)
                         }
                     }
                     runAlarmTask(it)
                 }
                 else ->
                 {
-                    AlarmPendingIntent.instance?.let {intent ->
-                        alarmManager.cancel(intent)
-                    }
-                    message = "********  Alarm is canceled  *********************"
+                    AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+                    message = "********  ${this.javaClass.simpleName}  Alarm is canceled  *********************"
                     appLog.print(TAG, message)
                     notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
                 }
@@ -138,7 +138,6 @@ class AlarmReceiver : BroadcastReceiver()
 
     private fun onDocumentError(context: Context, throwable: Throwable)
     {
-        println("********************* ${throwable.message} *********************************")
         disposable?.dispose()
         throwable.printStackTrace()
         val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)

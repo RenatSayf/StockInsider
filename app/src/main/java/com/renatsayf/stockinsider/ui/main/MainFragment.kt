@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.ui.main
 
+import android.app.AlarmManager
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,7 +12,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
-import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -19,16 +20,22 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
+import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
+import kotlinx.android.synthetic.main.set_alert_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import java.lang.IndexOutOfBoundsException
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 class MainFragment @Inject constructor() : Fragment()
 {
@@ -41,6 +48,9 @@ class MainFragment @Inject constructor() : Fragment()
 
     @Inject
     lateinit var searchRequest : SearchRequest
+
+    @Inject
+    lateinit var confirmationDialog : ConfirmationDialog
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -64,6 +74,14 @@ class MainFragment @Inject constructor() : Fragment()
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+
+        context?.let {
+            when(AlarmPendingIntent.isAlarmSetup(it))
+            {
+                true -> alarmOffButton.visibility = View.VISIBLE
+                else -> alarmOffButton.visibility = View.GONE
+            }
+        }
 
         mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
             if (companies == null)
@@ -176,6 +194,28 @@ class MainFragment @Inject constructor() : Fragment()
             mainActivity.hideKeyBoard(ticker_ET)
             mainViewModel.saveDefaultSearch(set)
         }
+
+        alarmOffButton.setOnClickListener {
+            confirmationDialog.message = getString(R.string.text_cancel_search)
+            confirmationDialog.flag = ConfirmationDialog.FLAG_CANCEL
+            confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
+        }
+
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
+            if (!it.hasBeenHandled)
+            {
+                it.getContent().let { flag ->
+                    if (flag == ConfirmationDialog.FLAG_CANCEL)
+                    {
+                        context?.let { context ->
+                            AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+                            Snackbar.make(group_sort_layout, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
+                            alarmOffButton.visibility = View.GONE
+                        }
+                    }
+                }
+            }
+        })
     }
 
     private fun onDocumentError(throwable : Throwable)

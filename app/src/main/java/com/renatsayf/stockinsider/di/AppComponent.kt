@@ -6,6 +6,7 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.Component
 import javax.inject.Singleton
 

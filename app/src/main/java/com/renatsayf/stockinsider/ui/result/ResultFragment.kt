@@ -127,20 +127,15 @@ class ResultFragment : Fragment()
                             context?.let { context ->
                                 addAlarmImgView.visibility = View.GONE
                                 alarmOnImgView.visibility = View.VISIBLE
-                                with(activity?.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)?.edit())
-                                {
-                                    this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, true)
-                                    this?.apply()
-                                    val nextCalendar = appCalendar.getNextCalendar()
-                                    val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
-                                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                    alarmManager.apply {
-                                        setExact(AlarmManager.RTC_WAKEUP, time, intent)
-                                    }
-                                    val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
-                                    appLog.print(TAG, message)
-                                    Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
+                                val nextCalendar = appCalendar.getNextCalendar()
+                                val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
+                                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                alarmManager.apply {
+                                    setExact(AlarmManager.RTC_WAKEUP, time, intent)
                                 }
+                                val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
+                                appLog.print(TAG, message)
+                                Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                             }
                         }
                         else ->
@@ -148,17 +143,7 @@ class ResultFragment : Fragment()
                             context?.let { context ->
                                 addAlarmImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
-                                with(activity?.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)?.edit())
-                                {
-                                    this?.putBoolean(AlarmReceiver.IS_ALARM_SET_KEY, false)
-                                    this?.apply()
-                                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                    AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-//                                    AlarmPendingIntent.instance?.let {
-//                                        alarmManager.cancel(it)
-//                                    }
-                                }
-
+                                AlarmPendingIntent.getAlarmIntent(context)?.cancel()
                                 Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
                         }
