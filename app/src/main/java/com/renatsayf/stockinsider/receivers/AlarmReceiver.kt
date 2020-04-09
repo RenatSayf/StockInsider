@@ -32,7 +32,6 @@ class AlarmReceiver : BroadcastReceiver()
     companion object
     {
         val TAG : String = this::class.java.simpleName
-        const val IS_ALARM_SET_KEY = "com.renatsayf.stockinsider.receivers.is_alarm_set"
     }
 
     @Inject
@@ -62,37 +61,48 @@ class AlarmReceiver : BroadcastReceiver()
 
     override fun onReceive(context: Context?, intent: Intent?)
     {
-        context?.let {
+        if (context != null && intent != null)
+        {
+            val isAlarmSettings = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
             var message = "******  ${this.javaClass.simpleName}  Alarm has been fired at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}  **************************"
             appLog.print(TAG, message)
-            notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
 
-            val isAlarmSetup = context
-                .getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
-                .getBoolean(IS_ALARM_SET_KEY, false)
-
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-            when(isAlarmSetup)
+            if (intent.action == AlarmPendingIntent.ACTION_START_ALARM)
             {
-                true ->
+                notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+                when(isAlarmSettings)
                 {
-                    val nextCalendar = appCalendar.getNextCalendar()
-                    AlarmPendingIntent.create(context, nextCalendar).let { result ->
+                    true ->
+                    {
+                        val nextCalendar = appCalendar.getNextCalendar()
+                        AlarmPendingIntent.create(context, nextCalendar).let { result ->
+                            alarmManager.apply {
+                                setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
+                                message = "**********  Следующий запрос будет выполнен в ${utils.getFormattedDateTime(0, nextCalendar.time)}  **************"
+                                appLog.print(TAG, message)
+                            }
+                        }
+                        runAlarmTask(context)
+                    }
+                    else ->
+                    {
+                        AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+                        message = "********  ${this.javaClass.simpleName}  Alarm is canceled  *********************"
+                        appLog.print(TAG, message)
+                        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+                    }
+                }
+            }
+            if (intent.action == Intent.ACTION_SCREEN_ON || intent.action == Intent.ACTION_USER_PRESENT)
+            {
+                if (isAlarmSettings && !AlarmPendingIntent.isAlarmSetup(context))
+                {
+                    AlarmPendingIntent.create(context).let { result ->
                         alarmManager.apply {
                             setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
-                            message = "**********  Следующий запрос будет выполнен в ${utils.getFormattedDateTime(0, nextCalendar.time)}  **************"
-                            appLog.print(TAG, message)
                         }
                     }
-                    runAlarmTask(it)
-                }
-                else ->
-                {
-                    AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-                    message = "********  ${this.javaClass.simpleName}  Alarm is canceled  *********************"
-                    appLog.print(TAG, message)
-                    notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
                 }
             }
         }

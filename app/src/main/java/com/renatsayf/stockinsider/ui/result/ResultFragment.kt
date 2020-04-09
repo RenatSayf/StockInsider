@@ -144,6 +144,11 @@ class ResultFragment : Fragment()
                                 addAlarmImgView.visibility = View.VISIBLE
                                 alarmOnImgView.visibility = View.GONE
                                 AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+                                with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
+                                {
+                                    putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+                                    apply()
+                                }
                                 Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
                             }
                         }
