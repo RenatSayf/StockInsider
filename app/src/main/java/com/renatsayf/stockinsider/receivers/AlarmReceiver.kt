@@ -88,7 +88,7 @@ class AlarmReceiver : BroadcastReceiver()
                     else ->
                     {
                         AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-                        message = "********  ${this.javaClass.simpleName}  Alarm is canceled  *********************"
+                        message = "********  ${this.javaClass.simpleName}  Alarm has been canceled  *********************"
                         appLog.print(TAG, message)
                         notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
                     }
@@ -101,6 +101,8 @@ class AlarmReceiver : BroadcastReceiver()
                     AlarmPendingIntent.create(context).let { result ->
                         alarmManager.apply {
                             setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
+                            message = "**********  Alarm has been recreated  **************"
+                            appLog.print(TAG, message)
                         }
                     }
                 }

@@ -2,7 +2,6 @@ package com.renatsayf.stockinsider.ui.result
 
 import android.app.AlarmManager
 import android.content.Context
-import android.icu.util.TimeZone
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,11 +15,13 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.SearchRequest
-import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.AppLog
+import com.renatsayf.stockinsider.utils.Utils
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
@@ -116,7 +117,7 @@ class ResultFragment : Fragment()
             confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
-        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer { it ->
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
             if (!it.hasBeenHandled)
             {
                 it.getContent().let {flag ->

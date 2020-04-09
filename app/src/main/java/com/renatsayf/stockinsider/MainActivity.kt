@@ -91,6 +91,12 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         }
     }
 
+    override fun onResume()
+    {
+        super.onResume()
+        notification.cancelNotifications(this)
+    }
+
     override fun onCreateOptionsMenu(menu : Menu) : Boolean
     {
         // Inflate the menu; this adds items to the action bar if it is present.
