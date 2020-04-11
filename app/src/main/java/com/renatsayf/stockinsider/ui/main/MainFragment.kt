@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.ui.main
 
-import android.app.AlarmManager
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -19,21 +18,20 @@ import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
-import kotlinx.android.synthetic.main.set_alert_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import java.lang.IndexOutOfBoundsException
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -75,8 +73,8 @@ class MainFragment @Inject constructor() : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
 
-        context?.let {
-            when(AlarmPendingIntent.isAlarmSetup(it))
+        activity?.let { a ->
+            when((a as MainActivity).isServiceRunning())
             {
                 true -> alarmOffButton.visibility = View.VISIBLE
                 else -> alarmOffButton.visibility = View.GONE
@@ -207,16 +205,36 @@ class MainFragment @Inject constructor() : Fragment()
                 it.getContent().let { flag ->
                     if (flag == ConfirmationDialog.FLAG_CANCEL)
                     {
-                        context?.let { context ->
-                            AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-                            with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
-                            {
-                                putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-                                apply()
-                            }
-                            Snackbar.make(group_sort_layout, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
-                            alarmOffButton.visibility = View.GONE
+//                        context?.let { context ->
+//                            AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+//                            with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
+//                            {
+//                                putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+//                                apply()
+//                            }
+//
+//                            Snackbar.make(group_sort_layout, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
+//                            alarmOffButton.visibility = View.GONE
+//                        }
+
+                        activity?.let{ a ->
+                            val serviceIntent = Intent(a, StockInsiderService::class.java)
+                            a.stopService(serviceIntent)
+                            AlarmPendingIntent.cancel(a)
                         }
+                    }
+                }
+            }
+        })
+
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, Observer {
+            if (!it.hasBeenHandled)
+            {
+                if (it.getContent() == StockInsiderService.STOP_KEY)
+                {
+                    context?.getString(R.string.text_search_is_disabled)?.let { msg ->
+                        alarmOffButton.visibility = View.GONE
+                        Snackbar.make(search_button, msg, Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
@@ -246,7 +264,6 @@ class MainFragment @Inject constructor() : Fragment()
         dataTransferModel.setDealList(dealList)
         activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
     }
-
 
 
 }

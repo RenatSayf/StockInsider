@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.ui.result
 
-import android.app.AlarmManager
-import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +15,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
-import java.util.*
 import javax.inject.Inject
 
 
@@ -126,31 +125,39 @@ class ResultFragment : Fragment()
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
                             context?.let { context ->
-                                addAlarmImgView.visibility = View.GONE
-                                alarmOnImgView.visibility = View.VISIBLE
-                                val nextCalendar = appCalendar.getNextCalendar()
-                                val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
-                                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                alarmManager.apply {
-                                    setExact(AlarmManager.RTC_WAKEUP, time, intent)
+
+
+                                activity?.let{ a ->
+                                    val serviceIntent = Intent(a, StockInsiderService::class.java)
+                                    a.startService(serviceIntent)
                                 }
-                                val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
-                                appLog.print(TAG, message)
+
+//                                val nextCalendar = appCalendar.getNextCalendar()
+//                                val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
+//                                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//                                alarmManager.apply {
+//                                    setExact(AlarmManager.RTC_WAKEUP, time, intent)
+//                                }
+//                                val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
+//                                appLog.print(TAG, message)
                                 Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
                             }
                         }
                         else ->
                         {
                             context?.let { context ->
-                                addAlarmImgView.visibility = View.VISIBLE
-                                alarmOnImgView.visibility = View.GONE
-                                AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-                                with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
-                                {
-                                    putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-                                    apply()
+                                activity?.let{ a ->
+                                    val serviceIntent = Intent(a, StockInsiderService::class.java)
+                                    a.stopService(serviceIntent)
                                 }
-                                Snackbar.make(addAlarmImgView, context.getString(R.string.text_search_is_disabled), Snackbar.LENGTH_LONG).show()
+
+//                                AlarmPendingIntent.getAlarmIntent(context)?.cancel()
+//                                with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
+//                                {
+//                                    putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+//                                    apply()
+//                                }
+
                             }
                         }
                     }
@@ -168,8 +175,8 @@ class ResultFragment : Fragment()
             activity?.onBackPressed()
         }
 
-        context?.let{
-            when (AlarmPendingIntent.isAlarmSetup(it))
+        activity?.let{ a ->
+            when ((a as MainActivity).isServiceRunning())
             {
                 true ->
                 {
@@ -178,6 +185,28 @@ class ResultFragment : Fragment()
                 }
             }
         }
+
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, Observer {
+            if (!it.hasBeenHandled)
+            {
+                when (it.getContent())
+                {
+                    StockInsiderService.STOP_KEY ->
+                    {
+                        context?.getString(R.string.text_search_is_disabled)?.let { msg ->
+                            addAlarmImgView.visibility = View.VISIBLE
+                            alarmOnImgView.visibility = View.GONE
+                            Snackbar.make(tradeListRV, msg, Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                    StockInsiderService.START_KEY ->
+                    {
+                        addAlarmImgView.visibility = View.GONE
+                        alarmOnImgView.visibility = View.VISIBLE
+                    }
+                }
+            }
+        })
 
         return
     }

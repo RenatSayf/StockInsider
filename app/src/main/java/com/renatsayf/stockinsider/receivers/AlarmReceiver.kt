@@ -94,19 +94,19 @@ class AlarmReceiver : BroadcastReceiver()
                     }
                 }
             }
-            if (intent.action == Intent.ACTION_SCREEN_ON || intent.action == Intent.ACTION_USER_PRESENT)
-            {
-                if (isAlarmSettings && !AlarmPendingIntent.isAlarmSetup(context))
-                {
-                    AlarmPendingIntent.create(context).let { result ->
-                        alarmManager.apply {
-                            setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
-                            message = "**********  Alarm has been recreated  **************"
-                            appLog.print(TAG, message)
-                        }
-                    }
-                }
-            }
+//            if (intent.action == Intent.ACTION_SCREEN_ON || intent.action == Intent.ACTION_USER_PRESENT)
+//            {
+//                if (isAlarmSettings && !AlarmPendingIntent.isAlarmSetup(context))
+//                {
+//                    AlarmPendingIntent.create(context).let { result ->
+//                        alarmManager.apply {
+//                            setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
+//                            message = "**********  Alarm has been recreated  **************"
+//                            appLog.print(TAG, message)
+//                        }
+//                    }
+//                }
+//            }
         }
     }
 

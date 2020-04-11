@@ -66,5 +66,16 @@ object AlarmPendingIntent
         return intent != null
     }
 
+    fun cancel(context: Context)
+    {
+        getAlarmIntent(context)?.also {
+            with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
+            {
+                putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+                apply()
+            }
+        }?.cancel()
+    }
+
 
 }

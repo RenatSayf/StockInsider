@@ -41,6 +41,11 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".service.StockInsiderService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="connectedDevice"/>
+
         <receiver android:name=".receivers.BootCompletedReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
@@ -48,11 +53,19 @@
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
         </receiver>
+
         <receiver android:name=".receivers.AlarmReceiver"
             android:enabled="true"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.renatsayf.stockinsider.utils.action.START_ALARM" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.StockInsiderService$PhoneUnlockedReceiver"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
                 <action android:name="android.intent.action.SCREEN_ON" />
                 <action android:name="android.intent.action.USER_PRESENT" />
             </intent-filter>
