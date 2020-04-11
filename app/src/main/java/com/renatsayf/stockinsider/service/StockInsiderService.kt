@@ -11,6 +11,7 @@ import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.*
 import java.util.*
@@ -31,7 +32,8 @@ class StockInsiderService : Service()
     @Inject
     lateinit var appLog: AppLog
 
-    private lateinit var receiver: PhoneUnlockedReceiver
+    private lateinit var alarmReceiver: AlarmReceiver
+    private lateinit var unlockedReceiver: PhoneUnlockedReceiver
 
     companion object
     {
@@ -58,10 +60,15 @@ class StockInsiderService : Service()
 
         serviceEvent.value = Event(START_KEY)
 
-        receiver = PhoneUnlockedReceiver()
+        alarmReceiver = AlarmReceiver()
+        val alarmFilter = IntentFilter()
+        alarmFilter.addAction(AlarmPendingIntent.ACTION_START_ALARM)
+        registerReceiver(alarmReceiver, alarmFilter)
+
+        unlockedReceiver = PhoneUnlockedReceiver()
         val filter = IntentFilter()
         filter.addAction(Intent.ACTION_SCREEN_ON)
-        registerReceiver(receiver, filter)
+        registerReceiver(unlockedReceiver, filter)
 
         val nextCalendar = appCalendar.getNextCalendar()
         val (time, alarmPendingIntent) = AlarmPendingIntent.create(this, nextCalendar)
@@ -107,7 +114,8 @@ class StockInsiderService : Service()
     override fun onDestroy()
     {
         super.onDestroy()
-        unregisterReceiver(receiver)
+        unregisterReceiver(unlockedReceiver)
+        unregisterReceiver(alarmReceiver)
         serviceEvent.value = Event(STOP_KEY)
         AlarmPendingIntent.cancel(this)
         notification.cancelNotifications(this)

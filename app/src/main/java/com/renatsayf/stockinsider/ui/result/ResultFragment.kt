@@ -18,7 +18,6 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Utils
@@ -124,40 +123,16 @@ class ResultFragment : Fragment()
                     {
                         flag != ConfirmationDialog.FLAG_CANCEL ->
                         {
-                            context?.let { context ->
-
-
-                                activity?.let{ a ->
-                                    val serviceIntent = Intent(a, StockInsiderService::class.java)
-                                    a.startService(serviceIntent)
-                                }
-
-//                                val nextCalendar = appCalendar.getNextCalendar()
-//                                val (time, intent) = AlarmPendingIntent.create(context, nextCalendar)
-//                                val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-//                                alarmManager.apply {
-//                                    setExact(AlarmManager.RTC_WAKEUP, time, intent)
-//                                }
-//                                val message = "**************   Start alarm setup at ${utils.getFormattedDateTime(0, Date(time))}  *********************"
-//                                appLog.print(TAG, message)
-                                Snackbar.make(alarmOnImgView, context.getString(R.string.text_searching_is_created), Snackbar.LENGTH_LONG).show()
+                            activity?.let{ a ->
+                                val serviceIntent = Intent(a, StockInsiderService::class.java)
+                                a.startService(serviceIntent)
                             }
                         }
                         else ->
                         {
-                            context?.let { context ->
-                                activity?.let{ a ->
-                                    val serviceIntent = Intent(a, StockInsiderService::class.java)
-                                    a.stopService(serviceIntent)
-                                }
-
-//                                AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-//                                with(context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit())
-//                                {
-//                                    putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-//                                    apply()
-//                                }
-
+                            activity?.let{ a ->
+                                val serviceIntent = Intent(a, StockInsiderService::class.java)
+                                a.stopService(serviceIntent)
                             }
                         }
                     }
@@ -203,12 +178,13 @@ class ResultFragment : Fragment()
                     {
                         addAlarmImgView.visibility = View.GONE
                         alarmOnImgView.visibility = View.VISIBLE
+                        context?.getString(R.string.text_searching_is_created)?.let { msg ->
+                            Snackbar.make(alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
+                        }
                     }
                 }
             }
         })
-
-        return
     }
 
 
