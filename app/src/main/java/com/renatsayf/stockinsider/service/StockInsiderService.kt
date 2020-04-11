@@ -69,7 +69,7 @@ class StockInsiderService : Service()
         alarmManager.apply {
             setExact(AlarmManager.RTC_WAKEUP, time, alarmPendingIntent)
         }
-        val message = "**************   Every day at at ${utils.getFormattedDateTime(0, Date(time))} we will check new deals  *********************"
+        val message = "Every day at ${utils.getFormattedDateTime(0, Date(time))} we will check new deals."
         appLog.print(ResultFragment.TAG, message)
 
         val actionIntent = Intent(Intent.ACTION_MAIN)
