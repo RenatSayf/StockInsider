@@ -9,14 +9,41 @@
     tools:context=".ui.deal.DealFragment">
 
     <TextView
+        android:id="@+id/companyNameTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toStartOf="@+id/tickerTV"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="Company name" />
+
+    <TextView
+        android:id="@+id/tickerTV"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="MSFT" />
+
+    <View
+        android:id="@+id/ticker_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/tickerTV" />
+
+    <TextView
         android:id="@+id/filing_date_header"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/text_filing_date"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/filingDateTV"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/text_filing_date" />
+        app:layout_constraintTop_toBottomOf="@id/ticker_bottom" />
 
     <TextView
         android:id="@+id/filingDateTV"
@@ -25,25 +52,27 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/filing_date_header"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="2020-04-09 11:20:36" />
-
+        app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
+        tools:text="2020-04-09 11:20:36"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"/>
 
     <View
         android:id="@+id/filing_date_bottom"
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="20dp"
         app:layout_constraintTop_toBottomOf="@id/filing_date_header" />
 
     <TextView
         android:id="@+id/trade_date_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:text="@string/text_trade_date"
+        android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
-        android:text="@string/text_trade_date" />
+        app:layout_constraintTop_toBottomOf="@id/filing_date_bottom" />
 
     <TextView
         android:id="@+id/tradeDateTV"
@@ -53,6 +82,96 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/trade_date_title"
         app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
-        tools:text="2020-04-09 11:20:36" />
+        tools:text="2020-04-09 11:20:36"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"/>
+
+    <View
+        android:id="@+id/trade_date_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/tradeDateTV" />
+
+    <TextView
+        android:id="@+id/insider_name_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_insider_name"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trade_date_bottom" />
+
+    <TextView
+        android:id="@+id/insiderNameTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/trade_date_title"
+        app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
+        tools:text="Angrick William P III"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"/>
+
+    <View
+        android:id="@+id/insider_name_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/insiderNameTV" />
+
+    <TextView
+        android:id="@+id/insider_title_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_insider_title"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/insider_name_bottom" />
+
+    <TextView
+        android:id="@+id/insiderTitleTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/trade_date_title"
+        app:layout_constraintTop_toBottomOf="@id/insider_name_bottom"
+        tools:text="Dir"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"/>
+
+    <View
+        android:id="@+id/insider_title_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/insiderTitleTV" />
+
+    <TextView
+        android:id="@+id/trade_type_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Trade Type"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/insider_title_bottom" />
+
+    <TextView
+        android:id="@+id/tradeTypeTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/trade_date_title"
+        app:layout_constraintTop_toBottomOf="@id/insider_title_bottom"
+        tools:text="@string/text_p_purchase"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
