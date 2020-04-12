@@ -59,6 +59,9 @@
     <string name="text_title_trade_type">Trade Type</string>
     <string name="text_title_price">Price, $</string>
     <string name="text_title_qty">Qty</string>
+    <string name="text_title_owned">Owned</string>
+    <string name="delta_own_title">ΔOwn</string>
+    <string name="value_title">Value,  $</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

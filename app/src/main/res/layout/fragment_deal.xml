@@ -205,7 +205,7 @@
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/trade_type_bottom"
-            tools:text="10000000" />
+            tools:text="5.96" />
 
         <View
             android:id="@+id/price_bottom"
@@ -236,6 +236,92 @@
             app:layout_constraintTop_toBottomOf="@id/price_bottom"
             tools:text="+95.11" />
 
+        <View
+            android:id="@+id/qty_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:layout_constraintTop_toBottomOf="@id/qty_title" />
+
+        <TextView
+            android:id="@+id/owned_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/text_title_owned"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/qty_bottom" />
+
+        <TextView
+            android:id="@+id/ownedTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/trade_date_title"
+            app:layout_constraintTop_toBottomOf="@id/qty_bottom"
+            tools:text="2 456 367" />
+
+        <View
+            android:id="@+id/delta_own_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:layout_constraintTop_toBottomOf="@id/owned_title" />
+
+        <TextView
+            android:id="@+id/delta_own_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/delta_own_title"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/delta_own_bottom" />
+
+        <TextView
+            android:id="@+id/deltaOwnTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/trade_date_title"
+            app:layout_constraintTop_toBottomOf="@id/delta_own_bottom"
+            tools:text="+4%" />
+
+        <View
+            android:id="@+id/value_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:layout_constraintTop_toBottomOf="@id/delta_own_title" />
+
+        <TextView
+            android:id="@+id/value_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/value_title"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/value_bottom" />
+
+        <TextView
+            android:id="@+id/valueTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAlignment="textEnd"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@id/trade_date_title"
+            app:layout_constraintTop_toBottomOf="@id/value_bottom"
+            tools:text="567 723" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
