@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="16dp"
+    android:scrollbars="vertical"
     tools:context=".ui.deal.DealFragment">
 
     <TextView
@@ -49,13 +50,13 @@
         android:id="@+id/filingDateTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@+id/filing_date_header"
         app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
-        tools:text="2020-04-09 11:20:36"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"/>
+        tools:text="2020-04-09 11:20:36" />
 
     <View
         android:id="@+id/filing_date_bottom"
@@ -78,13 +79,13 @@
         android:id="@+id/tradeDateTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/trade_date_title"
         app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
-        tools:text="2020-04-09 11:20:36"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"/>
+        tools:text="2020-04-09 11:20:36" />
 
     <View
         android:id="@+id/trade_date_bottom"
@@ -107,13 +108,13 @@
         android:id="@+id/insiderNameTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/trade_date_title"
         app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
-        tools:text="Angrick William P III"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"/>
+        tools:text="Angrick William P III" />
 
     <View
         android:id="@+id/insider_name_bottom"
@@ -136,13 +137,13 @@
         android:id="@+id/insiderTitleTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/trade_date_title"
         app:layout_constraintTop_toBottomOf="@id/insider_name_bottom"
-        tools:text="Dir"
-        android:textAlignment="textEnd"
-        android:textSize="18sp"/>
+        tools:text="Dir" />
 
     <View
         android:id="@+id/insider_title_bottom"
@@ -154,7 +155,7 @@
         android:id="@+id/trade_type_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Trade Type"
+        android:text="@string/text_title_trade_type"
         android:textSize="18sp"
         app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
         app:layout_constraintHorizontal_bias="0.5"
@@ -165,13 +166,71 @@
         android:id="@+id/tradeTypeTV"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toEndOf="@id/trade_date_title"
         app:layout_constraintTop_toBottomOf="@id/insider_title_bottom"
-        tools:text="@string/text_p_purchase"
+        tools:text="@string/text_p_purchase" />
+
+    <View
+        android:id="@+id/trade_type_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/trade_type_title" />
+
+    <TextView
+        android:id="@+id/price_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_title_price"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/trade_type_bottom" />
+
+    <TextView
+        android:id="@+id/priceTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:textAlignment="textEnd"
-        android:textSize="18sp"/>
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/trade_date_title"
+        app:layout_constraintTop_toBottomOf="@id/trade_type_bottom"
+        tools:text="10000000" />
+
+    <View
+        android:id="@+id/price_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintTop_toBottomOf="@id/price_title" />
+
+    <TextView
+        android:id="@+id/qty_title"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="@string/text_title_qty"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/price_bottom" />
+
+    <TextView
+        android:id="@+id/qtyTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textAlignment="textEnd"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@id/trade_date_title"
+        app:layout_constraintTop_toBottomOf="@id/price_bottom"
+        tools:text="+95.11" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>
