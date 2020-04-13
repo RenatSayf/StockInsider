@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider
 import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
@@ -28,6 +29,8 @@ import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
@@ -84,7 +87,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
         val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
-        println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
+        //println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
@@ -121,6 +124,17 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean( AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+        if (isServiceEnabled)
+        {
+            val serviceIntent = Intent(this, StockInsiderService::class.java)
+            startService(serviceIntent)
+        }
     }
 
     fun getFilingOrTradeValue(position : Int) : String

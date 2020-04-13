@@ -141,12 +141,4 @@ class Utils
         }
     }
 
-    fun createPendingIntent(context: Context, cls: Class<*>, action: String, code: Int, flag: Int) : PendingIntent?
-    {
-        return Intent(context, cls).let { intent ->
-            intent.action = action
-            PendingIntent.getBroadcast(context, code, intent, flag)
-        }
-    }
-
 }

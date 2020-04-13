@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
+import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -119,6 +120,10 @@ class StockInsiderService : Service()
         serviceEvent.value = Event(STOP_KEY)
         AlarmPendingIntent.cancel(this)
         notification.cancelNotifications(this)
+        this.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit {
+            putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+            apply()
+        }
         appLog.print(TAG, "Service is closed...")
     }
 

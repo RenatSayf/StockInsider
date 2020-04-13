@@ -44,20 +44,51 @@ data class Deal(val filingDate : String?) : Parcelable
     var tradeTypeInt : Int = 0
         private set
     var price : String? = ""
-    var qty : Double? = 0.0
-    var owned : Double? = 0.0
+        set(value)
+        {
+            field = value?.replace("$", "")
+        }
+    var qty : String? = ""
+        set(value)
+        {
+            field = value?.replace(",", " ")
+        }
+    var owned : String? = ""
+        set(value)
+        {
+            field = value?.replace(",", " ")
+        }
     var deltaOwn : String? = ""
     var volumeStr : String = ""
         set(value)
         {
             field = value
-            val regex = Regex("""\D""")
-            val strNum = field.replace(regex, "")
-            volume = strNum.toDouble()
+            volume = strToDouble(field)
         }
     var volume : Double = 0.0
         private set
     var error : String? = ""
+
+    private fun strToDouble(value: String?) : Double
+    {
+        if (value != null && value.isNotEmpty())
+        {
+            return try
+            {
+                val regex = Regex("""\D""")
+                val strNum = value.replace(regex, "")
+                strNum.toDouble()
+            }
+            catch (e: Exception)
+            {
+                0.0
+            }
+        }
+        else
+        {
+            return 0.0
+        }
+    }
 
     constructor(parcel : Parcel) : this(parcel.readString())
     {
@@ -70,8 +101,8 @@ data class Deal(val filingDate : String?) : Parcelable
         tradeType = parcel.readString()
         tradeTypeInt = parcel.readInt()
         price = parcel.readString()
-        qty = parcel.readValue(Double::class.java.classLoader) as? Double
-        owned = parcel.readValue(Double::class.java.classLoader) as? Double
+        qty = parcel.readString()
+        owned = parcel.readString()
         deltaOwn = parcel.readString()
         volume = parcel.readValue(Double::class.java.classLoader) as Double
         error = parcel.readString()
