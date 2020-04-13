@@ -3,7 +3,7 @@ package com.renatsayf.stockinsider.models
 import android.os.Parcel
 import android.os.Parcelable
 
-data class Deal(val filingDate : String?) : Parcelable
+data class Deal(var filingDate : String?) : Parcelable
 {
     var filingDateRefer : String? = ""
     var tradeDate: String? = ""
@@ -46,7 +46,7 @@ data class Deal(val filingDate : String?) : Parcelable
     var price : String? = ""
         set(value)
         {
-            field = value?.replace("$", "")
+            field = value?.replace("\$", "")
         }
     var qty : String? = ""
         set(value)
@@ -59,36 +59,32 @@ data class Deal(val filingDate : String?) : Parcelable
             field = value?.replace(",", " ")
         }
     var deltaOwn : String? = ""
-    var volumeStr : String = ""
+    var volumeStr : String? = ""
         set(value)
         {
-            field = value
-            volume = strToDouble(field)
+            field = value ?: ""
+            if (value != null && value.isNotEmpty())
+            {
+                volume = try
+                {
+                    val regex = Regex("""\D""")
+                    val strNum = value.replace(regex, "")
+                    strNum.toDouble()
+                }
+                catch (e: Exception)
+                {
+                    0.0
+                }
+            }
+            else
+            {
+                volume = 0.0
+            }
         }
     var volume : Double = 0.0
         private set
-    var error : String? = ""
 
-    private fun strToDouble(value: String?) : Double
-    {
-        if (value != null && value.isNotEmpty())
-        {
-            return try
-            {
-                val regex = Regex("""\D""")
-                val strNum = value.replace(regex, "")
-                strNum.toDouble()
-            }
-            catch (e: Exception)
-            {
-                0.0
-            }
-        }
-        else
-        {
-            return 0.0
-        }
-    }
+    var error : String? = ""
 
     constructor(parcel : Parcel) : this(parcel.readString())
     {
@@ -104,7 +100,8 @@ data class Deal(val filingDate : String?) : Parcelable
         qty = parcel.readString()
         owned = parcel.readString()
         deltaOwn = parcel.readString()
-        volume = parcel.readValue(Double::class.java.classLoader) as Double
+        volumeStr = parcel.readString()
+        volume = parcel.readDouble()
         error = parcel.readString()
     }
 
@@ -120,10 +117,11 @@ data class Deal(val filingDate : String?) : Parcelable
         parcel.writeString(tradeType)
         parcel.writeInt(tradeTypeInt)
         parcel.writeString(price)
-        parcel.writeValue(qty)
-        parcel.writeValue(owned)
+        parcel.writeString(qty)
+        parcel.writeString(owned)
         parcel.writeString(deltaOwn)
-        parcel.writeValue(volume)
+        parcel.writeString(volumeStr)
+        parcel.writeDouble(volume)
         parcel.writeString(error)
     }
 
@@ -134,7 +132,7 @@ data class Deal(val filingDate : String?) : Parcelable
 
     companion object CREATOR : Parcelable.Creator<Deal>
     {
-        var KEY_DEAL_LIST : String = "key_deal_list"
+        val KEY_DEAL_LIST : String = "${this::class.java.simpleName}.key_deal_list"
         override fun createFromParcel(parcel : Parcel) : Deal
         {
             return Deal(parcel)

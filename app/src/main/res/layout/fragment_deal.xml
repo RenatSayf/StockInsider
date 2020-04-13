@@ -71,7 +71,7 @@
             android:text="@string/text_filing_date"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/filingDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/ticker_bottom" />
 
@@ -84,7 +84,7 @@
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@+id/filing_date_header"
             app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
             tools:text="2020-04-09 11:20:36" />
@@ -102,7 +102,7 @@
             android:text="@string/text_trade_date"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/filing_date_bottom" />
 
@@ -113,7 +113,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
             tools:text="2020-04-09 11:20:36" />
@@ -130,8 +130,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_insider_name"
             android:textSize="18sp"
-            app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintEnd_toStartOf="@+id/insiderNameTV"
+            app:layout_constraintHorizontal_weight="4"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/trade_date_bottom" />
 
@@ -144,8 +144,8 @@
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/trade_date_title"
+            app:layout_constraintHorizontal_weight="6"
+            app:layout_constraintStart_toEndOf="@id/insider_name_title"
             app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
             tools:text="Angrick William P III" />
 
@@ -162,7 +162,7 @@
             android:text="@string/text_insider_title"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/insider_name_bottom" />
 
@@ -191,7 +191,7 @@
             android:text="@string/text_title_trade_type"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/insider_title_bottom" />
 
@@ -202,7 +202,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/insider_title_bottom"
             tools:text="@string/text_p_purchase" />
@@ -220,7 +220,7 @@
             android:text="@string/text_title_price"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/trade_type_bottom" />
 
@@ -231,7 +231,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/trade_type_bottom"
             tools:text="5.96" />
@@ -249,7 +249,7 @@
             android:text="@string/text_title_qty"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/price_bottom" />
 
@@ -260,7 +260,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/price_bottom"
             tools:text="+95.11" />
@@ -278,7 +278,7 @@
             android:text="@string/text_title_owned"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/qty_bottom" />
 
@@ -289,7 +289,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/qty_bottom"
             tools:text="2 456 367" />
@@ -307,7 +307,7 @@
             android:text="@string/delta_own_title"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/delta_own_bottom" />
 
@@ -318,7 +318,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/delta_own_bottom"
             tools:text="+4%" />
@@ -336,7 +336,7 @@
             android:text="@string/value_title"
             android:textSize="18sp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/value_bottom" />
 
@@ -347,7 +347,7 @@
             android:textAlignment="textEnd"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/value_bottom"
             tools:text="567 723" />

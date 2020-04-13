@@ -52,16 +52,19 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     @Inject
     lateinit var appLog: AppLog
 
-    override fun onCreate(savedInstanceState : Bundle?)
+    init
     {
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-
         appComponent = DaggerAppComponent.builder()
             .roomDataBaseModule(RoomDataBaseModule(this))
             .appCalendarModule(AppCalendarModule(this))
             .appLogModule(AppLogModule(this))
             .build()
+    }
+
+    override fun onCreate(savedInstanceState : Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -87,7 +90,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
         val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
-        //println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
+        println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
