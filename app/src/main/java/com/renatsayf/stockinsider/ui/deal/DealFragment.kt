@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.ui.deal
 
+import android.graphics.drawable.Drawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,9 +9,17 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
+import com.bumptech.glide.Glide
+import com.bumptech.glide.RequestBuilder
+import com.bumptech.glide.load.DataSource
+import com.bumptech.glide.load.engine.GlideException
+import com.bumptech.glide.request.RequestListener
+import com.bumptech.glide.request.target.CustomTarget
+import com.bumptech.glide.request.target.Target
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import kotlinx.android.synthetic.main.fragment_deal.*
+import java.net.URI
 import java.text.NumberFormat
 import java.util.*
 
@@ -60,6 +70,10 @@ class DealFragment : Fragment()
             ownedTV.text = d.owned
             deltaOwnTV.text = d.deltaOwn
             valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
+
+            val uri = Uri.parse(deal.tickerRefer)
+            Glide.with(this).load(uri).into(chartImagView)
+
         }
     }
 

@@ -324,7 +324,7 @@
             tools:text="+4%" />
 
         <View
-            android:id="@+id/value_bottom"
+            android:id="@+id/delta_bottom"
             android:layout_width="match_parent"
             android:layout_height="20dp"
             app:layout_constraintTop_toBottomOf="@id/delta_own_title" />
@@ -338,7 +338,7 @@
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/value_bottom" />
+            app:layout_constraintTop_toBottomOf="@id/delta_bottom" />
 
         <TextView
             android:id="@+id/valueTV"
@@ -349,8 +349,33 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
-            app:layout_constraintTop_toBottomOf="@id/value_bottom"
+            app:layout_constraintTop_toBottomOf="@id/delta_bottom"
             tools:text="567 723" />
+
+        <View
+            android:id="@+id/value_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            app:layout_constraintTop_toBottomOf="@id/value_title" />
+
+        <ProgressBar
+            android:id="@+id/imgLoadProgBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginEnd="100dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/value_bottom" />
+
+
+        <ImageView
+            android:id="@+id/chartImagView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toBottomOf="@id/value_bottom"
+            android:contentDescription="@string/app_name" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
