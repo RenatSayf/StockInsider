@@ -4,7 +4,9 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
+import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -20,7 +22,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.hypertrack.hyperlog.HyperLog
 import com.renatsayf.stockinsider.di.AppComponent
 import com.renatsayf.stockinsider.di.DaggerAppComponent
 import com.renatsayf.stockinsider.di.modules.AppCalendarModule
@@ -129,15 +130,18 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onDestroy()
+
+
+    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle)
     {
-        super.onDestroy()
-        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean( AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-        if (isServiceEnabled)
-        {
-            val serviceIntent = Intent(this, StockInsiderService::class.java)
-            startService(serviceIntent)
-        }
+        super.onSaveInstanceState(outState, outPersistentState)
+        appLog.print("AAA", "******** onSaveInstanceState() ***************")
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle)
+    {
+        super.onRestoreInstanceState(savedInstanceState)
+        appLog.print("AAA", "******** onRestoreInstanceState() ***************")
     }
 
     fun getFilingOrTradeValue(position : Int) : String
