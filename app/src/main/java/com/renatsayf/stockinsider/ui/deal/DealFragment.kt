@@ -54,12 +54,18 @@ class DealFragment : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(DealViewModel::class.java)
+
+        viewModel.background.observe(viewLifecycleOwner, androidx.lifecycle.Observer {
+            it?.let { mainDealLayout.background = it }
+        })
+
         val deal = arguments?.get(TAG) as Deal
         deal.let{ d ->
             DealListAdapter.dealAdapterItemClick.observe(viewLifecycleOwner, androidx.lifecycle.Observer { event ->
                 if (!event.hasBeenHandled)
                 {
                     event.getContent()?.let {
+                        viewModel.setLayOutBackground(it)
                         mainDealLayout.background = it
                     }
                 }
