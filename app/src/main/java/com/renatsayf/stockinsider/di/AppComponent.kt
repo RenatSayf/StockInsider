@@ -4,6 +4,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.di.modules.*
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
@@ -23,4 +24,5 @@ interface AppComponent
     fun inject(resultFragment : ResultFragment)
     fun inject(alarmReceiver: AlarmReceiver)
     fun inject(stockInsiderService: StockInsiderService)
+    fun inject(dealFragment: DealFragment)
 }

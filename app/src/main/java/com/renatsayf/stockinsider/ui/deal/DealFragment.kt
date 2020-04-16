@@ -16,12 +16,15 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.android.synthetic.main.fragment_deal.*
 import java.net.URI
 import java.text.NumberFormat
 import java.util.*
+import javax.inject.Inject
 
 class DealFragment : Fragment()
 {
@@ -31,7 +34,16 @@ class DealFragment : Fragment()
         val TAG = "${this::class.java.simpleName}.deal_fragment"
     }
 
+    @Inject
+    lateinit var appLog: AppLog
+
     private lateinit var viewModel : DealViewModel
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        MainActivity.appComponent.inject(this)
+    }
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
@@ -72,7 +84,34 @@ class DealFragment : Fragment()
             valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
 
             val uri = Uri.parse(deal.tickerRefer)
-            Glide.with(this).load(uri).into(chartImagView)
+            Glide.with(this).load(uri)
+                .listener(object : RequestListener<Drawable>{
+                    override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            isFirstResource: Boolean
+                    ): Boolean
+                    {
+                        e?.message?.let { appLog.print(TAG, it) }
+                        imgLoadProgBar.visibility = View.GONE
+                        return false
+                    }
+
+                    override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                    ): Boolean
+                    {
+                        appLog.print(TAG, "**********  Chart is loaded  ***********")
+                        imgLoadProgBar.visibility = View.GONE
+                        return false
+                    }
+                })
+                .into(chartImagView)
 
         }
     }
