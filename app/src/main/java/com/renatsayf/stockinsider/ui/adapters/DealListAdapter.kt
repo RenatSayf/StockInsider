@@ -1,17 +1,20 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context
+import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
+import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.deal_layout.view.*
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -20,6 +23,11 @@ import kotlin.collections.ArrayList
 
 class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
+    companion object
+    {
+        val dealAdapterItemClick : MutableLiveData<Event<Drawable>> = MutableLiveData()
+    }
+
     private lateinit var context: Context
 
     class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
@@ -113,6 +121,7 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         itemView.dealConstrLayout.setOnClickListener {
             val bundle = Bundle()
             bundle.putParcelable(DealFragment.TAG, deal)
+            dealAdapterItemClick.value = Event(it.dealConstrLayout.background)
             activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
         }
     }

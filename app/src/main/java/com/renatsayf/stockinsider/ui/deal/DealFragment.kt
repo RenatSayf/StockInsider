@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.deal
 
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
@@ -8,20 +9,17 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProviders
 import com.bumptech.glide.Glide
-import com.bumptech.glide.RequestBuilder
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.target.Target
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.android.synthetic.main.fragment_deal.*
-import java.net.URI
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
@@ -58,6 +56,14 @@ class DealFragment : Fragment()
         viewModel = ViewModelProvider(this).get(DealViewModel::class.java)
         val deal = arguments?.get(TAG) as Deal
         deal.let{ d ->
+            DealListAdapter.dealAdapterItemClick.observe(viewLifecycleOwner, androidx.lifecycle.Observer { event ->
+                if (!event.hasBeenHandled)
+                {
+                    event.getContent()?.let {
+                        mainDealLayout.background = it
+                    }
+                }
+            })
             companyNameTV.text = d.company
             companyNameTV.setOnClickListener {
                 println(d.companyRefer.toString())
@@ -112,6 +118,11 @@ class DealFragment : Fragment()
                     }
                 })
                 .into(chartImagView)
+
+            chartImagView.setOnClickListener {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
+                activity?.startActivity(intent)
+            }
 
         }
     }
