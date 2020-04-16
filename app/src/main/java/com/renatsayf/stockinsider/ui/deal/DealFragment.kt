@@ -80,7 +80,8 @@ class DealFragment : Fragment()
             }
             filingDateTV.text = d.filingDate
             filingDateTV.setOnClickListener {
-                println(d.filingDateRefer.toString())
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
+                activity?.startActivity(intent)
             }
             tradeDateTV.text = d.tradeDate
             insiderNameTV.text = d.insiderName
