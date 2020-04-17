@@ -26,7 +26,6 @@ import javax.inject.Inject
 
 class DealFragment : Fragment()
 {
-
     companion object
     {
         val TAG = "${this::class.java.simpleName}.deal_fragment"
@@ -72,11 +71,11 @@ class DealFragment : Fragment()
             })
             companyNameTV.text = d.company
             companyNameTV.setOnClickListener {
-                println(d.companyRefer.toString())
+                //println(d.companyRefer.toString())
             }
             tickerTV.text = d.ticker
             tickerTV.setOnClickListener {
-                println(d.tickerRefer.toString())
+                //println(d.tickerRefer.toString())
             }
             filingDateTV.text = d.filingDate
             filingDateTV.setOnClickListener {
@@ -86,7 +85,7 @@ class DealFragment : Fragment()
             tradeDateTV.text = d.tradeDate
             insiderNameTV.text = d.insiderName
             insiderNameTV.setOnClickListener {
-                println(d.insiderNameRefer.toString())
+                //println(d.insiderNameRefer.toString())
             }
             insiderTitleTV.text = d.insiderTitle
             tradeTypeTV.text = d.tradeType

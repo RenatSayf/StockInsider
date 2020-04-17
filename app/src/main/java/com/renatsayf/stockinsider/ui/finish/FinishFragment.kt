@@ -8,7 +8,6 @@ class FinishFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        println("********  FinishFragment finish **********")
         activity?.finish()
     }
 }

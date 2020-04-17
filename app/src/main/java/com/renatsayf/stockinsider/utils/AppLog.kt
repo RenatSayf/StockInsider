@@ -10,7 +10,7 @@ class AppLog @Inject constructor(private val context: Context)
 {
     companion object
     {
-       private const val isLog: Boolean = true
+       private const val isLog: Boolean = false
     }
 
     init

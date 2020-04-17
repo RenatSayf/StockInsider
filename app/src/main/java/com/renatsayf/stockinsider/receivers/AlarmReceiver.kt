@@ -81,7 +81,7 @@ class AlarmReceiver : BroadcastReceiver()
                         AlarmPendingIntent.create(context, nextCalendar).let { result ->
                             alarmManager.apply {
                                 setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
-                                message = "**********  Следующий запрос будет выполнен в ${utils.getFormattedDateTime(0, nextCalendar.time)}  **************"
+                                message = "**********  The next request will be executed at ${utils.getFormattedDateTime(0, nextCalendar.time)}  **************"
                                 appLog.print(TAG, message)
                             }
                         }
@@ -122,7 +122,6 @@ class AlarmReceiver : BroadcastReceiver()
             groupBy = utils.getGroupingValue(context, roomSearchSet.groupBy)
             sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
         }
-        appLog.print(TAG, "******* ${requestParams.searchName}: параметры запроса получены *******************")
 
         disposable = searchRequest.getTradingScreen(requestParams)
             .subscribeOn(Schedulers.newThread())
@@ -143,7 +142,7 @@ class AlarmReceiver : BroadcastReceiver()
         throwable.printStackTrace()
         val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
         val message = "$time (в.мест) \n" +
-                "Во время выполнения запроса произошла ошибка:\n" +
+                "An error occurred while executing the request:\n" +
                 "${throwable.message}"
         appLog.print(TAG, message)
         notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()

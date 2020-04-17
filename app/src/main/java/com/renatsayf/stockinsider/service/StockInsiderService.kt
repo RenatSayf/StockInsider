@@ -94,7 +94,7 @@ class StockInsiderService : Service()
 
         appNotification.notification?.let {
             startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
-            appLog.print(TAG, "Сервис запущен в ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
+            appLog.print(TAG, "Service has been started at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
         }
 
     }
@@ -143,7 +143,7 @@ class StockInsiderService : Service()
                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     if (intent.action == Intent.ACTION_SCREEN_ON)
                     {
-                        appLog.print(TAG, "**********  Экран разблокирован  ***********************")
+                        appLog.print(TAG, "**********  Screen has been unlocked  ***********************")
                         if (!AlarmPendingIntent.isAlarmSetup(context))
                         {
                             AlarmPendingIntent.create(context).let { result ->
