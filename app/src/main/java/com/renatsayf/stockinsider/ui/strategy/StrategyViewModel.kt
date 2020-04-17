@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel
 class StrategyViewModel : ViewModel() {
 
     private val _text = MutableLiveData<String>().apply {
-        value = "This is tools Fragment"
+        value = "This section is under development"
     }
     val text: LiveData<String> = _text
 }
