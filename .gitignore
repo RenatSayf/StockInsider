@@ -14,3 +14,14 @@
 .cxx
 /.idea/.name
 /.idea/gradle.xml
+/app/keystore/key_store.jks
+/app/keystore/key_store_password.txt
+/app/keystore/private_key.pepk
+app/libs/
+app/release/
+app/src/main/res/drawable-hdpi/
+app/src/main/res/drawable-mdpi/
+app/src/main/res/drawable-xhdpi/
+app/src/main/res/drawable-xxhdpi/
+app/src/main/res/drawable-xxxhdpi/
+app/src/main/res/layout-v26/
