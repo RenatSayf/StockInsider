@@ -12,4 +12,29 @@ class ResultViewModel : ViewModel()
     }
     val dealListAdapter : LiveData<DealListAdapter> = _dealListAdapter
 
+
+    //region Управление видимостью кнопки addAlarmImgView
+    private val _addAlarmVisibility = MutableLiveData<Int>().apply {
+        value = addAlarmVisibility?.value
+    }
+    val addAlarmVisibility: LiveData<Int> = _addAlarmVisibility
+    fun setAddAlarmVisibility(visibility: Int)
+    {
+        _addAlarmVisibility.value = visibility
+    }
+    //endregion
+
+
+    //region Управление видимостью кнопки alarmOnImgView
+    private val _alarmOnVisibility = MutableLiveData<Int>().apply {
+        value = alarmOnVisibility?.value
+    }
+    val alarmOnVisibility: LiveData<Int> = _alarmOnVisibility
+    fun setAlarmOnVisibility(visibility: Int)
+    {
+        _alarmOnVisibility.value = visibility
+    }
+    //endregion
+
+
 }

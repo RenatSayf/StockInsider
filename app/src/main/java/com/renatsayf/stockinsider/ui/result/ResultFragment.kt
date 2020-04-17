@@ -81,6 +81,14 @@ class ResultFragment : Fragment()
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
 
+        viewModel.addAlarmVisibility.observe(viewLifecycleOwner, Observer {
+            it?.let{ addAlarmImgView.visibility = it }
+        })
+
+        viewModel.alarmOnVisibility.observe(viewLifecycleOwner, Observer {
+            it?.let{ alarmOnImgView.visibility = it }
+        })
+
         dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
             it.let {
                 when
@@ -130,15 +138,11 @@ class ResultFragment : Fragment()
                                 putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, true)
                                 apply()
                             }
-                            addAlarmImgView.visibility = View.GONE
-                            alarmOnImgView.visibility = View.VISIBLE
+                            viewModel.setAddAlarmVisibility(View.GONE)
+                            viewModel.setAlarmOnVisibility(View.VISIBLE)
                             context?.getString(R.string.text_searching_is_created)?.let { msg ->
                                 Snackbar.make(alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
                             }
-//                            activity?.let{ a ->
-//                                val serviceIntent = Intent(a, StockInsiderService::class.java)
-//                                a.startService(serviceIntent)
-//                            }
                         }
                         else ->
                         {
@@ -146,8 +150,8 @@ class ResultFragment : Fragment()
                                 val serviceIntent = Intent(a, StockInsiderService::class.java)
                                 a.stopService(serviceIntent)
                                 a.getString(R.string.text_search_is_disabled).let { msg ->
-                                    addAlarmImgView.visibility = View.VISIBLE
-                                    alarmOnImgView.visibility = View.GONE
+                                    viewModel.setAddAlarmVisibility(View.VISIBLE)
+                                    viewModel.setAlarmOnVisibility(View.GONE)
                                     Snackbar.make(tradeListRV, msg, Snackbar.LENGTH_LONG).show()
                                 }
                             }
@@ -173,8 +177,8 @@ class ResultFragment : Fragment()
             {
                 true ->
                 {
-                    addAlarmImgView.visibility = View.GONE
-                    alarmOnImgView.visibility = View.VISIBLE
+                    viewModel.setAddAlarmVisibility(View.GONE)
+                    viewModel.setAlarmOnVisibility(View.VISIBLE)
                 }
             }
         }
@@ -187,22 +191,16 @@ class ResultFragment : Fragment()
                     StockInsiderService.STOP_KEY ->
                     {
                         context?.getString(R.string.text_search_is_disabled)?.let { msg ->
-                            addAlarmImgView.visibility = View.VISIBLE
-                            alarmOnImgView.visibility = View.GONE
+                            viewModel.setAddAlarmVisibility(View.VISIBLE)
+                            viewModel.setAlarmOnVisibility(View.GONE)
                             Snackbar.make(tradeListRV, msg, Snackbar.LENGTH_LONG).show()
                         }
-                    }
-                    StockInsiderService.START_KEY ->
-                    {
-//                        addAlarmImgView.visibility = View.GONE
-//                        alarmOnImgView.visibility = View.VISIBLE
-//                        context?.getString(R.string.text_searching_is_created)?.let { msg ->
-//                            Snackbar.make(alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
-//                        }
                     }
                 }
             }
         })
+
+
     }
 
 
