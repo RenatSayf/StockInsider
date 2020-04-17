@@ -23,6 +23,8 @@
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
             android:textAlignment="center"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tickerTV"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
@@ -31,7 +33,8 @@
         <View
             android:id="@+id/company_name_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/companyNameTV" />
 
         <TextView
@@ -40,6 +43,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_ticker"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tickerTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -52,6 +57,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@+id/ticker_title"
@@ -62,7 +69,8 @@
         <View
             android:id="@+id/ticker_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/tickerTV" />
 
         <TextView
@@ -71,6 +79,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_filing_date"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/filingDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -84,6 +94,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@+id/filing_date_header"
@@ -93,7 +105,8 @@
         <View
             android:id="@+id/filing_date_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/filing_date_header" />
 
         <TextView
@@ -102,6 +115,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_trade_date"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -113,6 +128,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -122,7 +139,8 @@
         <View
             android:id="@+id/trade_date_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/tradeDateTV" />
 
         <TextView
@@ -131,6 +149,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_insider_name"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/insiderNameTV"
             app:layout_constraintHorizontal_weight="4"
             app:layout_constraintStart_toStartOf="parent"
@@ -144,6 +164,8 @@
             android:textSize="18sp"
             android:textStyle="bold"
             android:textColor="@color/colorAccent"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="6"
             app:layout_constraintStart_toEndOf="@id/insider_name_title"
@@ -153,7 +175,8 @@
         <View
             android:id="@+id/insider_name_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/insiderNameTV" />
 
         <TextView
@@ -162,6 +185,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_insider_title"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -173,6 +198,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.5"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -182,7 +209,8 @@
         <View
             android:id="@+id/insider_title_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/insiderTitleTV" />
 
         <TextView
@@ -191,6 +219,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_title_trade_type"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -202,6 +232,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -211,7 +243,8 @@
         <View
             android:id="@+id/trade_type_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/trade_type_title" />
 
         <TextView
@@ -220,6 +253,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_title_price"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -231,6 +266,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -240,7 +277,8 @@
         <View
             android:id="@+id/price_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/price_title" />
 
         <TextView
@@ -249,6 +287,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_title_qty"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -260,6 +300,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -269,7 +311,8 @@
         <View
             android:id="@+id/qty_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/qty_title" />
 
         <TextView
@@ -278,6 +321,8 @@
             android:layout_height="wrap_content"
             android:text="@string/text_title_owned"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -289,6 +334,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -298,7 +345,8 @@
         <View
             android:id="@+id/delta_own_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/owned_title" />
 
         <TextView
@@ -307,6 +355,8 @@
             android:layout_height="wrap_content"
             android:text="@string/delta_own_title"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -318,6 +368,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -327,7 +379,8 @@
         <View
             android:id="@+id/delta_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/delta_own_title" />
 
         <TextView
@@ -336,6 +389,8 @@
             android:layout_height="wrap_content"
             android:text="@string/value_title"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
@@ -347,6 +402,8 @@
             android:layout_height="wrap_content"
             android:textAlignment="textEnd"
             android:textSize="18sp"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
@@ -356,7 +413,8 @@
         <View
             android:id="@+id/value_bottom"
             android:layout_width="match_parent"
-            android:layout_height="20dp"
+            android:layout_height="2dp"
+            android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/value_title" />
 
         <ProgressBar
