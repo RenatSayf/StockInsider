@@ -54,23 +54,6 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name=".receivers.AlarmReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.renatsayf.stockinsider.utils.action.START_ALARM" />
-            </intent-filter>
-        </receiver>
-
-        <receiver android:name=".service.StockInsiderService$PhoneUnlockedReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="android.intent.action.SCREEN_ON" />
-                <action android:name="android.intent.action.USER_PRESENT" />
-            </intent-filter>
-        </receiver>
-
     </application>
 
 </manifest>

@@ -132,6 +132,7 @@ class StockInsiderService : Service()
 
     inner class PhoneUnlockedReceiver : BroadcastReceiver()
     {
+
         // TODO: обработчик событий нажатия кнопки блокировки, выключения экрана....
         override fun onReceive(context: Context?, intent: Intent?)
         {

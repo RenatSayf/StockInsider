@@ -8,7 +8,9 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.utils.AppLog
 import javax.inject.Inject
 
 class ServiceNotification @Inject constructor() : Notification()
@@ -23,6 +25,14 @@ class ServiceNotification @Inject constructor() : Notification()
     var notification: Notification? = null
 
     private var context: Context? = null
+
+    @Inject
+    lateinit var appLog: AppLog
+
+    init
+    {
+        MainActivity.appComponent.inject(this)
+    }
 
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
@@ -42,6 +52,18 @@ class ServiceNotification @Inject constructor() : Notification()
             .setColor(iconColor)
             .setContentIntent(pendingIntent)
             .build()
+
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        if (VERSION.SDK_INT >= VERSION_CODES.O) {
+            val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
+            val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
+            val importance = NotificationManager.IMPORTANCE_HIGH
+            val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
+                description = descriptionText
+            }
+            notificationManager.createNotificationChannel(channel)
+        }
+
         return this
     }
 
@@ -49,16 +71,17 @@ class ServiceNotification @Inject constructor() : Notification()
     {
         when {
             this.context != null -> {
+
                 val notificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                if (VERSION.SDK_INT >= VERSION_CODES.O) {
-                    val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
-                    val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
-                    val importance = NotificationManager.IMPORTANCE_HIGH
-                    val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
-                        description = descriptionText
-                    }
-                    notificationManager.createNotificationChannel(channel)
-                }
+//                if (VERSION.SDK_INT >= VERSION_CODES.O) {
+//                    val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
+//                    val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
+//                    val importance = NotificationManager.IMPORTANCE_HIGH
+//                    val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
+//                        description = descriptionText
+//                    }
+//                    notificationManager.createNotificationChannel(channel)
+//                }
                 this.notification?.let {
                     notificationManager.notify(id, this.notification)
                 }
