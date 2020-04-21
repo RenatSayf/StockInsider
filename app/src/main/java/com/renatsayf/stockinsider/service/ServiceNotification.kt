@@ -15,9 +15,9 @@ class ServiceNotification @Inject constructor() : Notification()
 {
     companion object
     {
-        private const val CHANEL_ID : String = "channel_com.renatsayf.stockinsider.service"
-        const val NOTIFICATION_ID : Int = 1591
-        private const val TAG = "com.renatsayf.stockinsider.service.ServiceNotification"
+        private val CHANEL_ID : String = "${this::class.java.simpleName}.service_notification"
+        const val NOTIFICATION_ID : Int = 15917
+        private val TAG = "${this::class.java.simpleName}.service_tag"
     }
 
     var notification: Notification? = null

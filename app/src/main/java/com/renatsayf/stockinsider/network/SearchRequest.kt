@@ -88,7 +88,14 @@ class SearchRequest @Inject constructor()
                     deal.filingDateRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.attr("href")
                     deal.tradeDate = element?.select("tr:nth-child($trIndex) > td:nth-child(3) > div")?.text()
                     deal.ticker = element?.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a")?.text()
-                    val tdIndex = if(searchTicker == "") 0 else -1
+                    val tdIndex = when
+                    {
+                        searchTicker.isNotEmpty() && !searchTicker.contains("+") ->
+                        {
+                            -1
+                        }
+                        else -> 0
+                    }
                     deal.company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
                     deal.insiderName = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.text()
                     deal.insiderNameRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.attr("href")

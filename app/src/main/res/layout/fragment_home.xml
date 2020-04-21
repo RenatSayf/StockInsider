@@ -49,6 +49,7 @@
                             android:id="@+id/ticker_ET"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minHeight="64dp"
                             android:autofillHints=""
                             android:completionThreshold="1"
                             android:inputType="textAutoComplete|textMultiLine"
@@ -102,13 +103,15 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:orientation="horizontal"
-                        android:padding="10dp"
+                        android:paddingStart="10dp"
+                        android:paddingEnd="10dp"
                         app:layout_constraintTop_toTopOf="parent"
                         tools:layout_editor_absoluteX="5dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minHeight="32dp"
                             android:text="@string/text_filing_date"
                             />
 
@@ -116,6 +119,7 @@
                             android:id="@+id/filingDateSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minHeight="32dp"
                             android:entries="@array/list_for_filing_date"
                             />
 
@@ -132,6 +136,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:minHeight="32dp"
                             android:text="@string/text_trade_date"
                             />
 
@@ -139,6 +144,7 @@
                             android:id="@+id/tradeDateSpinner"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:minHeight="32dp"
                             android:entries="@array/list_for_filing_date"/>
 
                     </LinearLayout>

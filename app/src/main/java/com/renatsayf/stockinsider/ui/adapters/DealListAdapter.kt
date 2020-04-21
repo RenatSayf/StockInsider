@@ -1,9 +1,11 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context
+import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
@@ -124,6 +126,7 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
             dealAdapterItemClick.value = Event(it.dealConstrLayout.background)
             activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
         }
+
     }
 
 }

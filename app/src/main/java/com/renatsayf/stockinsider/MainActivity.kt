@@ -41,7 +41,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     companion object
     {
         lateinit var appComponent : AppComponent
-        const val APP_SETTINGS = "com.renatsayf.stockinsider.app_settings"
+        val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
     }
 
     private lateinit var appBarConfiguration : AppBarConfiguration
