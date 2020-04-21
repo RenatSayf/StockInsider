@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
@@ -37,25 +38,22 @@ class ServiceNotification @Inject constructor() : Notification()
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
                            text : String,
-                           iconResource : Int,
-                           iconColor: Int) : ServiceNotification
+                           iconResource: Int = R.drawable.ic_notification_logo
+                           ) : ServiceNotification
     {
         this.context = context
-        notification = NotificationCompat.Builder(context, CHANEL_ID)
-            //.setCategory(CATEGORY_SERVICE)
 
+        notification = NotificationCompat.Builder(context, CHANEL_ID)
             .setSmallIcon(iconResource)
-            .setContentTitle(context.getString(R.string.app_name))
+            .setColor(context.getColor(R.color.colorPrimary))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
-            //.setPriority(NotificationCompat.PRIORITY_MAX)
-            .setColor(iconColor)
             .setContentIntent(pendingIntent)
             .build()
 
         val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         if (VERSION.SDK_INT >= VERSION_CODES.O) {
-            val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
+            val name = context.getString(R.string.app_name)
             val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
@@ -71,17 +69,7 @@ class ServiceNotification @Inject constructor() : Notification()
     {
         when {
             this.context != null -> {
-
                 val notificationManager = context!!.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-//                if (VERSION.SDK_INT >= VERSION_CODES.O) {
-//                    val name = this.context!!.getString(R.string.app_name).plus(CHANEL_ID)
-//                    val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
-//                    val importance = NotificationManager.IMPORTANCE_HIGH
-//                    val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
-//                        description = descriptionText
-//                    }
-//                    notificationManager.createNotificationChannel(channel)
-//                }
                 this.notification?.let {
                     notificationManager.notify(id, this.notification)
                 }

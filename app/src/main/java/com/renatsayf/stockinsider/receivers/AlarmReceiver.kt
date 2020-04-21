@@ -72,7 +72,7 @@ class AlarmReceiver : BroadcastReceiver()
 
             if (intent.action == AlarmPendingIntent.ACTION_START_ALARM)
             {
-                notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+                notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
                 when(isAlarmSettings)
                 {
                     true ->
@@ -92,7 +92,7 @@ class AlarmReceiver : BroadcastReceiver()
                         AlarmPendingIntent.getAlarmIntent(context)?.cancel()
                         message = "********  ${this.javaClass.simpleName}  Alarm has been canceled  *********************"
                         appLog.print(TAG, message)
-                        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+                        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
                     }
                 }
             }
@@ -145,7 +145,7 @@ class AlarmReceiver : BroadcastReceiver()
                 "An error occurred while executing the request:\n" +
                 "${throwable.message}"
         appLog.print(TAG, message)
-        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold, R.color.colorRed).show()
+        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
     }
 
     private fun onDealListReady(context: Context, dealList: ArrayList<Deal>)
@@ -161,7 +161,7 @@ class AlarmReceiver : BroadcastReceiver()
             flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        notification.createNotification(context, pendingIntent, message, R.drawable.ic_stock_hause_cold, R.color.colorLightGreen).show()
+        notification.createNotification(context, pendingIntent, message, R.drawable.ic_stock_hause_cold).show()
     }
 
 }

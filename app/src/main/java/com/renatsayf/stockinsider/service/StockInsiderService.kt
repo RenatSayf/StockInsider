@@ -77,7 +77,7 @@ class StockInsiderService : Service()
         alarmManager.apply {
             setExact(AlarmManager.RTC_WAKEUP, time, alarmPendingIntent)
         }
-        val message = "Every day at ${utils.getFormattedDateTime(0, Date(time))} we will check new deals."
+        val message = "Next request will be at ${utils.getFormattedDateTime(0, Date(time))}."
         appLog.print(ResultFragment.TAG, message)
 
         val actionIntent = Intent(Intent.ACTION_MAIN)
@@ -85,11 +85,9 @@ class StockInsiderService : Service()
         actionIntent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
         val notificationPendingIntent = PendingIntent.getActivity(this, 0, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
         val appNotification = notification.createNotification(
-                this,
-                notificationPendingIntent,
-                message,
-                R.drawable.ic_stock_hause_cold,
-                R.color.colorGold
+                context = this,
+                pendingIntent = notificationPendingIntent,
+                text = getString(R.string.base_notification_text)
         )
 
         appNotification.notification?.let {
@@ -106,8 +104,7 @@ class StockInsiderService : Service()
                 this,
                 null,
                 this.getString(R.string.text_not_memory),
-                R.drawable.ic_stock_hause_cold,
-                R.color.colorRed
+                R.drawable.ic_stock_hause_cold
         ).show()
         appLog.print(TAG, this.getString(R.string.text_not_memory))
     }
