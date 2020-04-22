@@ -5,12 +5,10 @@ import android.app.PendingIntent
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
@@ -33,7 +31,7 @@ class AlarmReceiver : BroadcastReceiver()
 {
     companion object
     {
-        val TAG : String = this::class.java.simpleName
+        val TAG : String = this::class.java.name
     }
 
     @Inject
@@ -92,7 +90,7 @@ class AlarmReceiver : BroadcastReceiver()
                         AlarmPendingIntent.getAlarmIntent(context)?.cancel()
                         message = "********  ${this.javaClass.simpleName}  Alarm has been canceled  *********************"
                         appLog.print(TAG, message)
-                        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
+                        //notification.createNotification(context = context, pendingIntent = null, text = message).show()
                     }
                 }
             }
@@ -145,7 +143,7 @@ class AlarmReceiver : BroadcastReceiver()
                 "An error occurred while executing the request:\n" +
                 "${throwable.message}"
         appLog.print(TAG, message)
-        notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
+        notification.createNotification(context = context, pendingIntent = null, text = message).show()
     }
 
     private fun onDealListReady(context: Context, dealList: ArrayList<Deal>)
@@ -161,7 +159,7 @@ class AlarmReceiver : BroadcastReceiver()
             flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        notification.createNotification(context, pendingIntent, message, R.drawable.ic_stock_hause_cold).show()
+        notification.createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
     }
 
 }

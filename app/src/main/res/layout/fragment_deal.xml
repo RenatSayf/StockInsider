@@ -33,7 +33,7 @@
         <View
             android:id="@+id/company_name_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/companyNameTV" />
 
@@ -69,7 +69,7 @@
         <View
             android:id="@+id/ticker_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/tickerTV" />
 
@@ -105,7 +105,7 @@
         <View
             android:id="@+id/filing_date_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/filing_date_header" />
 
@@ -139,7 +139,7 @@
         <View
             android:id="@+id/trade_date_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/tradeDateTV" />
 
@@ -175,7 +175,7 @@
         <View
             android:id="@+id/insider_name_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/insiderNameTV" />
 
@@ -209,7 +209,7 @@
         <View
             android:id="@+id/insider_title_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/insiderTitleTV" />
 
@@ -243,7 +243,7 @@
         <View
             android:id="@+id/trade_type_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/trade_type_title" />
 
@@ -277,7 +277,7 @@
         <View
             android:id="@+id/price_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/price_title" />
 
@@ -311,7 +311,7 @@
         <View
             android:id="@+id/qty_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/qty_title" />
 
@@ -345,7 +345,7 @@
         <View
             android:id="@+id/delta_own_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/owned_title" />
 
@@ -379,7 +379,7 @@
         <View
             android:id="@+id/delta_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/delta_own_title" />
 
@@ -413,7 +413,7 @@
         <View
             android:id="@+id/value_bottom"
             android:layout_width="match_parent"
-            android:layout_height="2dp"
+            android:layout_height="1dp"
             android:background="@color/colorAccent"
             app:layout_constraintTop_toBottomOf="@id/value_title" />
 
