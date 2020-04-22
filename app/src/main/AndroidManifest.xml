@@ -54,6 +54,12 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".receivers.AlarmReceiver">
+            <intent-filter>
+                <action android:name="android.intent.action.SCREEN_ON" />
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
