@@ -1,14 +1,14 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context
-import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.Drawable
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
+import androidx.constraintlayout.motion.widget.MotionLayout
+import androidx.constraintlayout.motion.widget.TransitionAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -18,7 +18,6 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.deal_layout.view.*
-import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -66,66 +65,89 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         {
             if (deal.volume <= 999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000)
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy10000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy10000)
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy100000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy100000)
             }
             if (deal.volume > 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000000)
             }
         }
         else if (deal.tradeTypeInt == -1)
         {
             if (deal.volume <= 999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000)
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale10000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale10000)
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale100000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale100000)
             }
             if (deal.volume > 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000000)
             }
         }
         else if (deal.tradeTypeInt == -2)
         {
             if (deal.volume <= 999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000)
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe10000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe10000)
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe100000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe100000)
             }
             if (deal.volume > 99999)
             {
-                itemView.dealConstrLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000000)
+                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000000)
             }
         }
 
-        itemView.dealConstrLayout.setOnClickListener {
-            val bundle = Bundle()
-            bundle.putParcelable(DealFragment.TAG, deal)
-            dealAdapterItemClick.value = Event(it.dealConstrLayout.background)
-            activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
+        itemView.dealMotionLayout.setOnClickListener {
+            itemView.dealMotionLayout.transitionToEnd()
+
         }
+
+        itemView.dealMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener{
+            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
+            {
+
+            }
+
+            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
+            {
+
+            }
+
+            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
+            {
+
+            }
+
+            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
+            {
+                val bundle = Bundle()
+                bundle.putParcelable(DealFragment.TAG, deal)
+                dealAdapterItemClick.value = Event(itemView.dealMotionLayout.background)
+                activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
+            }
+        })
 
     }
 

@@ -5,6 +5,7 @@
     <color name="colorPrimaryDark">#022245</color>
     <color name="colorAccent">#303F9F</color>
     <color name="colorTransparent">#00FFFFFF</color>
+    <color name="colorSemitransparent">#12000000</color>
     <color name="white">#FFFFFF</color>
     <color name="pagebackground">#f5f9fc</color>
     <color name="buy1000000">#e1ffe1</color>

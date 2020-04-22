@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -13,13 +14,24 @@
     android:clickable="true"
     android:focusable="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/dealConstrLayout"
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/dealMotionLayout"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:padding="10dp"
             android:clickable="true"
-            android:focusable="true">
+            android:focusable="true"
+            app:layoutDescription="@xml/click_scene">
+
+            <View
+                android:id="@+id/animView"
+                android:layout_width="5dp"
+                android:layout_height="5dp"
+                android:background="@drawable/oval_frame"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
             <View
                 android:id="@+id/company_name_barier"
@@ -149,6 +161,8 @@
                 app:layout_constraintHorizontal_weight="5"
                 />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
 
 </androidx.cardview.widget.CardView>
