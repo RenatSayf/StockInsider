@@ -6,7 +6,7 @@
     <Transition
         motion:constraintSetEnd="@+id/end"
         motion:constraintSetStart="@+id/start"
-        motion:duration="3000"
+        motion:duration="350"
         motion:motionInterpolator="linear"
         motion:autoTransition="jumpToStart">
 
@@ -25,8 +25,8 @@
             motion:layout_constraintTop_toTopOf="parent"
             motion:layout_constraintEnd_toEndOf="parent"
             motion:layout_constraintBottom_toBottomOf="parent"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_width="600dp"
+            android:layout_height="600dp"
             android:scaleX="1"
             android:scaleY="1"
             android:alpha="0"

@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.motion.widget.MotionLayout
-import androidx.constraintlayout.motion.widget.TransitionAdapter
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -20,7 +19,6 @@ import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.deal_layout.view.*
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
@@ -65,61 +63,61 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         {
             if (deal.volume <= 999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000)
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000))
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy10000)
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy10000))
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy100000)
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy100000))
             }
             if (deal.volume > 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_buy1000000)
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000000))
             }
         }
         else if (deal.tradeTypeInt == -1)
         {
             if (deal.volume <= 999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale1000))
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale10000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale10000))
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale100000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale100000))
             }
             if (deal.volume > 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale1000000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale1000000))
             }
         }
         else if (deal.tradeTypeInt == -2)
         {
             if (deal.volume <= 999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe1000))
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe10000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe10000))
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe100000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe100000))
             }
             if (deal.volume > 99999)
             {
-                itemView.dealMotionLayout.background = context.resources.getDrawable(R.drawable.selector_sale_oe1000000)
+                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe1000000))
             }
         }
 
-        itemView.dealMotionLayout.setOnClickListener {
+        itemView.dealConstraintLayout.setOnClickListener {
             itemView.dealMotionLayout.transitionToEnd()
 
         }
@@ -144,7 +142,7 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
             {
                 val bundle = Bundle()
                 bundle.putParcelable(DealFragment.TAG, deal)
-                dealAdapterItemClick.value = Event(itemView.dealMotionLayout.background)
+                dealAdapterItemClick.value = Event(itemView.dealCardView.background)
                 activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
             }
         })
