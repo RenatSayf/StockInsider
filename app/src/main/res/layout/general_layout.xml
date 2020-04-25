@@ -17,6 +17,7 @@
         android:paddingEnd="5dp"
         android:text="@string/text_general"
         android:textSize="18sp"
+        android:textColor="@color/colorSectionHeader"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
@@ -26,7 +27,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:text="@string/text_ticker"
-        android:textSize="18sp"
+        android:textColor="@color/colorSectionItemTitle"
         app:layout_constraintTop_toBottomOf="@+id/section_title"
         app:layout_constraintStart_toStartOf="parent"
         />
@@ -44,6 +45,7 @@
         android:paddingEnd="30dp"
         android:textLocale="@string/locale_en_US"
         tools:targetApi="o"
+        android:textColor="@color/white"
         app:layout_constraintTop_toBottomOf="@+id/title"/>
 
     <ImageView
