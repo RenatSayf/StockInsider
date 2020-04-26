@@ -17,6 +17,7 @@
         android:paddingEnd="5dp"
         android:text="@string/text_transaction_filing"
         android:textSize="18sp"
+        android:textColor="@color/colorSectionHeader"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         />
@@ -33,6 +34,9 @@
         android:layout_height="wrap_content"
         android:checked="true"
         android:text="@string/text_purchase"
+        android:textColor="@color/white"
+        android:buttonTint="@color/white"
+        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barier" />
@@ -42,6 +46,9 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/text_sale"
+        android:textColor="@color/white"
+        android:buttonTint="@color/white"
+        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@id/barier" />
 
@@ -50,6 +57,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/text_traded_k"
+        android:textColor="@color/colorSectionItemTitle"
         android:padding="5dp"
         app:layout_constraintTop_toBottomOf="@+id/saleCheckBox"
         app:layout_constraintStart_toStartOf="parent"
@@ -66,12 +74,12 @@
         android:id="@+id/traded_min_ET"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:padding="10dp"
         android:hint="@string/text_min"
         android:autofillHints=""
         tools:ignore="UnusedAttribute"
         android:inputType="number"
+        style="@style/appEditTextStyle"
         app:layout_constraintTop_toBottomOf="@+id/barier1"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/traded_max_ET"
@@ -79,17 +87,17 @@
 
     <EditText
         android:id="@+id/traded_max_ET"
+        style="@style/appEditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:padding="10dp"
-        android:hint="@string/text_max"
         android:autofillHints=""
-        tools:ignore="UnusedAttribute"
+        android:hint="@string/text_max"
         android:inputType="number"
-        app:layout_constraintTop_toBottomOf="@id/barier1"
-        app:layout_constraintStart_toEndOf="@id/traded_min_ET"
+        android:padding="10dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"/>
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@id/traded_min_ET"
+        app:layout_constraintTop_toBottomOf="@id/barier1"
+        tools:ignore="UnusedAttribute" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

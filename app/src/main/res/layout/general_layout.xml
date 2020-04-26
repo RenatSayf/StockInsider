@@ -45,7 +45,7 @@
         android:paddingEnd="30dp"
         android:textLocale="@string/locale_en_US"
         tools:targetApi="o"
-        android:textColor="@color/white"
+        style="@style/appEditTextStyle"
         app:layout_constraintTop_toBottomOf="@+id/title"/>
 
     <ImageView
