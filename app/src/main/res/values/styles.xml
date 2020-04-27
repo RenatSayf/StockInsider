@@ -27,4 +27,14 @@
         <item name="android:textCursorDrawable">@null</item>
     </style>
 
+    <style name="AppLoadProgressBar" parent="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large">
+        <item name="android:indeterminateTint">@color/colorGold</item>
+    </style>
+    
+    <style name="AppRectangularDarkButton" parent="@style/Widget.AppCompat.ImageButton">
+        <item name="android:backgroundTint">@color/colorAccent</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
 </resources>
