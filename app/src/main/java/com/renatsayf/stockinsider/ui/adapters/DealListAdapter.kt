@@ -82,38 +82,38 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
         {
             if (deal.volume <= 999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale1000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000))
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale10000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale10000))
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale100000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale100000))
             }
             if (deal.volume > 99999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale1000000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000000))
             }
         }
         else if (deal.tradeTypeInt == -2)
         {
             if (deal.volume <= 999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe1000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000))
             }
             if (deal.volume > 999 && deal.volume <= 9999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe10000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe10000))
             }
             if (deal.volume > 9999 && deal.volume <= 99999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe100000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe100000))
             }
             if (deal.volume > 99999)
             {
-                itemView.dealCardView.setBackgroundColor(context.getColor(R.color.sale_oe1000000))
+                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000000))
             }
         }
 

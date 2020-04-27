@@ -30,4 +30,5 @@
     <color name="colorSectionHeader">#FFC107</color>
     <color name="colorSectionDivider">#303F9F</color>
     <color name="colorSectionItemTitle">#AEEA00</color>
+    <color name="colorBlack">#000000</color>
 </resources>
