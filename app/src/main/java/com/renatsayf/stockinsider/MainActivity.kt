@@ -14,6 +14,7 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
+import androidx.core.content.edit
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -144,6 +145,14 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     {
         super.onRestoreInstanceState(savedInstanceState)
         appLog.print("AAA", "******** onRestoreInstanceState() ***************")
+    }
+
+    fun setAlarmSetting(alarm: Boolean)
+    {
+        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+            putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, alarm)
+            apply()
+        }
     }
 
     fun getFilingOrTradeValue(position : Int) : String

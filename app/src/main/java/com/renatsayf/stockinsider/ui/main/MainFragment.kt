@@ -210,6 +210,7 @@ class MainFragment @Inject constructor() : Fragment()
                         activity?.let{ a ->
                             val serviceIntent = Intent(a, StockInsiderService::class.java)
                             a.stopService(serviceIntent)
+                            (a as MainActivity).setAlarmSetting(false)
                             AlarmPendingIntent.cancel(a)
                         }
                     }

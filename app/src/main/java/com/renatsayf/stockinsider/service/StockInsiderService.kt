@@ -117,10 +117,6 @@ class StockInsiderService : Service()
         serviceEvent.value = Event(STOP_KEY)
         AlarmPendingIntent.cancel(this)
         notification.cancelNotifications(this)
-        this.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit {
-            putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-            apply()
-        }
         appLog.print(TAG, "Service is closed...")
     }
 

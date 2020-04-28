@@ -3,21 +3,34 @@ package com.renatsayf.stockinsider.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
-import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.MainActivity
+import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 
 class BootCompletedReceiver : BroadcastReceiver()
 {
-    override fun onReceive(context : Context?, intent : Intent?)
+    override fun onReceive(context: Context?, intent: Intent?)
     {
         val action = intent?.action
-        if (action.equals("android.intent.action.BOOT_COMPLETED") ||
-                action.equals("android.intent.action.QUICKBOOT_POWERON") ||
-                action.equals("com.htc.intent.action.QUICKBOOT_POWERON")) {
-            context?.let {
-
-                val message = context.getString(R.string.app_name).plus(" is enabled")
-                Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        if (action.equals(Intent.ACTION_BOOT_COMPLETED) ||
+            action.equals("android.intent.action.QUICKBOOT_POWERON") ||
+            action.equals("com.htc.intent.action.QUICKBOOT_POWERON") ||
+            action.equals(Intent.ACTION_PACKAGE_REPLACED) ||
+            action.equals(Intent.ACTION_PACKAGE_ADDED)
+        )
+        {
+            context?.let { c ->
+               val isAlarmSetup = c.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
+                   .getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+                when(isAlarmSetup)
+                {
+                    true ->
+                    {
+                        val seviceIntent = Intent(c, StockInsiderService::class.java)
+                        c.startService(seviceIntent)
+                    }
+                    else -> return
+                }
             }
         }
         return

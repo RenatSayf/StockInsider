@@ -44,6 +44,8 @@ class ServiceNotification @Inject constructor() : Notification()
         this.context = context
 
         notification = NotificationCompat.Builder(context, CHANEL_ID)
+            .setPriority(NotificationManager.IMPORTANCE_NONE)
+            .setCategory(CATEGORY_RECOMMENDATION)
             .setSmallIcon(iconResource)
             .setColor(context.getColor(R.color.colorPrimary))
             .setContentText(text)

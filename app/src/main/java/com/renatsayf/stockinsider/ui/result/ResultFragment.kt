@@ -149,6 +149,7 @@ class ResultFragment : Fragment()
                             activity?.let{ a ->
                                 val serviceIntent = Intent(a, StockInsiderService::class.java)
                                 a.stopService(serviceIntent)
+                                (a as MainActivity).setAlarmSetting(false)
                                 a.getString(R.string.text_search_is_disabled).let { msg ->
                                     viewModel.setAddAlarmVisibility(View.VISIBLE)
                                     viewModel.setAlarmOnVisibility(View.GONE)
