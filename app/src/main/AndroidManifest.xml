@@ -45,17 +45,22 @@
             android:exported="false"
             android:foregroundServiceType="connectedDevice"/>
 
-        <receiver android:name=".receivers.BootCompletedReceiver">
+        <receiver android:name=".receivers.BootCompletedReceiver"
+            android:exported="true"
+            android:enabled="true">
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.QUICKBOOT_POWERON" />
                 <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
             </intent-filter>
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.PACKAGE_REPLACED" />
                 <data android:scheme="package" />
             </intent-filter>
             <intent-filter>
+                <category android:name="android.intent.category.DEFAULT"/>
                 <action android:name="android.intent.action.PACKAGE_ADDED" />
                 <data android:scheme="package" />
             </intent-filter>

@@ -4,7 +4,6 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
-import android.content.res.Configuration
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.Menu
@@ -94,17 +93,10 @@ class MainActivity @Inject constructor() : AppCompatActivity()
             ViewModelProvider(this)[DataTransferModel::class.java]
         }
         val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
-        println("${this.javaClass.simpleName}: dealList = ${dealList?.size}")
         dealList?.let {
             dataTransferModel.setDealList(dealList)
             navController.navigate(R.id.resultFragment, null)
         }
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
-        notification.cancelNotifications(this)
     }
 
     override fun onCreateOptionsMenu(menu : Menu) : Boolean
@@ -152,6 +144,12 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
             putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, alarm)
             apply()
+        }.also {
+            if (!alarm)
+            {
+                val serviceIntent = Intent(this, StockInsiderService::class.java)
+                stopService(serviceIntent)
+            }
         }
     }
 

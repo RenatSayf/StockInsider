@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.IBinder
-import androidx.core.content.edit
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -132,13 +131,13 @@ class StockInsiderService : Service()
             context?.let{
                 if (intent != null)
                 {
-                    val isAlarmSettings = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
+                    val isAlarmSetting = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
                         .getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     if (intent.action == Intent.ACTION_SCREEN_ON)
                     {
                         appLog.print(TAG, "**********  Screen has been unlocked  ***********************")
-                        if (!AlarmPendingIntent.isAlarmSetup(context))
+                        if (!AlarmPendingIntent.isAlarmSetup(context) && isAlarmSetting)
                         {
                             AlarmPendingIntent.create(context).let { result ->
                                 alarmManager.apply {

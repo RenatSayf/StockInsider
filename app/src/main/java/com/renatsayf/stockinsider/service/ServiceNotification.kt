@@ -5,7 +5,6 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.graphics.BitmapFactory
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
@@ -20,7 +19,6 @@ class ServiceNotification @Inject constructor() : Notification()
     {
         private val CHANEL_ID : String = "${this::class.java.simpleName}.service_notification"
         const val NOTIFICATION_ID : Int = 15917
-        private val TAG = "${this::class.java.simpleName}.service_tag"
     }
 
     var notification: Notification? = null

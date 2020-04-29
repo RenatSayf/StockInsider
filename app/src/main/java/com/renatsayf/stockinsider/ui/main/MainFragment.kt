@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -98,7 +97,7 @@ class MainFragment @Inject constructor() : Fragment()
         })
 
         var tickerText = ""
-        ticker_ET.doOnTextChanged { text, start, count, after ->
+        ticker_ET.doOnTextChanged { text, _, _, _ ->
             if (text != null)
             {
                 if (text.isNotEmpty())
@@ -116,7 +115,7 @@ class MainFragment @Inject constructor() : Fragment()
             }
         }
 
-        ticker_ET.setOnItemClickListener { _, view, i, l ->
+        ticker_ET.setOnItemClickListener { _, view, _, _ ->
             val tickerLayout = view.tickerLayout
             val ticker = tickerLayout.tickerTV.text
             val str = (tickerText.plus(ticker)).trim()
@@ -208,8 +207,6 @@ class MainFragment @Inject constructor() : Fragment()
                     if (flag == ConfirmationDialog.FLAG_CANCEL)
                     {
                         activity?.let{ a ->
-                            val serviceIntent = Intent(a, StockInsiderService::class.java)
-                            a.stopService(serviceIntent)
                             (a as MainActivity).setAlarmSetting(false)
                             AlarmPendingIntent.cancel(a)
                         }
@@ -279,7 +276,6 @@ class MainFragment @Inject constructor() : Fragment()
                 a.startService(serviceIntent)
             }
         }
-
     }
 
 

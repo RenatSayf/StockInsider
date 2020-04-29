@@ -4,8 +4,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.MainActivity
+import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import javax.inject.Inject
 
 class BootCompletedReceiver : BroadcastReceiver()
 {
