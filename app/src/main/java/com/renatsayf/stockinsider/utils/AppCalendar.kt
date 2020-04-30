@@ -8,11 +8,12 @@ class AppCalendar @Inject constructor(private val timeZone: TimeZone)
 {
     companion object
     {
+        // TODO to release version switch to 5 - 23 hours, through 2 hours
         const val START_HOUR : Int = 5
         const val START_MINUTE : Int = 0
         const val END_HOUR : Int = 23
         private const val END_MINUTE : Int = 0
-        private const val LOAD_INTERVAL : Long = 60 * 60 * 1000
+        private const val LOAD_INTERVAL : Long = 60 * 120 * 1000
     }
 
     private val isCheckWeekend = true
