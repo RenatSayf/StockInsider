@@ -1,5 +1,8 @@
 # StockInsider
 
+### Dependencies
+* ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/build.gradle
+
 ### Main screen
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/ui/main/MainFragment.kt
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/ui/main/MainViewModel.kt
