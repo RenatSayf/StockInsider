@@ -43,6 +43,7 @@
         <service android:name=".service.StockInsiderService"
             android:enabled="true"
             android:exported="false"
+            android:stopWithTask="false"
             android:foregroundServiceType="connectedDevice"/>
 
         <receiver android:name=".receivers.BootCompletedReceiver"
