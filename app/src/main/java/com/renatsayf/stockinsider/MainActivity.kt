@@ -240,6 +240,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     fun isServiceRunning() : Boolean
     {
         val activityManager = this.getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
+        @Suppress("DEPRECATION")
         val services = activityManager.getRunningServices(Int.MAX_VALUE)
         services.forEach {
             when(it.service.packageName)
