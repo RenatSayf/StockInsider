@@ -90,6 +90,7 @@ class StockInsiderService : Service()
             startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
             appLog.print(TAG, "Service has been started at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
         }
+
     }
 
     override fun onLowMemory()
@@ -108,6 +109,7 @@ class StockInsiderService : Service()
     {
         super.onTaskRemoved(rootIntent)
         appLog.print(TAG, "************* onTaskRemoved is fired *************")
+        //onCreate()
         startService(Intent(this, StockInsiderService::class.java))
     }
 

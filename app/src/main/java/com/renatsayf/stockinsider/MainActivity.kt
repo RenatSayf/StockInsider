@@ -14,6 +14,7 @@ import android.widget.CheckBox
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -46,6 +47,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
 
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var drawerLayout : DrawerLayout
 
     @Inject
     lateinit var notification : ServiceNotification
@@ -74,7 +76,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
 
         appComponent.inject(this)
 
-        val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
 
@@ -112,11 +114,16 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         {
             R.id.action_log_file ->
             {
-                val deviceLogsFile = appLog.getDeviceLogsInFile()
+                appLog.getDeviceLogsInFile()
+                return true
+            }
+            R.id.nav_home ->
+            {
+                drawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
         }
-        return true
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp() : Boolean
