@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -97,6 +98,7 @@ class ResultFragment : Fragment()
                         resultTV.text = it.size.toString()
                         val linearLayoutManager = LinearLayoutManager(activity)
                         val dealListAdapter = DealListAdapter(activity as MainActivity, it)
+                        dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                         tradeListRV.apply {
                             setHasFixedSize(true)
                             layoutManager = linearLayoutManager
