@@ -83,10 +83,6 @@ class MainFragment @Inject constructor() : Fragment()
         }
 
         mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
-            if (companies == null)
-            {
-                mainViewModel.getCompaniesArray()
-            }
             val tickerListAdapter = companies?.let {
                 context?.let { _ ->
                     TickersListAdapter(activity as MainActivity, it)
@@ -145,7 +141,8 @@ class MainFragment @Inject constructor() : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        mainViewModel.getSearchSetByName(DEFAULT_SET)
+        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
+        mainViewModel.setSearchSet(roomSearchSet)
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity

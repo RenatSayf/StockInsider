@@ -7,6 +7,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
@@ -14,6 +15,9 @@ class MainViewModel @Inject constructor() : ViewModel()
 {
     @Inject
     lateinit var db: AppDao
+
+    @Inject
+    lateinit var appLog: AppLog
 
     init {
         MainActivity.appComponent.inject(this)
@@ -28,21 +32,11 @@ class MainViewModel @Inject constructor() : ViewModel()
         _searchSet.value = set
     }
 
-    fun getSearchSetByName(setName : String)
-    {
-        CoroutineScope(Dispatchers.IO + SupervisorJob()).launch {
-            withContext(Dispatchers.Main) {
-                try
-                {
-                    val set = db.getSetByName(setName)
-                    _searchSet.postValue(set)
-                }
-                catch (e : Exception)
-                {
-                    e.printStackTrace()
-                }
-            }
+    fun getSearchSet(setName: String) : RoomSearchSet = runBlocking {
+        val set = async {
+            db.getSetByName(setName)
         }
+        set.await()
     }
 
     fun saveDefaultSearch(set : RoomSearchSet)
@@ -51,60 +45,27 @@ class MainViewModel @Inject constructor() : ViewModel()
             withContext(Dispatchers.Main) {
                 try
                 {
-                    val res = db.insertOrUpdateSearchSet(set)
-                    res
+                    db.insertOrUpdateSearchSet(set)
                 }
                 catch (e : Exception)
                 {
                     e.printStackTrace()
                 }
-            }
-        }
-    }
-
-    private var _tickers = MutableLiveData<Array<String>>().apply {
-        value = tickers?.value
-    }
-    var tickers : LiveData<Array<String>> = _tickers
-
-    fun getTickersArray() = CoroutineScope(Dispatchers.IO).launch {
-        withContext(Dispatchers.Main){
-            try
-            {
-                val tickersList = db.getAllTickers().toTypedArray()
-                _tickers.postValue(tickersList)
-            }
-            catch (e : Exception)
-            {
-                e.printStackTrace()
             }
         }
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        value = companies?.value
+        value = getCompanies()
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    fun getCompaniesArray()
-    {
-        CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main)
-            {
-                try
-                {
-                    val array = db.getAllCompanies().toTypedArray()
-                    _companies.postValue(array)
-                }
-                catch (e : Exception)
-                {
-                    e.printStackTrace()
-                }
-            }
+    private fun getCompanies() : Array<Companies>? = runBlocking{
+        val companies = async {
+             db.getAllCompanies().toTypedArray()
         }
+        companies.await()
     }
-
-
 
 
 }
