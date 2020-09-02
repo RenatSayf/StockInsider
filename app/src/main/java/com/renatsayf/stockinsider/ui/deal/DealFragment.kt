@@ -19,6 +19,8 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.utils.AppLog
+import kotlinx.android.synthetic.main.click_motion_layout.*
+import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
 import java.text.NumberFormat
 import java.util.*
@@ -72,14 +74,15 @@ class DealFragment : Fragment()
 
                     companyNameTV.text = d.company
                     companyNameTV.setOnClickListener {
-                        //println(d.companyRefer.toString())
+                        companyAnimView.clickMotionLayout.transitionToEnd()
                     }
                     tickerTV.text = d.ticker
                     tickerTV.setOnClickListener {
-                        //println(d.tickerRefer.toString())
+                        tickerAnimView.clickMotionLayout.transitionToEnd()
                     }
                     filingDateTV.text = d.filingDate
                     filingDateTV.setOnClickListener {
+                        filingDateAnimView.clickMotionLayout.transitionToEnd()
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
                         activity?.startActivity(intent)
                     }
@@ -125,6 +128,7 @@ class DealFragment : Fragment()
                         .into(chartImagView)
 
                     chartImagView.setOnClickListener {
+                        chartAnimView.clickMotionLayout.transitionToEnd()
                         val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
                         activity?.startActivity(intent)
                     }

@@ -30,6 +30,15 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:text="Company name" />
 
+        <include android:id="@+id/companyAnimView"
+            layout="@layout/click_motion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
+            app:layout_constraintTop_toTopOf="@id/companyNameTV"
+            app:layout_constraintEnd_toEndOf="@id/companyNameTV"
+            app:layout_constraintBottom_toBottomOf="@id/companyNameTV"/>
+
         <View
             android:id="@+id/company_name_bottom"
             android:layout_width="match_parent"
@@ -64,6 +73,15 @@
             tools:text="MSFT"
             android:textAlignment="textEnd"/>
 
+        <include android:id="@+id/tickerAnimView"
+            layout="@layout/click_motion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@+id/ticker_title"
+            app:layout_constraintTop_toTopOf="@id/tickerTV"
+            app:layout_constraintEnd_toEndOf="@id/tickerTV"
+            app:layout_constraintBottom_toBottomOf="@id/tickerTV"/>
+
         <View
             android:id="@+id/ticker_bottom"
             android:layout_width="match_parent"
@@ -97,6 +115,15 @@
             app:layout_constraintStart_toEndOf="@+id/filing_date_header"
             app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
             tools:text="2020-04-09 11:20:36" />
+
+        <include android:id="@+id/filingDateAnimView"
+            layout="@layout/click_motion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@+id/filing_date_header"
+            app:layout_constraintTop_toTopOf="@id/filingDateTV"
+            app:layout_constraintEnd_toEndOf="@id/filingDateTV"
+            app:layout_constraintBottom_toBottomOf="@id/filingDateTV"/>
 
         <View
             android:id="@+id/filing_date_bottom"
@@ -439,6 +466,15 @@
             app:layout_constraintTop_toBottomOf="@id/value_bottom"
             android:contentDescription="@string/app_name"
             tools:src="@drawable/stock_charts"/>
+
+        <include android:id="@+id/chartAnimView"
+            layout="@layout/click_motion_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layout_constraintStart_toStartOf="@+id/chartImagView"
+            app:layout_constraintTop_toTopOf="@id/chartImagView"
+            app:layout_constraintEnd_toEndOf="@id/chartImagView"
+            app:layout_constraintBottom_toBottomOf="@id/chartImagView"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
