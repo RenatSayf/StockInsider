@@ -11,7 +11,6 @@ import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
@@ -20,7 +19,7 @@ import kotlinx.android.synthetic.main.deal_layout.view.*
 import java.text.NumberFormat
 import java.util.*
 
-class DealListAdapter(private var activity : MainActivity, private val dealList : ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+class DealListAdapter(private val dealList: ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     companion object
     {
@@ -141,9 +140,9 @@ class DealListAdapter(private var activity : MainActivity, private val dealList 
             override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
             {
                 val bundle = Bundle()
-                bundle.putParcelable(DealFragment.TAG, deal)
+                bundle.putParcelable(DealFragment.ARG_DEAL, deal)
                 dealAdapterItemClick.value = Event(itemView.dealCardView.background)
-                activity.findNavController(R.id.nav_host_fragment).navigate(R.id.dealFragment, bundle)
+                itemView.dealCardView.findNavController().navigate(R.id.dealFragment, bundle)
             }
         })
 

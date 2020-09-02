@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -81,23 +80,23 @@ class ResultFragment : Fragment()
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
 
-        viewModel.addAlarmVisibility.observe(viewLifecycleOwner, Observer {
+        viewModel.addAlarmVisibility.observe(viewLifecycleOwner, {
             it?.let{ addAlarmImgView.visibility = it }
         })
 
-        viewModel.alarmOnVisibility.observe(viewLifecycleOwner, Observer {
+        viewModel.alarmOnVisibility.observe(viewLifecycleOwner, {
             it?.let{ alarmOnImgView.visibility = it }
         })
 
-        dataTransferModel.getDealList().observe(viewLifecycleOwner, Observer {
-            it.let {
+        dataTransferModel.getDealList().observe(viewLifecycleOwner, {
+            it.let { list ->
                 when
                 {
-                    it.size > 0 && it[0].error!!.isEmpty() ->
+                    list.size > 0 && list[0].error!!.isEmpty()     ->
                     {
-                        resultTV.text = it.size.toString()
+                        resultTV.text = list.size.toString()
                         val linearLayoutManager = LinearLayoutManager(activity)
-                        val dealListAdapter = DealListAdapter(activity as MainActivity, it)
+                        val dealListAdapter = DealListAdapter(list)
                         dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                         tradeListRV.apply {
                             setHasFixedSize(true)
@@ -106,15 +105,15 @@ class ResultFragment : Fragment()
                         }
                         return@let
                     }
-                    it.size == 1 && it[0].error!!.isNotEmpty() ->
+                    list.size == 1 && list[0].error!!.isNotEmpty() ->
                     {
                         resultTV.text = 0.toString()
-                        recommendationsTV.text = it[0].error
+                        recommendationsTV.text = list[0].error
                         noResultLayout.visibility = View.VISIBLE
                     }
-                    else ->
+                    else                                           ->
                     {
-                        resultTV.text = it.size.toString()
+                        resultTV.text = list.size.toString()
                         noResultLayout.visibility = View.VISIBLE
                     }
                 }
@@ -127,7 +126,7 @@ class ResultFragment : Fragment()
             confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
-        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer { event ->
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, { event ->
             if (!event.hasBeenHandled)
             {
                 event.getContent().let { flag ->
@@ -183,7 +182,7 @@ class ResultFragment : Fragment()
             }
         }
 
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, Observer { event ->
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, { event ->
             if (!event.hasBeenHandled)
             {
                 when (event.getContent())

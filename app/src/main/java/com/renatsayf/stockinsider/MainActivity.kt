@@ -80,15 +80,24 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         val navView : NavigationView = findViewById(R.id.nav_view)
         val navController = findNavController(R.id.nav_host_fragment)
 
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
                 setOf(
-                        R.id.nav_home, R.id.nav_strategy, R.id.nav_exit
+                        R.id.nav_home, R.id.nav_strategy
                      ), drawerLayout
                                                  )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        navView.setNavigationItemSelectedListener { item ->
+            if (item.itemId == R.id.nav_exit)
+            {
+                finish()
+            }
+            true
+        }
+
         loadProgreesBar.visibility = View.GONE
 
         dataTransferModel = this.run {
@@ -126,13 +135,13 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         return super.onOptionsItemSelected(item)
     }
 
+
+
     override fun onSupportNavigateUp() : Boolean
     {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle)
     {

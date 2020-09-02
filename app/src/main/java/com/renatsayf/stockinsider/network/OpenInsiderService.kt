@@ -44,7 +44,7 @@ interface OpenInsiderService
         fun create() : OpenInsiderService
         {
             val interceptor = HttpLoggingInterceptor()
-            interceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
+            interceptor.level = HttpLoggingInterceptor.Level.BASIC
 
             val okHttpClient = OkHttpClient().newBuilder()
                 .addInterceptor(interceptor)

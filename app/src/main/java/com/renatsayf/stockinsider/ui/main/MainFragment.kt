@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -82,7 +81,7 @@ class MainFragment @Inject constructor() : Fragment()
             }
         }
 
-        mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
+        mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
             val tickerListAdapter = companies?.let {
                 context?.let { _ ->
                     TickersListAdapter(activity as MainActivity, it)
@@ -124,7 +123,7 @@ class MainFragment @Inject constructor() : Fragment()
             tickerText = ""
         }
 
-        mainViewModel.searchSet.observe(viewLifecycleOwner, Observer {
+        mainViewModel.searchSet.observe(viewLifecycleOwner, {
             if (it != null)
             {
                 ticker_ET.setText(it.ticker)
@@ -197,7 +196,7 @@ class MainFragment @Inject constructor() : Fragment()
             confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
-        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, {
             if (!it.hasBeenHandled)
             {
                 it.getContent().let { flag ->
@@ -212,7 +211,7 @@ class MainFragment @Inject constructor() : Fragment()
             }
         })
 
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, Observer {
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, {
             if (!it.hasBeenHandled)
             {
                 if (it.getContent() == StockInsiderService.STOP_KEY)
@@ -234,7 +233,7 @@ class MainFragment @Inject constructor() : Fragment()
             {
                 val dealList: ArrayList<Deal> = arrayListOf()
                 dataTransferModel.setDealList(dealList)
-                activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
+                search_button.findNavController().navigate(R.id.resultFragment, null)
             }
             else ->
             {
@@ -247,7 +246,8 @@ class MainFragment @Inject constructor() : Fragment()
     {
         activity?.loadProgreesBar?.visibility = View.GONE
         dataTransferModel.setDealList(dealList)
-        activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
+        search_button.findNavController().navigate(R.id.resultFragment, null)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle)
