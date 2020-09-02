@@ -162,7 +162,32 @@
             app:layout_constraintHorizontal_weight="6"
             app:layout_constraintStart_toEndOf="@id/insider_name_title"
             app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
-            tools:text="Angrick William P III" />
+            tools:text="Angrick William P III"
+            android:clickable="true"
+            android:focusable="true" />
+
+        <androidx.constraintlayout.motion.widget.MotionLayout
+            android:id="@+id/insiderNameMotionLayout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            app:layoutDescription="@xml/click_scene"
+            app:layout_constraintBottom_toBottomOf="@id/insider_name_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@id/insider_name_title">
+
+            <View
+                android:id="@+id/animView"
+                android:layout_width="0.01dp"
+                android:layout_height="0.01dp"
+                android:background="@drawable/oval_frame"
+                android:gravity="center"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+        </androidx.constraintlayout.motion.widget.MotionLayout>
 
         <View
             android:id="@+id/insider_name_bottom"

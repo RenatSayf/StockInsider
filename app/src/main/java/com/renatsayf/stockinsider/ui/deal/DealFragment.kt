@@ -85,9 +85,7 @@ class DealFragment : Fragment()
                     }
                     tradeDateTV.text = d.tradeDate
                     insiderNameTV.text = d.insiderName
-                    insiderNameTV.setOnClickListener {
-                        //println(d.insiderNameRefer.toString())
-                    }
+
                     insiderTitleTV.text = d.insiderTitle
                     tradeTypeTV.text = d.tradeType
                     priceTV.text = d.price
@@ -143,6 +141,10 @@ class DealFragment : Fragment()
 //        requireActivity().onBackPressedDispatcher.addCallback(this){
 //            mainDealLayout.findNavController().currentBackStackEntry
 //        }
+
+        insiderNameTV.setOnClickListener {
+            insiderNameMotionLayout.transitionToEnd()
+        }
     }
 
 }
