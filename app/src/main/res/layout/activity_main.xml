@@ -23,6 +23,8 @@
         app:menu="@menu/activity_main_drawer"
         app:itemIconTint="@color/white"
         app:itemTextColor="@color/white"
-        android:background="@color/colorPrimary"/>
+        android:background="@color/colorPrimary">
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

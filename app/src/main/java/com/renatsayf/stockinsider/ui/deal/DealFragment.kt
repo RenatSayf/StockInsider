@@ -19,7 +19,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.utils.AppLog
-import kotlinx.android.synthetic.main.click_motion_layout.*
 import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
 import java.text.NumberFormat
@@ -88,6 +87,9 @@ class DealFragment : Fragment()
                     }
                     tradeDateTV.text = d.tradeDate
                     insiderNameTV.text = d.insiderName
+                    insiderNameTV.setOnClickListener {
+                        insiderNameMotionLayout.transitionToEnd()
+                    }
 
                     insiderTitleTV.text = d.insiderTitle
                     tradeTypeTV.text = d.tradeType
@@ -133,22 +135,14 @@ class DealFragment : Fragment()
                         activity?.startActivity(intent)
                     }
                 }
-                else
-                {
-                    onDetach()
-                }
             })
-
-
         }
 
 //        requireActivity().onBackPressedDispatcher.addCallback(this){
 //            mainDealLayout.findNavController().currentBackStackEntry
 //        }
 
-        insiderNameTV.setOnClickListener {
-            insiderNameMotionLayout.transitionToEnd()
-        }
+
     }
 
 }

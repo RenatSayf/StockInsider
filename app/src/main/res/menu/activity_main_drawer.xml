@@ -9,12 +9,11 @@
         <item
             android:id="@+id/nav_home"
             android:icon="@drawable/ic_stock_house_black_24dp"
-            android:title="@string/text_title_home"
-            />
+            android:title="@string/text_title_home" />
         <item
             android:id="@+id/nav_strategy"
             android:icon="@drawable/ic_trending_up_black_24dp"
-            android:title="@string/text_trading_strategy" />
+            android:title="@string/text_trading_strategy"/>
     </group>
 
     <item android:title="">
