@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:padding="10dp"
         android:textColor="@color/colorWhite"
-        android:layout_marginStart="44dp"
+        android:layout_marginStart="54dp"
         android:textSize="14sp"
         android:id="@+id/childView"
         tools:text="Asdsddd"
-        android:textAlignment="center"/>
+        />
 
 </LinearLayout>
