@@ -20,10 +20,18 @@
         android:layout_gravity="start"
         android:fitsSystemWindows="true"
         app:headerLayout="@layout/nav_header_main"
-        app:menu="@menu/activity_main_drawer"
-        app:itemIconTint="@color/white"
-        app:itemTextColor="@color/white"
+        tools:menu="@menu/activity_main_drawer"
+        app:itemIconTint="@color/colorWhite"
+        app:itemTextColor="@color/colorWhite"
         android:background="@color/colorPrimary">
+
+        <ExpandableListView
+            android:id="@+id/expandMenu"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="175dp"
+            android:indicatorEnd="400dp"
+            android:groupIndicator="@null"/>
 
     </com.google.android.material.navigation.NavigationView>
 

@@ -12,7 +12,7 @@
             android:title="@string/text_title_home" />
         <item
             android:id="@+id/nav_strategy"
-            android:icon="@drawable/ic_trending_up_black_24dp"
+            android:icon="@drawable/ic_trending_up"
             android:title="@string/text_trading_strategy"/>
     </group>
 
@@ -20,7 +20,7 @@
         <menu>
             <item
                 android:id="@+id/nav_exit"
-                android:icon="@drawable/ic_power_black_24dp"
+                android:icon="@drawable/ic_power_off"
                 android:title="@string/text_exit" />
 
         </menu>

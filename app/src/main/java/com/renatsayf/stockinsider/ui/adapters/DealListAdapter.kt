@@ -142,7 +142,7 @@ class DealListAdapter(private val dealList: ArrayList<Deal>) : RecyclerView.Adap
                 val bundle = Bundle()
                 bundle.putParcelable(DealFragment.ARG_DEAL, deal)
                 dealAdapterItemClick.value = Event(itemView.dealCardView.background)
-                itemView.dealCardView.findNavController().navigate(R.id.dealFragment, bundle)
+                itemView.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
             }
         })
 

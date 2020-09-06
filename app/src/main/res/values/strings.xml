@@ -62,6 +62,9 @@
     <string name="text_title_owned">Owned</string>
     <string name="delta_own_title">ΔOwn</string>
     <string name="value_title">Value,  $</string>
+    <string name="text_latest">Latest</string>
+    <string name="text_latest_purchases">Latest purchases</string>
+    <string name="text_latest_purchases_25">Latest purchases 25+ k$</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

@@ -12,7 +12,7 @@
         tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_nav_home_to_resultFragment"
-            app:destination="@id/resultFragment" />
+            app:destination="@id/nav_result" />
     </fragment>
 
     <fragment
@@ -23,23 +23,35 @@
 
 
     <fragment
-        android:id="@+id/resultFragment"
+        android:id="@+id/nav_result"
         android:name="com.renatsayf.stockinsider.ui.result.ResultFragment"
         android:label="@string/text_trading_screen"
         tools:layout="@layout/fragment_result">
 
         <action
             android:id="@+id/action_resultFragment_to_dealFragment"
-            app:destination="@id/dealFragment" />
+            app:destination="@id/nav_deal" />
 
     </fragment>
 
     <fragment
-        android:id="@+id/dealFragment"
+        android:id="@+id/nav_deal"
         android:name="com.renatsayf.stockinsider.ui.deal.DealFragment"
         android:label="@string/text_deal_details"
         tools:layout="@layout/fragment_deal">
     </fragment>
+
+    <fragment
+        android:id="@+id/nav_purchases"
+        android:name="com.renatsayf.stockinsider.ui.latest.purchases.PurchasesFragment"
+        android:label="purchases_fragment"
+        tools:layout="@layout/purchases_fragment" />
+
+    <fragment
+        android:id="@+id/nav_purchases25"
+        android:name="com.renatsayf.stockinsider.ui.latest.purchases25.Purchases25Fragment"
+        android:label="purchases25_fragment"
+        tools:layout="@layout/purchases25_fragment" />
 
 
 </navigation>

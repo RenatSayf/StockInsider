@@ -11,12 +11,14 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
+import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -32,8 +34,10 @@ import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
@@ -45,6 +49,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
     }
 
+    lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
     private lateinit var drawerLayout : DrawerLayout
@@ -78,7 +83,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
 
 
         // Passing each menu ID as a set of Ids because each
@@ -106,7 +111,67 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
         dealList?.let {
             dataTransferModel.setDealList(dealList)
-            navController.navigate(R.id.resultFragment, null)
+            navController.navigate(R.id.nav_result, null)
+        }
+
+        val expandableMenuAdapter = ExpandableMenuAdapter(this)
+        expandMenu.apply {
+            setAdapter(expandableMenuAdapter)
+            setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener{
+                override fun onGroupClick(
+                        p0: ExpandableListView?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long
+                ): Boolean
+                {
+                    when(p2)
+                    {
+                        0 ->
+                        {
+                            navController.navigate(R.id.nav_home)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        2 ->
+                        {
+                            navController.navigate(R.id.nav_strategy)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        3 ->
+                        {
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                            finish()
+                        }
+                    }
+                    return false
+                }
+
+            })
+            setOnChildClickListener(object : ExpandableListView.OnChildClickListener{
+                override fun onChildClick(
+                        p0: ExpandableListView?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Int,
+                        p4: Long
+                ): Boolean
+                {
+                    when
+                    {
+                        p2 == 1 && p3 == 0 ->
+                        {
+                            navController.navigate(R.id.nav_purchases)
+                        }
+                        p2 == 1 && p3 == 1 ->
+                        {
+                            navController.navigate(R.id.nav_purchases25)
+                        }
+                    }
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return false
+                }
+
+            })
         }
     }
 
