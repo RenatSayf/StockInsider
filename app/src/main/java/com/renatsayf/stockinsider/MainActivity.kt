@@ -312,5 +312,16 @@ class MainActivity : AppCompatActivity()
         return false
     }
 
+    override fun finish()
+    {
+        super.finish()
+        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+        if (isServiceEnabled && !isServiceRunning())
+        {
+            val serviceIntent = Intent(this, StockInsiderService::class.java)
+            startService(serviceIntent)
+        }
+    }
+
 
 }

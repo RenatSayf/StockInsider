@@ -1,7 +1,5 @@
 package com.renatsayf.stockinsider.ui.main
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -44,7 +42,6 @@ class MainFragment : Fragment()
     }
     private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private var isScreenRotate: Boolean = false
 
     @Inject
     lateinit var searchRequest : SearchRequest
@@ -243,32 +240,6 @@ class MainFragment : Fragment()
         activity?.loadProgreesBar?.visibility = View.GONE
         dataTransferModel.setDealList(dealList)
         search_button.findNavController().navigate(R.id.nav_result, null)
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle)
-    {
-        super.onSaveInstanceState(outState)
-        isScreenRotate = true
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?)
-    {
-        super.onViewStateRestored(savedInstanceState)
-        isScreenRotate = false
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        (activity as MainActivity).let { a ->
-            val isServiceEnabled = a.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-            if (isServiceEnabled && !isScreenRotate)
-            {
-                val serviceIntent = Intent(a, StockInsiderService::class.java)
-                a.startService(serviceIntent)
-            }
-        }
     }
 
 
