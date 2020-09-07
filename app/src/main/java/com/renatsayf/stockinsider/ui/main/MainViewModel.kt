@@ -4,13 +4,11 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.coroutines.*
-import javax.inject.Inject
 
 class MainViewModel @ViewModelInject constructor(
         private val db: AppDao,
