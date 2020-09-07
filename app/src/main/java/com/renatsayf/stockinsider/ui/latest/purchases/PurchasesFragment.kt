@@ -10,8 +10,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.content_main.*
 
+@AndroidEntryPoint
 class PurchasesFragment : Fragment()
 {
 

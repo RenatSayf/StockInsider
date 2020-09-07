@@ -23,6 +23,7 @@ import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Utils
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_result.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
@@ -30,6 +31,7 @@ import kotlinx.android.synthetic.main.set_alert_layout.*
 import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class ResultFragment : Fragment()
 {
     companion object
@@ -56,12 +58,6 @@ class ResultFragment : Fragment()
 
     @Inject
     lateinit var appLog: AppLog
-
-    override fun onCreate(savedInstanceState : Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        MainActivity.appComponent.inject(this)
-    }
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?

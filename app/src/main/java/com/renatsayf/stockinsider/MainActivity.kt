@@ -25,8 +25,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.di.AppComponent
-import com.renatsayf.stockinsider.di.DaggerAppComponent
 import com.renatsayf.stockinsider.di.modules.AppCalendarModule
 import com.renatsayf.stockinsider.di.modules.AppLogModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
@@ -37,15 +35,16 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
-class MainActivity @Inject constructor() : AppCompatActivity()
+@AndroidEntryPoint //TODO Hilt step 6
+class MainActivity : AppCompatActivity()
 {
     companion object
     {
-        lateinit var appComponent : AppComponent
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
     }
 
@@ -60,15 +59,6 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     @Inject
     lateinit var appLog: AppLog
 
-    init
-    {
-        appComponent = DaggerAppComponent.builder()
-            .roomDataBaseModule(RoomDataBaseModule(this))
-            .appCalendarModule(AppCalendarModule(this))
-            .appLogModule(AppLogModule(this))
-            .build()
-    }
-
     override fun onCreate(savedInstanceState : Bundle?)
     {
         setTheme(R.style.AppTheme_NoActionBar)
@@ -78,8 +68,6 @@ class MainActivity @Inject constructor() : AppCompatActivity()
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-        appComponent.inject(this)
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)

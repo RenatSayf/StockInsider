@@ -4,15 +4,19 @@ import android.content.Context
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@InstallIn(ApplicationComponent::class)
 @Module
-class AppLogModule @Inject constructor(private val context: Context)
+object AppLogModule
 {
     @Provides
     @Singleton
-    fun provideAppLog() : AppLog
+    fun provideAppLog(@ApplicationContext context: Context) : AppLog
     {
         return AppLog(context)
     }

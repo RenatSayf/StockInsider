@@ -51,9 +51,9 @@ class StockInsiderService : Service()
         super.onCreate()
 
         utils = Utils()
-        notification = ServiceNotification()
         appCalendar = AppCalendar(TimeZone.getTimeZone(getString(R.string.app_time_zone)))
         appLog = AppLog(this)
+        notification = ServiceNotification(appLog)
 
         serviceEvent.value = Event(START_KEY)
 

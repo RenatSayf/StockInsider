@@ -18,6 +18,7 @@ import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Utils
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -27,6 +28,7 @@ import kotlinx.coroutines.withContext
 import java.util.*
 import javax.inject.Inject
 
+@AndroidEntryPoint
 class AlarmReceiver : BroadcastReceiver()
 {
     companion object
@@ -53,11 +55,6 @@ class AlarmReceiver : BroadcastReceiver()
     lateinit var appLog: AppLog
 
     private var disposable: Disposable? = null
-
-    init
-    {
-        MainActivity.appComponent.inject(this)
-    }
 
     override fun onReceive(context: Context?, intent: Intent?)
     {

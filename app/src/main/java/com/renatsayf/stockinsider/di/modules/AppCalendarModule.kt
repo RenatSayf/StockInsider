@@ -6,15 +6,19 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.utils.AppCalendar
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+@InstallIn(ApplicationComponent::class)
 @Module
-class AppCalendarModule @Inject constructor(private val context: Context)
+object AppCalendarModule
 {
     @Provides
     @Singleton
-    fun provideAppCalendar() : AppCalendar
+    fun provideAppCalendar(@ApplicationContext context: Context) : AppCalendar
     {
         val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))
         return AppCalendar(timeZone)

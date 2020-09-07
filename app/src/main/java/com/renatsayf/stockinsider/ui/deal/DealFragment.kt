@@ -19,12 +19,15 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.utils.AppLog
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 
+
+@AndroidEntryPoint
 class DealFragment : Fragment()
 {
     companion object
@@ -37,12 +40,6 @@ class DealFragment : Fragment()
     lateinit var appLog: AppLog
 
     private lateinit var viewModel : DealViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        MainActivity.appComponent.inject(this)
-    }
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?

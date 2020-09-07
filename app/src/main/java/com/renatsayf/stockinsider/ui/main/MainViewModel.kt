@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.main
 
+import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,18 +12,11 @@ import com.renatsayf.stockinsider.utils.AppLog
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
-class MainViewModel @Inject constructor() : ViewModel()
+class MainViewModel @ViewModelInject constructor(
+        private val db: AppDao,
+        private val appLog: AppLog
+) : ViewModel()
 {
-    @Inject
-    lateinit var db: AppDao
-
-    @Inject
-    lateinit var appLog: AppLog
-
-    init {
-        MainActivity.appComponent.inject(this)
-    }
-
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }

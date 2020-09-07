@@ -24,6 +24,7 @@ import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_main.*
@@ -37,7 +38,8 @@ import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
 
-class MainFragment @Inject constructor() : Fragment()
+@AndroidEntryPoint
+class MainFragment : Fragment()
 {
     companion object
     {
@@ -52,14 +54,6 @@ class MainFragment @Inject constructor() : Fragment()
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
-
-    override fun onCreate(savedInstanceState : Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        MainActivity.appComponent.inject(this)
-
-
-    }
 
     override fun onCreateView(
             inflater : LayoutInflater,
