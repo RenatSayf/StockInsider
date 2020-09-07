@@ -9,7 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import javax.inject.Inject
 
 
-@Database(entities = [RoomSearchSet::class, Companies::class], version = 1)
+@Database(entities = [RoomSearchSet::class, Companies::class], version = 1, exportSchema = false)
 abstract class AppDataBase : RoomDatabase()
 {
     abstract fun searchSetDao() : AppDao

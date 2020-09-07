@@ -6,21 +6,20 @@ import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.RoomDBProvider
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ApplicationComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import javax.inject.Singleton
 
+//TODO Hilt step 5
+@InstallIn(ApplicationComponent::class)
 @Module
-class RoomDataBaseModule @Inject constructor(private val context: Context)
+object RoomDataBaseModule
 {
     @Provides
-    fun provideContext() : Context
-    {
-        return context
-    }
-
-    @Provides
     @Singleton
-    fun provideRoomDataBase() : AppDao
+    fun provideRoomDataBase(@ApplicationContext context: Context) : AppDao
     {
         return AppDataBase.getInstance(context).searchSetDao()
     }

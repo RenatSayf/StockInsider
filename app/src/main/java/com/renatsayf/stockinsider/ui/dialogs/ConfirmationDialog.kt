@@ -6,9 +6,11 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.utils.Event
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ConfirmationDialog @Inject constructor(var message : String, var flag : String) : DialogFragment()
+@AndroidEntryPoint
+class ConfirmationDialog constructor(var message : String, var flag : String) : DialogFragment()
 {
     companion object{
         const val TAG = "confirmation_dialog"

@@ -41,7 +41,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:entries="@array/list_for_filing_date"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/colorWhite"
         android:popupBackground="@color/colorPrimary"
         android:theme="@style/TextAppearance.AppCompat.Title.Inverse"
         android:spinnerMode="dropdown"
@@ -55,7 +55,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         app:layout_constraintTop_toBottomOf="@id/filingDateSpinner"
         app:layout_constraintStart_toStartOf="@id/filingDateSpinner"
         app:layout_constraintEnd_toEndOf="@id/filingDateSpinner"/>
@@ -85,7 +85,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:entries="@array/list_for_filing_date"
-        android:backgroundTint="@color/white"
+        android:backgroundTint="@color/colorWhite"
         android:popupBackground="@color/colorPrimary"
         android:theme="@style/TextAppearance.AppCompat.Title.Inverse"
         android:spinnerMode="dropdown"
@@ -98,7 +98,7 @@
     <View
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         app:layout_constraintTop_toBottomOf="@id/tradeDateSpinner"
         app:layout_constraintStart_toStartOf="@id/tradeDateSpinner"
         app:layout_constraintEnd_toEndOf="@id/tradeDateSpinner"/>

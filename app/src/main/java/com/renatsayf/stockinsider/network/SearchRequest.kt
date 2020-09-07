@@ -9,7 +9,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest @Inject constructor()
+class SearchRequest
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
     private var disposable : Disposable? = null

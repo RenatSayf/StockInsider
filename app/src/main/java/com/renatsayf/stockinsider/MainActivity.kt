@@ -11,56 +11,50 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.CheckBox
+import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
+import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.di.AppComponent
-import com.renatsayf.stockinsider.di.DaggerAppComponent
-import com.renatsayf.stockinsider.di.modules.AppCalendarModule
-import com.renatsayf.stockinsider.di.modules.AppLogModule
-import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
+import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
-class MainActivity @Inject constructor() : AppCompatActivity()
+@AndroidEntryPoint //TODO Hilt step 6
+class MainActivity : AppCompatActivity()
 {
     companion object
     {
-        lateinit var appComponent : AppComponent
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
     }
 
+    lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var drawerLayout : DrawerLayout
 
     @Inject
     lateinit var notification : ServiceNotification
 
     @Inject
     lateinit var appLog: AppLog
-
-    init
-    {
-        appComponent = DaggerAppComponent.builder()
-            .roomDataBaseModule(RoomDataBaseModule(this))
-            .appCalendarModule(AppCalendarModule(this))
-            .appLogModule(AppLogModule(this))
-            .build()
-    }
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -72,21 +66,28 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
-        appComponent.inject(this)
-
-        val drawerLayout : DrawerLayout = findViewById(R.id.drawer_layout)
+        drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
-        val navController = findNavController(R.id.nav_host_fragment)
+        navController = findNavController(R.id.nav_host_fragment)
+
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         appBarConfiguration = AppBarConfiguration(
                 setOf(
-                        R.id.nav_home, R.id.nav_strategy, R.id.nav_exit
+                        R.id.nav_home, R.id.nav_strategy
                      ), drawerLayout
                                                  )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        navView.setNavigationItemSelectedListener { item ->
+            if (item.itemId == R.id.nav_exit)
+            {
+                finish()
+            }
+            true
+        }
+
         loadProgreesBar.visibility = View.GONE
 
         dataTransferModel = this.run {
@@ -95,7 +96,67 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
         dealList?.let {
             dataTransferModel.setDealList(dealList)
-            navController.navigate(R.id.resultFragment, null)
+            navController.navigate(R.id.nav_result, null)
+        }
+
+        val expandableMenuAdapter = ExpandableMenuAdapter(this)
+        expandMenu.apply {
+            setAdapter(expandableMenuAdapter)
+            setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener{
+                override fun onGroupClick(
+                        p0: ExpandableListView?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Long
+                ): Boolean
+                {
+                    when(p2)
+                    {
+                        0 ->
+                        {
+                            navController.navigate(R.id.nav_home)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        2 ->
+                        {
+                            navController.navigate(R.id.nav_strategy)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        3 ->
+                        {
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                            finish()
+                        }
+                    }
+                    return false
+                }
+
+            })
+            setOnChildClickListener(object : ExpandableListView.OnChildClickListener{
+                override fun onChildClick(
+                        p0: ExpandableListView?,
+                        p1: View?,
+                        p2: Int,
+                        p3: Int,
+                        p4: Long
+                ): Boolean
+                {
+                    when
+                    {
+                        p2 == 1 && p3 == 0 ->
+                        {
+                            navController.navigate(R.id.nav_purchases)
+                        }
+                        p2 == 1 && p3 == 1 ->
+                        {
+                            navController.navigate(R.id.nav_purchases25)
+                        }
+                    }
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return false
+                }
+
+            })
         }
     }
 
@@ -112,20 +173,25 @@ class MainActivity @Inject constructor() : AppCompatActivity()
         {
             R.id.action_log_file ->
             {
-                val deviceLogsFile = appLog.getDeviceLogsInFile()
+                appLog.getDeviceLogsInFile()
+                return true
+            }
+            R.id.nav_home ->
+            {
+                drawerLayout.openDrawer(GravityCompat.START)
                 return true
             }
         }
-        return true
+        return super.onOptionsItemSelected(item)
     }
+
+
 
     override fun onSupportNavigateUp() : Boolean
     {
         val navController = findNavController(R.id.nav_host_fragment)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
-
-
 
     override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle)
     {
@@ -233,6 +299,7 @@ class MainActivity @Inject constructor() : AppCompatActivity()
     fun isServiceRunning() : Boolean
     {
         val activityManager = this.getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
+        @Suppress("DEPRECATION")
         val services = activityManager.getRunningServices(Int.MAX_VALUE)
         services.forEach {
             when(it.service.packageName)

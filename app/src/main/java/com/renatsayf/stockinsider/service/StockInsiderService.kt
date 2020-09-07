@@ -7,6 +7,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.icu.util.TimeZone
 import android.os.IBinder
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.MainActivity
@@ -15,22 +16,14 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.*
 import java.util.*
-import javax.inject.Inject
 
 
 class StockInsiderService : Service()
 {
-    @Inject
-    lateinit var utils: Utils
-
-    @Inject
-    lateinit var notification: ServiceNotification
-
-    @Inject
-    lateinit var appCalendar: AppCalendar
-
-    @Inject
-    lateinit var appLog: AppLog
+    private lateinit var utils: Utils
+    private lateinit var notification: ServiceNotification
+    private lateinit var appCalendar: AppCalendar
+    private lateinit var appLog: AppLog
 
     private lateinit var alarmReceiver: AlarmReceiver
     private lateinit var unlockedReceiver: PhoneUnlockedReceiver
@@ -56,7 +49,11 @@ class StockInsiderService : Service()
     override fun onCreate()
     {
         super.onCreate()
-        MainActivity.appComponent.inject(this)
+
+        utils = Utils()
+        appCalendar = AppCalendar(TimeZone.getTimeZone(getString(R.string.app_time_zone)))
+        appLog = AppLog(this)
+        notification = ServiceNotification(appLog)
 
         serviceEvent.value = Event(START_KEY)
 
@@ -106,6 +103,14 @@ class StockInsiderService : Service()
                 R.drawable.ic_stock_hause_cold
         ).show()
         appLog.print(TAG, this.getString(R.string.text_not_memory))
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?)
+    {
+        super.onTaskRemoved(rootIntent)
+        appLog.print(TAG, "************* onTaskRemoved is fired *************")
+        //onCreate()
+        startService(Intent(this, StockInsiderService::class.java))
     }
 
     override fun onDestroy()

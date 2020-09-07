@@ -11,9 +11,11 @@ import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.utils.AppLog
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-class ServiceNotification @Inject constructor() : Notification()
+
+class ServiceNotification @Inject constructor(private val appLog: AppLog) : Notification()
 {
     companion object
     {
@@ -24,14 +26,6 @@ class ServiceNotification @Inject constructor() : Notification()
     var notification: Notification? = null
 
     private var context: Context? = null
-
-    @Inject
-    lateinit var appLog: AppLog
-
-    init
-    {
-        MainActivity.appComponent.inject(this)
-    }
 
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,

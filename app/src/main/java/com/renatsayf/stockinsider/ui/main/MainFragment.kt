@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -23,6 +22,7 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.date_layout.*
@@ -35,7 +35,8 @@ import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
 
-class MainFragment @Inject constructor() : Fragment()
+@AndroidEntryPoint
+class MainFragment : Fragment()
 {
     companion object
     {
@@ -50,12 +51,6 @@ class MainFragment @Inject constructor() : Fragment()
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
-
-    override fun onCreate(savedInstanceState : Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        MainActivity.appComponent.inject(this)
-    }
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -82,11 +77,7 @@ class MainFragment @Inject constructor() : Fragment()
             }
         }
 
-        mainViewModel.companies.observe(viewLifecycleOwner, Observer { companies ->
-            if (companies == null)
-            {
-                mainViewModel.getCompaniesArray()
-            }
+        mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
             val tickerListAdapter = companies?.let {
                 context?.let { _ ->
                     TickersListAdapter(activity as MainActivity, it)
@@ -128,7 +119,7 @@ class MainFragment @Inject constructor() : Fragment()
             tickerText = ""
         }
 
-        mainViewModel.searchSet.observe(viewLifecycleOwner, Observer {
+        mainViewModel.searchSet.observe(viewLifecycleOwner, {
             if (it != null)
             {
                 ticker_ET.setText(it.ticker)
@@ -145,7 +136,8 @@ class MainFragment @Inject constructor() : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        mainViewModel.getSearchSetByName(DEFAULT_SET)
+        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
+        mainViewModel.setSearchSet(roomSearchSet)
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
@@ -200,7 +192,7 @@ class MainFragment @Inject constructor() : Fragment()
             confirmationDialog.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
-        confirmationDialog.eventOk.observe(viewLifecycleOwner, Observer {
+        confirmationDialog.eventOk.observe(viewLifecycleOwner, {
             if (!it.hasBeenHandled)
             {
                 it.getContent().let { flag ->
@@ -215,7 +207,7 @@ class MainFragment @Inject constructor() : Fragment()
             }
         })
 
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, Observer {
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, {
             if (!it.hasBeenHandled)
             {
                 if (it.getContent() == StockInsiderService.STOP_KEY)
@@ -237,7 +229,7 @@ class MainFragment @Inject constructor() : Fragment()
             {
                 val dealList: ArrayList<Deal> = arrayListOf()
                 dataTransferModel.setDealList(dealList)
-                activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
+                search_button.findNavController().navigate(R.id.nav_result, null)
             }
             else ->
             {
@@ -250,7 +242,8 @@ class MainFragment @Inject constructor() : Fragment()
     {
         activity?.loadProgreesBar?.visibility = View.GONE
         dataTransferModel.setDealList(dealList)
-        activity?.findNavController(R.id.nav_host_fragment)?.navigate(R.id.resultFragment, null)
+        search_button.findNavController().navigate(R.id.nav_result, null)
+
     }
 
     override fun onSaveInstanceState(outState: Bundle)
