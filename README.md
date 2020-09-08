@@ -6,6 +6,8 @@
 ### Main screen
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/ui/main/MainFragment.kt
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/ui/main/MainViewModel.kt
+* ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/repository/IDataRepository.kt
+* ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/repository/DataRepositoryImpl.kt
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/network/SearchRequest.kt
 * ##### https://github.com/RenatSayf/StockInsider/blob/renat/app/src/main/java/com/renatsayf/stockinsider/ui/adapters/TickersListAdapter.kt
 ![Image alt](https://github.com/RenatSayf/StockInsider/blob/renat/app/images/start.gif)
