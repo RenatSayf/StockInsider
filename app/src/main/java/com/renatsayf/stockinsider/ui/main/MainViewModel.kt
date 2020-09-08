@@ -9,9 +9,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
 
 class MainViewModel @ViewModelInject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
 {
@@ -44,11 +42,9 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         repositoryImpl.getCompaniesFromDbAsync()
     }
 
-    fun getDealListAsync(set: SearchSet)
+    fun getDealList(set: SearchSet)
     {
-        subscribe = repositoryImpl.getDealListFromNet(set)
-            .subscribeOn(Schedulers.newThread())
-            .observeOn(AndroidSchedulers.mainThread())
+        subscribe = repositoryImpl.getDealListFromNetAsync(set)
             .subscribe({ list ->
                            dealList.value = list
                        }, { t ->

@@ -148,7 +148,7 @@ class MainFragment : Fragment()
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
 
-            mainViewModel.getDealListAsync(searchSet)
+            mainViewModel.getDealList(searchSet)
 
             val set = RoomSearchSet(
                     DEFAULT_SET,

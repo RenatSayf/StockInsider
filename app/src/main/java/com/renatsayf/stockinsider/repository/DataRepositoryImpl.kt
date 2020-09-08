@@ -12,7 +12,7 @@ import javax.inject.Inject
 
 class DataRepositoryImpl @Inject constructor(private val request: SearchRequest, private val db: AppDao) : IDataRepository
 {
-    override fun getDealListFromNet(set: SearchSet): Observable<ArrayList<Deal>>
+    override fun getDealListFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
         return request.getTradingScreen(set)
     }

@@ -7,7 +7,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 
 interface IDataRepository
 {
-    fun getDealListFromNet(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
+    fun getDealListFromNetAsync(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
 
     fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
