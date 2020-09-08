@@ -9,7 +9,7 @@ import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
@@ -17,7 +17,7 @@ import kotlinx.coroutines.*
 
 class MainViewModel @ViewModelInject constructor(
         private val db: AppDao,
-        private val searchRequest: SearchRequest
+        private val repositoryImpl: DataRepositoryImpl
 ) : ViewModel()
 {
     private var subscribe: Disposable? = null
@@ -31,14 +31,14 @@ class MainViewModel @ViewModelInject constructor(
         _searchSet.value = set
     }
 
-    fun getSearchSet(setName: String) : RoomSearchSet = runBlocking {
+    fun getSearchSetAsync(setName: String) : RoomSearchSet = runBlocking {
         val set = async {
             db.getSetByName(setName)
         }
         set.await()
     }
 
-    fun saveDefaultSearch(set : RoomSearchSet)
+    fun saveDefaultSearchAsync(set : RoomSearchSet)
     {
         CoroutineScope(Dispatchers.IO).launch {
             withContext(Dispatchers.Main) {
@@ -55,21 +55,20 @@ class MainViewModel @ViewModelInject constructor(
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        value = getCompanies()
+        value = getCompaniesAsync()
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    private fun getCompanies() : Array<Companies>? = runBlocking{
+    private fun getCompaniesAsync() : Array<Companies>? = runBlocking{
         val companies = async {
              db.getAllCompanies().toTypedArray()
         }
         companies.await()
     }
 
-
-    fun getDealList(set: SearchSet)
+    fun getDealListAsync(set: SearchSet)
     {
-        subscribe = searchRequest.getTradingScreen(set)
+        subscribe = repositoryImpl.searchRequest.getTradingScreen(set)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->

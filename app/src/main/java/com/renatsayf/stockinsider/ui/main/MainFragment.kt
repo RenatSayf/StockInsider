@@ -127,7 +127,7 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
+        val roomSearchSet = mainViewModel.getSearchSetAsync(DEFAULT_SET)
         mainViewModel.setSearchSet(roomSearchSet)
 
         search_button.setOnClickListener {
@@ -148,7 +148,7 @@ class MainFragment : Fragment()
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
 
-            mainViewModel.getDealList(searchSet)
+            mainViewModel.getDealListAsync(searchSet)
 
             val set = RoomSearchSet(
                     DEFAULT_SET,
@@ -167,7 +167,7 @@ class MainFragment : Fragment()
                     sort_spinner.selectedItemPosition
                                    )
             mainActivity.hideKeyBoard(ticker_ET)
-            mainViewModel.saveDefaultSearch(set)
+            mainViewModel.saveDefaultSearchAsync(set)
         }
 
         alarmOffButton.setOnClickListener {
@@ -182,7 +182,7 @@ class MainFragment : Fragment()
                 it.getContent().let { flag ->
                     if (flag == ConfirmationDialog.FLAG_CANCEL)
                     {
-                        activity?.let{ a ->
+                        requireActivity().let{ a ->
                             (a as MainActivity).setAlarmSetting(false)
                             AlarmPendingIntent.cancel(a)
                         }
@@ -208,7 +208,7 @@ class MainFragment : Fragment()
             value = null
             observe(viewLifecycleOwner, { list ->
                 list?.let{
-                    activity?.loadProgreesBar?.visibility = View.GONE
+                    requireActivity().loadProgreesBar?.visibility = View.GONE
                     dataTransferModel.setDealList(list)
                     search_button.findNavController().navigate(R.id.nav_result, null)
                 }
@@ -219,7 +219,7 @@ class MainFragment : Fragment()
             value = null
             observe(viewLifecycleOwner, {
                 it?.let {
-                    activity?.loadProgreesBar?.visibility = View.GONE
+                    requireActivity().loadProgreesBar?.visibility = View.GONE
                     when (it) {
                         is IndexOutOfBoundsException ->
                         {
