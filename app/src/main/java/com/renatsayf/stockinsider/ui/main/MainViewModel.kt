@@ -4,7 +4,6 @@ import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
@@ -13,12 +12,8 @@ import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.*
 
-class MainViewModel @ViewModelInject constructor(
-        private val db: AppDao,
-        private val repositoryImpl: DataRepositoryImpl
-) : ViewModel()
+class MainViewModel @ViewModelInject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
 {
     private var subscribe: Disposable? = null
 
@@ -31,44 +26,27 @@ class MainViewModel @ViewModelInject constructor(
         _searchSet.value = set
     }
 
-    fun getSearchSetAsync(setName: String) : RoomSearchSet = runBlocking {
-        val set = async {
-            db.getSetByName(setName)
-        }
-        set.await()
+    fun getSearchSet(setName: String) : RoomSearchSet = run {
+        repositoryImpl.getSearchSetFromDbAsync(setName)
     }
 
-    fun saveDefaultSearchAsync(set : RoomSearchSet)
+    fun saveDefaultSearch(set : RoomSearchSet)
     {
-        CoroutineScope(Dispatchers.IO).launch {
-            withContext(Dispatchers.Main) {
-                try
-                {
-                    db.insertOrUpdateSearchSet(set)
-                }
-                catch (e : Exception)
-                {
-                    e.printStackTrace()
-                }
-            }
-        }
+        repositoryImpl.saveDefaultSearchAsync(set)
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        value = getCompaniesAsync()
+        value = getCompanies()
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    private fun getCompaniesAsync() : Array<Companies>? = runBlocking{
-        val companies = async {
-             db.getAllCompanies().toTypedArray()
-        }
-        companies.await()
+    private fun getCompanies() : Array<Companies>? = run{
+        repositoryImpl.getCompaniesFromDbAsync()
     }
 
     fun getDealListAsync(set: SearchSet)
     {
-        subscribe = repositoryImpl.searchRequest.getTradingScreen(set)
+        subscribe = repositoryImpl.getDealListFromNet(set)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list ->

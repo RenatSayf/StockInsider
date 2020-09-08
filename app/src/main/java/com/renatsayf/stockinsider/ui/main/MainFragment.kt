@@ -127,7 +127,7 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        val roomSearchSet = mainViewModel.getSearchSetAsync(DEFAULT_SET)
+        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
         mainViewModel.setSearchSet(roomSearchSet)
 
         search_button.setOnClickListener {
@@ -167,7 +167,7 @@ class MainFragment : Fragment()
                     sort_spinner.selectedItemPosition
                                    )
             mainActivity.hideKeyBoard(ticker_ET)
-            mainViewModel.saveDefaultSearchAsync(set)
+            mainViewModel.saveDefaultSearch(set)
         }
 
         alarmOffButton.setOnClickListener {

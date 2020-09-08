@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.di.modules
 
+import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.Module
@@ -15,8 +16,8 @@ object DataRepositoryModule
 {
     @Provides
     @Singleton
-    fun provideDataRepository(searchRequest: SearchRequest) : DataRepositoryImpl
+    fun provideDataRepository(searchRequest: SearchRequest, db: AppDao) : DataRepositoryImpl
     {
-        return DataRepositoryImpl(searchRequest)
+        return DataRepositoryImpl(searchRequest, db)
     }
 }
