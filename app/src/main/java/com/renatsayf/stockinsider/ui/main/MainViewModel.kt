@@ -7,14 +7,21 @@ import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.utils.AppLog
+import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.SearchSet
+import com.renatsayf.stockinsider.network.SearchRequest
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 
 class MainViewModel @ViewModelInject constructor(
         private val db: AppDao,
-        private val appLog: AppLog
+        private val searchRequest: SearchRequest
 ) : ViewModel()
 {
+    private var subscribe: Disposable? = null
+
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }
@@ -60,4 +67,25 @@ class MainViewModel @ViewModelInject constructor(
     }
 
 
+    fun getDealList(set: SearchSet)
+    {
+        subscribe = searchRequest.getTradingScreen(set)
+            .subscribeOn(Schedulers.newThread())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ list ->
+                           dealList.value = list
+                       }, { t ->
+                           documentError.value = t
+                       })
+    }
+
+    var dealList: MutableLiveData<ArrayList<Deal>> = MutableLiveData()
+
+    var documentError : MutableLiveData<Throwable> = MutableLiveData()
+
+    override fun onCleared()
+    {
+        subscribe?.dispose()
+        super.onCleared()
+    }
 }
