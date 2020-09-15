@@ -53,13 +53,13 @@
     <fragment
         android:id="@+id/nav_purchases"
         android:name="com.renatsayf.stockinsider.ui.latest.purchases.PurchasesFragment"
-        android:label="purchases_fragment"
+        android:label="@string/text_latest_purchases"
         tools:layout="@layout/purchases_fragment" />
 
     <fragment
         android:id="@+id/nav_purchases25"
         android:name="com.renatsayf.stockinsider.ui.latest.purchases25.Purchases25Fragment"
-        android:label="purchases25_fragment"
+        android:label="@string/text_latest_purchases_25"
         tools:layout="@layout/purchases25_fragment" />
 
 
