@@ -1,7 +1,5 @@
 package com.renatsayf.stockinsider.ui.main
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,14 +15,11 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
@@ -44,10 +39,6 @@ class MainFragment : Fragment()
     }
     private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
-    private var isScreenRotate: Boolean = false
-
-    @Inject
-    lateinit var searchRequest : SearchRequest
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
@@ -157,14 +148,7 @@ class MainFragment : Fragment()
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
 
-            searchRequest.getTradingScreen(searchSet)
-                .subscribeOn(Schedulers.newThread())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({list ->
-                    onDealListReady(list)
-                }, {
-                    t -> onDocumentError(t)
-                })
+            mainViewModel.getDealList(searchSet)
 
             val set = RoomSearchSet(
                     DEFAULT_SET,
@@ -198,7 +182,7 @@ class MainFragment : Fragment()
                 it.getContent().let { flag ->
                     if (flag == ConfirmationDialog.FLAG_CANCEL)
                     {
-                        activity?.let{ a ->
+                        requireActivity().let{ a ->
                             (a as MainActivity).setAlarmSetting(false)
                             AlarmPendingIntent.cancel(a)
                         }
@@ -219,55 +203,37 @@ class MainFragment : Fragment()
                 }
             }
         })
-    }
 
-    private fun onDocumentError(throwable : Throwable)
-    {
-        activity?.loadProgreesBar?.visibility = View.GONE
-        when (throwable) {
-            is IndexOutOfBoundsException ->
-            {
-                val dealList: ArrayList<Deal> = arrayListOf()
-                dataTransferModel.setDealList(dealList)
-                search_button.findNavController().navigate(R.id.nav_result, null)
-            }
-            else ->
-            {
-                Snackbar.make(search_button, throwable.message.toString(), Snackbar.LENGTH_LONG).show()
-            }
+        mainViewModel.dealList.apply {
+            value = null
+            observe(viewLifecycleOwner, { list ->
+                list?.let{
+                    requireActivity().loadProgreesBar?.visibility = View.GONE
+                    dataTransferModel.setDealList(list)
+                    search_button.findNavController().navigate(R.id.nav_result, null)
+                }
+            })
         }
-    }
 
-    private fun onDealListReady(dealList : ArrayList<Deal>)
-    {
-        activity?.loadProgreesBar?.visibility = View.GONE
-        dataTransferModel.setDealList(dealList)
-        search_button.findNavController().navigate(R.id.nav_result, null)
-
-    }
-
-    override fun onSaveInstanceState(outState: Bundle)
-    {
-        super.onSaveInstanceState(outState)
-        isScreenRotate = true
-    }
-
-    override fun onViewStateRestored(savedInstanceState: Bundle?)
-    {
-        super.onViewStateRestored(savedInstanceState)
-        isScreenRotate = false
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        (activity as MainActivity).let { a ->
-            val isServiceEnabled = a.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-            if (isServiceEnabled && !isScreenRotate)
-            {
-                val serviceIntent = Intent(a, StockInsiderService::class.java)
-                a.startService(serviceIntent)
-            }
+        mainViewModel.documentError.apply {
+            value = null
+            observe(viewLifecycleOwner, {
+                it?.let {
+                    requireActivity().loadProgreesBar?.visibility = View.GONE
+                    when (it) {
+                        is IndexOutOfBoundsException ->
+                        {
+                            val dealList: ArrayList<Deal> = arrayListOf()
+                            dataTransferModel.setDealList(dealList)
+                            search_button.findNavController().navigate(R.id.nav_result, null)
+                        }
+                        else ->
+                        {
+                            Snackbar.make(search_button, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                        }
+                    }
+                }
+            })
         }
     }
 
