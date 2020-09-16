@@ -65,6 +65,13 @@
     <string name="text_latest">Latest</string>
     <string name="text_latest_purchases">Latest purchases</string>
     <string name="text_latest_purchases_25">Latest purchases 25+ k$</string>
+    <string name="text_data_not_avalible">Data is not available, please, try later</string>
+    <string name="text_cancel">Cancel</string>
+    <string name="text_ok">OK</string>
+    <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
+    <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
+    <string name="text_select_sum">Выберете сумму:</string>
+    <string name="text_to_support">Поддержать</string>
 
     <string-array name="ticker_list">
         <item>AA</item>
@@ -124,6 +131,11 @@
         <item>1</item>
         <item>2</item>
         <item>8</item>
+    </integer-array>
+    <integer-array name="donate_sum">
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
     </integer-array>
     
 </resources>

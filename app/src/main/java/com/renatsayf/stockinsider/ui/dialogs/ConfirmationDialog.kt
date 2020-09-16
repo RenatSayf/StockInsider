@@ -5,12 +5,13 @@ import android.app.Dialog
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ConfirmationDialog constructor(var message : String, var flag : String) : DialogFragment()
+class ConfirmationDialog constructor(var message : String, var btnOkText: String = "Ok", var flag : String) : DialogFragment()
 {
     companion object{
         const val TAG = "confirmation_dialog"
@@ -22,7 +23,7 @@ class ConfirmationDialog constructor(var message : String, var flag : String) : 
     {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage(message)
-            .setPositiveButton("Ok") { _, _ ->
+            .setPositiveButton(btnOkText) { _, _ ->
                 if (flag != FLAG_CANCEL)
                 {
                     eventOk.value = Event("")
@@ -32,7 +33,7 @@ class ConfirmationDialog constructor(var message : String, var flag : String) : 
                     eventOk.value = Event(FLAG_CANCEL)
                 }
             }
-            .setNegativeButton("Cancel"){ _, _ ->
+            .setNegativeButton(getString(R.string.text_cancel)){ _, _ ->
                 dismiss()
             }
 

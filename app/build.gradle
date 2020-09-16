@@ -48,7 +48,10 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.3.0'
     implementation 'androidx.navigation:navigation-ui-ktx:2.3.0'
-    implementation 'androidx.multidex:multidex:2.0.1' //todo Enable multidex. Step 1 (https://developer.android.com/studio/build/multidex)
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0'
+//todo Enable multidex. Step 1 (https://developer.android.com/studio/build/multidex)
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'

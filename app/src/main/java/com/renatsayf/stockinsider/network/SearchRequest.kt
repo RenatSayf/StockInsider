@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.network
 
+import android.content.Context
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -9,7 +11,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest
+class SearchRequest @Inject constructor(private val context: Context)
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
     private var disposable : Disposable? = null
@@ -17,7 +19,7 @@ class SearchRequest
 
     fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
-        return io.reactivex.Observable.create {emmiter ->
+        return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             searchTicker = set.ticker
             disposable = openInsiderService.getInsiderTrading(
@@ -47,11 +49,11 @@ class SearchRequest
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe({
-                    emmiter.onNext(dealList)
+                    emitter.onNext(dealList)
                 }, { error: Throwable ->
-                    emmiter.onError(error)
+                    emitter.onError(error)
                 }, {
-                    emmiter.onComplete()
+                    emitter.onComplete()
                 })
         }
     }
@@ -64,7 +66,7 @@ class SearchRequest
         if (bodyText != null && bodyText.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = "Data is not available, please, try later"
+            deal.error = context.getString(R.string.text_data_not_avalible)
             listDeal.add(deal)
             return listDeal
         }
@@ -72,7 +74,7 @@ class SearchRequest
         if (error != null && error.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = "Data is not available, please, try later"
+            deal.error = context.getString(R.string.text_data_not_avalible)
             listDeal.add(deal)
             return listDeal
         }
