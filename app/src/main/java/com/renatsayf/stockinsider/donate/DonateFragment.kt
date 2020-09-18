@@ -1,12 +1,11 @@
 package com.renatsayf.stockinsider.donate
 
+import android.app.AlertDialog
 import android.app.Dialog
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.R
@@ -15,25 +14,30 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class DonateFragment : DialogFragment()
 {
+    private var dialogView: View? = null
 
     companion object
     {
-        fun newInstance() = DonateFragment()
+        private var instance: DonateFragment? = null
+        fun getInstance() = if (instance == null)
+        {
+            DonateFragment()
+        }
+        else
+        {
+            instance as DonateFragment
+        }
     }
 
     private lateinit var viewModel: DonateViewModel
 
-    override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View?
-    {
-        return inflater.inflate(R.layout.donate_fragment, container, false)
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        return super.onCreateDialog(savedInstanceState)
+        dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.donate_fragment, ConstraintLayout(requireContext()), false)
+        val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
+        return builder.create().apply {
+            window?.setBackgroundDrawableResource(R.drawable.rectangle_frame_background)
+        }
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?)
