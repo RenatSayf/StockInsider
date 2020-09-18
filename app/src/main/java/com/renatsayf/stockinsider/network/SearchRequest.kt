@@ -5,7 +5,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class SearchRequest @Inject constructor(private val context: Context)
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
-    private var disposable : Disposable? = null
+    private var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
     fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
@@ -22,7 +22,7 @@ class SearchRequest @Inject constructor(private val context: Context)
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             searchTicker = set.ticker
-            disposable = openInsiderService.getInsiderTrading(
+            val subscriber = openInsiderService.getInsiderTrading(
                 set.ticker,
                 set.filingPeriod,
                 set.tradePeriod,
@@ -55,6 +55,7 @@ class SearchRequest @Inject constructor(private val context: Context)
                 }, {
                     emitter.onComplete()
                 })
+            composite.add(subscriber)
         }
     }
 

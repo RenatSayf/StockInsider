@@ -10,7 +10,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.R
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DonateFragment : DialogFragment()
 {
 
