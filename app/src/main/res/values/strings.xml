@@ -72,6 +72,7 @@
     <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
     <string name="text_select_sum">Выберете сумму:</string>
     <string name="text_to_support">Поддержать</string>
+    <string name="text_support_project">Support the project</string>
 
     <string-array name="ticker_list">
         <item>AA</item>
@@ -132,10 +133,10 @@
         <item>2</item>
         <item>8</item>
     </integer-array>
-    <integer-array name="donate_sum">
+    <string-array name="donate_sum">
         <item>50</item>
         <item>100</item>
         <item>200</item>
-    </integer-array>
+    </string-array>
     
 </resources>

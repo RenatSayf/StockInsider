@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="16dp"
+    android:layout_margin="5dp"
     android:background="@color/colorPrimary"
     tools:context=".donate.DonateFragment">
 
@@ -80,7 +81,7 @@
         style="@style/Widget.AppCompat.ButtonBar"
         android:background="@drawable/transparent_background_straight_angle"
         android:textColor="@color/colorWhite"
-        android:textSize="20sp"
+
         android:drawableStart="@drawable/ic_sentiment_very_dissatisfied"
         android:textAlignment="textStart"
         android:drawablePadding="10dp"
@@ -98,7 +99,7 @@
         style="@style/Widget.AppCompat.ButtonBar"
         android:background="@drawable/transparent_background_straight_angle"
         android:textColor="@color/colorWhite"
-        android:textSize="20sp"
+
         android:drawableEnd="@drawable/ic_sentiment_very_satisfied"
         android:textAlignment="textEnd"
         android:drawablePadding="10dp"

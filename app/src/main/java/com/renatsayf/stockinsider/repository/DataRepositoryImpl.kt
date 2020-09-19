@@ -32,7 +32,7 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
                 {
                     db.insertOrUpdateSearchSet(set)
                 }
-                catch (e : Exception)
+                catch (e: Exception)
                 {
                     e.printStackTrace()
                 }

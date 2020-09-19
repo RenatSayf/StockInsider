@@ -18,6 +18,7 @@ class DonateFragment : DialogFragment()
 
     companion object
     {
+        val TAG = this::class.java.canonicalName
         private var instance: DonateFragment? = null
         fun getInstance() = if (instance == null)
         {
@@ -44,7 +45,7 @@ class DonateFragment : DialogFragment()
     {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
-        // TODO: Use the ViewModel
+
     }
 
 }

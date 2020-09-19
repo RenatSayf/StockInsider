@@ -22,24 +22,28 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataHeader.add(context.getString(R.string.text_title_home))
         listDataHeader.add(context.getString(R.string.text_latest))
         listDataHeader.add(context.getString(R.string.text_trading_strategy))
+        listDataHeader.add(context.getString(R.string.text_support_project))
         listDataHeader.add(context.getString(R.string.text_exit))
 
         // Adding data icons
         ContextCompat.getDrawable(context, R.drawable.ic_stock_hause_cold)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_today)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_trending_up)?.let { listDataIcons.add(it) }
+        ContextCompat.getDrawable(context, R.drawable.ic_thumb_up_alt)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_power_off)?.let { listDataIcons.add(it) }
 
         val homeHeader: ArrayList<String> = arrayListOf()
         val latestHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_latest_purchases),
                                                           context.getString(R.string.text_latest_purchases_25))
         val strategyHeader: ArrayList<String> = arrayListOf()
+        val supportHeader: ArrayList<String> = arrayListOf()
         val exitHeader: ArrayList<String> = arrayListOf()
 
         listDataChild.put(listDataHeader[0], homeHeader)
         listDataChild.put(listDataHeader[1], latestHeader)
         listDataChild.put(listDataHeader[2], strategyHeader)
-        listDataChild.put(listDataHeader[3], exitHeader)
+        listDataChild.put(listDataHeader[3], supportHeader)
+        listDataChild.put(listDataHeader[4], exitHeader)
     }
 
     override fun getGroupCount(): Int

@@ -25,6 +25,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
+import com.renatsayf.stockinsider.donate.DonateFragment
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -55,6 +56,9 @@ class MainActivity : AppCompatActivity()
 
     @Inject
     lateinit var appLog: AppLog
+
+    @Inject
+    lateinit var donateFragment: DonateFragment
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -124,13 +128,17 @@ class MainActivity : AppCompatActivity()
                         }
                         3 ->
                         {
+                            donateFragment.show(supportFragmentManager, DonateFragment.TAG)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        4 ->
+                        {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             finish()
                         }
                     }
                     return false
                 }
-
             })
             setOnChildClickListener(object : ExpandableListView.OnChildClickListener{
                 override fun onChildClick(
@@ -155,7 +163,6 @@ class MainActivity : AppCompatActivity()
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return false
                 }
-
             })
         }
     }
