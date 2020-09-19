@@ -1,6 +1,6 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.donate.DonateFragment
+import com.renatsayf.stockinsider.donate.DonateDialog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -12,8 +12,8 @@ import dagger.hilt.android.components.ApplicationComponent
 object DonateDialogModule
 {
     @Provides
-    fun provideDonateDialog() : DonateFragment
+    fun provideDonateDialog() : DonateDialog
     {
-        return DonateFragment.getInstance()
+        return DonateDialog.getInstance()
     }
 }

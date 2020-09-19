@@ -25,7 +25,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.donate.DonateFragment
+import com.renatsayf.stockinsider.donate.DonateDialog
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -58,7 +58,7 @@ class MainActivity : AppCompatActivity()
     lateinit var appLog: AppLog
 
     @Inject
-    lateinit var donateFragment: DonateFragment
+    lateinit var donateDialog: DonateDialog
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity()
                         }
                         3 ->
                         {
-                            donateFragment.show(supportFragmentManager, DonateFragment.TAG)
+                            donateDialog.show(supportFragmentManager, DonateDialog.TAG)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         4 ->
