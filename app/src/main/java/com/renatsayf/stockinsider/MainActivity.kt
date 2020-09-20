@@ -126,11 +126,6 @@ class MainActivity : AppCompatActivity()
                             navController.navigate(R.id.nav_strategy)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        3 ->
-                        {
-                            donateDialog.show(supportFragmentManager, DonateDialog.TAG)
-                            drawerLayout.closeDrawer(GravityCompat.START)
-                        }
                         4 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
@@ -158,6 +153,14 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 1 ->
                         {
                             navController.navigate(R.id.nav_purchases25)
+                        }
+                        p2 == 3 && p3 == 0 ->
+                        {
+                            donateDialog.show(supportFragmentManager, DonateDialog.TAG)
+                        }
+                        p2 == 3 && p3 == 1 ->
+                        {
+
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)

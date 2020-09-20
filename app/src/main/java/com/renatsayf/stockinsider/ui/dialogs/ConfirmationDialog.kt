@@ -11,13 +11,21 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ConfirmationDialog constructor(var message : String, var btnOkText: String = "Ok", var flag : String) : DialogFragment()
+class ConfirmationDialog constructor(var message : String,
+                                     var btnOkText: String,
+                                     var flag : String) : DialogFragment()
 {
     companion object{
         const val TAG = "confirmation_dialog"
         const val FLAG_CANCEL = "cancel"
     }
     val eventOk : MutableLiveData<Event<String>> = MutableLiveData()
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        if (btnOkText.isEmpty()) btnOkText = getString(R.string.text_ok)
+    }
 
     override fun onCreateDialog(savedInstanceState : Bundle?) : Dialog
     {
