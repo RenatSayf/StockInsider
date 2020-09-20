@@ -73,6 +73,8 @@
     <string name="text_select_sum">Выберете сумму:</string>
     <string name="text_to_support">Поддержать</string>
     <string name="text_support_project">Support the project</string>
+    <string name="text_purchase_caceled">Транзакция отменена. Мне очень жаль, что Вы передумали...</string>
+    <string name="text_thanks_for_donating">Спасибо Вам за поддержку!!!</string>
 
     <string-array name="ticker_list">
         <item>AA</item>

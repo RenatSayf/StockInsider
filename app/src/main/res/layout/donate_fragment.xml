@@ -46,11 +46,10 @@
     <Spinner
         android:id="@+id/sumSpinnerView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@id/selectSumTView"
         android:padding="10dp"
         android:layout_marginBottom="50dp"
-        android:entries="@array/donate_sum"
         android:backgroundTint="@color/colorWhite"
         android:popupBackground="@color/colorPrimary"
         android:theme="@style/TextAppearance.AppCompat.Title.Inverse"

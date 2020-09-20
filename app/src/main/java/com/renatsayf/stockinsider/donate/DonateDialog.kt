@@ -9,11 +9,13 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.android.billingclient.api.*
+import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.donate_fragment.*
 
 @AndroidEntryPoint
@@ -21,6 +23,7 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
 {
     private var dialogView: View? = null
     private var skuList: MutableList<SkuDetails> = arrayListOf()
+    private lateinit var billingClient: BillingClient
 
     companion object
     {
@@ -53,13 +56,51 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
             savedInstanceState: Bundle?
     ): View?
     {
+        viewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
         return dialogView
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
+
+        billingClient = BillingClient.newBuilder(requireContext())
+            .setListener(this)
+            .enablePendingPurchases()
+            .build()
+
+        billingClient.startConnection(object : BillingClientStateListener
+                                      {
+                                          override fun onBillingSetupFinished(result: BillingResult)
+                                          {
+                                              if (result.responseCode == BillingClient.BillingResponseCode.OK)
+                                              {
+                                                  viewModel.querySkuDetails(billingClient)
+                                              }
+                                          }
+
+                                          override fun onBillingServiceDisconnected()
+                                          {
+                                              return
+                                          }
+                                      })
+
+        viewModel.priceList.observe(viewLifecycleOwner, {
+            if (!it.isNullOrEmpty())
+            {
+                skuList = it
+                val priceList = mutableListOf<String>()
+                skuList.forEach { sku ->
+                    priceList.add(sku.originalPrice)
+                }
+                val adapter = ArrayAdapter(
+                        requireContext(),
+                        R.layout.app_spinner_item,
+                        priceList
+                )
+                sumSpinnerView.adapter = adapter
+            }
+        })
 
         val thanksText = requireContext().getString(R.string.text_thanks).plus(" ")
             .plus(requireContext().getString(R.string.app_name))
@@ -70,55 +111,43 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
         }
 
         btnDoDonate.setOnClickListener {
-
-            dismiss()
+            val selectedPrice = sumSpinnerView.selectedItem.toString()
+            if(!skuList.isNullOrEmpty())
+            {
+                skuList.forEach {
+                    if (it.originalPrice == selectedPrice)
+                    {
+                        val flowParams = BillingFlowParams.newBuilder().setSkuDetails(it).build()
+                        billingClient.launchBillingFlow(requireActivity(), flowParams)
+                        return@forEach
+                    }
+                }
+            }
         }
 
-        viewModel.priceList.observe(viewLifecycleOwner, {
-            if (!it.isNullOrEmpty())
+        viewModel.eventPurchased.observe(viewLifecycleOwner, {
+            if (!it.hasBeenHandled)
             {
-                skuList = it
-                val priceList = mutableListOf<String>()
-                skuList.forEach {
-                    priceList.add(it.price)
-                }
-                //priceList.sortDescending()
-                val adapter = ArrayAdapter(
-                        requireContext(),
-                        android.R.layout.simple_spinner_item,
-                        priceList
-                )
-                sumSpinnerView.adapter = adapter
+                Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_thanks_for_donating), Snackbar.LENGTH_LONG).show()
+                dismiss()
             }
         })
-
-        val billingClient = BillingClient.newBuilder(requireContext())
-            .setListener(this)
-            .enablePendingPurchases()
-            .build()
-
-        billingClient.startConnection(object : BillingClientStateListener
-                                      {
-            override fun onBillingSetupFinished(result: BillingResult)
-            {
-                if (result.responseCode == BillingClient.BillingResponseCode.OK)
-                {
-                    viewModel.querySkuDetails(billingClient)
-                }
-            }
-
-            override fun onBillingServiceDisconnected()
-            {
-                return
-            }
-
-        })
-
     }
 
-    override fun onPurchasesUpdated(p0: BillingResult, p1: MutableList<Purchase>?)
+    override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?)
     {
-
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null)
+        {
+            for (purchase in purchases)
+            {
+                viewModel.handlePurchase(billingClient, purchase)
+            }
+        }
+        else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED)
+        {
+            Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_purchase_caceled), Snackbar.LENGTH_LONG).show()
+            dismiss()
+        }
     }
 
 }
