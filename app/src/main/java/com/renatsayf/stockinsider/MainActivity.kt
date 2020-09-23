@@ -24,6 +24,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.renatsayf.stockinsider.donate.DonateDialog
 import com.renatsayf.stockinsider.models.DataTransferModel
@@ -50,6 +53,7 @@ class MainActivity : AppCompatActivity()
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var dataTransferModel : DataTransferModel
     private lateinit var drawerLayout : DrawerLayout
+    private lateinit var ad: InterstitialAd
 
     @Inject
     lateinit var notification : ServiceNotification
@@ -160,13 +164,37 @@ class MainActivity : AppCompatActivity()
                         }
                         p2 == 3 && p3 == 1 ->
                         {
-
+                            if (ad.isLoaded)
+                            {
+                                ad.show()
+                            }
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
                     return false
                 }
             })
+        }
+
+
+    }
+
+    override fun onResume()
+    {
+        super.onResume()
+        MobileAds.initialize(this){}
+        ad = InterstitialAd(this).apply {
+            adUnitId = if (BuildConfig.DEBUG)
+            {
+                println("********************** DEBUG *********************")
+                "ca-app-pub-3940256099942544/1033173712"
+            }
+            else
+            {
+                println("********************** RELEASE *********************")
+                "ca-app-pub-4071145618173901/6731179324"
+            }
+            loadAd(AdRequest.Builder().build())
         }
     }
 
@@ -194,8 +222,6 @@ class MainActivity : AppCompatActivity()
         }
         return super.onOptionsItemSelected(item)
     }
-
-
 
     override fun onSupportNavigateUp() : Boolean
     {
