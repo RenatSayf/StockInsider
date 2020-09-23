@@ -24,6 +24,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
@@ -176,25 +177,23 @@ class MainActivity : AppCompatActivity()
             })
         }
 
-
-    }
-
-    override fun onResume()
-    {
-        super.onResume()
         MobileAds.initialize(this){}
         ad = InterstitialAd(this).apply {
             adUnitId = if (BuildConfig.DEBUG)
             {
-                println("********************** DEBUG *********************")
                 "ca-app-pub-3940256099942544/1033173712"
             }
             else
             {
-                println("********************** RELEASE *********************")
                 "ca-app-pub-4071145618173901/6731179324"
             }
             loadAd(AdRequest.Builder().build())
+            adListener = object : AdListener()
+            {
+                override fun onAdClosed() {
+                    ad.loadAd(AdRequest.Builder().build())
+                }
+            }
         }
     }
 
