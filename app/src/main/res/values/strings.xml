@@ -142,5 +142,7 @@
     </string-array>
     
     <string name="full_screen_ads">ca-app-pub-4071145618173901~3517008411</string>
-    
+    <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
+
 </resources>

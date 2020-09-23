@@ -181,11 +181,11 @@ class MainActivity : AppCompatActivity()
         ad = InterstitialAd(this).apply {
             adUnitId = if (BuildConfig.DEBUG)
             {
-                "ca-app-pub-3940256099942544/1033173712"
+                getString(R.string.test_interstitial_ads_id)
             }
             else
             {
-                "ca-app-pub-4071145618173901/6731179324"
+                getString(R.string.release_interstitial_ads_id)
             }
             loadAd(AdRequest.Builder().build())
             adListener = object : AdListener()
