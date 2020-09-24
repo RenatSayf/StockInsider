@@ -7,14 +7,20 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
 import io.reactivex.Observable
+import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 class DataRepositoryImpl @Inject constructor(private val request: SearchRequest, private val db: AppDao) : IDataRepository
 {
-    override fun getDealListFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
+    override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
         return request.getTradingScreen(set)
+    }
+
+    override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
+    {
+        return request.getInsiderTrading(insider)
     }
 
     override fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = runBlocking {

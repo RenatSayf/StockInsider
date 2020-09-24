@@ -1,9 +1,8 @@
 package com.renatsayf.stockinsider.network
 
-import android.content.Context
-import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -11,7 +10,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest @Inject constructor(private val context: Context)
+class SearchRequest @Inject constructor()
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
     private var composite = CompositeDisposable()
@@ -22,7 +21,7 @@ class SearchRequest @Inject constructor(private val context: Context)
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             searchTicker = set.ticker
-            val subscriber = openInsiderService.getInsiderTrading(
+            val subscriber = openInsiderService.getTradingScreen(
                 set.ticker,
                 set.filingPeriod,
                 set.tradePeriod,
@@ -67,7 +66,7 @@ class SearchRequest @Inject constructor(private val context: Context)
         if (bodyText != null && bodyText.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = context.getString(R.string.text_data_not_avalible)
+            deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
@@ -75,7 +74,7 @@ class SearchRequest @Inject constructor(private val context: Context)
         if (error != null && error.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = context.getString(R.string.text_data_not_avalible)
+            deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
@@ -117,7 +116,56 @@ class SearchRequest @Inject constructor(private val context: Context)
         return listDeal
     }
 
+    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
+    {
+        return Single.create { emitter ->
+            var dealList: ArrayList<Deal> = arrayListOf()
+            val subscribe = openInsiderService.getInsiderTrading(insider)
+                .map { doc ->
+                    dealList = doParseInsiderTrading(doc)
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    emitter.onSuccess(dealList)
+                }, {
+                    emitter.onError(it)
+                })
+            composite.add(subscribe)
+        }
+    }
 
+    private fun doParseInsiderTrading(document: Document) : ArrayList<Deal>
+    {
+        val listDeal : ArrayList<Deal> = arrayListOf()
+        val elements = document.select("#subjectDetails > table > tbody")
+        if (elements.size > 0)
+        {
+            val tbody = elements[0]
+            var trIndex = 1
+            tbody.children().forEach {
+                val filingDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").text()
+                val deal = Deal(filingDate).apply {
+                    filingDateRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").attr("href")
+                    tradeDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(3) > div").text()
+                    ticker = tbody.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
+                    company = ""
+                    insiderName = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").text()
+                    insiderNameRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").attr("href")
+                    insiderTitle = tbody.select("tr:nth-child($trIndex) > td:nth-child(6)").text()
+                    tradeType = tbody.select("tr:nth-child($trIndex) > td:nth-child(7)").text()
+                    price = tbody.select("tr:nth-child($trIndex) > td:nth-child(8)").text()
+                    qty = tbody.select("tr:nth-child($trIndex) > td:nth-child(9)").text()
+                    owned = tbody.select("tr:nth-child($trIndex) > td:nth-child(10)").text()
+                    deltaOwn = tbody.select("tr:nth-child($trIndex) > td:nth-child(11)").text()
+                    volumeStr = tbody.select("tr:nth-child($trIndex) > td:nth-child(12)").text()
+                    trIndex++
+                }
+                listDeal.add(deal)
+            }
+        }
+        return listDeal
+    }
 
 
 

@@ -17,6 +17,6 @@ object SearchRequestModule
     @Singleton
     fun provideSearchRequest(@ApplicationContext context: Context): SearchRequest
     {
-        return SearchRequest(context)
+        return SearchRequest()
     }
 }

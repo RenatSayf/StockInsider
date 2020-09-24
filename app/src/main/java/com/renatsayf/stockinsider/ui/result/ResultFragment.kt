@@ -104,7 +104,7 @@ class ResultFragment : Fragment()
                     list.size == 1 && list[0].error!!.isNotEmpty() ->
                     {
                         resultTV.text = 0.toString()
-                        recommendationsTV.text = list[0].error
+                        recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
                         noResultLayout.visibility = View.VISIBLE
                     }
                     else                                           ->

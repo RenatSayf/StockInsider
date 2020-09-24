@@ -9,19 +9,22 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
+import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
+import io.reactivex.disposables.CompositeDisposable
 import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
+import kotlinx.android.synthetic.main.load_progress_layout.*
 import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
@@ -40,6 +43,7 @@ class DealFragment : Fragment()
     lateinit var appLog: AppLog
 
     private lateinit var viewModel : DealViewModel
+    private var composite = CompositeDisposable()
 
     override fun onCreateView(
             inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
@@ -72,7 +76,8 @@ class DealFragment : Fragment()
                     companyNameTV.setOnClickListener {
                         companyAnimView.clickMotionLayout.transitionToEnd()
                     }
-                    tickerTV.text = d.ticker
+                    //tickerTV.text = d.ticker
+                    d.ticker?.let { viewModel.setTicker(it) }
                     tickerTV.setOnClickListener {
                         tickerAnimView.clickMotionLayout.transitionToEnd()
                     }
@@ -135,18 +140,42 @@ class DealFragment : Fragment()
             })
         }
 
-//        requireActivity().onBackPressedDispatcher.addCallback(this){
-//            mainDealLayout.findNavController().currentBackStackEntry
-//        }
-
-        insiderNameMotionLayout.setOnClickListener {
+        insiderNameMotionLayout.setOnClickListener { view ->
+            requireActivity().loadProgreesBar.visibility = View.VISIBLE
             val insiderNameRefer = deal.insiderNameRefer
-            println("******************* $insiderNameRefer ***************************")
-            val insiderName = deal.insiderName
-            println("******************* $insiderName ***************************")
+            insiderNameRefer?.let { name ->
+                val subscribe = viewModel.getInsiderTrading(name)
+                    .subscribe({ list ->
+                                   println("******************** list.size = ${list.size} **********************")
+                                   requireActivity().loadProgreesBar.visibility = View.GONE
+                                   val bundle = Bundle().apply {
+                                       putParcelableArrayList(
+                                               InsiderTradingFragment.ARG_INSIDER_DEALS,
+                                               list
+                                       )
+                                   }
+                                   view.findNavController().navigate(R.id.nav_insider_trading, bundle)
+                                   return@subscribe
+                               },
+                               { err ->
+                                   err.printStackTrace()
+                                   requireActivity().loadProgreesBar.visibility = View.GONE
+                               })
+                composite.add(subscribe)
+            }
             return@setOnClickListener
         }
 
+        viewModel.ticker.observe(viewLifecycleOwner, {
+            tickerTV.text = it
+        })
+
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        composite.dispose()
     }
 
 }

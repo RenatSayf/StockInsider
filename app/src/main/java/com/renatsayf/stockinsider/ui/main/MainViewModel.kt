@@ -44,7 +44,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
 
     fun getDealList(set: SearchSet)
     {
-        subscribe = repositoryImpl.getDealListFromNetAsync(set)
+        subscribe = repositoryImpl.getTradingScreenFromNetAsync(set)
             .subscribe({ list ->
                            dealList.value = list
                        }, { t ->
