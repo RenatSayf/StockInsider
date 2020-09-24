@@ -139,6 +139,13 @@ class DealFragment : Fragment()
 //            mainDealLayout.findNavController().currentBackStackEntry
 //        }
 
+        insiderNameMotionLayout.setOnClickListener {
+            val insiderNameRefer = deal.insiderNameRefer
+            println("******************* $insiderNameRefer ***************************")
+            val insiderName = deal.insiderName
+            println("******************* $insiderName ***************************")
+            return@setOnClickListener
+        }
 
     }
 
