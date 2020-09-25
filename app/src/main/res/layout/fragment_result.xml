@@ -36,7 +36,8 @@
             android:textSize="18sp"
             android:textColor="@color/colorWhite"/>
 
-        <include layout="@layout/set_alert_layout"
+        <include android:id="@+id/alertLayout"
+            layout="@layout/set_alert_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="end"/>

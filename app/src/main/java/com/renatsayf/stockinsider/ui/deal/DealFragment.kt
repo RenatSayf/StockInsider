@@ -35,8 +35,8 @@ class DealFragment : Fragment()
 {
     companion object
     {
-        val TAG = "${this::class.java.simpleName}.deal_fragment"
-        val ARG_DEAL = "${this::class.java.simpleName}.deal"
+        val TAG = "${this::class.java.canonicalName}"
+        val ARG_DEAL = "${this::class.java.canonicalName}.deal"
     }
 
     @Inject
@@ -63,7 +63,8 @@ class DealFragment : Fragment()
         })
 
         val deal = arguments?.get(ARG_DEAL) as Deal
-        deal.let{ d ->
+        viewModel.setDeal(deal)
+        deal.let{
             DealListAdapter.dealAdapterItemClick.observe(viewLifecycleOwner, { event ->
                 if (!event.hasBeenHandled)
                 {
@@ -72,59 +73,20 @@ class DealFragment : Fragment()
                         mainDealLayout.background = it
                     }
 
-                    companyNameTV.text = d.company
-                    companyNameTV.setOnClickListener {
-                        companyAnimView.clickMotionLayout.transitionToEnd()
-                    }
-                    //tickerTV.text = d.ticker
-                    d.ticker?.let { viewModel.setTicker(it) }
-                    tickerTV.setOnClickListener {
-                        tickerAnimView.clickMotionLayout.transitionToEnd()
-                    }
-                    filingDateTV.text = d.filingDate
-                    filingDateTV.setOnClickListener {
-                        filingDateAnimView.clickMotionLayout.transitionToEnd()
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
-                        activity?.startActivity(intent)
-                    }
-                    tradeDateTV.text = d.tradeDate
-                    insiderNameTV.text = d.insiderName
-                    insiderNameTV.setOnClickListener {
-                        insiderNameMotionLayout.transitionToEnd()
-                    }
-
-                    insiderTitleTV.text = d.insiderTitle
-                    tradeTypeTV.text = d.tradeType
-                    priceTV.text = d.price
-                    qtyTV.text = d.qty.toString()
-                    ownedTV.text = d.owned
-                    deltaOwnTV.text = d.deltaOwn
-                    valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
-
                     val uri = Uri.parse(deal.tickerRefer)
                     Glide.with(this).load(uri)
                         .listener(object : RequestListener<Drawable>{
-                            override fun onLoadFailed(
-                                    e: GlideException?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    isFirstResource: Boolean
-                            ): Boolean
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean
                             {
                                 e?.message?.let { appLog.print(TAG, it) }
                                 imgLoadProgBar.visibility = View.GONE
                                 return false
                             }
 
-                            override fun onResourceReady(
-                                    resource: Drawable?,
-                                    model: Any?,
-                                    target: Target<Drawable>?,
-                                    dataSource: DataSource?,
-                                    isFirstResource: Boolean
-                            ): Boolean
+                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean
                             {
                                 appLog.print(TAG, "**********  Chart is loaded  ***********")
+                                resource?.let { viewModel.setChart(it) }
                                 imgLoadProgBar.visibility = View.GONE
                                 return false
                             }
@@ -146,7 +108,7 @@ class DealFragment : Fragment()
             insiderNameRefer?.let { name ->
                 val subscribe = viewModel.getInsiderTrading(name)
                     .subscribe({ list ->
-                                   println("******************** list.size = ${list.size} **********************")
+                                   appLog.print(TAG, "******************** list.size = ${list.size} **********************")
                                    requireActivity().loadProgreesBar.visibility = View.GONE
                                    val bundle = Bundle().apply {
                                        putParcelableArrayList(
@@ -166,8 +128,38 @@ class DealFragment : Fragment()
             return@setOnClickListener
         }
 
-        viewModel.ticker.observe(viewLifecycleOwner, {
-            tickerTV.text = it
+        viewModel.deal.observe(viewLifecycleOwner, { d ->
+            companyNameTV.text = d.company
+            companyNameTV.setOnClickListener {
+                companyAnimView.clickMotionLayout.transitionToEnd()
+            }
+            tickerTV.text = d.ticker
+            tickerTV.setOnClickListener {
+                tickerAnimView.clickMotionLayout.transitionToEnd()
+            }
+            filingDateTV.text = d.filingDate
+            filingDateTV.setOnClickListener {
+                filingDateAnimView.clickMotionLayout.transitionToEnd()
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
+                activity?.startActivity(intent)
+            }
+            tradeDateTV.text = d.tradeDate
+            insiderNameTV.text = d.insiderName
+            insiderNameTV.setOnClickListener {
+                insiderNameMotionLayout.transitionToEnd()
+            }
+
+            insiderTitleTV.text = d.insiderTitle
+            tradeTypeTV.text = d.tradeType
+            priceTV.text = d.price
+            qtyTV.text = d.qty.toString()
+            ownedTV.text = d.owned
+            deltaOwnTV.text = d.deltaOwn
+            valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
+        })
+
+        viewModel.chart.observe(viewLifecycleOwner, {
+            chartImagView.setImageDrawable(it)
         })
 
     }
