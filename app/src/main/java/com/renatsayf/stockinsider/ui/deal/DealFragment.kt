@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -102,30 +103,47 @@ class DealFragment : Fragment()
             })
         }
 
-        insiderNameMotionLayout.setOnClickListener { view ->
-            requireActivity().loadProgreesBar.visibility = View.VISIBLE
-            val insiderNameRefer = deal.insiderNameRefer
-            insiderNameRefer?.let { name ->
-                val subscribe = viewModel.getInsiderTrading(name)
-                    .subscribe({ list ->
-                                   appLog.print(TAG, "******************** list.size = ${list.size} **********************")
-                                   requireActivity().loadProgreesBar.visibility = View.GONE
-                                   val bundle = Bundle().apply {
-                                       putParcelableArrayList(
-                                               InsiderTradingFragment.ARG_INSIDER_DEALS,
-                                               list
-                                       )
-                                   }
-                                   view.findNavController().navigate(R.id.nav_insider_trading, bundle)
-                                   return@subscribe
-                               },
-                               { err ->
-                                   err.printStackTrace()
-                                   requireActivity().loadProgreesBar.visibility = View.GONE
-                               })
-                composite.add(subscribe)
+        insiderNameMotionLayout.apply {
+            setOnClickListener {
+                this.transitionToEnd()
             }
-            return@setOnClickListener
+            setTransitionListener(object : MotionLayout.TransitionListener{
+                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
+                {}
+
+                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
+                {}
+
+                override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
+                {
+                    requireActivity().loadProgreesBar.visibility = View.VISIBLE
+                    val insiderNameRefer = deal.insiderNameRefer
+                    insiderNameRefer?.let { name ->
+                        val subscribe = viewModel.getInsiderTrading(name)
+                            .subscribe({ list ->
+                                           appLog.print(TAG, "******************** list.size = ${list.size} **********************")
+                                           requireActivity().loadProgreesBar.visibility = View.GONE
+                                           val bundle = Bundle().apply {
+                                               putParcelableArrayList(
+                                                       InsiderTradingFragment.ARG_INSIDER_DEALS,
+                                                       list
+                                               )
+                                           }
+                                           p0?.findNavController()?.navigate(R.id.nav_insider_trading, bundle)
+                                           return@subscribe
+                                       },
+                                       { err ->
+                                           err.printStackTrace()
+                                           requireActivity().loadProgreesBar.visibility = View.GONE
+                                       })
+                        composite.add(subscribe)
+                    }
+                }
+
+                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
+                {}
+
+            })
         }
 
         viewModel.deal.observe(viewLifecycleOwner, { d ->

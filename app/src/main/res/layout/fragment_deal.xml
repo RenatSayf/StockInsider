@@ -198,10 +198,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutDescription="@xml/click_scene"
-            app:layout_constraintBottom_toBottomOf="@id/insider_name_title"
+            app:layout_constraintBottom_toBottomOf="@id/insiderNameTV"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/insider_name_title">
+            app:layout_constraintTop_toTopOf="@id/insiderNameTV">
 
             <View
                 android:id="@+id/animView"

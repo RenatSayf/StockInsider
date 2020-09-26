@@ -70,9 +70,7 @@ class MainFragment : Fragment()
 
         mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
             val tickerListAdapter = companies?.let {
-                context?.let { _ ->
-                    TickersListAdapter(activity as MainActivity, it)
-                }
+                TickersListAdapter(requireActivity(), it)
             }
             ticker_ET.setAdapter(tickerListAdapter)
             //ticker_ET.threshold = 1
