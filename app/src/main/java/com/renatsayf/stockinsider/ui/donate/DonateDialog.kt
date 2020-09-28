@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.donate
+package com.renatsayf.stockinsider.ui.donate
 
 import android.app.AlertDialog
 import android.app.Dialog

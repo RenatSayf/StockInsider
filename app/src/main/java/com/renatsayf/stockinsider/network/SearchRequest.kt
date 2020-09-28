@@ -173,7 +173,7 @@ class SearchRequest @Inject constructor()
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = openInsiderService.getTradingByTicker(ticker)
                 .map { doc ->
-                    dealList = doParseInsiderTrading(doc)
+                    dealList = doParseDocument(doc)
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

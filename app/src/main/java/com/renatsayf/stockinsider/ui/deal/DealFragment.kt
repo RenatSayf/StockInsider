@@ -164,6 +164,8 @@ class DealFragment : Fragment()
                     deal.ticker?.let {t ->
                         viewModel.getTradingByTicker(t)
                             .subscribe({ list ->
+                                           requireActivity().loadProgreesBar.visibility = View.GONE
+                                           appLog.print(TAG, "******************** list.size = ${list.size} **********************")
                                             val bundle = Bundle().apply {
                                                 putParcelableArrayList("", list)
                                             }

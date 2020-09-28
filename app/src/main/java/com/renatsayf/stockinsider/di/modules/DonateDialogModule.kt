@@ -1,6 +1,6 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.donate.DonateDialog
+import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
