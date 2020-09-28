@@ -1,11 +1,10 @@
 package com.renatsayf.stockinsider.ui.result.insider
 
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +26,8 @@ class InsiderTradingFragment : Fragment()
     companion object
     {
         val TAG = this::class.java.canonicalName.toString()
-        val ARG_INSIDER_DEALS = this::class.java.canonicalName.toString()
+        val ARG_INSIDER_DEALS = this::class.java.canonicalName.toString().plus("deals_list")
+        val ARG_INSIDER_NAME = this::class.java.canonicalName.toString().plus("insider_name")
         fun newInstance() = InsiderTradingFragment()
     }
 
@@ -47,14 +47,17 @@ class InsiderTradingFragment : Fragment()
         viewModel = ViewModelProvider(this)[InsiderTradingViewModel::class.java]
 
         val dealList = arguments?.getParcelableArrayList<Deal>(ARG_INSIDER_DEALS)
+        val insiderName = arguments?.getString(ARG_INSIDER_NAME)
 
         alertLayout.visibility = View.GONE
+        insiderNameLayout.visibility = View.VISIBLE
 
         appLog.print(TAG,"****************** ${dealList?.size} ***********************")
         if (!dealList.isNullOrEmpty())
         {
             noResultLayout.visibility = View.GONE
             resultTV.text = dealList.size.toString()
+            insiderNameTView.text = insiderName
 
             val linearLayoutManager = LinearLayoutManager(activity)
             val dealListAdapter = DealListAdapter(dealList)

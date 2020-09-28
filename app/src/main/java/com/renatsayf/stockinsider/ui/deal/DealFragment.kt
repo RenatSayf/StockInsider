@@ -124,6 +124,7 @@ class DealFragment : Fragment()
                                            appLog.print(TAG, "******************** list.size = ${list.size} **********************")
                                            requireActivity().loadProgreesBar.visibility = View.GONE
                                            val bundle = Bundle().apply {
+                                               putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
                                                putParcelableArrayList(
                                                        InsiderTradingFragment.ARG_INSIDER_DEALS,
                                                        list
