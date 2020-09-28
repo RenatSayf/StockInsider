@@ -23,6 +23,7 @@ import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
+import kotlinx.android.synthetic.main.click_motion_layout.*
 import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
@@ -114,7 +115,7 @@ class DealFragment : Fragment()
                 override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
                 {}
 
-                override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
+                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
                 {
                     requireActivity().loadProgreesBar.visibility = View.VISIBLE
                     val insiderNameRefer = deal.insiderNameRefer
@@ -130,14 +131,47 @@ class DealFragment : Fragment()
                                                        list
                                                )
                                            }
-                                           p0?.findNavController()?.navigate(R.id.nav_insider_trading, bundle)
-                                           return@subscribe
+                                           layout?.findNavController()?.navigate(R.id.nav_insider_trading, bundle)
                                        },
                                        { err ->
                                            err.printStackTrace()
                                            requireActivity().loadProgreesBar.visibility = View.GONE
                                        })
                         composite.add(subscribe)
+                    }
+                }
+
+                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
+                {}
+
+            })
+        }
+
+        clickMotionLayout.apply {
+            setOnClickListener {
+                this.transitionToEnd()
+            }
+            setTransitionListener(object : MotionLayout.TransitionListener{
+                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
+                {}
+
+                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
+                {}
+
+                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
+                {
+                    requireActivity().loadProgreesBar.visibility = View.VISIBLE
+                    deal.ticker?.let {t ->
+                        viewModel.getTradingByTicker(t)
+                            .subscribe({ list ->
+                                            val bundle = Bundle().apply {
+                                                putParcelableArrayList("", list)
+                                            }
+                                       },
+                                       { err ->
+                                            err.printStackTrace()
+                                           requireActivity().loadProgreesBar.visibility = View.GONE
+                                       })
                     }
                 }
 

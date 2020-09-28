@@ -63,4 +63,9 @@ class DealViewModel @ViewModelInject constructor(
     {
         _chart.value = chart
     }
+
+    fun getTradingByTicker(ticker: String) : Single<ArrayList<Deal>>
+    {
+        return repositoryImpl.getTradingByTickerAsync(ticker)
+    }
 }

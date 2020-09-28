@@ -167,6 +167,23 @@ class SearchRequest @Inject constructor()
         return listDeal
     }
 
-
+    fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
+    {
+        return Single.create { emitter ->
+            var dealList: ArrayList<Deal> = arrayListOf()
+            val subscribe = openInsiderService.getTradingByTicker(ticker)
+                .map { doc ->
+                    dealList = doParseInsiderTrading(doc)
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                               emitter.onSuccess(dealList)
+                           }, {
+                               emitter.onError(it)
+                           })
+            composite.add(subscribe)
+        }
+    }
 
 }
