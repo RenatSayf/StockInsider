@@ -51,6 +51,9 @@
         <action
             android:id="@+id/action_nav_deal_to_insiderTradingFragment"
             app:destination="@id/nav_insider_trading" />
+        <action
+            android:id="@+id/action_nav_deal_to_tradingByTickerFragment"
+            app:destination="@id/nav_trading_by_ticker" />
     </fragment>
 
     <fragment
@@ -69,6 +72,11 @@
         android:name="com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment"
         android:label="Insiders Deals"
         tools:layout="@layout/insider_trading_fragment" />
+    <fragment
+        android:id="@+id/nav_trading_by_ticker"
+        android:name="com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment"
+        android:label="Trading By Company"
+        tools:layout="@layout/trading_by_ticker_fragment" />
 
 
 </navigation>

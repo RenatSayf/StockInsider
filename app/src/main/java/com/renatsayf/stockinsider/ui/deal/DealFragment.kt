@@ -20,10 +20,10 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
+import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
-import kotlinx.android.synthetic.main.click_motion_layout.*
 import kotlinx.android.synthetic.main.click_motion_layout.view.*
 import kotlinx.android.synthetic.main.fragment_deal.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
@@ -125,6 +125,7 @@ class DealFragment : Fragment()
                                            appLog.print(TAG, "******************** list.size = ${list.size} **********************")
                                            requireActivity().loadProgreesBar.visibility = View.GONE
                                            val bundle = Bundle().apply {
+                                               putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
                                                putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
                                                putParcelableArrayList(
                                                        InsiderTradingFragment.ARG_INSIDER_DEALS,
@@ -147,7 +148,7 @@ class DealFragment : Fragment()
             })
         }
 
-        clickMotionLayout.apply {
+        tickerAnimView.clickMotionLayout.apply {
             setOnClickListener {
                 this.transitionToEnd()
             }
@@ -160,21 +161,29 @@ class DealFragment : Fragment()
 
                 override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
                 {
-                    requireActivity().loadProgreesBar.visibility = View.VISIBLE
-                    deal.ticker?.let {t ->
-                        viewModel.getTradingByTicker(t)
-                            .subscribe({ list ->
-                                           requireActivity().loadProgreesBar.visibility = View.GONE
-                                           appLog.print(TAG, "******************** list.size = ${list.size} **********************")
-                                            val bundle = Bundle().apply {
-                                                putParcelableArrayList("", list)
-                                            }
-                                       },
-                                       { err ->
-                                            err.printStackTrace()
-                                           requireActivity().loadProgreesBar.visibility = View.GONE
-                                       })
-                    }
+                    clickAnimationCompleted(deal, layout)
+                }
+
+                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
+                {}
+
+            })
+        }
+
+        companyAnimView.clickMotionLayout.apply {
+            setOnClickListener {
+                this.transitionToEnd()
+            }
+            setTransitionListener(object : MotionLayout.TransitionListener{
+                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
+                {}
+
+                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
+                {}
+
+                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
+                {
+                    clickAnimationCompleted(deal, layout)
                 }
 
                 override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
@@ -217,6 +226,31 @@ class DealFragment : Fragment()
             chartImagView.setImageDrawable(it)
         })
 
+    }
+
+    private fun clickAnimationCompleted(deal: Deal, layout: MotionLayout?)
+    {
+        requireActivity().loadProgreesBar.visibility = View.VISIBLE
+        deal.ticker?.let {t ->
+            viewModel.getTradingByTicker(t)
+                .subscribe({ list ->
+                               requireActivity().loadProgreesBar.visibility = View.GONE
+                               appLog.print(TAG, "******************** list.size = ${list.size} **********************")
+                               if (list.size > 0)
+                               {
+                                   val bundle = Bundle().apply {
+                                       putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
+                                       putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
+                                       putString(TradingByTickerFragment.ARG_COMPANY_NAME, companyNameTV.text.toString())
+                                   }
+                                   layout?.findNavController()?.navigate(R.id.nav_trading_by_ticker, bundle)
+                               }
+                           },
+                           { err ->
+                               err.printStackTrace()
+                               requireActivity().loadProgreesBar.visibility = View.GONE
+                           })
+        }
     }
 
     override fun onDestroy()

@@ -73,7 +73,7 @@
     <string name="text_select_sum">Выберете сумму:</string>
     <string name="text_to_support">Поддержать</string>
     <string name="text_support_project">Support the project</string>
-    <string name="text_purchase_caceled">Транзакция отменена. Мне очень жаль, что Вы передумали...</string>
+    <string name="text_purchase_caceled">Транзакция отменена. Мне очень жаль, что Вы передумали…</string>
     <string name="text_thanks_for_donating">Спасибо Вам за поддержку!!!</string>
 
     <string-array name="ticker_list">
@@ -145,5 +145,6 @@
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
     <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
     <string name="text_insider">Insider:</string>
+    <string name="text_company">Company:</string>
 
 </resources>

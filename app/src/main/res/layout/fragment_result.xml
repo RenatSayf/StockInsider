@@ -55,14 +55,14 @@
         tools:visibility="visible">
 
         <TextView
-            android:id="@+id/insiderLable"
+            android:id="@+id/titleTView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginStart="5dp"
-            android:text="@string/text_insider"
+            tools:text="@string/text_insider"
             android:textAlignment="textStart"
-            android:textSize="24sp"
+            android:textSize="18sp"
             android:textColor="@color/colorWhite"/>
 
         <TextView
@@ -72,7 +72,7 @@
             android:layout_weight="3"
             android:layout_marginStart="5dp"
             tools:text="Insider Name"
-            android:textAlignment="textStart"
+            android:textAlignment="textEnd"
             android:textSize="24sp"
             android:textColor="@color/colorGold"/>
 
