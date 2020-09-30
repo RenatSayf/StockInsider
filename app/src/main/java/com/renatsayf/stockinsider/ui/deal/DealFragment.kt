@@ -94,14 +94,16 @@ class DealFragment : Fragment()
                             }
                         })
                         .into(chartImagView)
-
-                    chartImagView.setOnClickListener {
-                        chartAnimView.clickMotionLayout.transitionToEnd()
-                        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
-                        activity?.startActivity(intent)
-                    }
                 }
             })
+        }
+
+        chartAnimView.clickMotionLayout.apply {
+            setOnClickListener {
+                this.clickMotionLayout.transitionToEnd()
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
+                activity?.startActivity(intent)
+            }
         }
 
         insiderNameMotionLayout.apply {
