@@ -34,6 +34,7 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
+import com.renatsayf.stockinsider.ui.latest.purchases.Purchases1Fragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -152,7 +153,10 @@ class MainActivity : AppCompatActivity()
                     {
                         p2 == 1 && p3 == 0 ->
                         {
-                            navController.navigate(R.id.nav_purchases)
+                            val bundle = Bundle().apply {
+                                putString(Purchases1Fragment.ARG_SET_NAME, Purchases1Fragment.PURCHASES_1_FOR_WEEK)
+                            }
+                            navController.navigate(R.id.nav_purchases, bundle)
                         }
                         p2 == 1 && p3 == 1 ->
                         {

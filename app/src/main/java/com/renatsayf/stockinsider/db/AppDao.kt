@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
+import com.renatsayf.stockinsider.models.SearchSet
 
 @Dao
 interface AppDao

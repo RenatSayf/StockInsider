@@ -58,9 +58,9 @@
 
     <fragment
         android:id="@+id/nav_purchases"
-        android:name="com.renatsayf.stockinsider.ui.latest.purchases.PurchasesFragment"
+        android:name="com.renatsayf.stockinsider.ui.latest.purchases.Purchases1Fragment"
         android:label="@string/text_latest_purchases"
-        tools:layout="@layout/purchases_fragment" />
+        tools:layout="@layout/fragment_result" />
 
     <fragment
         android:id="@+id/nav_purchases25"

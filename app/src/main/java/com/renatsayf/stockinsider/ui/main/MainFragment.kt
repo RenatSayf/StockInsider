@@ -64,12 +64,10 @@ class MainFragment : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
 
-        activity?.let { a ->
-            when((a as MainActivity).isServiceRunning())
-            {
-                true -> alarmOffButton.visibility = View.VISIBLE
-                else -> alarmOffButton.visibility = View.GONE
-            }
+        when ((requireActivity() as MainActivity).isServiceRunning())
+        {
+            true -> alarmOffButton.visibility = View.VISIBLE
+            else -> alarmOffButton.visibility = View.GONE
         }
 
         mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
@@ -237,6 +235,29 @@ class MainFragment : Fragment()
                 }
             })
         }
+
+//        val setName = arguments?.getString(ARG_SET_NAME)
+//        if (!setName.isNullOrEmpty())
+//        {
+//            val set = mainViewModel.getSearchSet(setName)
+//            val searchSet = SearchSet(set.setName).apply {
+//                ticker = set.ticker
+//                filingPeriod = set.filingPeriod.toString()
+//                tradePeriod = set.tradePeriod.toString()
+//                isPurchase = if (set.isPurchase) "1" else ""
+//                isSale = if (set.isSale) "1" else ""
+//                tradedMin = set.tradedMin
+//                tradedMax = set.tradedMax
+//                isOfficer = if (set.isOfficer) "1" else ""
+//                isDirector = if (set.isDirector) "1" else ""
+//                isTenPercent = if (set.isTenPercent) "1" else ""
+//                groupBy = set.groupBy.toString()
+//                sortBy = set.sortBy.toString()
+//            }
+//            arguments?.clear()
+//            requireActivity().loadProgreesBar.visibility = View.VISIBLE
+//            mainViewModel.getDealList(searchSet)
+//        }
     }
 
 
