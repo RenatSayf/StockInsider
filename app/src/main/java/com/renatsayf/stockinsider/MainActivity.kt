@@ -5,7 +5,6 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.os.PersistableBundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -29,12 +28,12 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
+import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -228,18 +227,6 @@ class MainActivity : AppCompatActivity()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    override fun onSaveInstanceState(outState: Bundle, outPersistentState: PersistableBundle)
-    {
-        super.onSaveInstanceState(outState, outPersistentState)
-        appLog.print("AAA", "******** onSaveInstanceState() ***************")
-    }
-
-    override fun onRestoreInstanceState(savedInstanceState: Bundle)
-    {
-        super.onRestoreInstanceState(savedInstanceState)
-        appLog.print("AAA", "******** onRestoreInstanceState() ***************")
-    }
-
     fun setAlarmSetting(alarm: Boolean)
     {
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
@@ -305,6 +292,7 @@ class MainActivity : AppCompatActivity()
     fun getCheckBoxValue(checkBox : CheckBox) : String
     {
         val id = checkBox.id
+        appLog.print(this::class.java.canonicalName.toString(), "*************** checkBox.id = ${id} **********************")
         return if(checkBox.isChecked && id == R.id.officer_CheBox)
         {
             "1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1"
@@ -313,6 +301,7 @@ class MainActivity : AppCompatActivity()
         {
             "1"
         }
+
         else
         {
             ""

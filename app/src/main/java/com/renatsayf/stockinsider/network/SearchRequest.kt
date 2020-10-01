@@ -27,6 +27,7 @@ class SearchRequest @Inject constructor()
                 set.tradePeriod,
                 set.isPurchase,
                 set.isSale,
+                set.excludeDerivRelated,
                 set.tradedMin,
                 set.tradedMax,
                 set.isOfficer,

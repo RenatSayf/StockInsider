@@ -16,17 +16,19 @@ import java.util.concurrent.TimeUnit
 interface OpenInsiderService
 {
     @Headers(
-            userAgentHeader
+            userAgentHeader,
+            "Content-Type:application/x-www-form-urlencoded; charset=utf-8"
             )
     @GET("screener")
     fun getTradingScreen(
                 @Query("s", encoded = true) ticker: String,
-                @Query("fd") filingDate: String,
-                @Query("td") tradeDate: String,
-                @Query("xp") isPurchase: String,
-                @Query("xs") isSale: String,
-                @Query("vl") tradedMin: String,
-                @Query("vh") tradedMax: String,
+                @Query("fd", encoded = true) filingDate: String,
+                @Query("td", encoded = true) tradeDate: String,
+                @Query("xp", encoded = true) isPurchase: String,
+                @Query("xs", encoded = true) isSale: String,
+                @Query("excludeDerivRelated", encoded = true) excludeDerivRelated: String = "1",
+                @Query("vl", encoded = true) tradedMin: String,
+                @Query("vh", encoded = true) tradedMax: String,
                 @Query("isofficer") isOfficer: String,
                 @Query("iscob") isCob : String = isOfficer,
                 @Query("isceo") isSeo: String = isOfficer,

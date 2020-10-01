@@ -19,6 +19,7 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -42,6 +43,9 @@ class MainFragment : Fragment()
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
+
+    @Inject
+    lateinit var appLog: AppLog
 
     override fun onCreateView(
             inflater : LayoutInflater,
