@@ -122,7 +122,7 @@ class SearchRequest @Inject constructor()
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = openInsiderService.getInsiderTrading(insider)
                 .map { doc ->
-                    dealList = doParseInsiderTrading(doc)
+                    dealList = doParseInsiderTrading(doc, "#subjectDetails")
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -135,10 +135,10 @@ class SearchRequest @Inject constructor()
         }
     }
 
-    private fun doParseInsiderTrading(document: Document) : ArrayList<Deal>
+    private fun doParseInsiderTrading(document: Document, tagId: String) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
-        val elements = document.select("#subjectDetails > table > tbody")
+        val elements = document.select("$tagId > table > tbody")
         if (elements.size > 0)
         {
             val tbody = elements[0]
@@ -173,7 +173,7 @@ class SearchRequest @Inject constructor()
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = openInsiderService.getTradingByTicker(ticker)
                 .map { doc ->
-                    dealList = doParseDocument(doc)
+                    dealList = doParseInsiderTrading(doc, "#tablewrapper")
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

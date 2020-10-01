@@ -45,13 +45,13 @@ interface OpenInsiderService
     @GET("{insiderName}")
     fun getInsiderTrading(@Path("insiderName", encoded = true) insiderName: String): Single<Document>
 
-    @Headers(Factory.userAgentHeader)
+    @Headers(userAgentHeader)
     @GET("{ticker}")
     fun getTradingByTicker(@Path("ticker", encoded = true) ticker: String): Single<Document>
 
     companion object Factory
     {
-        const val userAgentHeader = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+        private const val userAgentHeader = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
         fun create() : OpenInsiderService
         {
