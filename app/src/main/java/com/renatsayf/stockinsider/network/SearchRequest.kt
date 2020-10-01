@@ -43,7 +43,7 @@ class SearchRequest @Inject constructor()
                 set.sortBy
             )
                 .map { document ->
-                    dealList = doParseDocument(document)
+                    dealList = doMainParsing(document)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
@@ -58,7 +58,7 @@ class SearchRequest @Inject constructor()
         }
     }
 
-    private fun doParseDocument(document : Document) : ArrayList<Deal>
+    private fun doMainParsing(document : Document) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
@@ -122,7 +122,7 @@ class SearchRequest @Inject constructor()
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = openInsiderService.getInsiderTrading(insider)
                 .map { doc ->
-                    dealList = doParseInsiderTrading(doc, "#subjectDetails")
+                    dealList = doAdditionalParsing(doc, "#subjectDetails")
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -135,7 +135,7 @@ class SearchRequest @Inject constructor()
         }
     }
 
-    private fun doParseInsiderTrading(document: Document, tagId: String) : ArrayList<Deal>
+    private fun doAdditionalParsing(document: Document, tagId: String) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val elements = document.select("$tagId > table > tbody")
@@ -173,7 +173,7 @@ class SearchRequest @Inject constructor()
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = openInsiderService.getTradingByTicker(ticker)
                 .map { doc ->
-                    dealList = doParseInsiderTrading(doc, "#tablewrapper")
+                    dealList = doAdditionalParsing(doc, "#tablewrapper")
                 }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
