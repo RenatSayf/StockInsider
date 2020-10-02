@@ -160,7 +160,11 @@ class MainActivity : AppCompatActivity()
                         }
                         p2 == 1 && p3 == 1 ->
                         {
-                            navController.navigate(R.id.nav_purchases25)
+                            val bundle = Bundle().apply {
+                                putString(Purchases1Fragment.ARG_SET_NAME, Purchases1Fragment.PURCHASES_5_FOR_WEEK)
+                            }
+                            navController.navigate(R.id.nav_purchases, bundle)
+                            //navController.navigate(R.id.nav_purchases25)
                         }
                         p2 == 3 && p3 == 0 ->
                         {

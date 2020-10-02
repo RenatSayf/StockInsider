@@ -33,8 +33,8 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         ContextCompat.getDrawable(context, R.drawable.ic_power_off)?.let { listDataIcons.add(it) }
 
         val homeHeader: ArrayList<String> = arrayListOf()
-        val latestHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_latest_purchases),
-                                                          context.getString(R.string.text_latest_purchases_25))
+        val latestHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_latest_purchases_1),
+                                                          context.getString(R.string.text_latest_purchases_5))
         val strategyHeader: ArrayList<String> = arrayListOf()
         val supportHeader: ArrayList<String> = arrayListOf("To support the financial", "Watch the Ads")
         val exitHeader: ArrayList<String> = arrayListOf()

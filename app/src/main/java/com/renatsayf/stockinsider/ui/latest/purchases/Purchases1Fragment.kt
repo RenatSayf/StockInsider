@@ -27,7 +27,8 @@ class Purchases1Fragment : Fragment()
     companion object
     {
         val ARG_SET_NAME = this::class.java.canonicalName.toString().plus("arg_set_name")
-        const val PURCHASES_1_FOR_WEEK = "Purchases more 1 million"
+        const val PURCHASES_1_FOR_WEEK = "Purchases more \$1 million for week"
+        const val PURCHASES_5_FOR_WEEK = "Purchases more \$5 million for week"
         fun newInstance() = Purchases1Fragment()
     }
 
@@ -59,7 +60,7 @@ class Purchases1Fragment : Fragment()
         val setName = arguments?.getString(ARG_SET_NAME)
         if (!setName.isNullOrEmpty())
         {
-            requireActivity().toolbar.title = "Purchases more \$1 million"
+            requireActivity().toolbar.title = setName
             val set = viewModel.getSearchSet(setName)
             val searchSet = SearchSet(set.setName).apply {
                 ticker = set.ticker

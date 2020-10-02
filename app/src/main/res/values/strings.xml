@@ -62,9 +62,9 @@
     <string name="text_title_owned">Owned</string>
     <string name="delta_own_title">ΔOwn</string>
     <string name="value_title">Value,  $</string>
-    <string name="text_latest">Latest</string>
-    <string name="text_latest_purchases">Latest purchases</string>
-    <string name="text_latest_purchases_25">Latest purchases 25+ k$</string>
+    <string name="text_latest">Latest Week</string>
+    <string name="text_latest_purchases_1">Purchases more $1 million</string>
+    <string name="text_latest_purchases_5">Purchases more $5 million</string>
     <string name="text_data_not_avalible">Data is not available, please, try later</string>
     <string name="text_cancel">Cancel</string>
     <string name="text_ok">OK</string>
