@@ -146,5 +146,7 @@
     <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
     <string name="text_insider">Insider:</string>
     <string name="text_company">Company:</string>
+    <string name="text_financial_support">To support the financial</string>
+    <string name="text_watch_ads">Watch the Ads</string>
 
 </resources>
