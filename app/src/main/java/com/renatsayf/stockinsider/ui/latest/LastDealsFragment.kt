@@ -110,7 +110,8 @@ class LastDealsFragment : Fragment()
         viewModel.documentError.apply {
             value = null
             observe(viewLifecycleOwner, {
-                when (it) {
+                when (it)
+                {
                     is IndexOutOfBoundsException ->
                     {
                         val dealList: ArrayList<Deal> = arrayListOf()
@@ -146,6 +147,7 @@ class LastDealsFragment : Fragment()
                         Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
                     }
                 }
+                requireActivity().loadProgreesBar.visibility = View.GONE
             })
         }
     }
