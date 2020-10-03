@@ -83,9 +83,7 @@ class LastDealsFragment : Fragment()
             viewModel.getDealList(searchSet)
         }
 
-        viewModel.dealList.apply {
-            value = null
-            observe(viewLifecycleOwner, {
+        viewModel.dealList.observe(viewLifecycleOwner, {
                 if (!it.isNullOrEmpty())
                 {
                     resultTV.text = it.size.toString()
@@ -105,11 +103,8 @@ class LastDealsFragment : Fragment()
                 }
                 requireActivity().loadProgreesBar.visibility = View.GONE
             })
-        }
 
-        viewModel.documentError.apply {
-            value = null
-            observe(viewLifecycleOwner, {
+        viewModel.documentError.observe(viewLifecycleOwner, {
                 when (it)
                 {
                     is IndexOutOfBoundsException ->
@@ -144,12 +139,15 @@ class LastDealsFragment : Fragment()
                     }
                     else ->
                     {
-                        Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                        if (it != null)
+                        {
+                            Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                        }
                     }
                 }
                 requireActivity().loadProgreesBar.visibility = View.GONE
             })
-        }
+
     }
 
 }
