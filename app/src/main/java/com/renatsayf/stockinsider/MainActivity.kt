@@ -9,7 +9,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import android.widget.CheckBox
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
@@ -34,7 +33,7 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
-import com.renatsayf.stockinsider.ui.latest.LastDealsFragment
+import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -154,17 +153,16 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 0 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(LastDealsFragment.ARG_SET_NAME, LastDealsFragment.PURCHASES_1_FOR_WEEK)
+                                putString(ResultFragment.ARG_SET_NAME, ResultFragment.PURCHASES_1_FOR_WEEK)
                             }
-                            navController.navigate(R.id.nav_purchases, bundle)
+                            navController.navigate(R.id.nav_result, bundle)
                         }
                         p2 == 1 && p3 == 1 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(LastDealsFragment.ARG_SET_NAME, LastDealsFragment.PURCHASES_5_FOR_WEEK)
+                                putString(ResultFragment.ARG_SET_NAME, ResultFragment.PURCHASES_5_FOR_WEEK)
                             }
-                            navController.navigate(R.id.nav_purchases, bundle)
-                            //navController.navigate(R.id.nav_purchases25)
+                            navController.navigate(R.id.nav_result, bundle)
                         }
                         p2 == 3 && p3 == 0 ->
                         {
@@ -283,6 +281,7 @@ class MainActivity : AppCompatActivity()
 
     fun getSortingValue(position : Int) : String
     {
+        appLog.print(this::class.java.canonicalName.toString(), "****************** position = $position *********************")
         val sortingValue : String
         return try
         {
@@ -297,23 +296,14 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    fun getCheckBoxValue(checkBox : CheckBox) : String
+    fun getOfficerValue(value: Boolean) : String
     {
-        val id = checkBox.id
-        appLog.print(this::class.java.canonicalName.toString(), "*************** checkBox.id = ${id} **********************")
-        return if(checkBox.isChecked && id == R.id.officer_CheBox)
-        {
-            "1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1"
-        }
-        else if (checkBox.isChecked && id != R.id.officer_CheBox)
-        {
-            "1"
-        }
+        return if (value) "1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1" else ""
+    }
 
-        else
-        {
-            ""
-        }
+    fun getCheckBoxValue(value: Boolean) : String
+    {
+        return if (value) "1" else ""
     }
 
     fun getTickersString(string : String) : String

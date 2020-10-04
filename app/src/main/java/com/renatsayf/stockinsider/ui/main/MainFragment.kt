@@ -13,11 +13,11 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +26,6 @@ import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
-import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
 import javax.inject.Inject
@@ -132,23 +131,22 @@ class MainFragment : Fragment()
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity
-            mainActivity.loadProgreesBar.visibility = View.VISIBLE
             val searchSet = SearchSet("custom set")
             val tickersString = ticker_ET.text.toString().trim()
             searchSet.ticker = mainActivity.getTickersString(tickersString)
             searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
             searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
-            searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
-            searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
+            searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox.isChecked)
+            searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox.isChecked)
             searchSet.tradedMin = traded_min_ET.text.toString().trim()
             searchSet.tradedMax = traded_max_ET.text.toString().trim()
-            searchSet.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
-            searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
-            searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
+            searchSet.isOfficer = mainActivity.getOfficerValue(officer_CheBox.isChecked)
+            searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox.isChecked)
+            searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox.isChecked)
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
 
-            mainViewModel.getDealList(searchSet)
+            //mainViewModel.getDealList(searchSet)
 
             val set = RoomSearchSet(
                     DEFAULT_SET,
@@ -166,8 +164,15 @@ class MainFragment : Fragment()
                     group_spinner.selectedItemPosition,
                     sort_spinner.selectedItemPosition
                                    )
-            mainActivity.hideKeyBoard(ticker_ET)
-            mainViewModel.saveDefaultSearch(set)
+            (requireActivity() as MainActivity).hideKeyBoard(ticker_ET)
+            val result = mainViewModel.saveSearchSet(set)
+            if (result > -1)
+            {
+                val bundle = Bundle().apply {
+                    putString(ResultFragment.ARG_SET_NAME, DEFAULT_SET)
+                }
+                search_button.findNavController().navigate(R.id.nav_result, bundle)
+            }
         }
 
         alarmOffButton.setOnClickListener {
@@ -204,37 +209,37 @@ class MainFragment : Fragment()
             }
         })
 
-        mainViewModel.dealList.apply {
-            value = null
-            observe(viewLifecycleOwner, { list ->
-                list?.let{
-                    requireActivity().loadProgreesBar?.visibility = View.GONE
-                    dataTransferModel.setDealList(list)
-                    search_button.findNavController().navigate(R.id.nav_result, null)
-                }
-            })
-        }
-
-        mainViewModel.documentError.apply {
-            value = null
-            observe(viewLifecycleOwner, {
-                it?.let {
-                    requireActivity().loadProgreesBar?.visibility = View.GONE
-                    when (it) {
-                        is IndexOutOfBoundsException ->
-                        {
-                            val dealList: ArrayList<Deal> = arrayListOf()
-                            dataTransferModel.setDealList(dealList)
-                            search_button.findNavController().navigate(R.id.nav_result, null)
-                        }
-                        else ->
-                        {
-                            Snackbar.make(search_button, it.message.toString(), Snackbar.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            })
-        }
+//        mainViewModel.dealList.apply {
+//            value = null
+//            observe(viewLifecycleOwner, { list ->
+//                list?.let{
+//                    requireActivity().loadProgreesBar?.visibility = View.GONE
+//                    dataTransferModel.setDealList(list)
+//                    search_button.findNavController().navigate(R.id.nav_result, null)
+//                }
+//            })
+//        }
+//
+//        mainViewModel.documentError.apply {
+//            value = null
+//            observe(viewLifecycleOwner, {
+//                it?.let {
+//                    requireActivity().loadProgreesBar?.visibility = View.GONE
+//                    when (it) {
+//                        is IndexOutOfBoundsException ->
+//                        {
+//                            val dealList: ArrayList<Deal> = arrayListOf()
+//                            dataTransferModel.setDealList(dealList)
+//                            search_button.findNavController().navigate(R.id.nav_result, null)
+//                        }
+//                        else ->
+//                        {
+//                            Snackbar.make(search_button, it.message.toString(), Snackbar.LENGTH_LONG).show()
+//                        }
+//                    }
+//                }
+//            })
+//        }
     }
 
 

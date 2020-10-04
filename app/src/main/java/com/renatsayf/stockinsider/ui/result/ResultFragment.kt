@@ -14,17 +14,22 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.DataTransferModel
+import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_result.*
+import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
@@ -36,9 +41,13 @@ class ResultFragment : Fragment()
 {
     companion object
     {
-        val TAG : String = this::class.java.simpleName
+        val TAG = this::class.java.canonicalName.toString().plus("_tag")
+        val ARG_SET_NAME = this::class.java.canonicalName.toString().plus("_arg_set_name")
+        const val PURCHASES_1_FOR_WEEK = "Purchases more \$1 million for week"
+        const val PURCHASES_5_FOR_WEEK = "Purchases more \$5 million for week"
     }
     private lateinit var viewModel : ResultViewModel
+    private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
 
     @Inject
@@ -71,7 +80,8 @@ class ResultFragment : Fragment()
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProvider(this).get(ResultViewModel::class.java)
+        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
+        viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
         dataTransferModel = activity?.run {
             ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         }!!
@@ -84,8 +94,43 @@ class ResultFragment : Fragment()
             it?.let{ alarmOnImgView.visibility = it }
         })
 
-        dataTransferModel.getDealList().observe(viewLifecycleOwner, {
+        viewModel.toolBarTitle.observe(viewLifecycleOwner, {
+            requireActivity().toolbar.title = it
+        })
+
+        noResultLayout.visibility = View.GONE
+
+        if (savedInstanceState == null)
+        {
+            requireActivity().loadProgreesBar.visibility = View.VISIBLE
+            val setName = arguments?.getString(ARG_SET_NAME)
+            if (!setName.isNullOrEmpty())
+            {
+                //requireActivity().toolbar.title = setName
+                viewModel.setToolBarTitle(setName)
+                val mainActivity = activity as MainActivity
+                val set = mainViewModel.getSearchSet(setName)
+                val searchSet = SearchSet(set.setName).apply {
+                    ticker = mainActivity.getTickersString(set.ticker)
+                    filingPeriod = mainActivity.getFilingOrTradeValue(set.filingPeriod)
+                    tradePeriod = mainActivity.getFilingOrTradeValue(set.tradePeriod)
+                    isPurchase = mainActivity.getCheckBoxValue(set.isPurchase)
+                    isSale = mainActivity.getCheckBoxValue(set.isSale)
+                    tradedMin = set.tradedMin
+                    tradedMax = set.tradedMax
+                    isOfficer = mainActivity.getOfficerValue(set.isOfficer)
+                    isDirector = mainActivity.getCheckBoxValue(set.isDirector)
+                    isTenPercent = mainActivity.getCheckBoxValue(set.isTenPercent)
+                    groupBy = mainActivity.getGroupingValue(set.groupBy)
+                    sortBy = mainActivity.getSortingValue(set.sortBy)
+                }
+                mainViewModel.getDealList(searchSet)
+            }
+        }
+
+        mainViewModel.dealList.observe(viewLifecycleOwner, {
             it.let { list ->
+                requireActivity().loadProgreesBar?.visibility = View.GONE
                 when
                 {
                     list.size > 0 && list[0].error!!.isEmpty()     ->
@@ -111,6 +156,49 @@ class ResultFragment : Fragment()
                     {
                         resultTV.text = list.size.toString()
                         noResultLayout.visibility = View.VISIBLE
+                    }
+                }
+            }
+        })
+
+        mainViewModel.documentError.observe(viewLifecycleOwner, {
+            requireActivity().loadProgreesBar?.visibility = View.GONE
+            when (it) {
+                is IndexOutOfBoundsException ->
+                {
+                    val dealList: ArrayList<Deal> = arrayListOf()
+                    when
+                    {
+                        dealList.size > 0 && dealList[0].error!!.isEmpty()     ->
+                        {
+                            resultTV.text = dealList.size.toString()
+                            val linearLayoutManager = LinearLayoutManager(activity)
+                            val dealListAdapter = DealListAdapter(dealList)
+                            dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                            tradeListRV.apply {
+                                setHasFixedSize(true)
+                                layoutManager = linearLayoutManager
+                                adapter = dealListAdapter
+                            }
+                        }
+                        dealList.size == 1 && dealList[0].error!!.isNotEmpty() ->
+                        {
+                            resultTV.text = 0.toString()
+                            recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
+                            noResultLayout.visibility = View.VISIBLE
+                        }
+                        else                                                   ->
+                        {
+                            resultTV.text = dealList.size.toString()
+                            noResultLayout.visibility = View.VISIBLE
+                        }
+                    }
+                }
+                else ->
+                {
+                    if (it != null)
+                    {
+                        Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
@@ -196,6 +284,12 @@ class ResultFragment : Fragment()
         })
 
 
+    }
+
+    override fun onDestroy()
+    {
+        super.onDestroy()
+        requireActivity().loadProgreesBar.visibility = View.GONE
     }
 
 

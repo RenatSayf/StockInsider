@@ -37,5 +37,18 @@ class ResultViewModel @ViewModelInject constructor() : ViewModel()
     }
     //endregion
 
+    //region Сохранение состояния заголовка ToolBar
+    private val _toolBarTitle = MutableLiveData<String>().apply {
+        value
+    }
+    val toolBarTitle: LiveData<String> = _toolBarTitle
+
+    fun setToolBarTitle(title: String)
+    {
+        _toolBarTitle.value = title
+    }
+    //endregion
+
+
 
 }

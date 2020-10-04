@@ -28,11 +28,10 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         repositoryImpl.getSearchSetFromDbAsync(setName)
     }
 
-    fun saveDefaultSearch(set : RoomSearchSet)
+    fun saveSearchSet(set: RoomSearchSet) : Long
     {
-        repositoryImpl.saveDefaultSearchAsync(set)
+        return repositoryImpl.saveSearchSetAsync(set)
     }
-
     private var _companies = MutableLiveData<Array<Companies>>().apply {
         value = getCompanies()
     }

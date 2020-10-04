@@ -16,12 +16,12 @@
         <action
             android:id="@+id/action_nav_home_to_nav_strategy"
             app:destination="@id/nav_strategy" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_purchases"
-            app:destination="@id/nav_purchases" />
-        <action
-            android:id="@+id/action_nav_home_to_nav_purchases25"
-            app:destination="@id/nav_purchases25" />
+<!--        <action-->
+<!--            android:id="@+id/action_nav_home_to_nav_purchases"-->
+<!--            app:destination="@id/nav_purchases" />-->
+<!--        <action-->
+<!--            android:id="@+id/action_nav_home_to_nav_purchases25"-->
+<!--            app:destination="@id/nav_purchases25" />-->
     </fragment>
 
     <fragment
@@ -56,17 +56,17 @@
             app:destination="@id/nav_trading_by_ticker" />
     </fragment>
 
-    <fragment
-        android:id="@+id/nav_purchases"
-        android:name="com.renatsayf.stockinsider.ui.latest.LastDealsFragment"
-        android:label="@string/text_latest_purchases_1"
-        tools:layout="@layout/fragment_result" />
+<!--    <fragment-->
+<!--        android:id="@+id/nav_purchases"-->
+<!--        android:name="com.renatsayf.stockinsider.ui.latest.LastDealsFragment"-->
+<!--        android:label="@string/text_latest_purchases_1"-->
+<!--        tools:layout="@layout/fragment_result" />-->
 
-    <fragment
-        android:id="@+id/nav_purchases25"
-        android:name="com.renatsayf.stockinsider.ui.latest.purchases25.Purchases25Fragment"
-        android:label="@string/text_latest_purchases_5"
-        tools:layout="@layout/purchases25_fragment" />
+<!--    <fragment-->
+<!--        android:id="@+id/nav_purchases25"-->
+<!--        android:name="com.renatsayf.stockinsider.ui.latest.purchases25.Purchases25Fragment"-->
+<!--        android:label="@string/text_latest_purchases_5"-->
+<!--        tools:layout="@layout/purchases25_fragment" />-->
     <fragment
         android:id="@+id/nav_insider_trading"
         android:name="com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment"

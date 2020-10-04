@@ -29,18 +29,18 @@ interface OpenInsiderService
                 @Query("excludeDerivRelated", encoded = true) excludeDerivRelated: String = "1",
                 @Query("vl", encoded = true) tradedMin: String,
                 @Query("vh", encoded = true) tradedMax: String,
-                @Query("isofficer") isOfficer: String,
-                @Query("iscob") isCob : String = isOfficer,
-                @Query("isceo") isSeo: String = isOfficer,
-                @Query("ispres") isPres: String = isOfficer,
-                @Query("iscoo") isCoo: String = isOfficer,
-                @Query("iscfo") isCfo: String = isOfficer,
-                @Query("isgc") isGc: String = isOfficer,
-                @Query("isvp") isVp: String = isOfficer,
-                @Query("isdirector") isDirector: String,
-                @Query("istenpercent") isTenPercent: String,
-                @Query("grp") groupBy: String,
-                @Query("sortcol") sortBy: String
+                @Query("isofficer", encoded = true) isOfficer: String,
+                @Query("iscob", encoded = true) isCob : String = isOfficer,
+                @Query("isceo", encoded = true) isSeo: String = isOfficer,
+                @Query("ispres", encoded = true) isPres: String = isOfficer,
+                @Query("iscoo", encoded = true) isCoo: String = isOfficer,
+                @Query("iscfo", encoded = true) isCfo: String = isOfficer,
+                @Query("isgc", encoded = true) isGc: String = isOfficer,
+                @Query("isvp", encoded = true) isVp: String = isOfficer,
+                @Query("isdirector", encoded = true) isDirector: String,
+                @Query("istenpercent", encoded = true) isTenPercent: String,
+                @Query("grp", encoded = true) groupBy: String,
+                @Query("sortcol", encoded = true) sortBy: String
                          ): Observable<Document>
 
     @Headers(userAgentHeader)
