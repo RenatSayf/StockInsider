@@ -43,6 +43,7 @@ class ResultFragment : Fragment()
     {
         val TAG = this::class.java.canonicalName.toString().plus("_tag")
         val ARG_SET_NAME = this::class.java.canonicalName.toString().plus("_arg_set_name")
+        val ARG_TITLE = this::class.java.canonicalName.toString().plus("_arg_title")
         const val PURCHASES_1_FOR_WEEK = "Purchases more \$1 million for week"
         const val PURCHASES_5_FOR_WEEK = "Purchases more \$5 million for week"
     }
@@ -100,14 +101,16 @@ class ResultFragment : Fragment()
 
         noResultLayout.visibility = View.GONE
 
+        val title = arguments?.getString(ARG_TITLE) ?: ""
+        viewModel.setToolBarTitle(title)
+
         if (savedInstanceState == null)
         {
             requireActivity().loadProgreesBar.visibility = View.VISIBLE
             val setName = arguments?.getString(ARG_SET_NAME)
+
             if (!setName.isNullOrEmpty())
             {
-                //requireActivity().toolbar.title = setName
-                viewModel.setToolBarTitle(setName)
                 val mainActivity = activity as MainActivity
                 val set = mainViewModel.getSearchSet(setName)
                 val searchSet = SearchSet(set.setName).apply {

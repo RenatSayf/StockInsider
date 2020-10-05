@@ -13,7 +13,6 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.ui.main.MainFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.AppLog
@@ -94,16 +93,16 @@ class AlarmReceiver : BroadcastReceiver()
         }
     }
 
-    private fun getSearchSet() : RoomSearchSet = runBlocking {
+    private fun getSearchSet(setName: String) : RoomSearchSet = runBlocking {
         return@runBlocking withContext(Dispatchers.Default) {
-            db.getSetByName(MainFragment.DEFAULT_SET)
+            db.getSetByName(setName)
         }
     }
 
     private fun runAlarmTask(context: Context)
     {
-        val roomSearchSet = getSearchSet()
-        val requestParams = SearchSet(MainFragment.DEFAULT_SET).apply {
+        val roomSearchSet = getSearchSet(context.getString(R.string.text_default_set_name))
+        val requestParams = SearchSet(roomSearchSet.setName).apply {
             ticker = roomSearchSet.ticker
             filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
             tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)

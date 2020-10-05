@@ -35,10 +35,11 @@ class MainFragment : Fragment()
 {
     companion object
     {
-        const val DEFAULT_SET : String = "default set"
+
     }
     private lateinit var mainViewModel : MainViewModel
     private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var defaultSet : String
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
@@ -126,7 +127,8 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
+        defaultSet = getString(R.string.text_default_set_name)
+        val roomSearchSet = mainViewModel.getSearchSet(defaultSet)
         mainViewModel.setSearchSet(roomSearchSet)
 
         search_button.setOnClickListener {
@@ -146,10 +148,8 @@ class MainFragment : Fragment()
             searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
             searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
 
-            //mainViewModel.getDealList(searchSet)
-
             val set = RoomSearchSet(
-                    DEFAULT_SET,
+                    defaultSet,
                     "",
                     ticker_ET.text.toString().trim(),
                     filingDateSpinner.selectedItemPosition,
@@ -169,7 +169,8 @@ class MainFragment : Fragment()
             if (result > -1)
             {
                 val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_SET_NAME, DEFAULT_SET)
+                    putString(ResultFragment.ARG_SET_NAME, defaultSet)
+                    putString(ResultFragment.ARG_TITLE, "Trading Screen")
                 }
                 search_button.findNavController().navigate(R.id.nav_result, bundle)
             }

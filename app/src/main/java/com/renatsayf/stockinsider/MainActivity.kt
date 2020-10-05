@@ -153,14 +153,16 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 0 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, ResultFragment.PURCHASES_1_FOR_WEEK)
+                                putString(ResultFragment.ARG_SET_NAME, "purchases_more_1")
+                                putString(ResultFragment.ARG_TITLE, "Purchases more \$1 million\n for week")
                             }
                             navController.navigate(R.id.nav_result, bundle)
                         }
                         p2 == 1 && p3 == 1 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, ResultFragment.PURCHASES_5_FOR_WEEK)
+                                putString(ResultFragment.ARG_SET_NAME, "purchases_more_5")
+                                putString(ResultFragment.ARG_TITLE, "Purchases more \$5 million\n for week")
                             }
                             navController.navigate(R.id.nav_result, bundle)
                         }

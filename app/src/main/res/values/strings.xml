@@ -148,5 +148,7 @@
     <string name="text_company">Company:</string>
     <string name="text_financial_support">To support the financial</string>
     <string name="text_watch_ads">Watch the Ads</string>
+    <string name="title_trading_screen">Trading Screen</string>
+    <string name="text_default_set_name">default_set</string>
 
 </resources>
