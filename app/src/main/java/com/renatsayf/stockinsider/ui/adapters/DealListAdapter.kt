@@ -14,12 +14,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
+import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.deal_layout.view.*
 import java.text.NumberFormat
 import java.util.*
 
-class DealListAdapter(private val dealList: ArrayList<Deal>) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+class DealListAdapter(private val dealList: ArrayList<Deal>,
+                        private val childLayoutId: Int) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     companion object
     {
@@ -33,7 +35,7 @@ class DealListAdapter(private val dealList: ArrayList<Deal>) : RecyclerView.Adap
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
         val cardView = LayoutInflater.from(parent.context).inflate(
-                R.layout.deal_layout,
+                childLayoutId,
                 parent,
                 false) as CardView
         context = parent.context
@@ -48,103 +50,115 @@ class DealListAdapter(private val dealList: ArrayList<Deal>) : RecyclerView.Adap
     override fun onBindViewHolder(holder : ViewHolder, position : Int)
     {
         val itemView = holder.itemView
-        val deal = dealList[position]
-        itemView.filingDateTV.text = deal.filingDate
-        itemView.tickerTV.text = deal.ticker
-        itemView.companyNameTV.text = deal.company
-        itemView.tradeTypeTV.text = deal.tradeType
-        val numberFormat = NumberFormat.getInstance(Locale.getDefault())
-        val formatedVolume = numberFormat.format(deal.volume)
-        itemView.dealValueTV.text = formatedVolume
-        itemView.insiderNameTV.text = deal.insiderName
-        itemView.insiderTitleTV.text = deal.insiderTitle
-        if (deal.tradeTypeInt > 0)
+        when (childLayoutId)
         {
-            if (deal.volume <= 999)
+            R.layout.deal_layout      ->
             {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000))
+                val deal = dealList[position]
+                itemView.filingDateTV.text = deal.filingDate
+                itemView.tickerTV.text = deal.ticker
+                itemView.companyNameTV.text = deal.company
+                itemView.tradeTypeTV.text = deal.tradeType
+                val numberFormat = NumberFormat.getInstance(Locale.getDefault())
+                val formatedVolume = numberFormat.format(deal.volume)
+                itemView.dealValueTV.text = formatedVolume
+                itemView.insiderNameTV.text = deal.insiderName
+                itemView.insiderTitleTV.text = deal.insiderTitle
+                if (deal.tradeTypeInt > 0)
+                {
+                    if (deal.volume <= 999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000))
+                    }
+                    if (deal.volume > 999 && deal.volume <= 9999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy10000))
+                    }
+                    if (deal.volume > 9999 && deal.volume <= 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy100000))
+                    }
+                    if (deal.volume > 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+                    }
+                }
+                else if (deal.tradeTypeInt == -1)
+                {
+                    if (deal.volume <= 999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000))
+                    }
+                    if (deal.volume > 999 && deal.volume <= 9999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale10000))
+                    }
+                    if (deal.volume > 9999 && deal.volume <= 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale100000))
+                    }
+                    if (deal.volume > 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000000))
+                    }
+                }
+                else if (deal.tradeTypeInt == -2)
+                {
+                    if (deal.volume <= 999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000))
+                    }
+                    if (deal.volume > 999 && deal.volume <= 9999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe10000))
+                    }
+                    if (deal.volume > 9999 && deal.volume <= 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe100000))
+                    }
+                    if (deal.volume > 99999)
+                    {
+                        itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000000))
+                    }
+                }
+
+                itemView.dealConstraintLayout.setOnClickListener {
+                    itemView.dealMotionLayout.transitionToEnd()
+
+                }
+
+                itemView.dealMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener{
+                    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
+                    {
+
+                    }
+
+                    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
+                    {
+
+                    }
+
+                    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
+                    {
+
+                    }
+
+                    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
+                    {
+                        val bundle = Bundle()
+                        bundle.putParcelable(DealFragment.ARG_DEAL, deal)
+                        dealAdapterItemClick.value = Event(itemView.dealCardView.background)
+                        itemView.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
+                    }
+                })
             }
-            if (deal.volume > 999 && deal.volume <= 9999)
+            R.layout.fake_deal_layout ->
             {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy10000))
-            }
-            if (deal.volume > 9999 && deal.volume <= 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy100000))
-            }
-            if (deal.volume > 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+
             }
         }
-        else if (deal.tradeTypeInt == -1)
-        {
-            if (deal.volume <= 999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000))
-            }
-            if (deal.volume > 999 && deal.volume <= 9999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale10000))
-            }
-            if (deal.volume > 9999 && deal.volume <= 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale100000))
-            }
-            if (deal.volume > 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000000))
-            }
-        }
-        else if (deal.tradeTypeInt == -2)
-        {
-            if (deal.volume <= 999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000))
-            }
-            if (deal.volume > 999 && deal.volume <= 9999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe10000))
-            }
-            if (deal.volume > 9999 && deal.volume <= 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe100000))
-            }
-            if (deal.volume > 99999)
-            {
-                itemView.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000000))
-            }
-        }
+        //println("**************view id = ${res} *********************")
 
-        itemView.dealConstraintLayout.setOnClickListener {
-            itemView.dealMotionLayout.transitionToEnd()
-
-        }
-
-        itemView.dealMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener{
-            override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
-            {
-
-            }
-
-            override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
-            {
-
-            }
-
-            override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
-            {
-
-            }
-
-            override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
-            {
-                val bundle = Bundle()
-                bundle.putParcelable(DealFragment.ARG_DEAL, deal)
-                dealAdapterItemClick.value = Event(itemView.dealCardView.background)
-                itemView.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
-            }
-        })
 
     }
 

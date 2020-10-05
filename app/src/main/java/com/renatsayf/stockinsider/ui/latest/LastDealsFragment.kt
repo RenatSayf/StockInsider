@@ -88,7 +88,7 @@ class LastDealsFragment : Fragment()
                 {
                     resultTV.text = it.size.toString()
                     val linearLayoutManager = LinearLayoutManager(activity)
-                    val dealListAdapter = DealListAdapter(it)
+                    val dealListAdapter = DealListAdapter(it, R.layout.deal_layout)
                     dealListAdapter.stateRestorationPolicy =
                             RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                     tradeListRV.apply {
@@ -116,7 +116,7 @@ class LastDealsFragment : Fragment()
                             {
                                 resultTV.text = dealList.size.toString()
                                 val linearLayoutManager = LinearLayoutManager(activity)
-                                val dealListAdapter = DealListAdapter(dealList)
+                                val dealListAdapter = DealListAdapter(dealList, R.layout.deal_layout)
                                 dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                                 tradeListRV.apply {
                                     setHasFixedSize(true)

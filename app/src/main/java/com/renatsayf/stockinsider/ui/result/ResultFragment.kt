@@ -29,6 +29,7 @@ import com.renatsayf.stockinsider.utils.Utils
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.fragment_result.*
+import kotlinx.android.synthetic.main.fragment_result.view.*
 import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
@@ -44,8 +45,6 @@ class ResultFragment : Fragment()
         val TAG = this::class.java.canonicalName.toString().plus("_tag")
         val ARG_SET_NAME = this::class.java.canonicalName.toString().plus("_arg_set_name")
         val ARG_TITLE = this::class.java.canonicalName.toString().plus("_arg_title")
-        const val PURCHASES_1_FOR_WEEK = "Purchases more \$1 million for week"
-        const val PURCHASES_5_FOR_WEEK = "Purchases more \$5 million for week"
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
@@ -75,6 +74,19 @@ class ResultFragment : Fragment()
     {
         val root = inflater.inflate(R.layout.fragment_result, container, false)
         root.noResultLayout.visibility = View.GONE
+
+        //region Показываем фейковый список пока подгружаются данные
+        val fakeDeal = Deal("xxxxxxxx")
+        val fakeList = ArrayList<Deal>()
+        for (i in 0..10) fakeList.add(fakeDeal)
+        val linearLayoutManager = LinearLayoutManager(activity)
+        val dealListAdapter = DealListAdapter(fakeList, R.layout.fake_deal_layout)
+        root.tradeListRV.apply {
+            setHasFixedSize(true)
+            layoutManager = linearLayoutManager
+            adapter = dealListAdapter
+        }
+        //endregion
         return root
     }
 
@@ -98,8 +110,6 @@ class ResultFragment : Fragment()
         viewModel.toolBarTitle.observe(viewLifecycleOwner, {
             requireActivity().toolbar.title = it
         })
-
-        noResultLayout.visibility = View.GONE
 
         val title = arguments?.getString(ARG_TITLE) ?: ""
         viewModel.setToolBarTitle(title)
@@ -140,7 +150,7 @@ class ResultFragment : Fragment()
                     {
                         resultTV.text = list.size.toString()
                         val linearLayoutManager = LinearLayoutManager(activity)
-                        val dealListAdapter = DealListAdapter(list)
+                        val dealListAdapter = DealListAdapter(list, R.layout.deal_layout)
                         dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                         tradeListRV.apply {
                             setHasFixedSize(true)
@@ -176,7 +186,7 @@ class ResultFragment : Fragment()
                         {
                             resultTV.text = dealList.size.toString()
                             val linearLayoutManager = LinearLayoutManager(activity)
-                            val dealListAdapter = DealListAdapter(dealList)
+                            val dealListAdapter = DealListAdapter(dealList, R.layout.deal_layout)
                             dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                             tradeListRV.apply {
                                 setHasFixedSize(true)
