@@ -34,7 +34,9 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
 
         val homeHeader: ArrayList<String> = arrayListOf()
         val latestHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_latest_purchases_1),
-                                                          context.getString(R.string.text_latest_purchases_5))
+                                                          context.getString(R.string.text_latest_purchases_5),
+                                                          context.getString(R.string.text_latest_sales_1),
+                                                          context.getString(R.string.text_latest_sales_5))
         val strategyHeader: ArrayList<String> = arrayListOf()
         val supportHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_financial_support),context.getString(R.string.text_watch_ads))
         val exitHeader: ArrayList<String> = arrayListOf()

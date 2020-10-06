@@ -154,7 +154,7 @@ class MainActivity : AppCompatActivity()
                         {
                             val bundle = Bundle().apply {
                                 putString(ResultFragment.ARG_SET_NAME, "purchases_more_1")
-                                putString(ResultFragment.ARG_TITLE, "Purchases more \$1 million\n for week")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
                             }
                             navController.navigate(R.id.nav_result, bundle)
                         }
@@ -162,9 +162,27 @@ class MainActivity : AppCompatActivity()
                         {
                             val bundle = Bundle().apply {
                                 putString(ResultFragment.ARG_SET_NAME, "purchases_more_5")
-                                putString(ResultFragment.ARG_TITLE, "Purchases more \$5 million\n for week")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
                             }
                             navController.navigate(R.id.nav_result, bundle)
+                        }
+                        p2 == 1 && p3 == 2 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_SET_NAME, "sales_more_1")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                            }.run {
+                                navController.navigate(R.id.nav_result, this)
+                            }
+                        }
+                        p2 == 1 && p3 == 3 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_SET_NAME, "sales_more_5")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                            }.run {
+                                navController.navigate(R.id.nav_result, this)
+                            }
                         }
                         p2 == 3 && p3 == 0 ->
                         {

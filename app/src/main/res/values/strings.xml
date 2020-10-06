@@ -85,8 +85,8 @@
     
     <string-array name="list_for_filing_date">
         <item>All dates</item>
-        <item>Custom</item>
         <item>Latest day</item>
+        <item>Last 2 days</item>
         <item>Last 3 days</item>
         <item>Last 1 week</item>
         <item>Last 2 weeks</item>
@@ -100,8 +100,8 @@
     </string-array>
     <integer-array name="value_for_filing_date">
         <item>0</item>
-        <item>-1</item>
         <item>1</item>
+        <item>2</item>
         <item>3</item>
         <item>7</item>
         <item>14</item>
@@ -150,5 +150,11 @@
     <string name="text_watch_ads">Watch the Ads</string>
     <string name="title_trading_screen">Trading Screen</string>
     <string name="text_default_set_name">default_set</string>
+    <string name="text_purchases_more_1">Purchases more $1 million for week</string>
+    <string name="text_purchases_more_5">Purchases more $5 million for week</string>
+    <string name="text_latest_sales_1">Sales more $1 million</string>
+    <string name="text_latest_sales_5">Sales more $5 million</string>
+    <string name="text_sales_more_1">Sales more $1 million for week</string>
+    <string name="text_sales_more_5">Sales more $5 million for week</string>
 
 </resources>
