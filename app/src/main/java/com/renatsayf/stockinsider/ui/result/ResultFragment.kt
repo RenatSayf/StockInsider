@@ -76,9 +76,8 @@ class ResultFragment : Fragment()
         root.noResultLayout.visibility = View.GONE
 
         //region Показываем фейковый список пока подгружаются данные
-        val fakeDeal = Deal("xxxxxxxx")
         val fakeList = ArrayList<Deal>()
-        for (i in 0..10) fakeList.add(fakeDeal)
+        for (i in 0..10) fakeList.add(Deal("xxxxxxxx"))
         val linearLayoutManager = LinearLayoutManager(activity)
         val dealListAdapter = DealListAdapter(fakeList, R.layout.fake_deal_layout)
         root.tradeListRV.apply {
@@ -150,7 +149,7 @@ class ResultFragment : Fragment()
                     {
                         resultTV.text = list.size.toString()
                         val linearLayoutManager = LinearLayoutManager(activity)
-                        val dealListAdapter = DealListAdapter(list, R.layout.deal_layout)
+                        val dealListAdapter = DealListAdapter(list)
                         dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                         tradeListRV.apply {
                             setHasFixedSize(true)
@@ -186,7 +185,7 @@ class ResultFragment : Fragment()
                         {
                             resultTV.text = dealList.size.toString()
                             val linearLayoutManager = LinearLayoutManager(activity)
-                            val dealListAdapter = DealListAdapter(dealList, R.layout.deal_layout)
+                            val dealListAdapter = DealListAdapter(dealList)
                             dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                             tradeListRV.apply {
                                 setHasFixedSize(true)

@@ -283,7 +283,6 @@ class MainActivity : AppCompatActivity()
 
     fun getSortingValue(position : Int) : String
     {
-        appLog.print(this::class.java.canonicalName.toString(), "****************** position = $position *********************")
         val sortingValue : String
         return try
         {

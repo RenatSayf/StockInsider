@@ -14,14 +14,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
-import com.renatsayf.stockinsider.utils.AppLog
 import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.deal_layout.view.*
 import java.text.NumberFormat
 import java.util.*
 
 class DealListAdapter(private val dealList: ArrayList<Deal>,
-                        private val childLayoutId: Int) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+                        private val childLayoutId: Int = R.layout.deal_layout) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     companion object
     {
@@ -157,8 +156,6 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
 
             }
         }
-        //println("**************view id = ${res} *********************")
-
 
     }
 

@@ -61,7 +61,7 @@ class InsiderTradingFragment : Fragment()
             insiderNameTView.text = insiderName
 
             val linearLayoutManager = LinearLayoutManager(activity)
-            val dealListAdapter = DealListAdapter(dealList, R.layout.deal_layout)
+            val dealListAdapter = DealListAdapter(dealList)
             dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             tradeListRV.apply {
                 setHasFixedSize(true)
