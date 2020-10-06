@@ -11,4 +11,4 @@ is_officer,
 is_director, 
 is_ten_percent, 
 group_by, 
-sort_by) VALUES ("Purchases more $5 million for week", "", "", 7, 7, 1, 0, 4999, "", 1, 1, 1, 0, 0)
+sort_by) VALUES ("sales_more_5", "", "", 7, 7, 0, 1, 4999, "", 1, 1, 1, 0, 0)
