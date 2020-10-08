@@ -1,0 +1,24 @@
+header > div > img {
+    display: block;
+    margin: auto;
+    width: 100%;
+    height: auto;
+}
+
+#grid{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: 5fr;
+    grid-gap: 2vw;
+}
+
+#grid > div {
+    font-size: 5vw;
+    padding: .5em;
+    background:ghostwhite;
+    text-align: justify;
+  }
+
+p {
+    text-indent: 4vw;
+}
