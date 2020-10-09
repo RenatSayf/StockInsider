@@ -1,24 +1,41 @@
-header > div > img {
+.text-img {
     display: block;
     margin: auto;
     width: 100%;
     height: auto;
 }
 
+.sec-logo > img {
+    display: block;
+    margin: auto;
+    width: 30%;
+    height: 30%;
+    background-color: ghostwhite;
+}
+
 #grid{
     display: grid;
     grid-template-columns: 1fr;
     grid-template-rows: 5fr;
-    grid-gap: 2vw;
+    grid-gap: 0vw;
 }
 
 #grid > div {
     font-size: 5vw;
     padding: .5em;
-    background:ghostwhite;
+    background-color:ghostwhite;
     text-align: justify;
   }
 
 p {
     text-indent: 4vw;
+}
+
+ol > li {
+    margin: 10px;
+}
+
+.signature {
+    text-align: end;
+    font-style: italic;
 }

@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -210,37 +211,10 @@ class MainFragment : Fragment()
             }
         })
 
-//        mainViewModel.dealList.apply {
-//            value = null
-//            observe(viewLifecycleOwner, { list ->
-//                list?.let{
-//                    requireActivity().loadProgreesBar?.visibility = View.GONE
-//                    dataTransferModel.setDealList(list)
-//                    search_button.findNavController().navigate(R.id.nav_result, null)
-//                }
-//            })
-//        }
-//
-//        mainViewModel.documentError.apply {
-//            value = null
-//            observe(viewLifecycleOwner, {
-//                it?.let {
-//                    requireActivity().loadProgreesBar?.visibility = View.GONE
-//                    when (it) {
-//                        is IndexOutOfBoundsException ->
-//                        {
-//                            val dealList: ArrayList<Deal> = arrayListOf()
-//                            dataTransferModel.setDealList(dealList)
-//                            search_button.findNavController().navigate(R.id.nav_result, null)
-//                        }
-//                        else ->
-//                        {
-//                            Snackbar.make(search_button, it.message.toString(), Snackbar.LENGTH_LONG).show()
-//                        }
-//                    }
-//                }
-//            })
-//        }
+        requireActivity().onBackPressedDispatcher.addCallback(this){
+            (activity as MainActivity).finish()
+        }
+
     }
 
 
