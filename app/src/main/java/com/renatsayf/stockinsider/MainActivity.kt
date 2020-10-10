@@ -4,7 +4,11 @@ import android.app.Activity
 import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
+import android.text.*
+import android.text.style.*
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -32,8 +36,10 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
+import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
@@ -63,6 +69,9 @@ class MainActivity : AppCompatActivity()
 
     @Inject
     lateinit var donateDialog: DonateDialog
+
+    @Inject
+    lateinit var confirmationDialog: ConfirmationDialog
 
     override fun onCreate(savedInstanceState : Bundle?)
     {
@@ -127,7 +136,8 @@ class MainActivity : AppCompatActivity()
                         }
                         2 ->
                         {
-                            navController.navigate(R.id.nav_strategy)
+                            val spannableMessage = createSpannableMessage()
+                            AppDialog.getInstance(spannableMessage, "Читать").show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         4 ->
@@ -220,6 +230,44 @@ class MainActivity : AppCompatActivity()
                 }
             }
         }
+    }
+
+    private fun createSpannableMessage() : SpannableStringBuilder
+    {
+        val clickable = object : ClickableSpan()
+        {
+            override fun onClick(p0: View)
+            {
+                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.fxmag.ru/"))
+                startActivity(intent)
+            }
+        }
+        val string1 = "Привет!\n"
+        val spannable1 = SpannableString(string1)
+        spannable1.apply {
+            setSpan(ForegroundColorSpan(Color.GREEN),0, string1.length - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            setSpan(RelativeSizeSpan(2f), 0, string1.length -1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+
+        }
+        val spannableStringBuilder = SpannableStringBuilder(spannable1)
+
+        val string2 = "Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»\n"
+
+        spannableStringBuilder.append(SpannableString(string2).apply
+        {
+            setSpan(UnderlineSpan(), 71, 85, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+            setSpan(
+                    ForegroundColorSpan(getColor(R.color.colorSectionDivider)),
+                    71,
+                    85,
+                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            setSpan(clickable, 71, 85, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
+        })
+
+        val string3 = "\nПолный обзор этих статей, описывающих стратегию торговли, вы можете прочитать в этом разделе."
+        spannableStringBuilder.append(SpannableString(string3))
+        return spannableStringBuilder
     }
 
     override fun onCreateOptionsMenu(menu : Menu) : Boolean

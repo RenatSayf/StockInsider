@@ -12,12 +12,12 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class ConfirmationDialog constructor(var message : String,
-                                     var btnOkText: String,
+                                     private var btnOkText: String,
                                      var flag : String) : DialogFragment()
 {
     companion object{
-        const val TAG = "confirmation_dialog"
-        const val FLAG_CANCEL = "cancel"
+        val TAG = this::class.java.canonicalName.plus("_confirmation_dialog")
+        val FLAG_CANCEL = this::class.java.canonicalName.plus("flag_cancel")
     }
     val eventOk : MutableLiveData<Event<String>> = MutableLiveData()
 
