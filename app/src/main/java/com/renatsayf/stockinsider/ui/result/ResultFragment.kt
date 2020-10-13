@@ -68,51 +68,15 @@ class ResultFragment : Fragment()
     @Inject
     lateinit var appLog: AppLog
 
-    override fun onCreateView(
-            inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
-                             ) : View?
+    override fun onCreate(savedInstanceState: Bundle?)
     {
-        val root = inflater.inflate(R.layout.fragment_result, container, false)
-        root.noResultLayout.visibility = View.GONE
+        super.onCreate(savedInstanceState)
 
-        //region Показываем фейковый список пока подгружаются данные
-        val fakeList = ArrayList<Deal>()
-        for (i in 0..10) fakeList.add(Deal("xxxxxxxx"))
-        val linearLayoutManager = LinearLayoutManager(activity)
-        val dealListAdapter = DealListAdapter(fakeList, R.layout.fake_deal_layout)
-        root.tradeListRV.apply {
-            setHasFixedSize(true)
-            layoutManager = linearLayoutManager
-            adapter = dealListAdapter
-        }
-        //endregion
-        return root
-    }
-
-    override fun onActivityCreated(savedInstanceState : Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        dataTransferModel = activity?.run {
-            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
-        }!!
-
-        viewModel.addAlarmVisibility.observe(viewLifecycleOwner, {
-            it?.let{ addAlarmImgView.visibility = it }
-        })
-
-        viewModel.alarmOnVisibility.observe(viewLifecycleOwner, {
-            it?.let{ alarmOnImgView.visibility = it }
-        })
-
-        viewModel.toolBarTitle.observe(viewLifecycleOwner, {
-            requireActivity().toolbar.title = it
-        })
-
-        val title = arguments?.getString(ARG_TITLE) ?: ""
-        viewModel.setToolBarTitle(title)
-
+        dataTransferModel = requireActivity().run {
+            ViewModelProvider(this)[DataTransferModel::class.java]
+        }
         if (savedInstanceState == null)
         {
             requireActivity().loadProgreesBar.visibility = View.VISIBLE
@@ -139,6 +103,47 @@ class ResultFragment : Fragment()
                 mainViewModel.getDealList(searchSet)
             }
         }
+    }
+
+    override fun onCreateView(
+            inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
+                             ) : View?
+    {
+        val root = inflater.inflate(R.layout.fragment_result, container, false)
+        root.noResultLayout.visibility = View.GONE
+
+        //region Показываем фейковый список пока подгружаются данные
+        val fakeList = ArrayList<Deal>()
+        for (i in 0..10) fakeList.add(Deal("xxxxxxxx"))
+        val linearLayoutManager = LinearLayoutManager(activity)
+        val dealListAdapter = DealListAdapter(fakeList, R.layout.fake_deal_layout)
+        root.tradeListRV.apply {
+            setHasFixedSize(true)
+            layoutManager = linearLayoutManager
+            adapter = dealListAdapter
+        }
+        //endregion
+        return root
+    }
+
+    override fun onActivityCreated(savedInstanceState : Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+
+        viewModel.addAlarmVisibility.observe(viewLifecycleOwner, {
+            it?.let{ addAlarmImgView.visibility = it }
+        })
+
+        viewModel.alarmOnVisibility.observe(viewLifecycleOwner, {
+            it?.let{ alarmOnImgView.visibility = it }
+        })
+
+        viewModel.toolBarTitle.observe(viewLifecycleOwner, {
+            requireActivity().toolbar.title = it
+        })
+
+        val title = arguments?.getString(ARG_TITLE) ?: ""
+        viewModel.setToolBarTitle(title)
 
         mainViewModel.dealList.observe(viewLifecycleOwner, {
             it.let { list ->
