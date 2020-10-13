@@ -2,11 +2,13 @@ package com.renatsayf.stockinsider.ui.strategy
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.widget.LinearLayout
+import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -19,6 +21,7 @@ class AppDialog : DialogFragment()
     companion object
     {
         val TAG = this::class.java.canonicalName.plus("_tag")
+        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("key_no_show_again")
         private lateinit var message: SpannableStringBuilder
         private lateinit var btnOkText: String
         private var instance: AppDialog? = null
@@ -48,6 +51,19 @@ class AppDialog : DialogFragment()
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
+                    dismiss()
+                }
+
+            })
+            setNeutralButton("Больше не показывать", object : DialogInterface.OnClickListener
+            {
+                override fun onClick(p0: DialogInterface?, p1: Int)
+                {
+                    requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit {
+                        putBoolean(KEY_NO_SHOW_AGAIN, true)
+                        apply()
+                    }
+                    (requireActivity() as MainActivity).navController.navigate(R.id.nav_strategy)
                     dismiss()
                 }
 

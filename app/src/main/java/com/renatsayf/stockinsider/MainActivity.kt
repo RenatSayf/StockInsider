@@ -105,6 +105,13 @@ class MainActivity : AppCompatActivity()
             true
         }
 
+
+        //region TODO перед релизом удалить или закомментировать
+        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+            putBoolean(AppDialog.KEY_NO_SHOW_AGAIN, false)
+            apply()
+        }
+        //endregion
         loadProgreesBar.visibility = View.GONE
 
         dataTransferModel = this.run {
@@ -136,8 +143,18 @@ class MainActivity : AppCompatActivity()
                         }
                         2 ->
                         {
-                            val spannableMessage = createSpannableMessage()
-                            AppDialog.getInstance(spannableMessage, "Читать").show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
+                            when(getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AppDialog.KEY_NO_SHOW_AGAIN, false))
+                            {
+                                true ->
+                                {
+                                    navController.navigate(R.id.nav_strategy)
+                                }
+                                else ->
+                                {
+                                    val spannableMessage = createSpannableMessage()
+                                    AppDialog.getInstance(spannableMessage, context.getString(R.string.text_read)).show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
+                                }
+                            }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         4 ->
@@ -242,7 +259,7 @@ class MainActivity : AppCompatActivity()
                 startActivity(intent)
             }
         }
-        val string1 = "Привет!\n"
+        val string1 = getString(R.string.text_hi)+"\n"
         val spannable1 = SpannableString(string1)
         spannable1.apply {
             setSpan(ForegroundColorSpan(Color.GREEN),0, string1.length - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
@@ -251,7 +268,7 @@ class MainActivity : AppCompatActivity()
         }
         val spannableStringBuilder = SpannableStringBuilder(spannable1)
 
-        val string2 = "Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»\n"
+        val string2 = getString(R.string.text_strategy_dialog_1)+"\n"
 
         spannableStringBuilder.append(SpannableString(string2).apply
         {
@@ -265,7 +282,7 @@ class MainActivity : AppCompatActivity()
             setSpan(clickable, 71, 85, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         })
 
-        val string3 = "\nПолный обзор этих статей, описывающих стратегию торговли, вы можете прочитать в этом разделе."
+        val string3 = "\n"+getString(R.string.text_strategy_dialog_2)
         spannableStringBuilder.append(SpannableString(string3))
         return spannableStringBuilder
     }

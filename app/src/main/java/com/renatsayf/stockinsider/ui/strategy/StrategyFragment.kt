@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.ui.strategy
 
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -10,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_strategy.*
 import kotlinx.android.synthetic.main.fragment_strategy.view.*
 
 @AndroidEntryPoint
@@ -42,5 +44,19 @@ class StrategyFragment : Fragment()
             webView.loadUrl("file:///android_asset/strategy/index.html")
         }
         return root
+    }
+
+    override fun onActivityCreated(savedInstanceState: Bundle?)
+    {
+        super.onActivityCreated(savedInstanceState)
+        webView.setOnTouchListener(object : View.OnTouchListener{
+            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
+            {
+                p0?.performClick()
+                
+                return false
+            }
+
+        })
     }
 }

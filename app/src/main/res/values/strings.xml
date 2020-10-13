@@ -156,5 +156,9 @@
     <string name="text_latest_sales_5">Sales more $5 million</string>
     <string name="text_sales_more_1">Sales more $1 million for week</string>
     <string name="text_sales_more_5">Sales more $5 million for week</string>
+    <string name="text_read">Читать</string>
+    <string name="text_hi">Привет!</string>
+    <string name="text_strategy_dialog_1">Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»</string>
+    <string name="text_strategy_dialog_2">Полный обзор этих статей, описывающих стратегию торговли, вы можете прочитать в этом разделе.</string>
 
 </resources>
