@@ -2,36 +2,53 @@ package com.renatsayf.stockinsider.ui.strategy
 
 import android.app.AlertDialog
 import android.app.Dialog
-import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.widget.LinearLayout
-import androidx.core.content.edit
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import kotlinx.android.synthetic.main.app_dialog_layout.view.*
 
 class AppDialog : DialogFragment()
 {
-
+    private lateinit var listener: OnClickListener
 
     companion object
     {
         val TAG = this::class.java.canonicalName.plus("_tag")
-        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("key_no_show_again")
         private lateinit var message: SpannableStringBuilder
-        private lateinit var btnOkText: String
+        private lateinit var positiveText: String
+        private var negativeText: String? = null
+        private var neutralText: String? = null
+        private var dialogTag: String = ""
         private var instance: AppDialog? = null
-        fun getInstance(message: SpannableStringBuilder, btnOkText: String = "OK"): AppDialog = if (instance == null)
+        fun getInstance(tag: String,
+                        message: SpannableStringBuilder,
+                        positiveText: String = "OK",
+                        negativeText: String? = "Cancel",
+                        neutralText: String? = null): AppDialog = if (instance == null)
         {
+            this.dialogTag = tag
             this.message = message
-            this.btnOkText = btnOkText
+            this.positiveText = positiveText
+            this.negativeText = negativeText
+            this.neutralText = neutralText
             AppDialog()
         }
         else instance as AppDialog
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        listener = ViewModelProvider(activity as MainActivity)[OnClickListener::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -40,35 +57,45 @@ class AppDialog : DialogFragment()
         dialogView.dialogTextView.text = message
         val builder = AlertDialog.Builder(requireContext()).apply {
             setView(dialogView)
-            setPositiveButton(btnOkText, object : DialogInterface.OnClickListener
+            setPositiveButton(positiveText, object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    (requireActivity() as MainActivity).navController.navigate(R.id.nav_strategy)
+                    val pair = Pair(dialogTag, p1)
+                    listener.pushData(pair) //push data to Activity or Fragments
                 }
             })
-            setNegativeButton("Закрыть", object : DialogInterface.OnClickListener
+        }
+        negativeText?.let {
+            builder.setNegativeButton(it, object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    dismiss()
-                }
-
-            })
-            setNeutralButton("Больше не показывать", object : DialogInterface.OnClickListener
-            {
-                override fun onClick(p0: DialogInterface?, p1: Int)
-                {
-                    requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).edit {
-                        putBoolean(KEY_NO_SHOW_AGAIN, true)
-                        apply()
-                    }
-                    (requireActivity() as MainActivity).navController.navigate(R.id.nav_strategy)
                     dismiss()
                 }
 
             })
         }
+        neutralText?.let {
+            builder.setNeutralButton(it, object : DialogInterface.OnClickListener
+            {
+                override fun onClick(p0: DialogInterface?, p1: Int)
+                {
+                    listener.pushData(Pair(dialogTag, p1)) //push data to Activity or Fragments
+                    dismiss()
+                }
+            })
+        }
         return builder.create()
+    }
+
+    class OnClickListener : ViewModel()
+    {
+        private val _click = MutableLiveData<Pair<String?, Int>>()
+        fun pushData(data: Pair<String?, Int>)
+        {
+            _click.value = data
+        }
+        var onClick: LiveData<Pair<String?, Int>> = _click
     }
 }

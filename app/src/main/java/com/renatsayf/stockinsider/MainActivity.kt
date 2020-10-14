@@ -31,8 +31,6 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
-import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -53,11 +51,12 @@ class MainActivity : AppCompatActivity()
     companion object
     {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
+        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("key_no_show_again")
     }
 
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
-    private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var appDialogListener : AppDialog.OnClickListener
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var ad: InterstitialAd
 
@@ -108,20 +107,13 @@ class MainActivity : AppCompatActivity()
 
         //region TODO перед релизом удалить или закомментировать
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-            putBoolean(AppDialog.KEY_NO_SHOW_AGAIN, false)
+            putBoolean(KEY_NO_SHOW_AGAIN, false)
             apply()
         }
         //endregion
         loadProgreesBar.visibility = View.GONE
 
-        dataTransferModel = this.run {
-            ViewModelProvider(this)[DataTransferModel::class.java]
-        }
-        val dealList = intent?.getParcelableArrayListExtra<Deal>(Deal.KEY_DEAL_LIST)
-        dealList?.let {
-            dataTransferModel.setDealList(dealList)
-            navController.navigate(R.id.nav_result, null)
-        }
+        appDialogListener = ViewModelProvider(this)[AppDialog.OnClickListener::class.java]
 
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
         expandMenu.apply {
@@ -143,7 +135,7 @@ class MainActivity : AppCompatActivity()
                         }
                         2 ->
                         {
-                            when(getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AppDialog.KEY_NO_SHOW_AGAIN, false))
+                            when(getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
                             {
                                 true ->
                                 {
@@ -152,7 +144,8 @@ class MainActivity : AppCompatActivity()
                                 else ->
                                 {
                                     val spannableMessage = createSpannableMessage()
-                                    AppDialog.getInstance(spannableMessage, context.getString(R.string.text_read)).show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
+                                    AppDialog.getInstance("show_strategy", spannableMessage, context.getString(R.string.text_read), "Закрыть", "Больше не показывать")
+                                        .show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
                                 }
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
@@ -228,6 +221,27 @@ class MainActivity : AppCompatActivity()
                 }
             })
         }
+
+        appDialogListener.onClick.observe(this, {
+            if (it.first == "show_strategy")
+            {
+                when (it.second)
+                {
+                    -1 ->
+                    {
+                        navController.navigate(R.id.nav_strategy)
+                    }
+                    -3 ->
+                    {
+                        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+                            putBoolean(KEY_NO_SHOW_AGAIN, true)
+                            apply()
+                        }
+                        navController.navigate(R.id.nav_strategy)
+                    }
+                }
+            }
+        })
 
         MobileAds.initialize(this){}
         ad = InterstitialAd(this).apply {

@@ -48,7 +48,6 @@ class ResultFragment : Fragment()
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var dataTransferModel : DataTransferModel
 
     @Inject
     lateinit var searchRequest: SearchRequest
@@ -74,9 +73,7 @@ class ResultFragment : Fragment()
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        dataTransferModel = requireActivity().run {
-            ViewModelProvider(this)[DataTransferModel::class.java]
-        }
+
         if (savedInstanceState == null)
         {
             requireActivity().loadProgreesBar.visibility = View.VISIBLE

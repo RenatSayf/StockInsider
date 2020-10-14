@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.DataTransferModel
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.android.synthetic.main.fragment_strategy.*
 import kotlinx.android.synthetic.main.fragment_strategy.view.*
@@ -24,10 +25,12 @@ class StrategyFragment : Fragment()
     }
 
     private lateinit var strategyViewModel: StrategyViewModel
+    private lateinit var dataTransferModel: DataTransferModel
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        dataTransferModel = ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
         requireActivity().onBackPressedDispatcher.addCallback(this){
             (activity as MainActivity).navController.navigate(R.id.nav_home)
         }
@@ -58,5 +61,6 @@ class StrategyFragment : Fragment()
             }
 
         })
+
     }
 }
