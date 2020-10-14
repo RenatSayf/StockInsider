@@ -152,6 +152,7 @@ class ResultFragment : Fragment()
                 {
                     list.size > 0 && list[0].error!!.isEmpty()     ->
                     {
+                        requireActivity().saveSearchBtnView.visibility = View.VISIBLE
                         resultTV.text = list.size.toString()
                         val linearLayoutManager = LinearLayoutManager(activity)
                         val dealListAdapter = DealListAdapter(list)
@@ -299,6 +300,10 @@ class ResultFragment : Fragment()
                 }
             }
         })
+
+        saveSearchBtnView.setOnClickListener {
+            Snackbar.make(it, "Click......", Snackbar.LENGTH_LONG).show()
+        }
 
 
     }
