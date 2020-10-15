@@ -35,6 +35,7 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
@@ -321,6 +322,10 @@ class MainActivity : AppCompatActivity()
             {
                 drawerLayout.openDrawer(GravityCompat.START)
                 return true
+            }
+            R.id.action_settings ->
+            {
+                SaveSearchDialog().show(supportFragmentManager, SaveSearchDialog.TAG)
             }
         }
         return super.onOptionsItemSelected(item)
