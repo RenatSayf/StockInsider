@@ -21,6 +21,7 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
@@ -48,6 +49,7 @@ class ResultFragment : Fragment()
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
+    private lateinit var searchSet: SearchSet
 
     @Inject
     lateinit var searchRequest: SearchRequest
@@ -83,7 +85,7 @@ class ResultFragment : Fragment()
             {
                 val mainActivity = activity as MainActivity
                 val set = mainViewModel.getSearchSet(setName)
-                val searchSet = SearchSet(set.setName).apply {
+                searchSet = SearchSet(set.setName).apply {
                     ticker = mainActivity.getTickersString(set.ticker)
                     filingPeriod = mainActivity.getFilingOrTradeValue(set.filingPeriod)
                     tradePeriod = mainActivity.getFilingOrTradeValue(set.tradePeriod)
@@ -299,7 +301,16 @@ class ResultFragment : Fragment()
         })
 
         saveSearchBtnView.setOnClickListener {
-            Snackbar.make(it, "Click......", Snackbar.LENGTH_LONG).show()
+            val name = (if (searchSet.ticker.isEmpty()) "All" else searchSet.ticker)
+                .plus("/period"+searchSet.filingPeriod)
+                .plus(if (searchSet.isPurchase == "1") "/Pur" else "")
+                .plus(if (searchSet.isSale == "1") "/Sale" else "")
+                .plus(if (searchSet.tradedMin.isNotEmpty()) "/min${searchSet.tradedMin}" else "")
+                .plus(if (searchSet.tradedMax.isNotEmpty()) "/max${searchSet.tradedMax}" else "")
+                .plus(if (searchSet.isOfficer.isNotEmpty()) "/Officer" else "")
+                .plus(if (searchSet.isDirector == "1") "/Dir" else "")
+                .plus(if (searchSet.isTenPercent == "1") "/10%Owner" else "")
+            SaveSearchDialog.getInstance(name).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
 
 

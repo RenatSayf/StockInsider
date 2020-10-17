@@ -325,7 +325,7 @@ class MainActivity : AppCompatActivity()
             }
             R.id.action_settings ->
             {
-                SaveSearchDialog().show(supportFragmentManager, SaveSearchDialog.TAG)
+                
             }
         }
         return super.onOptionsItemSelected(item)

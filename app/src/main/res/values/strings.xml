@@ -66,7 +66,7 @@
     <string name="text_latest_purchases_1">Purchases more $1 million</string>
     <string name="text_latest_purchases_5">Purchases more $5 million</string>
     <string name="text_data_not_avalible">Data is not available, please, try later</string>
-    <string name="text_cancel">Cancel</string>
+    <string name="text_cancel">Отмена</string>
     <string name="text_ok">OK</string>
     <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
     <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
@@ -160,5 +160,8 @@
     <string name="text_hi">Привет!</string>
     <string name="text_strategy_dialog_1">Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»</string>
     <string name="text_strategy_dialog_2">Полный обзор этих статей, описывающих стратегию торговли, вы можете прочитать в этом разделе.</string>
+    <string name="text_set_search_name">Задайте название поиска</string>
+    <string name="text_saving_search">Сохранение параметров поиска</string>
+    <string name="text_save">Сохранить</string>
 
 </resources>
