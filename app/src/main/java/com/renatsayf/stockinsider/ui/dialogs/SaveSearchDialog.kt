@@ -46,8 +46,7 @@ class SaveSearchDialog : DialogFragment()
     {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.save_search_layout, LinearLayout(requireContext()), false)
 
-        val name = arguments?.getString(KEY_SEARCH_NAME).toString()
-        dialogView.searchNameView.setText(name)
+        dialogView.searchNameView.setText(arguments?.getString(KEY_SEARCH_NAME).toString())
 
         val builder = AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.text_saving_search))
@@ -58,6 +57,7 @@ class SaveSearchDialog : DialogFragment()
                 {
                     if (!dialogView.searchNameView.text.isNullOrEmpty())
                     {
+                        val name = dialogView.searchNameView.text.toString()
                         listener.pushData(Pair(KEY_SEARCH_NAME, name))
                     }
                 }
