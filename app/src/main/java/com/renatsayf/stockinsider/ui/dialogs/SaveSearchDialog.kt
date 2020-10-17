@@ -7,17 +7,22 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import kotlinx.android.synthetic.main.save_search_layout.*
 import kotlinx.android.synthetic.main.save_search_layout.view.*
 
 class SaveSearchDialog : DialogFragment()
 {
+    private lateinit var listener: OnClickListener
 
     companion object
     {
         val TAG = this::class.java.canonicalName.plus("_tag")
-        private val KEY_SEARCH_NAME = this::class.java.canonicalName.plus("_key_search_name")
+        val KEY_SEARCH_NAME = this::class.java.canonicalName.plus("_key_search_name")
         private var instance: SaveSearchDialog? = null
         fun getInstance(searchName: String = ""): SaveSearchDialog = if (instance == null)
         {
@@ -31,11 +36,18 @@ class SaveSearchDialog : DialogFragment()
 
     }
 
+    override fun onCreate(savedInstanceState: Bundle?)
+    {
+        super.onCreate(savedInstanceState)
+        listener = ViewModelProvider(activity as MainActivity)[OnClickListener::class.java]
+    }
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
         val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.save_search_layout, LinearLayout(requireContext()), false)
 
-        dialogView.searchNameView.setText(arguments?.getString(KEY_SEARCH_NAME).toString())
+        val name = arguments?.getString(KEY_SEARCH_NAME).toString()
+        dialogView.searchNameView.setText(name)
 
         val builder = AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.text_saving_search))
@@ -44,7 +56,10 @@ class SaveSearchDialog : DialogFragment()
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    dismiss()
+                    if (!dialogView.searchNameView.text.isNullOrEmpty())
+                    {
+                        listener.pushData(Pair(KEY_SEARCH_NAME, name))
+                    }
                 }
 
             })
@@ -60,10 +75,14 @@ class SaveSearchDialog : DialogFragment()
         return builder.create()
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?)
+    class OnClickListener : ViewModel()
     {
-        super.onActivityCreated(savedInstanceState)
-
+        private val _click = MutableLiveData<Pair<String?, String>>()
+        fun pushData(data: Pair<String?, String>)
+        {
+            _click.value = data
+        }
+        var onClick: LiveData<Pair<String?, String>> = _click
     }
 
 

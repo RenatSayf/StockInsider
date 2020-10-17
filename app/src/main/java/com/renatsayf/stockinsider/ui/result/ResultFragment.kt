@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
@@ -49,6 +48,7 @@ class ResultFragment : Fragment()
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
+    private lateinit var saveDialogListener : SaveSearchDialog.OnClickListener
     private lateinit var searchSet: SearchSet
 
     @Inject
@@ -75,6 +75,7 @@ class ResultFragment : Fragment()
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
+        saveDialogListener = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.OnClickListener::class.java]
 
         if (savedInstanceState == null)
         {
@@ -312,6 +313,13 @@ class ResultFragment : Fragment()
                 .plus(if (searchSet.isTenPercent == "1") "/10%Owner" else "")
             SaveSearchDialog.getInstance(name).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
+
+        saveDialogListener.onClick.observe(viewLifecycleOwner, {
+            if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
+            {
+                println("********************* ${this::class.java.canonicalName} searchName = ${it.second} ************************************")
+            }
+        })
 
 
     }
