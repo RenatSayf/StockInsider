@@ -24,6 +24,11 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         _searchSet.value = set
     }
 
+    fun getAllSearchSets() : List<RoomSearchSet>
+    {
+        return repositoryImpl.getAllSearchSetsFromDbAsync()
+    }
+
     fun getSearchSet(setName: String) : RoomSearchSet = run {
         repositoryImpl.getSearchSetFromDbAsync(setName)
     }

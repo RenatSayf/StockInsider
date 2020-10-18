@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
@@ -50,6 +51,7 @@ class ResultFragment : Fragment()
     private lateinit var mainViewModel : MainViewModel
     private lateinit var saveDialogListener : SaveSearchDialog.OnClickListener
     private lateinit var searchSet: SearchSet
+    private lateinit var roomSearchSet: RoomSearchSet
 
     @Inject
     lateinit var searchRequest: SearchRequest
@@ -85,20 +87,21 @@ class ResultFragment : Fragment()
             if (!setName.isNullOrEmpty())
             {
                 val mainActivity = activity as MainActivity
-                val set = mainViewModel.getSearchSet(setName)
-                searchSet = SearchSet(set.setName).apply {
-                    ticker = mainActivity.getTickersString(set.ticker)
-                    filingPeriod = mainActivity.getFilingOrTradeValue(set.filingPeriod)
-                    tradePeriod = mainActivity.getFilingOrTradeValue(set.tradePeriod)
-                    isPurchase = mainActivity.getCheckBoxValue(set.isPurchase)
-                    isSale = mainActivity.getCheckBoxValue(set.isSale)
-                    tradedMin = set.tradedMin
-                    tradedMax = set.tradedMax
-                    isOfficer = mainActivity.getOfficerValue(set.isOfficer)
-                    isDirector = mainActivity.getCheckBoxValue(set.isDirector)
-                    isTenPercent = mainActivity.getCheckBoxValue(set.isTenPercent)
-                    groupBy = mainActivity.getGroupingValue(set.groupBy)
-                    sortBy = mainActivity.getSortingValue(set.sortBy)
+
+                roomSearchSet = mainViewModel.getSearchSet(setName)
+                searchSet = SearchSet(roomSearchSet.setName).apply {
+                    ticker = mainActivity.getTickersString(roomSearchSet.ticker)
+                    filingPeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.filingPeriod)
+                    tradePeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.tradePeriod)
+                    isPurchase = mainActivity.getCheckBoxValue(roomSearchSet.isPurchase)
+                    isSale = mainActivity.getCheckBoxValue(roomSearchSet.isSale)
+                    tradedMin = roomSearchSet.tradedMin
+                    tradedMax = roomSearchSet.tradedMax
+                    isOfficer = mainActivity.getOfficerValue(roomSearchSet.isOfficer)
+                    isDirector = mainActivity.getCheckBoxValue(roomSearchSet.isDirector)
+                    isTenPercent = mainActivity.getCheckBoxValue(roomSearchSet.isTenPercent)
+                    groupBy = mainActivity.getGroupingValue(roomSearchSet.groupBy)
+                    sortBy = mainActivity.getSortingValue(roomSearchSet.sortBy)
                 }
                 mainViewModel.getDealList(searchSet)
             }
@@ -317,7 +320,8 @@ class ResultFragment : Fragment()
         saveDialogListener.onClick.observe(viewLifecycleOwner, {
             if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
             {
-                println("********************* ${this::class.java.canonicalName} searchName = ${it.second} ************************************")
+                roomSearchSet.setName = it.second
+                mainViewModel.saveSearchSet(roomSearchSet)
             }
         })
 

@@ -10,7 +10,7 @@ data class RoomSearchSet(
 
         @PrimaryKey
         @ColumnInfo(name = "set_name")
-        val setName : String,
+        var setName : String,
 
         @ColumnInfo(name = "company_name")
         val companyName : String,
@@ -51,6 +51,3 @@ data class RoomSearchSet(
         @ColumnInfo(name = "sort_by")
         val sortBy : Int
                         )
-{
-
-}

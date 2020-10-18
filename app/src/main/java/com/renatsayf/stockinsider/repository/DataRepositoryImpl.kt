@@ -23,6 +23,13 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         return request.getInsiderTrading(insider)
     }
 
+    override fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = runBlocking {
+        val res = async {
+            db.getSearchSets()
+        }
+        res.await()
+    }
+
     override fun getTradingByTickerAsync(ticker: String): Single<ArrayList<Deal>>
     {
         return request.getTradingByTicker(ticker)

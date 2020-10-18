@@ -13,11 +13,11 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.DataTransferModel
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
@@ -34,12 +34,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MainFragment : Fragment()
 {
-    companion object
-    {
-
-    }
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var searchListListener : SearchListDialog.OnClickListener
     private lateinit var defaultSet : String
 
     @Inject
@@ -55,9 +51,10 @@ class MainFragment : Fragment()
                              ) : View?
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        dataTransferModel = activity?.run {
-            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
-        }!!
+//        dataTransferModel = activity?.run {
+//            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
+//        }!!
+        searchListListener = ViewModelProvider(requireActivity())[SearchListDialog.OnClickListener::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -114,6 +111,7 @@ class MainFragment : Fragment()
         mainViewModel.searchSet.observe(viewLifecycleOwner, {
             if (it != null)
             {
+                ticker_ET.setText("")
                 ticker_ET.setText(it.ticker)
                 filingDateSpinner.setSelection(it.filingPeriod)
                 tradeDateSpinner.setSelection(it.tradePeriod)
@@ -131,6 +129,11 @@ class MainFragment : Fragment()
         defaultSet = getString(R.string.text_default_set_name)
         val roomSearchSet = mainViewModel.getSearchSet(defaultSet)
         mainViewModel.setSearchSet(roomSearchSet)
+
+        searchListListener.onClick.observe(viewLifecycleOwner, {
+            println("*********************** searchListListener setName = ${it.setName} *****************************")
+            mainViewModel.setSearchSet(it)
+        })
 
         search_button.setOnClickListener {
             val mainActivity = activity as MainActivity

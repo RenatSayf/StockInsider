@@ -145,7 +145,7 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
         }
         else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED)
         {
-            Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_purchase_caceled), Snackbar.LENGTH_LONG).show()
+            Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_purchase_canceled), Snackbar.LENGTH_LONG).show()
             dismiss()
         }
     }
