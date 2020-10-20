@@ -13,7 +13,6 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
@@ -35,8 +34,8 @@ import javax.inject.Inject
 class MainFragment : Fragment()
 {
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var searchListListener : SearchListDialog.OnClickListener
-    private lateinit var defaultSet : String
+    private lateinit var searchDialogListListener : SearchListDialog.EventListener //TODO Sending events between Activities/Fragments: Step 6
+    private lateinit var searchName : String
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
@@ -51,10 +50,9 @@ class MainFragment : Fragment()
                              ) : View?
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-//        dataTransferModel = activity?.run {
-//            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
-//        }!!
-        searchListListener = ViewModelProvider(requireActivity())[SearchListDialog.OnClickListener::class.java]
+        searchName = getString(R.string.text_default_set_name)
+
+        searchDialogListListener = ViewModelProvider(requireActivity())[SearchListDialog.EventListener::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -109,6 +107,7 @@ class MainFragment : Fragment()
         }
 
         mainViewModel.searchSet.observe(viewLifecycleOwner, {
+            println("*********************** mainViewModel.searchSet.observe() = ${it.setName} *****************************")
             if (it != null)
             {
                 ticker_ET.setText("")
@@ -126,36 +125,25 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        defaultSet = getString(R.string.text_default_set_name)
-        val roomSearchSet = mainViewModel.getSearchSet(defaultSet)
+        val roomSearchSet = mainViewModel.getSearchSet(searchName)
         mainViewModel.setSearchSet(roomSearchSet)
 
-        searchListListener.onClick.observe(viewLifecycleOwner, {
-            println("*********************** searchListListener setName = ${it.setName} *****************************")
-            mainViewModel.setSearchSet(it)
+        //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
+        searchDialogListListener.data.observe(viewLifecycleOwner, { event ->
+            event.getContent()?.let {
+                //println("*********************** searchListListener.on_Click.observe() = ${it.setName} *****************************")
+                mainViewModel.setSearchSet(it)
+            }
         })
 
         search_button.setOnClickListener {
-            val mainActivity = activity as MainActivity
-            val searchSet = SearchSet("custom set")
-            val tickersString = ticker_ET.text.toString().trim()
-            searchSet.ticker = mainActivity.getTickersString(tickersString)
-            searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
-            searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
-            searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox.isChecked)
-            searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox.isChecked)
-            searchSet.tradedMin = traded_min_ET.text.toString().trim()
-            searchSet.tradedMax = traded_max_ET.text.toString().trim()
-            searchSet.isOfficer = mainActivity.getOfficerValue(officer_CheBox.isChecked)
-            searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox.isChecked)
-            searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox.isChecked)
-            searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
-            searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-
             val set = RoomSearchSet(
-                    defaultSet,
+                    searchName,
                     "",
-                    ticker_ET.text.toString().trim(),
+                    ticker_ET.text.toString().apply {
+                        trim()
+                        replace(" ", "+")
+                    },
                     filingDateSpinner.selectedItemPosition,
                     tradeDateSpinner.selectedItemPosition,
                     purchaseCheckBox.isChecked,
@@ -172,8 +160,9 @@ class MainFragment : Fragment()
             val result = mainViewModel.saveSearchSet(set)
             if (result > -1)
             {
+                mainViewModel.setSearchSet(set)
                 val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_SET_NAME, defaultSet)
+                    putString(ResultFragment.ARG_SET_NAME, searchName)
                     putString(ResultFragment.ARG_TITLE, "Trading Screen")
                 }
                 search_button.findNavController().navigate(R.id.nav_result, bundle)

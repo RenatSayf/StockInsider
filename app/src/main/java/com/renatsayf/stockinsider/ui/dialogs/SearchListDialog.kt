@@ -5,13 +5,11 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.*
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -19,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class SearchListDialog : DialogFragment()
 {
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var listener: OnClickListener
+    private lateinit var listener: EventListener //TODO Sending events between Activities/Fragments: Step 3
 
     companion object
     {
@@ -30,7 +28,7 @@ class SearchListDialog : DialogFragment()
     {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        listener = ViewModelProvider(requireActivity())[OnClickListener::class.java]
+        listener = ViewModelProvider(requireActivity())[EventListener::class.java] //TODO Sending events between Activities/Fragments: Step 4
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -49,9 +47,7 @@ class SearchListDialog : DialogFragment()
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
                     index = p1
-                    //println("*********************** SingleChoiceItems index = $index *****************************")
                 }
-
             })
             setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener
             {
@@ -61,7 +57,9 @@ class SearchListDialog : DialogFragment()
                     if (index > -1)
                     {
                         val roomSearchSet = allSearchSets[index]
-                        listener.pushData(roomSearchSet)
+                        //TODO Sending events between Activities/Fragments: Step 5
+                        // next step in com.renatsayf.stockinsider.ui.dialogs.MainFragment.kt
+                        listener.data.value = Event(roomSearchSet)
                     }
                 }
             })
@@ -69,13 +67,12 @@ class SearchListDialog : DialogFragment()
         return builder.create()
     }
 
-    class OnClickListener : ViewModel()
+
+
+    //TODO Sending events between Activities/Fragments: Step 2 - create this class,
+    // next step in com.renatsayf.stockinsider.ui.dialogs.SearchListDialog.kt
+    class EventListener : ViewModel()
     {
-        private val _click = MutableLiveData<RoomSearchSet>()
-        fun pushData(data: RoomSearchSet)
-        {
-            _click.value = data
-        }
-        var onClick: LiveData<RoomSearchSet> = _click
+        val data = MutableLiveData<Event<RoomSearchSet>>()
     }
 }

@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity()
 
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
-    private lateinit var appDialogListener : AppDialog.OnClickListener
+    private lateinit var appDialogListener : AppDialog.EventListener
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var ad: InterstitialAd
 
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity()
         //endregion
         loadProgreesBar.visibility = View.GONE
 
-        appDialogListener = ViewModelProvider(this)[AppDialog.OnClickListener::class.java]
+        appDialogListener = ViewModelProvider(this)[AppDialog.EventListener::class.java]
 
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
         expandMenu.apply {
@@ -228,22 +228,24 @@ class MainActivity : AppCompatActivity()
             })
         }
 
-        appDialogListener.onClick.observe(this, {
-            if (it.first == "show_strategy")
-            {
-                when (it.second)
+        appDialogListener.data.observe(this, { event ->
+            event.getContent()?.let{
+                if (it.first == "show_strategy")
                 {
-                    -1 ->
+                    when (it.second)
                     {
-                        navController.navigate(R.id.nav_strategy)
-                    }
-                    -3 ->
-                    {
-                        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-                            putBoolean(KEY_NO_SHOW_AGAIN, true)
-                            apply()
+                        -1 ->
+                        {
+                            navController.navigate(R.id.nav_strategy)
                         }
-                        navController.navigate(R.id.nav_strategy)
+                        -3 ->
+                        {
+                            getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+                                putBoolean(KEY_NO_SHOW_AGAIN, true)
+                                apply()
+                            }
+                            navController.navigate(R.id.nav_strategy)
+                        }
                     }
                 }
             }

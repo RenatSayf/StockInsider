@@ -1,5 +1,8 @@
 package com.renatsayf.stockinsider.utils
 
+
+//TODO Sending events between Activities/Fragments: Step 1 - create this class, next step in com.renatsayf.stockinsider.ui.dialogs.SearchListDialog.kt
+@Suppress("RedundantSetter")
 open class Event<out T>(private val content: T)
 {
     var hasBeenHandled = false

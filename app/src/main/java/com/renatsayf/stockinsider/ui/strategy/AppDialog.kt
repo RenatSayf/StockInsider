@@ -8,17 +8,17 @@ import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.app_dialog_layout.view.*
 
 class AppDialog : DialogFragment()
 {
-    private lateinit var listener: OnClickListener
+    private lateinit var listener: EventListener
 
     companion object
     {
@@ -48,7 +48,7 @@ class AppDialog : DialogFragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        listener = ViewModelProvider(activity as MainActivity)[OnClickListener::class.java]
+        listener = ViewModelProvider(activity as MainActivity)[EventListener::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -62,7 +62,7 @@ class AppDialog : DialogFragment()
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
                     val pair = Pair(dialogTag, p1)
-                    listener.pushData(pair) //push data to Activity or Fragments
+                    listener.data.value = Event(pair)
                 }
             })
         }
@@ -81,7 +81,7 @@ class AppDialog : DialogFragment()
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    listener.pushData(Pair(dialogTag, p1)) //push data to Activity or Fragments
+                    listener.data.value = Event(Pair(dialogTag, p1))
                     dismiss()
                 }
             })
@@ -89,13 +89,10 @@ class AppDialog : DialogFragment()
         return builder.create()
     }
 
-    class OnClickListener : ViewModel()
+
+
+    class EventListener : ViewModel()
     {
-        private val _click = MutableLiveData<Pair<String?, Int>>()
-        fun pushData(data: Pair<String?, Int>)
-        {
-            _click.value = data
-        }
-        var onClick: LiveData<Pair<String?, Int>> = _click
+        val data = MutableLiveData<Event<Pair<String?, Int>>>()
     }
 }
