@@ -10,7 +10,7 @@ data class RoomSearchSet(
 
         @PrimaryKey
         @ColumnInfo(name = "set_name")
-        var setName : String,
+        var queryName : String,
 
         @ColumnInfo(name = "company_name")
         val companyName : String,

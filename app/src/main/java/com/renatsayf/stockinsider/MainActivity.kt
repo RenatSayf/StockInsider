@@ -179,7 +179,7 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 0 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, "purchases_more_1")
+                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_1")
                                 putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
                             }
                             navController.navigate(R.id.nav_result, bundle)
@@ -187,7 +187,7 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 1 ->
                         {
                             val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, "purchases_more_5")
+                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_5")
                                 putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
                             }
                             navController.navigate(R.id.nav_result, bundle)
@@ -195,7 +195,7 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 2 ->
                         {
                             Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, "sales_more_1")
+                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_1")
                                 putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
                             }.run {
                                 navController.navigate(R.id.nav_result, this)
@@ -204,7 +204,7 @@ class MainActivity : AppCompatActivity()
                         p2 == 1 && p3 == 3 ->
                         {
                             Bundle().apply {
-                                putString(ResultFragment.ARG_SET_NAME, "sales_more_5")
+                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_5")
                                 putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
                             }.run {
                                 navController.navigate(R.id.nav_result, this)

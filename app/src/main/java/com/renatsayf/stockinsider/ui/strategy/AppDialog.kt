@@ -73,7 +73,6 @@ class AppDialog : DialogFragment()
                 {
                     dismiss()
                 }
-
             })
         }
         neutralText?.let {

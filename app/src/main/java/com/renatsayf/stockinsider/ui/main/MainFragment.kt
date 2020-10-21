@@ -107,7 +107,7 @@ class MainFragment : Fragment()
         }
 
         mainViewModel.searchSet.observe(viewLifecycleOwner, {
-            println("*********************** mainViewModel.searchSet.observe() = ${it.setName} *****************************")
+            //println("*********************** mainViewModel.searchSet.observe() = ${it.setName} *****************************")
             if (it != null)
             {
                 ticker_ET.setText("")
@@ -140,10 +140,7 @@ class MainFragment : Fragment()
             val set = RoomSearchSet(
                     searchName,
                     "",
-                    ticker_ET.text.toString().apply {
-                        trim()
-                        replace(" ", "+")
-                    },
+                    ticker_ET.text.toString(),
                     filingDateSpinner.selectedItemPosition,
                     tradeDateSpinner.selectedItemPosition,
                     purchaseCheckBox.isChecked,
@@ -162,7 +159,7 @@ class MainFragment : Fragment()
             {
                 mainViewModel.setSearchSet(set)
                 val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_SET_NAME, searchName)
+                    putString(ResultFragment.ARG_QUERY_NAME, searchName)
                     putString(ResultFragment.ARG_TITLE, "Trading Screen")
                 }
                 search_button.findNavController().navigate(R.id.nav_result, bundle)

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -44,12 +45,12 @@ class ResultFragment : Fragment()
     companion object
     {
         val TAG = this::class.java.canonicalName.toString().plus("_tag")
-        val ARG_SET_NAME = this::class.java.canonicalName.toString().plus("_arg_set_name")
+        val ARG_QUERY_NAME = this::class.java.canonicalName.toString().plus("_arg_set_name")
         val ARG_TITLE = this::class.java.canonicalName.toString().plus("_arg_title")
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var saveDialogListener : SaveSearchDialog.OnClickListener
+    private lateinit var saveDialogListener : SaveSearchDialog.EventListener
     private lateinit var searchSet: SearchSet
     private lateinit var roomSearchSet: RoomSearchSet
 
@@ -77,19 +78,19 @@ class ResultFragment : Fragment()
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        saveDialogListener = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.OnClickListener::class.java]
+        saveDialogListener = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.EventListener::class.java]
 
         if (savedInstanceState == null)
         {
             requireActivity().loadProgreesBar.visibility = View.VISIBLE
-            val setName = arguments?.getString(ARG_SET_NAME)
+            val queryName = arguments?.getString(ARG_QUERY_NAME)
 
-            if (!setName.isNullOrEmpty())
+            if (!queryName.isNullOrEmpty())
             {
                 val mainActivity = activity as MainActivity
 
-                roomSearchSet = mainViewModel.getSearchSet(setName)
-                searchSet = SearchSet(roomSearchSet.setName).apply {
+                roomSearchSet = mainViewModel.getSearchSet(queryName)
+                searchSet = SearchSet(roomSearchSet.queryName).apply {
                     ticker = mainActivity.getTickersString(roomSearchSet.ticker)
                     filingPeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.filingPeriod)
                     tradePeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.tradePeriod)
@@ -103,8 +104,15 @@ class ResultFragment : Fragment()
                     groupBy = mainActivity.getGroupingValue(roomSearchSet.groupBy)
                     sortBy = mainActivity.getSortingValue(roomSearchSet.sortBy)
                 }
+
                 mainViewModel.getDealList(searchSet)
             }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(this){
+            roomSearchSet.queryName = requireContext().getString(R.string.text_default_set_name)
+            mainViewModel.saveSearchSet(roomSearchSet)
+            (activity as MainActivity).navController.navigate(R.id.nav_home)
         }
     }
 
@@ -317,11 +325,13 @@ class ResultFragment : Fragment()
             SaveSearchDialog.getInstance(name).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
 
-        saveDialogListener.onClick.observe(viewLifecycleOwner, {
-            if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
-            {
-                roomSearchSet.setName = it.second
-                mainViewModel.saveSearchSet(roomSearchSet)
+        saveDialogListener.data.observe(viewLifecycleOwner, { event ->
+            event.getContent()?.let {
+                if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
+                {
+                    roomSearchSet.queryName = it.second
+                    mainViewModel.saveSearchSet(roomSearchSet)
+                }
             }
         })
 

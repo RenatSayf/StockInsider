@@ -36,7 +36,7 @@ class SearchListDialog : DialogFragment()
         val searchIdList = mutableListOf<String>()
         val allSearchSets = mainViewModel.getAllSearchSets()
         allSearchSets.forEach{
-            searchIdList.add(it.setName)
+            searchIdList.add(it.queryName)
         }
 
         var index : Int = -1

@@ -102,7 +102,7 @@ class AlarmReceiver : BroadcastReceiver()
     private fun runAlarmTask(context: Context)
     {
         val roomSearchSet = getSearchSet(context.getString(R.string.text_default_set_name))
-        val requestParams = SearchSet(roomSearchSet.setName).apply {
+        val requestParams = SearchSet(roomSearchSet.queryName).apply {
             ticker = roomSearchSet.ticker
             filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
             tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)

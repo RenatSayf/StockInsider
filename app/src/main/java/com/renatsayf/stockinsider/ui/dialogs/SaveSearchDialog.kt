@@ -7,17 +7,18 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.utils.Event
 import kotlinx.android.synthetic.main.save_search_layout.view.*
 
 class SaveSearchDialog : DialogFragment()
 {
-    private lateinit var listener: OnClickListener
+    //private lateinit var listener: OnClickListener
+    private lateinit var listener: EventListener
 
     companion object
     {
@@ -39,7 +40,7 @@ class SaveSearchDialog : DialogFragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        listener = ViewModelProvider(activity as MainActivity)[OnClickListener::class.java]
+        listener = ViewModelProvider(activity as MainActivity)[EventListener::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -58,7 +59,7 @@ class SaveSearchDialog : DialogFragment()
                     if (!dialogView.searchNameView.text.isNullOrEmpty())
                     {
                         val name = dialogView.searchNameView.text.toString()
-                        listener.pushData(Pair(KEY_SEARCH_NAME, name))
+                        listener.data.value = Event(Pair(KEY_SEARCH_NAME, name))
                     }
                 }
 
@@ -75,14 +76,9 @@ class SaveSearchDialog : DialogFragment()
         return builder.create()
     }
 
-    class OnClickListener : ViewModel()
+    class EventListener : ViewModel()
     {
-        private val _click = MutableLiveData<Pair<String?, String>>()
-        fun pushData(data: Pair<String?, String>)
-        {
-            _click.value = data
-        }
-        var onClick: LiveData<Pair<String?, String>> = _click
+        val data = MutableLiveData<Event<Pair<String?, String>>>()
     }
 
 
