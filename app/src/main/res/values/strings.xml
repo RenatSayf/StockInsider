@@ -164,5 +164,6 @@
     <string name="text_saving_search">Сохранение параметров поиска</string>
     <string name="text_save">Сохранить</string>
     <string name="text_my_search">Мои поиски</string>
+    <string name="text_default_search">Поиск по умолчанию</string>
 
 </resources>

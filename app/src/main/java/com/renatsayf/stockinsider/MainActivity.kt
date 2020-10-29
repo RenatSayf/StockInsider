@@ -14,7 +14,6 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
-import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -88,6 +87,8 @@ class MainActivity : AppCompatActivity()
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
 
+
+
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
@@ -109,7 +110,6 @@ class MainActivity : AppCompatActivity()
             }
             true
         }
-
 
         //region TODO перед релизом удалить или закомментировать
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
@@ -309,12 +309,12 @@ class MainActivity : AppCompatActivity()
         return spannableStringBuilder
     }
 
-    override fun onCreateOptionsMenu(menu : Menu) : Boolean
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
+//    override fun onCreateOptionsMenu(menu : Menu) : Boolean
+//    {
+//        // Inflate the menu; this adds items to the action bar if it is present.
+//        menuInflater.inflate(R.menu.main, menu)
+//        return true
+//    }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
@@ -336,7 +336,7 @@ class MainActivity : AppCompatActivity()
             }
             R.id.action_settings ->
             {
-                
+
             }
         }
         return super.onOptionsItemSelected(item)
@@ -458,6 +458,8 @@ class MainActivity : AppCompatActivity()
             startService(serviceIntent)
         }
     }
+
+
 
 
 }

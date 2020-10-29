@@ -21,4 +21,10 @@
         android:orderInCategory="3"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_default_search"
+        android:title="@string/text_default_search"
+        app:showAsAction="never"
+        android:orderInCategory="4"/>
+
 </menu>
