@@ -41,12 +41,6 @@ class MainFragment : Fragment()
     @Inject
     lateinit var appLog: AppLog
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
     override fun onCreateView(
             inflater : LayoutInflater,
             container : ViewGroup?,
@@ -63,6 +57,7 @@ class MainFragment : Fragment()
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
 
         when ((requireActivity() as MainActivity).isServiceRunning())
         {

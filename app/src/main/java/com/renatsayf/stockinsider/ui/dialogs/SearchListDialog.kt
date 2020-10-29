@@ -33,13 +33,12 @@ class SearchListDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
+        val allSearchSets = mainViewModel.getAllSearchSets() as ArrayList<RoomSearchSet>
+        allSearchSets.removeIf {s -> s.queryName == getString(R.string.text_default_set_name) || s.queryName == getString(R.string.text_current_set_name)}
+
         val searchIdList = mutableListOf<String>()
-        val allSearchSets = mainViewModel.getAllSearchSets()
         allSearchSets.forEach{
-            if (it.queryName != getString(R.string.text_default_set_name) && it.queryName != getString(R.string.text_current_set_name))
-            {
-                searchIdList.add(it.queryName)
-            }
+            searchIdList.add(it.queryName)
         }
 
         var index : Int = -1
