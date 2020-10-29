@@ -11,4 +11,4 @@ is_officer,
 is_director, 
 is_ten_percent, 
 group_by, 
-sort_by) VALUES ("sales_more_5", "", "", 7, 7, 0, 1, 4999, "", 1, 1, 1, 0, 0)
+sort_by) VALUES ("current_set", "", "", 3, 3, 1, 0, "", "", 1, 1, 1, 0, 3)
