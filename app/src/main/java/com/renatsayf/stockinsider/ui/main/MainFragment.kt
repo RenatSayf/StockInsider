@@ -54,7 +54,7 @@ class MainFragment : Fragment()
                              ) : View?
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        searchName = getString(R.string.text_default_set_name)
+        searchName = getString(R.string.text_current_set_name)
 
         searchDialogListListener = ViewModelProvider(requireActivity())[SearchListDialog.EventListener::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -111,7 +111,6 @@ class MainFragment : Fragment()
         }
 
         mainViewModel.searchSet.observe(viewLifecycleOwner, {
-            //println("*********************** mainViewModel.searchSet.observe() = ${it.setName} *****************************")
             if (it != null)
             {
                 ticker_ET.setText("")
@@ -135,7 +134,6 @@ class MainFragment : Fragment()
         //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
         searchDialogListListener.data.observe(viewLifecycleOwner, { event ->
             event.getContent()?.let {
-                //println("*********************** searchListListener.on_Click.observe() = ${it.setName} *****************************")
                 mainViewModel.setSearchSet(it)
             }
         })
@@ -222,7 +220,9 @@ class MainFragment : Fragment()
         {
             R.id.action_default_search ->
             {
-                Snackbar.make(search_button, "default search Click", Snackbar.LENGTH_LONG).show()
+                val searchName = getString(R.string.text_default_set_name)
+                val roomSearchSet = mainViewModel.getSearchSet(searchName)
+                mainViewModel.setSearchSet(roomSearchSet)
             }
         }
         return super.onOptionsItemSelected(item)

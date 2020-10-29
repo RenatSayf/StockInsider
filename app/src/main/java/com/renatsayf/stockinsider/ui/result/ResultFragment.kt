@@ -110,7 +110,7 @@ class ResultFragment : Fragment()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this){
-            roomSearchSet.queryName = requireContext().getString(R.string.text_default_set_name)
+            roomSearchSet.queryName = requireContext().getString(R.string.text_current_set_name)
             mainViewModel.saveSearchSet(roomSearchSet)
             (activity as MainActivity).navController.navigate(R.id.nav_home)
         }
