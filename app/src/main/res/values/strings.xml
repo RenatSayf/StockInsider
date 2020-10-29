@@ -167,5 +167,6 @@
     <string name="text_my_search">Мои поиски</string>
     <string name="text_default_search">Поиск по умолчанию</string>
     <string name="text_my_search_requests">Мои поисковые запросы</string>
+    <string name="text_inet_not_connection">Отсутствует соединение с интернет. Подключитесь к сети и попробуйте снова</string>
 
 </resources>

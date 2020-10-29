@@ -5,6 +5,8 @@ import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -35,6 +37,7 @@ import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
+import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -77,7 +80,7 @@ class MainActivity : AppCompatActivity()
     @Inject
     lateinit var confirmationDialog: ConfirmationDialog
 
-    override fun onCreate(savedInstanceState : Bundle?)
+    override fun onCreate(savedInstanceState: Bundle?)
     {
         setTheme(R.style.AppTheme_NoActionBar)
 
@@ -99,8 +102,8 @@ class MainActivity : AppCompatActivity()
         appBarConfiguration = AppBarConfiguration(
                 setOf(
                         R.id.nav_home, R.id.nav_strategy
-                     ), drawerLayout
-                                                 )
+                ), drawerLayout
+        )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener { item ->
@@ -124,112 +127,175 @@ class MainActivity : AppCompatActivity()
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
         expandMenu.apply {
             setAdapter(expandableMenuAdapter)
-            setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener{
-                override fun onGroupClick(
-                        p0: ExpandableListView?,
-                        p1: View?,
-                        p2: Int,
-                        p3: Long
-                ): Boolean
-                {
-                    when(p2)
-                    {
-                        0 ->
-                        {
-                            navController.navigate(R.id.nav_home)
-                            drawerLayout.closeDrawer(GravityCompat.START)
-                        }
-                        2 ->
-                        {
-                            when(getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
-                            {
-                                true ->
-                                {
-                                    navController.navigate(R.id.nav_strategy)
-                                }
-                                else ->
-                                {
-                                    val spannableMessage = createSpannableMessage()
-                                    AppDialog.getInstance("show_strategy", spannableMessage, context.getString(R.string.text_read), "Закрыть", "Больше не показывать")
-                                        .show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
-                                }
-                            }
-                            drawerLayout.closeDrawer(GravityCompat.START)
-                        }
-                        4 ->
-                        {
-                            drawerLayout.closeDrawer(GravityCompat.START)
-                            finish()
-                        }
-                    }
-                    return false
-                }
-            })
-            setOnChildClickListener(object : ExpandableListView.OnChildClickListener{
-                override fun onChildClick(
-                        p0: ExpandableListView?,
-                        p1: View?,
-                        p2: Int,
-                        p3: Int,
-                        p4: Long
-                ): Boolean
-                {
-                    when
-                    {
-                        p2 == 1 && p3 == 0 ->
-                        {
-                            val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_1")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
-                            }
-                            navController.navigate(R.id.nav_result, bundle)
-                        }
-                        p2 == 1 && p3 == 1 ->
-                        {
-                            val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_5")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
-                            }
-                            navController.navigate(R.id.nav_result, bundle)
-                        }
-                        p2 == 1 && p3 == 2 ->
-                        {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_1")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
-                            }.run {
-                                navController.navigate(R.id.nav_result, this)
-                            }
-                        }
-                        p2 == 1 && p3 == 3 ->
-                        {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_5")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
-                            }.run {
-                                navController.navigate(R.id.nav_result, this)
-                            }
-                        }
-                        p2 == 3 && p3 == 0 ->
-                        {
-                            donateDialog.show(supportFragmentManager, DonateDialog.TAG)
-                        }
-                        p2 == 3 && p3 == 1 ->
-                        {
-                            if (ad.isLoaded)
-                            {
-                                ad.show()
-                            }
-                        }
-                    }
-                    drawerLayout.closeDrawer(GravityCompat.START)
-                    return false
-                }
-            })
+            setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener
+                                    {
+                                        override fun onGroupClick(
+                                                p0: ExpandableListView?,
+                                                p1: View?,
+                                                p2: Int,
+                                                p3: Long
+                                        ): Boolean
+                                        {
+                                            when (p2)
+                                            {
+                                                0 ->
+                                                {
+                                                    navController.navigate(R.id.nav_home)
+                                                    drawerLayout.closeDrawer(GravityCompat.START)
+                                                }
+                                                2 ->
+                                                {
+                                                    when (getSharedPreferences(
+                                                            APP_SETTINGS,
+                                                            Context.MODE_PRIVATE
+                                                    ).getBoolean(
+                                                            KEY_NO_SHOW_AGAIN,
+                                                            false
+                                                    ))
+                                                    {
+                                                        true ->
+                                                        {
+                                                            navController.navigate(R.id.nav_strategy)
+                                                        }
+                                                        else ->
+                                                        {
+                                                            val spannableMessage =
+                                                                    createSpannableMessage()
+                                                            AppDialog.getInstance(
+                                                                    "show_strategy",
+                                                                    spannableMessage,
+                                                                    context.getString(
+                                                                            R.string.text_read
+                                                                    ),
+                                                                    "Закрыть",
+                                                                    "Больше не показывать"
+                                                            )
+                                                                .show(
+                                                                        supportFragmentManager.beginTransaction(),
+                                                                        AppDialog.TAG
+                                                                )
+                                                        }
+                                                    }
+                                                    drawerLayout.closeDrawer(GravityCompat.START)
+                                                }
+                                                4 ->
+                                                {
+                                                    drawerLayout.closeDrawer(GravityCompat.START)
+                                                    finish()
+                                                }
+                                            }
+                                            return false
+                                        }
+                                    })
+            setOnChildClickListener(object : ExpandableListView.OnChildClickListener
+                                    {
+                                        override fun onChildClick(
+                                                p0: ExpandableListView?,
+                                                p1: View?,
+                                                p2: Int,
+                                                p3: Int,
+                                                p4: Long
+                                        ): Boolean
+                                        {
+                                            when
+                                            {
+                                                p2 == 1 && p3 == 0 ->
+                                                {
+                                                    val bundle = Bundle().apply {
+                                                        putString(
+                                                                ResultFragment.ARG_QUERY_NAME,
+                                                                "purchases_more_1"
+                                                        )
+                                                        putString(
+                                                                ResultFragment.ARG_TITLE,
+                                                                context.getString(R.string.text_purchases_more_1)
+                                                        )
+                                                    }
+                                                    navController.navigate(R.id.nav_result, bundle)
+                                                }
+                                                p2 == 1 && p3 == 1 ->
+                                                {
+                                                    val bundle = Bundle().apply {
+                                                        putString(
+                                                                ResultFragment.ARG_QUERY_NAME,
+                                                                "purchases_more_5"
+                                                        )
+                                                        putString(
+                                                                ResultFragment.ARG_TITLE,
+                                                                context.getString(R.string.text_purchases_more_5)
+                                                        )
+                                                    }
+                                                    navController.navigate(R.id.nav_result, bundle)
+                                                }
+                                                p2 == 1 && p3 == 2 ->
+                                                {
+                                                    Bundle().apply {
+                                                        putString(
+                                                                ResultFragment.ARG_QUERY_NAME,
+                                                                "sales_more_1"
+                                                        )
+                                                        putString(
+                                                                ResultFragment.ARG_TITLE,
+                                                                context.getString(R.string.text_sales_more_1)
+                                                        )
+                                                    }.run {
+                                                        navController.navigate(
+                                                                R.id.nav_result,
+                                                                this
+                                                        )
+                                                    }
+                                                }
+                                                p2 == 1 && p3 == 3 ->
+                                                {
+                                                    Bundle().apply {
+                                                        putString(
+                                                                ResultFragment.ARG_QUERY_NAME,
+                                                                "sales_more_5"
+                                                        )
+                                                        putString(
+                                                                ResultFragment.ARG_TITLE,
+                                                                context.getString(R.string.text_sales_more_5)
+                                                        )
+                                                    }.run {
+                                                        navController.navigate(
+                                                                R.id.nav_result,
+                                                                this
+                                                        )
+                                                    }
+                                                }
+                                                p2 == 3 && p3 == 0 ->
+                                                {
+                                                    if (isNetworkConnectivity())
+                                                    {
+                                                        donateDialog.show(
+                                                                supportFragmentManager,
+                                                                DonateDialog.TAG
+                                                        )
+                                                    }
+                                                }
+                                                p2 == 3 && p3 == 1 ->
+                                                {
+                                                    if (isNetworkConnectivity())
+                                                    {
+                                                        if (ad.isLoaded)
+                                                        {
+                                                            ad.show()
+                                                        }
+                                                        else
+                                                        {
+                                                            ad.loadAd(AdRequest.Builder().build())
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            drawerLayout.closeDrawer(GravityCompat.START)
+                                            return false
+                                        }
+                                    })
         }
 
         appDialogListener.data.observe(this, { event ->
-            event.getContent()?.let{
+            event.getContent()?.let {
                 if (it.first == "show_strategy")
                 {
                     when (it.second)
@@ -284,8 +350,13 @@ class MainActivity : AppCompatActivity()
         val string1 = getString(R.string.text_hi)+"\n"
         val spannable1 = SpannableString(string1)
         spannable1.apply {
-            setSpan(ForegroundColorSpan(Color.GREEN),0, string1.length - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
-            setSpan(RelativeSizeSpan(2f), 0, string1.length -1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
+            setSpan(
+                    ForegroundColorSpan(Color.GREEN),
+                    0,
+                    string1.length - 1,
+                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
+            )
+            setSpan(RelativeSizeSpan(2f), 0, string1.length - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
         }
         val spannableStringBuilder = SpannableStringBuilder(spannable1)
@@ -355,7 +426,7 @@ class MainActivity : AppCompatActivity()
         }
     }
 
-    fun getFilingOrTradeValue(position : Int) : String
+    fun getFilingOrTradeValue(position: Int) : String
     {
         val filingValue : String
         return try
@@ -364,14 +435,14 @@ class MainActivity : AppCompatActivity()
             filingValue = filingValues?.get(position).toString()
             filingValue
         }
-        catch (e : Exception)
+        catch (e: Exception)
         {
             e.printStackTrace()
             ""
         }
     }
 
-    fun getGroupingValue(position : Int) : String
+    fun getGroupingValue(position: Int) : String
     {
         val groupingValue : String
         return try
@@ -380,14 +451,14 @@ class MainActivity : AppCompatActivity()
             groupingValue = groupingValues?.get(position).toString()
             groupingValue
         }
-        catch (e : Exception)
+        catch (e: Exception)
         {
             e.printStackTrace()
             ""
         }
     }
 
-    fun getSortingValue(position : Int) : String
+    fun getSortingValue(position: Int) : String
     {
         val sortingValue : String
         return try
@@ -396,7 +467,7 @@ class MainActivity : AppCompatActivity()
             sortingValue = sortingValues?.get(position).toString()
             sortingValue
         }
-        catch (e : Exception)
+        catch (e: Exception)
         {
             e.printStackTrace()
             ""
@@ -413,13 +484,13 @@ class MainActivity : AppCompatActivity()
         return if (value) "1" else ""
     }
 
-    fun getTickersString(string : String) : String
+    fun getTickersString(string: String) : String
     {
         val pattern = Regex("\\s")
         return string.trim().replace(pattern, "+")
     }
 
-    fun hideKeyBoard(view : View)
+    fun hideKeyBoard(view: View)
     {
         val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
@@ -433,7 +504,8 @@ class MainActivity : AppCompatActivity()
         services.forEach {
             when(it.service.packageName)
             {
-                this.packageName -> {
+                this.packageName ->
+                {
                     return true
                 }
             }
@@ -441,10 +513,27 @@ class MainActivity : AppCompatActivity()
         return false
     }
 
+    fun isNetworkConnectivity(): Boolean
+    {
+        val cm: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        val activeNetwork = cm.activeNetwork
+        activeNetwork?.let { network ->
+            val nc = cm.getNetworkCapabilities(network)
+            nc?.let {
+                return(it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+            }
+        }
+        Snackbar.make(expandMenu, getString(R.string.text_inet_not_connection), Snackbar.LENGTH_LONG).show()
+        return false
+    }
+
     override fun finish()
     {
         super.finish()
-        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(
+                AlarmPendingIntent.IS_ALARM_SETUP_KEY,
+                false
+        )
         if (isServiceEnabled && !isServiceRunning())
         {
             val serviceIntent = Intent(this, StockInsiderService::class.java)

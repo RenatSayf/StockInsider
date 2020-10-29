@@ -227,7 +227,16 @@ class ResultFragment : Fragment()
                 {
                     if (it != null)
                     {
-                        Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                        if ((activity as MainActivity).isNetworkConnectivity())
+                        {
+                            Snackbar.make(tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                        }
+                        else
+                        {
+                            resultTV.text = 0.toString()
+                            recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
+                            noResultLayout.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
