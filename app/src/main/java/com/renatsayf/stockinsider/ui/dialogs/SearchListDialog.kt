@@ -36,12 +36,15 @@ class SearchListDialog : DialogFragment()
         val searchIdList = mutableListOf<String>()
         val allSearchSets = mainViewModel.getAllSearchSets()
         allSearchSets.forEach{
-            searchIdList.add(it.queryName)
+            if (it.queryName != getString(R.string.text_default_set_name) && it.queryName != getString(R.string.text_current_set_name))
+            {
+                searchIdList.add(it.queryName)
+            }
         }
 
         var index : Int = -1
         val builder = AlertDialog.Builder(requireContext()).apply {
-            setTitle("Мои поисковые запросы")
+            setTitle(getString(R.string.text_my_search_requests))
             setSingleChoiceItems(searchIdList.toTypedArray(), -1, object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
