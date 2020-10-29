@@ -513,6 +513,7 @@ class MainActivity : AppCompatActivity()
         return false
     }
 
+    //TODO INTERNET connection checking function
     fun isNetworkConnectivity(): Boolean
     {
         val cm: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
