@@ -10,7 +10,7 @@ import com.renatsayf.stockinsider.utils.AppLog
 import java.io.File
 import java.io.FileOutputStream
 
-private const val DB_VERSION = 8
+private const val DB_VERSION = 9
 
 @Database(entities = [RoomSearchSet::class, Companies::class], version = DB_VERSION, exportSchema = false)
 abstract class AppDataBase : RoomDatabase()

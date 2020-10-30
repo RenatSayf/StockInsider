@@ -19,7 +19,6 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
@@ -33,7 +32,7 @@ import javax.inject.Inject
 class MainFragment : Fragment()
 {
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var searchDialogListListener : SearchListDialog.EventListener //TODO Sending events between Activities/Fragments: Step 6
+    private lateinit var searchDialogListObserver : SearchListDialog.EventObserver //TODO Sending events between Activities/Fragments: Step 6
     private lateinit var searchName : String
 
     @Inject
@@ -51,7 +50,7 @@ class MainFragment : Fragment()
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         searchName = getString(R.string.text_current_set_name)
 
-        searchDialogListListener = ViewModelProvider(requireActivity())[SearchListDialog.EventListener::class.java]
+        searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -128,7 +127,7 @@ class MainFragment : Fragment()
         mainViewModel.setSearchSet(roomSearchSet)
 
         //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
-        searchDialogListListener.data.observe(viewLifecycleOwner, { event ->
+        searchDialogListObserver.data.observe(viewLifecycleOwner, { event ->
             event.getContent()?.let {
                 mainViewModel.setSearchSet(it)
             }
@@ -215,8 +214,7 @@ class MainFragment : Fragment()
                 mainViewModel.setSearchSet(roomSearchSet)
             }
         }
-        //return super.onOptionsItemSelected(item)
-        return true
+        return super.onOptionsItemSelected(item)
     }
 
 

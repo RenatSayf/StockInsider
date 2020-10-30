@@ -35,6 +35,14 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         return request.getTradingByTicker(ticker)
     }
 
+    override fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = runBlocking {
+        val res = async {
+            db.getUserSearchSets()
+        }
+        res.await()
+    }
+
+
     override fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = runBlocking {
         val set = async {
             db.getSetByName(setName)
@@ -48,6 +56,14 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         }
         res.await()
     }
+
+    override fun deleteSearchSetAsync(set: RoomSearchSet): Int = runBlocking {
+        val res = async {
+            db.deleteSet(set)
+        }
+        res.await()
+    }
+
 
 
     override fun getCompaniesFromDbAsync(): Array<Companies> = runBlocking{

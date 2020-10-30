@@ -17,7 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class SearchListDialog : DialogFragment()
 {
     private lateinit var mainViewModel: MainViewModel
-    private lateinit var listener: EventListener //TODO Sending events between Activities/Fragments: Step 3
+    private lateinit var observer: EventObserver //TODO Sending events between Activities/Fragments: Step 3
 
     companion object
     {
@@ -28,12 +28,12 @@ class SearchListDialog : DialogFragment()
     {
         super.onCreate(savedInstanceState)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        listener = ViewModelProvider(requireActivity())[EventListener::class.java] //TODO Sending events between Activities/Fragments: Step 4
+        observer = ViewModelProvider(requireActivity())[EventObserver::class.java] //TODO Sending events between Activities/Fragments: Step 4
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        val allSearchSets = mainViewModel.getAllSearchSets() as ArrayList<RoomSearchSet>
+        val allSearchSets = mainViewModel.getUserSearchSets() as ArrayList<RoomSearchSet>
         allSearchSets.removeIf {s -> s.queryName == getString(R.string.text_default_set_name) || s.queryName == getString(R.string.text_current_set_name)}
 
         val searchIdList = mutableListOf<String>()
@@ -61,9 +61,21 @@ class SearchListDialog : DialogFragment()
                         val roomSearchSet = allSearchSets[index]
                         //TODO Sending events between Activities/Fragments: Step 5
                         // next step in com.renatsayf.stockinsider.ui.dialogs.MainFragment.kt
-                        listener.data.value = Event(roomSearchSet)
+                        observer.data.value = Event(roomSearchSet)
                     }
                 }
+            })
+            setNegativeButton(getString(R.string.text_delete), object : DialogInterface.OnClickListener{
+                override fun onClick(p0: DialogInterface?, p1: Int)
+                {
+                    if (index > -1)
+                    {
+                        val roomSearchSet = allSearchSets[index]
+                        mainViewModel.deleteSearchSet(roomSearchSet)
+                        dismiss()
+                    }
+                }
+
             })
         }
         return builder.create()
@@ -73,7 +85,7 @@ class SearchListDialog : DialogFragment()
 
     //TODO Sending events between Activities/Fragments: Step 2 - create this class,
     // next step in com.renatsayf.stockinsider.ui.dialogs.SearchListDialog.kt
-    class EventListener : ViewModel()
+    class EventObserver : ViewModel()
     {
         val data = MutableLiveData<Event<RoomSearchSet>>()
     }

@@ -1,13 +1,15 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
-import com.renatsayf.stockinsider.models.SearchSet
 
 @Dao
 interface AppDao
 {
     @Query("SELECT * FROM search_set")
     suspend fun getSearchSets() : List<RoomSearchSet>
+
+    @Query("SELECT * FROM search_set WHERE search_set.set_name NOT IN ('default_set', 'purchases_more_1', 'purchases_more_5', 'sales_more_1', 'sales_more_5', 'current_set')")
+    suspend fun getUserSearchSets() : List<RoomSearchSet>
 
     @Query("SELECT * FROM search_set WHERE set_name = :setName")
     suspend fun getSetByName(setName : String) : RoomSearchSet

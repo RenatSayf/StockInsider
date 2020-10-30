@@ -169,5 +169,6 @@
     <string name="text_my_search_requests">Мои поисковые запросы</string>
     <string name="text_inet_not_connection">Отсутствует соединение с интернет. Подключитесь к сети и попробуйте снова</string>
     <string name="text_all_tickers">Все тикеры</string>
+    <string name="text_delete">Удалить</string>
 
 </resources>
