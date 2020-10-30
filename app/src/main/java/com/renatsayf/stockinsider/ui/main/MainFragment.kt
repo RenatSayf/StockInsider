@@ -19,6 +19,7 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.app_bar_main.*
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
@@ -203,12 +204,6 @@ class MainFragment : Fragment()
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
-    {
-        inflater.inflate(R.menu.main, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean
     {
         when(item.itemId)
@@ -220,7 +215,8 @@ class MainFragment : Fragment()
                 mainViewModel.setSearchSet(roomSearchSet)
             }
         }
-        return super.onOptionsItemSelected(item)
+        //return super.onOptionsItemSelected(item)
+        return true
     }
 
 

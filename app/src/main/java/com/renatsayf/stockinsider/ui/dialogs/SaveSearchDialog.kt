@@ -17,8 +17,7 @@ import kotlinx.android.synthetic.main.save_search_layout.view.*
 
 class SaveSearchDialog : DialogFragment()
 {
-    //private lateinit var listener: OnClickListener
-    private lateinit var listener: EventListener
+    private lateinit var observer: EventObserver
 
     companion object
     {
@@ -40,7 +39,7 @@ class SaveSearchDialog : DialogFragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        listener = ViewModelProvider(activity as MainActivity)[EventListener::class.java]
+        observer = ViewModelProvider(activity as MainActivity)[EventObserver::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -59,7 +58,7 @@ class SaveSearchDialog : DialogFragment()
                     if (!dialogView.searchNameView.text.isNullOrEmpty())
                     {
                         val name = dialogView.searchNameView.text.toString()
-                        listener.data.value = Event(Pair(KEY_SEARCH_NAME, name))
+                        observer.data.value = Event(Pair(KEY_SEARCH_NAME, name))
                     }
                 }
 
@@ -76,7 +75,7 @@ class SaveSearchDialog : DialogFragment()
         return builder.create()
     }
 
-    class EventListener : ViewModel()
+    class EventObserver : ViewModel()
     {
         val data = MutableLiveData<Event<Pair<String?, String>>>()
     }

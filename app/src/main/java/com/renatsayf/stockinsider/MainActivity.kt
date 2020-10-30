@@ -16,6 +16,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -89,8 +90,6 @@ class MainActivity : AppCompatActivity()
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
-
 
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView : NavigationView = findViewById(R.id.nav_view)
@@ -378,6 +377,13 @@ class MainActivity : AppCompatActivity()
         val string3 = "\n"+getString(R.string.text_strategy_dialog_2)
         spannableStringBuilder.append(SpannableString(string3))
         return spannableStringBuilder
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean
+    {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        menuInflater.inflate(R.menu.main, menu)
+        return true
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean

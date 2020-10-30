@@ -43,7 +43,7 @@
         android:autofillHints=""
         android:completionThreshold="1"
         android:inputType="textAutoComplete|textMultiLine"
-        android:labelFor="@id/ticker_ET"
+        android:hint="@string/text_all_tickers"
         android:paddingStart="5dp"
         android:paddingEnd="30dp"
         tools:targetApi="o"

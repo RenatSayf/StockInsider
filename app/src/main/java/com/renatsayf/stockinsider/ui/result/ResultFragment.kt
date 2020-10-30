@@ -2,9 +2,7 @@ package com.renatsayf.stockinsider.ui.result
 
 import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
@@ -50,7 +48,7 @@ class ResultFragment : Fragment()
     }
     private lateinit var viewModel : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var saveDialogListener : SaveSearchDialog.EventListener
+    private lateinit var saveDialogObserver : SaveSearchDialog.EventObserver
     private lateinit var searchSet: SearchSet
     private lateinit var roomSearchSet: RoomSearchSet
 
@@ -75,10 +73,11 @@ class ResultFragment : Fragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
+        setHasOptionsMenu(false)
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         viewModel = ViewModelProvider(this)[ResultViewModel::class.java]
-        saveDialogListener = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.EventListener::class.java]
+        saveDialogObserver = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.EventObserver::class.java]
 
         if (savedInstanceState == null)
         {
@@ -334,7 +333,7 @@ class ResultFragment : Fragment()
             SaveSearchDialog.getInstance(name).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
 
-        saveDialogListener.data.observe(viewLifecycleOwner, { event ->
+        saveDialogObserver.data.observe(viewLifecycleOwner, { event ->
             event.getContent()?.let {
                 if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
                 {
