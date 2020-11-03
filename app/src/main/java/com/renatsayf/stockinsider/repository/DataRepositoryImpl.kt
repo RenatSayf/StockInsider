@@ -50,11 +50,10 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         set.await()
     }
 
-    override fun saveSearchSetAsync(set: RoomSearchSet): Long = runBlocking {
-        val res = async {
+    override suspend fun saveSearchSetAsync(set: RoomSearchSet): Long = CoroutineScope(Dispatchers.IO).run {
+        return withContext(Dispatchers.Main) {
             db.insertOrUpdateSearchSet(set)
         }
-        res.await()
     }
 
     override fun deleteSearchSetAsync(set: RoomSearchSet): Int = runBlocking {

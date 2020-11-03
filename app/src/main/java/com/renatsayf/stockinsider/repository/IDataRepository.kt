@@ -21,7 +21,7 @@ interface IDataRepository
 
     suspend fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
-    fun saveSearchSetAsync(set: RoomSearchSet) : Long
+    suspend fun saveSearchSetAsync(set: RoomSearchSet) : Long
 
     fun deleteSearchSetAsync(set: RoomSearchSet) : Int
 

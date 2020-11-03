@@ -39,7 +39,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         repositoryImpl.getSearchSetFromDbAsync(setName)
     }
 
-    fun saveSearchSet(set: RoomSearchSet) : Long
+    suspend fun saveSearchSet(set: RoomSearchSet) : Long
     {
         return repositoryImpl.saveSearchSetAsync(set)
     }

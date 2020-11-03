@@ -155,15 +155,17 @@ class MainFragment : Fragment()
                     sort_spinner.selectedItemPosition
                                    )
             (requireActivity() as MainActivity).hideKeyBoard(ticker_ET)
-            val result = mainViewModel.saveSearchSet(set)
-            if (result > -1)
-            {
-                mainViewModel.setSearchSet(set)
-                val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_QUERY_NAME, searchName)
-                    putString(ResultFragment.ARG_TITLE, "Trading Screen")
+            CoroutineScope(Dispatchers.Main).launch {
+                val result = mainViewModel.saveSearchSet(set)
+                if (result > -1)
+                {
+                    mainViewModel.setSearchSet(set)
+                    val bundle = Bundle().apply {
+                        putString(ResultFragment.ARG_QUERY_NAME, searchName)
+                        putString(ResultFragment.ARG_TITLE, "Trading Screen")
+                    }
+                    search_button.findNavController().navigate(R.id.nav_result, bundle)
                 }
-                search_button.findNavController().navigate(R.id.nav_result, bundle)
             }
         }
 
