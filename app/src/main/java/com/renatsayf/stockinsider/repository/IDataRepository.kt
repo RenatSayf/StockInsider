@@ -19,7 +19,7 @@ interface IDataRepository
 
     fun getUserSearchSetsFromDbAsync() : List<RoomSearchSet>
 
-    fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
+    suspend fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
     fun saveSearchSetAsync(set: RoomSearchSet) : Long
 

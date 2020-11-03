@@ -43,7 +43,7 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
     }
 
 
-    override fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = runBlocking {
+    override suspend fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = CoroutineScope(Dispatchers.IO).run {
         val set = async {
             db.getSetByName(setName)
         }

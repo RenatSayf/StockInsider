@@ -34,6 +34,9 @@ import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.*
 import kotlinx.android.synthetic.main.no_result_layout.view.*
 import kotlinx.android.synthetic.main.set_alert_layout.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -88,23 +91,24 @@ class ResultFragment : Fragment()
             {
                 val mainActivity = activity as MainActivity
 
-                roomSearchSet = mainViewModel.getSearchSet(queryName)
-                searchSet = SearchSet(roomSearchSet.queryName).apply {
-                    ticker = mainActivity.getTickersString(roomSearchSet.ticker)
-                    filingPeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.filingPeriod)
-                    tradePeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.tradePeriod)
-                    isPurchase = mainActivity.getCheckBoxValue(roomSearchSet.isPurchase)
-                    isSale = mainActivity.getCheckBoxValue(roomSearchSet.isSale)
-                    tradedMin = roomSearchSet.tradedMin
-                    tradedMax = roomSearchSet.tradedMax
-                    isOfficer = mainActivity.getOfficerValue(roomSearchSet.isOfficer)
-                    isDirector = mainActivity.getCheckBoxValue(roomSearchSet.isDirector)
-                    isTenPercent = mainActivity.getCheckBoxValue(roomSearchSet.isTenPercent)
-                    groupBy = mainActivity.getGroupingValue(roomSearchSet.groupBy)
-                    sortBy = mainActivity.getSortingValue(roomSearchSet.sortBy)
+                CoroutineScope(Dispatchers.Main).launch {
+                    roomSearchSet = mainViewModel.getSearchSetAsync(queryName)
+                    searchSet = SearchSet(roomSearchSet.queryName).apply {
+                        ticker = mainActivity.getTickersString(roomSearchSet.ticker)
+                        filingPeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.filingPeriod)
+                        tradePeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.tradePeriod)
+                        isPurchase = mainActivity.getCheckBoxValue(roomSearchSet.isPurchase)
+                        isSale = mainActivity.getCheckBoxValue(roomSearchSet.isSale)
+                        tradedMin = roomSearchSet.tradedMin
+                        tradedMax = roomSearchSet.tradedMax
+                        isOfficer = mainActivity.getOfficerValue(roomSearchSet.isOfficer)
+                        isDirector = mainActivity.getCheckBoxValue(roomSearchSet.isDirector)
+                        isTenPercent = mainActivity.getCheckBoxValue(roomSearchSet.isTenPercent)
+                        groupBy = mainActivity.getGroupingValue(roomSearchSet.groupBy)
+                        sortBy = mainActivity.getSortingValue(roomSearchSet.sortBy)
+                    }
+                    mainViewModel.getDealList(searchSet)
                 }
-
-                mainViewModel.getDealList(searchSet)
             }
         }
 

@@ -26,6 +26,7 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -123,8 +124,11 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        val roomSearchSet = mainViewModel.getSearchSet(searchName)
-        mainViewModel.setSearchSet(roomSearchSet)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
+            mainViewModel.setSearchSet(roomSearchSet)
+        }
 
         //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
         searchDialogListObserver.data.observe(viewLifecycleOwner, { event ->
@@ -210,8 +214,11 @@ class MainFragment : Fragment()
             R.id.action_default_search ->
             {
                 val searchName = getString(R.string.text_default_set_name)
-                val roomSearchSet = mainViewModel.getSearchSet(searchName)
-                mainViewModel.setSearchSet(roomSearchSet)
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
+                    mainViewModel.setSearchSet(roomSearchSet)
+                }
             }
         }
         return super.onOptionsItemSelected(item)
