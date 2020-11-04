@@ -23,11 +23,10 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         return request.getInsiderTrading(insider)
     }
 
-    override fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = runBlocking {
-        val res = async {
+    override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
+        withContext(Dispatchers.Main) {
             db.getSearchSets()
         }
-        res.await()
     }
 
     override fun getTradingByTickerAsync(ticker: String): Single<ArrayList<Deal>>
@@ -41,7 +40,6 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         }
         res.await()
     }
-
 
     override suspend fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = CoroutineScope(Dispatchers.IO).run {
         val set = async {

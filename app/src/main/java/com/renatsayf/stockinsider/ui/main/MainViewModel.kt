@@ -10,7 +10,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import io.reactivex.disposables.Disposable
-import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.*
 
 class MainViewModel @ViewModelInject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
 {
@@ -25,7 +25,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         _searchSet.value = set
     }
 
-    fun getAllSearchSets() : List<RoomSearchSet>
+    suspend fun getAllSearchSets() : List<RoomSearchSet>
     {
         return repositoryImpl.getAllSearchSetsFromDbAsync()
     }
