@@ -54,16 +54,15 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         }
     }
 
-    override fun deleteSearchSetAsync(set: RoomSearchSet): Int = runBlocking {
-        val res = async {
+    override suspend fun deleteSearchSetAsync(set: RoomSearchSet): Int = CoroutineScope(Dispatchers.IO).run {
+        return withContext(Dispatchers.Main){
             db.deleteSet(set)
         }
-        res.await()
     }
 
 
 
-    override fun getCompaniesFromDbAsync(): Array<Companies> = runBlocking{
+    override suspend fun getCompaniesFromDbAsync(): Array<Companies> = CoroutineScope(Dispatchers.IO).run {
         val companies = async {
             db.getAllCompanies().toTypedArray()
         }

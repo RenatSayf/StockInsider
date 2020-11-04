@@ -11,6 +11,9 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -65,18 +68,23 @@ class SearchListDialog : DialogFragment()
                     }
                 }
             })
-            setNegativeButton(getString(R.string.text_delete), object : DialogInterface.OnClickListener{
-                override fun onClick(p0: DialogInterface?, p1: Int)
-                {
-                    if (index > -1)
+            setNegativeButton(
+                    getString(R.string.text_delete),
+                    object : DialogInterface.OnClickListener
                     {
-                        val roomSearchSet = allSearchSets[index]
-                        mainViewModel.deleteSearchSet(roomSearchSet)
-                        dismiss()
-                    }
-                }
+                        override fun onClick(p0: DialogInterface?, p1: Int)
+                        {
+                            if (index > -1)
+                            {
+                                val roomSearchSet = allSearchSets[index]
+                                CoroutineScope(Dispatchers.Main).launch {
+                                    mainViewModel.deleteSearchSet(roomSearchSet)
+                                    dismiss()
+                                }
+                            }
+                        }
 
-            })
+                    })
         }
         return builder.create()
     }

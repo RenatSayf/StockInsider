@@ -44,16 +44,19 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         return repositoryImpl.saveSearchSetAsync(set)
     }
 
-    fun deleteSearchSet(set: RoomSearchSet) = run {
+    suspend fun deleteSearchSet(set: RoomSearchSet) = run {
         repositoryImpl.deleteSearchSetAsync(set)
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        value = getCompanies()
+        CoroutineScope(Dispatchers.IO).launch {
+            val c = getCompanies()
+            postValue(c)
+        }
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    private fun getCompanies() : Array<Companies>? = run{
+    private suspend fun getCompanies() : Array<Companies>? = run {
         repositoryImpl.getCompaniesFromDbAsync()
     }
 
