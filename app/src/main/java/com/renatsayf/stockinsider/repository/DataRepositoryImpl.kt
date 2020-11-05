@@ -34,7 +34,7 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         return request.getTradingByTicker(ticker)
     }
 
-    override fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = runBlocking {
+    override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
         val res = async {
             db.getUserSearchSets()
         }

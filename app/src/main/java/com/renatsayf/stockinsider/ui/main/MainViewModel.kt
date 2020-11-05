@@ -30,7 +30,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         return repositoryImpl.getAllSearchSetsFromDbAsync()
     }
 
-    fun getUserSearchSets() : List<RoomSearchSet>
+    suspend fun getUserSearchSets() : List<RoomSearchSet>
     {
         return repositoryImpl.getUserSearchSetsFromDbAsync()
     }

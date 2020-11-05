@@ -36,57 +36,72 @@ class SearchListDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        val allSearchSets = mainViewModel.getUserSearchSets() as ArrayList<RoomSearchSet>
-        allSearchSets.removeIf {s -> s.queryName == getString(R.string.text_default_set_name) || s.queryName == getString(R.string.text_current_set_name)}
+        CoroutineScope(Dispatchers.Main).launch {
+            val allSearchSets = mainViewModel.getUserSearchSets() as ArrayList<RoomSearchSet>
+            allSearchSets.removeIf { s ->
+                s.queryName == getString(R.string.text_default_set_name) || s.queryName == getString(
+                        R.string.text_current_set_name
+                )
+            }
 
-        val searchIdList = mutableListOf<String>()
-        allSearchSets.forEach{
-            searchIdList.add(it.queryName)
-        }
+            val searchIdList = mutableListOf<String>()
+            allSearchSets.forEach {
+                searchIdList.add(it.queryName)
+            }
 
-        var index : Int = -1
-        val builder = AlertDialog.Builder(requireContext()).apply {
-            setTitle(getString(R.string.text_my_search_requests))
-            setSingleChoiceItems(searchIdList.toTypedArray(), -1, object : DialogInterface.OnClickListener
-            {
-                override fun onClick(p0: DialogInterface?, p1: Int)
-                {
-                    index = p1
-                }
-            })
-            setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener
-            {
-                override fun onClick(p0: DialogInterface?, p1: Int)
-                {
-                    //println("*********************** PositiveButton index = $index *****************************")
-                    if (index > -1)
-                    {
-                        val roomSearchSet = allSearchSets[index]
-                        //TODO Sending events between Activities/Fragments: Step 5
-                        // next step in com.renatsayf.stockinsider.ui.dialogs.MainFragment.kt
-                        observer.data.value = Event(roomSearchSet)
-                    }
-                }
-            })
-            setNegativeButton(
-                    getString(R.string.text_delete),
-                    object : DialogInterface.OnClickListener
-                    {
-                        override fun onClick(p0: DialogInterface?, p1: Int)
+            var index: Int = -1
+            AlertDialog.Builder(requireContext()).apply {
+                setTitle(getString(R.string.text_my_search_requests))
+                setSingleChoiceItems(
+                        searchIdList.toTypedArray(),
+                        -1,
+                        object : DialogInterface.OnClickListener
                         {
-                            if (index > -1)
+                            override fun onClick(p0: DialogInterface?, p1: Int)
                             {
-                                val roomSearchSet = allSearchSets[index]
-                                CoroutineScope(Dispatchers.Main).launch {
-                                    mainViewModel.deleteSearchSet(roomSearchSet)
-                                    dismiss()
+                                index = p1
+                            }
+                        })
+                setPositiveButton(
+                        getString(R.string.text_ok),
+                        object : DialogInterface.OnClickListener
+                        {
+                            override fun onClick(p0: DialogInterface?, p1: Int)
+                            {
+                                //println("*********************** PositiveButton index = $index *****************************")
+                                if (index > -1)
+                                {
+                                    val roomSearchSet = allSearchSets[index]
+                                    //TODO Sending events between Activities/Fragments: Step 5
+                                    // next step in com.renatsayf.stockinsider.ui.dialogs.MainFragment.kt
+                                    observer.data.value = Event(roomSearchSet)
+                                }
+                                dismiss()
+                            }
+                        })
+                setNegativeButton(
+                        getString(R.string.text_delete),
+                        object : DialogInterface.OnClickListener
+                        {
+                            override fun onClick(p0: DialogInterface?, p1: Int)
+                            {
+                                if (index > -1)
+                                {
+                                    val roomSearchSet = allSearchSets[index]
+                                    CoroutineScope(Dispatchers.Main).launch {
+                                        mainViewModel.deleteSearchSet(roomSearchSet)
+                                        dismiss()
+                                    }
                                 }
                             }
-                        }
 
-                    })
+                        })
+                setOnCancelListener { dismiss() }
+                create()
+                show()
+            }
         }
-        return builder.create()
+        return super.onCreateDialog(savedInstanceState)
     }
 
 

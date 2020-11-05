@@ -5,7 +5,6 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
-import kotlinx.coroutines.Deferred
 
 interface IDataRepository
 {
@@ -17,7 +16,7 @@ interface IDataRepository
 
     fun getTradingByTickerAsync(ticker: String) : Single<ArrayList<Deal>>
 
-    fun getUserSearchSetsFromDbAsync() : List<RoomSearchSet>
+    suspend fun getUserSearchSetsFromDbAsync() : List<RoomSearchSet>
 
     suspend fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
