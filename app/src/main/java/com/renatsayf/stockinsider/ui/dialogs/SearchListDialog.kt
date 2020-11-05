@@ -90,9 +90,10 @@ class SearchListDialog : DialogFragment()
                                     val roomSearchSet = allSearchSets[index]
                                     CoroutineScope(Dispatchers.Main).launch {
                                         mainViewModel.deleteSearchSet(roomSearchSet)
-                                        dismiss()
+
                                     }
                                 }
+                                dismiss()
                             }
 
                         })
