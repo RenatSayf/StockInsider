@@ -19,9 +19,3 @@
 /app/keystore/private_key.pepk
 app/libs/
 app/release/
-app/src/main/res/drawable-hdpi/
-app/src/main/res/drawable-mdpi/
-app/src/main/res/drawable-xhdpi/
-app/src/main/res/drawable-xxhdpi/
-app/src/main/res/drawable-xxxhdpi/
-app/src/main/res/layout-v26/

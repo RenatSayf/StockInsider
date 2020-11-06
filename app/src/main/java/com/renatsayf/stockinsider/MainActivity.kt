@@ -142,7 +142,7 @@ class MainActivity : AppCompatActivity()
                                                     navController.navigate(R.id.nav_home)
                                                     drawerLayout.closeDrawer(GravityCompat.START)
                                                 }
-                                                2 ->
+                                                3 ->
                                                 {
                                                     when (getSharedPreferences(
                                                             APP_SETTINGS,
@@ -177,7 +177,7 @@ class MainActivity : AppCompatActivity()
                                                     }
                                                     drawerLayout.closeDrawer(GravityCompat.START)
                                                 }
-                                                4 ->
+                                                5 ->
                                                 {
                                                     drawerLayout.closeDrawer(GravityCompat.START)
                                                     finish()
@@ -198,7 +198,7 @@ class MainActivity : AppCompatActivity()
                                         {
                                             when
                                             {
-                                                p2 == 1 && p3 == 0 ->
+                                                p2 == 2 && p3 == 0 ->
                                                 {
                                                     val bundle = Bundle().apply {
                                                         putString(
@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity()
                                                     }
                                                     navController.navigate(R.id.nav_result, bundle)
                                                 }
-                                                p2 == 1 && p3 == 1 ->
+                                                p2 == 2 && p3 == 1 ->
                                                 {
                                                     val bundle = Bundle().apply {
                                                         putString(
@@ -226,7 +226,7 @@ class MainActivity : AppCompatActivity()
                                                     }
                                                     navController.navigate(R.id.nav_result, bundle)
                                                 }
-                                                p2 == 1 && p3 == 2 ->
+                                                p2 == 2 && p3 == 2 ->
                                                 {
                                                     Bundle().apply {
                                                         putString(
@@ -244,7 +244,7 @@ class MainActivity : AppCompatActivity()
                                                         )
                                                     }
                                                 }
-                                                p2 == 1 && p3 == 3 ->
+                                                p2 == 2 && p3 == 3 ->
                                                 {
                                                     Bundle().apply {
                                                         putString(
@@ -262,7 +262,7 @@ class MainActivity : AppCompatActivity()
                                                         )
                                                     }
                                                 }
-                                                p2 == 3 && p3 == 0 ->
+                                                p2 == 4 && p3 == 0 ->
                                                 {
                                                     if (isNetworkConnectivity())
                                                     {
@@ -272,7 +272,7 @@ class MainActivity : AppCompatActivity()
                                                         )
                                                     }
                                                 }
-                                                p2 == 3 && p3 == 1 ->
+                                                p2 == 4 && p3 == 1 ->
                                                 {
                                                     if (isNetworkConnectivity())
                                                     {
