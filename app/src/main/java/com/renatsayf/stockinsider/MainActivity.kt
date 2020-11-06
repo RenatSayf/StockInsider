@@ -127,170 +127,170 @@ class MainActivity : AppCompatActivity()
         expandMenu.apply {
             setAdapter(expandableMenuAdapter)
             setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener
-                                    {
-                                        override fun onGroupClick(
-                                                p0: ExpandableListView?,
-                                                p1: View?,
-                                                p2: Int,
-                                                p3: Long
-                                        ): Boolean
-                                        {
-                                            when (p2)
-                                            {
-                                                0 ->
-                                                {
-                                                    navController.navigate(R.id.nav_home)
-                                                    drawerLayout.closeDrawer(GravityCompat.START)
-                                                }
-                                                3 ->
-                                                {
-                                                    when (getSharedPreferences(
-                                                            APP_SETTINGS,
-                                                            Context.MODE_PRIVATE
-                                                    ).getBoolean(
-                                                            KEY_NO_SHOW_AGAIN,
-                                                            false
-                                                    ))
-                                                    {
-                                                        true ->
-                                                        {
-                                                            navController.navigate(R.id.nav_strategy)
-                                                        }
-                                                        else ->
-                                                        {
-                                                            val spannableMessage =
-                                                                    createSpannableMessage()
-                                                            AppDialog.getInstance(
-                                                                    "show_strategy",
-                                                                    spannableMessage,
-                                                                    context.getString(
-                                                                            R.string.text_read
-                                                                    ),
-                                                                    "Закрыть",
-                                                                    "Больше не показывать"
-                                                            )
-                                                                .show(
-                                                                        supportFragmentManager.beginTransaction(),
-                                                                        AppDialog.TAG
-                                                                )
-                                                        }
-                                                    }
-                                                    drawerLayout.closeDrawer(GravityCompat.START)
-                                                }
-                                                5 ->
-                                                {
-                                                    drawerLayout.closeDrawer(GravityCompat.START)
-                                                    finish()
-                                                }
-                                            }
-                                            return false
-                                        }
-                                    })
+            {
+                override fun onGroupClick(p0: ExpandableListView?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Long): Boolean
+                {
+                    when (p2)
+                    {
+                        0 ->
+                        {
+                            navController.navigate(R.id.nav_home)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        4 ->
+                        {
+                            when (getSharedPreferences(APP_SETTINGS,
+                                Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
+                            {
+                                true ->
+                                {
+                                    navController.navigate(R.id.nav_strategy)
+                                }
+                                else ->
+                                {
+                                    val spannableMessage = createSpannableMessage()
+                                    AppDialog.getInstance("show_strategy", spannableMessage, context.getString(R.string.text_read), context.getString(R.string.text_close), context.getString(R.string.text_not_show_again))
+                                        .show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
+                                }
+                            }
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        6 ->
+                        {
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                            finish()
+                        }
+                    }
+                    return false
+                }
+            })
             setOnChildClickListener(object : ExpandableListView.OnChildClickListener
-                                    {
-                                        override fun onChildClick(
-                                                p0: ExpandableListView?,
-                                                p1: View?,
-                                                p2: Int,
-                                                p3: Int,
-                                                p4: Long
-                                        ): Boolean
-                                        {
-                                            when
-                                            {
-                                                p2 == 2 && p3 == 0 ->
-                                                {
-                                                    val bundle = Bundle().apply {
-                                                        putString(
-                                                                ResultFragment.ARG_QUERY_NAME,
-                                                                "purchases_more_1"
-                                                        )
-                                                        putString(
-                                                                ResultFragment.ARG_TITLE,
-                                                                context.getString(R.string.text_purchases_more_1)
-                                                        )
-                                                    }
-                                                    navController.navigate(R.id.nav_result, bundle)
-                                                }
-                                                p2 == 2 && p3 == 1 ->
-                                                {
-                                                    val bundle = Bundle().apply {
-                                                        putString(
-                                                                ResultFragment.ARG_QUERY_NAME,
-                                                                "purchases_more_5"
-                                                        )
-                                                        putString(
-                                                                ResultFragment.ARG_TITLE,
-                                                                context.getString(R.string.text_purchases_more_5)
-                                                        )
-                                                    }
-                                                    navController.navigate(R.id.nav_result, bundle)
-                                                }
-                                                p2 == 2 && p3 == 2 ->
-                                                {
-                                                    Bundle().apply {
-                                                        putString(
-                                                                ResultFragment.ARG_QUERY_NAME,
-                                                                "sales_more_1"
-                                                        )
-                                                        putString(
-                                                                ResultFragment.ARG_TITLE,
-                                                                context.getString(R.string.text_sales_more_1)
-                                                        )
-                                                    }.run {
-                                                        navController.navigate(
-                                                                R.id.nav_result,
-                                                                this
-                                                        )
-                                                    }
-                                                }
-                                                p2 == 2 && p3 == 3 ->
-                                                {
-                                                    Bundle().apply {
-                                                        putString(
-                                                                ResultFragment.ARG_QUERY_NAME,
-                                                                "sales_more_5"
-                                                        )
-                                                        putString(
-                                                                ResultFragment.ARG_TITLE,
-                                                                context.getString(R.string.text_sales_more_5)
-                                                        )
-                                                    }.run {
-                                                        navController.navigate(
-                                                                R.id.nav_result,
-                                                                this
-                                                        )
-                                                    }
-                                                }
-                                                p2 == 4 && p3 == 0 ->
-                                                {
-                                                    if (isNetworkConnectivity())
-                                                    {
-                                                        donateDialog.show(
-                                                                supportFragmentManager,
-                                                                DonateDialog.TAG
-                                                        )
-                                                    }
-                                                }
-                                                p2 == 4 && p3 == 1 ->
-                                                {
-                                                    if (isNetworkConnectivity())
-                                                    {
-                                                        if (ad.isLoaded)
-                                                        {
-                                                            ad.show()
-                                                        }
-                                                        else
-                                                        {
-                                                            ad.loadAd(AdRequest.Builder().build())
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                            drawerLayout.closeDrawer(GravityCompat.START)
-                                            return false
-                                        }
-                                    })
+            {
+                override fun onChildClick(p0: ExpandableListView?,
+                    p1: View?,
+                    p2: Int,
+                    p3: Int,
+                    p4: Long): Boolean
+                {
+                    when
+                    {
+                        p2 == 1 && p3 == 0 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_3")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 1 && p3 == 1 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_3")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 1 && p3 == 2 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_3")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 1 && p3 == 3 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_3")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 2 && p3 == 0 ->
+                        {
+                            val bundle = Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_1")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
+                            }
+                            navController.navigate(R.id.nav_result, bundle)
+                        }
+                        p2 == 2 && p3 == 1 ->
+                        {
+                            val bundle = Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_5")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
+                            }
+                            navController.navigate(R.id.nav_result, bundle)
+                        }
+                        p2 == 2 && p3 == 2 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_1")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 2 && p3 == 3 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_5")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                            }.run {
+                                navController.navigate(R.id.nav_result, this)
+                            }
+                        }
+                        p2 == 3 && p3 == 0 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_14")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 3 && p3 == 1 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_14")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 3 && p3 == 2 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_14")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 3 && p3 == 3 ->
+                        {
+                            Bundle().apply {
+                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_14")
+                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
+                            }.run { navController.navigate(R.id.nav_result, this) }
+                        }
+                        p2 == 5 && p3 == 0 ->
+                        {
+                            if (isNetworkConnectivity())
+                            {
+                                donateDialog.show(supportFragmentManager, DonateDialog.TAG)
+                            }
+                        }
+                        p2 == 5 && p3 == 1 ->
+                        {
+                            if (isNetworkConnectivity())
+                            {
+                                if (ad.isLoaded)
+                                {
+                                    ad.show()
+                                }
+                                else
+                                {
+                                    ad.loadAd(AdRequest.Builder().build())
+                                }
+                            }
+                        }
+                    }
+                    drawerLayout.closeDrawer(GravityCompat.START)
+                    return false
+                }
+            })
         }
 
         appDialogListener.data.observe(this, { event ->

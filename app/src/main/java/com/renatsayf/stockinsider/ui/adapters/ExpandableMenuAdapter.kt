@@ -20,8 +20,9 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
     init
     {
         listDataHeader.add(context.getString(R.string.text_title_home))
-        listDataHeader.add("Сделки за последние 3 дня")
+        listDataHeader.add(context.getString(R.string.text_deals_for_3_days))
         listDataHeader.add(context.getString(R.string.text_deals_for_7_days))
+        listDataHeader.add("Сделки за 14 дней")
         listDataHeader.add(context.getString(R.string.text_trading_strategy))
         listDataHeader.add(context.getString(R.string.text_support_project))
         listDataHeader.add(context.getString(R.string.text_exit))
@@ -30,6 +31,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         ContextCompat.getDrawable(context, R.drawable.ic_stock_hause_cold)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_3)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_7)?.let { listDataIcons.add(it) }
+        ContextCompat.getDrawable(context, R.drawable.ic_calendar_14)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_trending_up)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_thumb_up_alt)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_power_off)?.let { listDataIcons.add(it) }
@@ -46,9 +48,10 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataChild.put(listDataHeader[0], homeHeader)
         listDataChild.put(listDataHeader[1], latestHeader)
         listDataChild.put(listDataHeader[2], latestHeader)
-        listDataChild.put(listDataHeader[3], strategyHeader)
-        listDataChild.put(listDataHeader[4], supportHeader)
-        listDataChild.put(listDataHeader[5], exitHeader)
+        listDataChild.put(listDataHeader[3], latestHeader)
+        listDataChild.put(listDataHeader[4], strategyHeader)
+        listDataChild.put(listDataHeader[5], supportHeader)
+        listDataChild.put(listDataHeader[6], exitHeader)
     }
 
     override fun getGroupCount(): Int
