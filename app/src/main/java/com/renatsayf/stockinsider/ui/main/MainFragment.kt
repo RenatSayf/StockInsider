@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.ui.main
 
 import android.os.Bundle
 import android.view.*
+import android.widget.AdapterView
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -202,6 +203,26 @@ class MainFragment : Fragment()
                 }
             }
         })
+
+        filingDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long)
+            {
+                val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
+                val selectedItem = array[p2]
+                when
+                {
+                    selectedItem < 3 && selectedItem != 0 -> tradeDateSpinner.setSelection(3)
+                    selectedItem == 0 -> tradeDateSpinner.setSelection(0)
+                    else -> tradeDateSpinner.setSelection(p2)
+                }
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?)
+            {
+
+            }
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(this){
             (activity as MainActivity).finish()
