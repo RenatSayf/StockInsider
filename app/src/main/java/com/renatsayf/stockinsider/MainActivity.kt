@@ -44,6 +44,7 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
+import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
@@ -159,6 +160,10 @@ class MainActivity : AppCompatActivity()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         6 ->
+                        {
+                            WebViewDialog().show(supportFragmentManager, "dsfdfdf")
+                        }
+                        7 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             finish()

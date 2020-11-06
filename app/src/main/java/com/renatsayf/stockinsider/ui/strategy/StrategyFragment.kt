@@ -56,10 +56,8 @@ class StrategyFragment : Fragment()
             override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
             {
                 p0?.performClick()
-                
                 return false
             }
-
         })
 
     }
