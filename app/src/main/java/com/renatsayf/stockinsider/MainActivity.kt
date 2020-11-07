@@ -44,7 +44,6 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
-import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
@@ -100,11 +99,8 @@ class MainActivity : AppCompatActivity()
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(
-                setOf(
-                        R.id.nav_home, R.id.nav_strategy
-                ), drawerLayout
-        )
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.nav_strategy),
+            drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener { item ->
@@ -155,15 +151,21 @@ class MainActivity : AppCompatActivity()
                                 else ->
                                 {
                                     val spannableMessage = createSpannableMessage()
-                                    AppDialog.getInstance("show_strategy", spannableMessage, context.getString(R.string.text_read), context.getString(R.string.text_close), context.getString(R.string.text_not_show_again))
-                                        .show(supportFragmentManager.beginTransaction(), AppDialog.TAG)
+                                    AppDialog.getInstance("show_strategy",
+                                        spannableMessage,
+                                        context.getString(R.string.text_read),
+                                        context.getString(R.string.text_close),
+                                        context.getString(R.string.text_not_show_again)).show(
+                                        supportFragmentManager.beginTransaction(),
+                                        AppDialog.TAG)
                                 }
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         6 ->
                         {
-
+                            doShare()
+                            drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         7 ->
                         {
@@ -188,35 +190,40 @@ class MainActivity : AppCompatActivity()
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_3")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_pur_more1_for_3))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 1 && p3 == 1 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_3")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_pur_more5_for_3))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 1 && p3 == 2 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_3")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sale_more1_for_3))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 1 && p3 == 3 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_3")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sale_more5_for_3))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 2 && p3 == 0 ->
                         {
                             val bundle = Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_1")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_purchases_more_1))
                             }
                             navController.navigate(R.id.nav_result, bundle)
                         }
@@ -224,7 +231,8 @@ class MainActivity : AppCompatActivity()
                         {
                             val bundle = Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_5")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_purchases_more_5))
                             }
                             navController.navigate(R.id.nav_result, bundle)
                         }
@@ -232,14 +240,16 @@ class MainActivity : AppCompatActivity()
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sales_more_1")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sales_more_1))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 2 && p3 == 3 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sales_more_5")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sales_more_5))
                             }.run {
                                 navController.navigate(R.id.nav_result, this)
                             }
@@ -248,28 +258,32 @@ class MainActivity : AppCompatActivity()
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_14")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_pur_more1_for_14))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 3 && p3 == 1 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_14")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_pur_more5_for_14))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 3 && p3 == 2 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_14")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sale_more1_for_14))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 3 && p3 == 3 ->
                         {
                             Bundle().apply {
                                 putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_14")
-                                putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
+                                putString(ResultFragment.ARG_TITLE,
+                                    context.getString(R.string.text_sale_more5_for_14))
                             }.run { navController.navigate(R.id.nav_result, this) }
                         }
                         p2 == 5 && p3 == 0 ->
@@ -356,12 +370,10 @@ class MainActivity : AppCompatActivity()
         val string1 = getString(R.string.text_hi)+"\n"
         val spannable1 = SpannableString(string1)
         spannable1.apply {
-            setSpan(
-                    ForegroundColorSpan(Color.GREEN),
-                    0,
-                    string1.length - 1,
-                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-            )
+            setSpan(ForegroundColorSpan(Color.GREEN),
+                0,
+                string1.length - 1,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
             setSpan(RelativeSizeSpan(2f), 0, string1.length - 1, Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
 
         }
@@ -369,15 +381,12 @@ class MainActivity : AppCompatActivity()
 
         val string2 = getString(R.string.text_strategy_dialog_1)+"\n"
 
-        spannableStringBuilder.append(SpannableString(string2).apply
-        {
+        spannableStringBuilder.append(SpannableString(string2).apply {
             setSpan(UnderlineSpan(), 71, 85, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
-            setSpan(
-                    ForegroundColorSpan(getColor(R.color.colorSectionDivider)),
-                    71,
-                    85,
-                    Spannable.SPAN_EXCLUSIVE_INCLUSIVE
-            )
+            setSpan(ForegroundColorSpan(getColor(R.color.colorSectionDivider)),
+                71,
+                85,
+                Spannable.SPAN_EXCLUSIVE_INCLUSIVE)
             setSpan(clickable, 71, 85, Spannable.SPAN_INCLUSIVE_INCLUSIVE)
         })
 
@@ -534,20 +543,31 @@ class MainActivity : AppCompatActivity()
         activeNetwork?.let { network ->
             val nc = cm.getNetworkCapabilities(network)
             nc?.let {
-                return(it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || it.hasTransport(NetworkCapabilities.TRANSPORT_WIFI))
+                return(it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || it.hasTransport(
+                    NetworkCapabilities.TRANSPORT_WIFI))
             }
         }
-        Snackbar.make(expandMenu, getString(R.string.text_inet_not_connection), Snackbar.LENGTH_LONG).show()
+        Snackbar.make(expandMenu,
+            getString(R.string.text_inet_not_connection),
+            Snackbar.LENGTH_LONG).show()
         return false
+    }
+
+    fun doShare()
+    {
+        val sharingIntent = Intent(Intent.ACTION_SEND)
+            sharingIntent.type = "text/plain"
+            val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
+            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
+            startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
     }
 
     override fun finish()
     {
         super.finish()
         val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(
-                AlarmPendingIntent.IS_ALARM_SETUP_KEY,
-                false
-        )
+            AlarmPendingIntent.IS_ALARM_SETUP_KEY,
+            false)
         if (isServiceEnabled && !isServiceRunning())
         {
             val serviceIntent = Intent(this, StockInsiderService::class.java)
