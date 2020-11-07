@@ -6,7 +6,7 @@
     <string name="nav_header_subtitle">android.studio@android.com</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
-
+    <string name="app_link">https://play.google.com/store/apps/details?id=</string>
     <string name="menu_home">Home</string>
     <string name="menu_gallery">Gallery</string>
     <string name="menu_slideshow">Slideshow</string>
@@ -63,8 +63,8 @@
     <string name="delta_own_title">ΔOwn</string>
     <string name="value_title">Value,  $</string>
     <string name="text_deals_for_7_days">Сделки за 7 дней</string>
-    <string name="text_latest_purchases_1">Покупки больше $1 милл.</string>
-    <string name="text_latest_purchases_5">Покупки больше $5 милл.</string>
+    <string name="text_latest_purchases_1">Покупки больше 1 милл.$</string>
+    <string name="text_latest_purchases_5">Покупки больше 5 милл.$</string>
     <string name="text_data_not_avalible">Data is not available, please, try later</string>
     <string name="text_cancel">Отмена</string>
     <string name="text_ok">OK</string>
@@ -185,5 +185,12 @@
     <string name="text_accept">Принимаю</string>
     <string name="text_user_agreement">Пользовательское соглашение</string>
     <string name="text_share_using">Поделиться с помощью</string>
+    <string name="text_developer_name">Разработка: RenatSayf</string>
+    <string name="text_developer_email">E-mail: renatsayf@gmail.com</string>
+    <string name="text_evaluate">Оценить</string>
+    <string name="privacy_policy_text_link">Политика конфиденциальности</string>
+    <string name="privacy_policy_link">https://sites.google.com/view/stock-insider/</string>
+    <string name="text_share">Поделиться</string>
+    <string name="text_about_app">О программе</string>
 
 </resources>

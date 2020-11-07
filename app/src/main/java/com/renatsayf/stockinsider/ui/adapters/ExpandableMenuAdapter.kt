@@ -25,7 +25,8 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataHeader.add("Сделки за 14 дней")
         listDataHeader.add(context.getString(R.string.text_trading_strategy))
         listDataHeader.add(context.getString(R.string.text_support_project))
-        listDataHeader.add("Поделиться")
+        listDataHeader.add(context.getString(R.string.text_about_app))
+        listDataHeader.add(context.getString(R.string.text_share))
         listDataHeader.add(context.getString(R.string.text_exit))
 
         // Adding data icons
@@ -35,6 +36,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_14)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_trending_up)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_thumb_up_alt)?.let { listDataIcons.add(it) }
+        ContextCompat.getDrawable(context, R.drawable.ic_info)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_share)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_power_off)?.let { listDataIcons.add(it) }
 
@@ -54,7 +56,8 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataChild.put(listDataHeader[4], strategyHeader)
         listDataChild.put(listDataHeader[5], supportHeader)
         listDataChild.put(listDataHeader[6], arrayListOf())
-        listDataChild.put(listDataHeader[7], exitHeader)
+        listDataChild.put(listDataHeader[7], arrayListOf())
+        listDataChild.put(listDataHeader[8], exitHeader)
     }
 
     override fun getGroupCount(): Int

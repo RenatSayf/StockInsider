@@ -114,7 +114,7 @@ class MainActivity : AppCompatActivity()
         //region TODO перед релизом удалить или закомментировать
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_NO_SHOW_AGAIN, false)
-            putBoolean(KEY_IS_AGREE, false)
+            //putBoolean(KEY_IS_AGREE, false)
             apply()
         }
         //endregion
@@ -164,10 +164,15 @@ class MainActivity : AppCompatActivity()
                         }
                         6 ->
                         {
-                            doShare()
+                            navController.navigate(R.id.nav_about_app)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         7 ->
+                        {
+                            doShare()
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        8 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             finish()

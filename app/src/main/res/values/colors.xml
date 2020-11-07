@@ -31,4 +31,5 @@
     <color name="colorSectionDivider">#303F9F</color>
     <color name="colorSectionItemTitle">#AEEA00</color>
     <color name="colorBlack">#000000</color>
+    <color name="colorLink">#f93c75</color>
 </resources>
