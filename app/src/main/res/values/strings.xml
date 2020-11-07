@@ -182,5 +182,7 @@
     <string name="text_pur_more5_for_14">Покупки более 5 милл.$ за 14 дней</string>
     <string name="text_sale_more1_for_14">Продажи более 1 милл.$ за 14 дней</string>
     <string name="text_sale_more5_for_14">Продажи более 5 милл.$ за 14 дней</string>
+    <string name="text_accept">Принимаю</string>
+    <string name="text_user_agreement">Пользовательское соглашение</string>
 
 </resources>

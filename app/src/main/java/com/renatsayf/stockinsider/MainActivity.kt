@@ -61,7 +61,8 @@ class MainActivity : AppCompatActivity()
     companion object
     {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
-        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("key_no_show_again")
+        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("_key_no_show_again")
+        val KEY_IS_AGREE = this::class.java.canonicalName.plus("_key_is_agree")
     }
 
     lateinit var navController: NavController
@@ -117,6 +118,7 @@ class MainActivity : AppCompatActivity()
         //region TODO перед релизом удалить или закомментировать
         getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
             putBoolean(KEY_NO_SHOW_AGAIN, false)
+            putBoolean(KEY_IS_AGREE, false)
             apply()
         }
         //endregion
@@ -161,7 +163,7 @@ class MainActivity : AppCompatActivity()
                         }
                         6 ->
                         {
-                            WebViewDialog().show(supportFragmentManager, "dsfdfdf")
+
                         }
                         7 ->
                         {

@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.main
 
+import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
@@ -16,6 +17,7 @@ import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
+import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
@@ -61,6 +63,9 @@ class MainFragment : Fragment()
     {
         super.onActivityCreated(savedInstanceState)
         setHasOptionsMenu(true)
+
+        val isAgree = requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.KEY_IS_AGREE, false)
+        if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
 
         when ((requireActivity() as MainActivity).isServiceRunning())
         {
