@@ -169,7 +169,7 @@ class MainFragment : Fragment()
                     mainViewModel.setSearchSet(set)
                     val bundle = Bundle().apply {
                         putString(ResultFragment.ARG_QUERY_NAME, searchName)
-                        putString(ResultFragment.ARG_TITLE, "Trading Screen")
+                        putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
                     }
                     search_button.findNavController().navigate(R.id.nav_result, bundle)
                 }

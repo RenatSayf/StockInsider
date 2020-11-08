@@ -18,21 +18,21 @@
         android:background="@color/colorPrimary">
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="@string/text_results"
+            android:textAlignment="textStart"
+            android:textSize="18sp"
+            android:textColor="@color/colorWhite"/>
+
+        <TextView
             android:id="@+id/resultTV"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="5dp"
             android:text="@string/text_0"
             android:textAlignment="textEnd"
-            android:textSize="18sp"
-            android:textColor="@color/colorWhite"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:text="@string/text_results"
-            android:textAlignment="textStart"
             android:textSize="18sp"
             android:textColor="@color/colorWhite"/>
 
@@ -58,7 +58,7 @@
             android:id="@+id/titleTView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
+            android:layout_weight="2"
             android:layout_marginStart="5dp"
             tools:text="@string/text_insider"
             android:textAlignment="textStart"
@@ -69,7 +69,7 @@
             android:id="@+id/insiderNameTView"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="3"
+            android:layout_weight="4"
             android:layout_marginStart="5dp"
             tools:text="Insider Name"
             android:textAlignment="textEnd"
@@ -98,6 +98,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_margin="16dp"
         android:visibility="gone"
-        tools:visibility="visible"/>
+        tools:visibility="visible"
+        android:contentDescription="@string/app_name" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

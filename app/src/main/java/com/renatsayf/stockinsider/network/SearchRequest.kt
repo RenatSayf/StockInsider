@@ -13,7 +13,7 @@ import javax.inject.Inject
 class SearchRequest @Inject constructor()
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
-    private var composite = CompositeDisposable()
+    var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
     fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
@@ -186,5 +186,7 @@ class SearchRequest @Inject constructor()
             composite.add(subscribe)
         }
     }
+
+
 
 }

@@ -68,4 +68,9 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         }
         companies.await()
     }
+
+    override fun destructor()
+    {
+        request.composite.clear()
+    }
 }

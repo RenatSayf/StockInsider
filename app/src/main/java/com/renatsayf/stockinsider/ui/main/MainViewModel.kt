@@ -77,6 +77,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
     override fun onCleared()
     {
         subscribe?.dispose()
+        repositoryImpl.destructor()
         super.onCleared()
     }
 }

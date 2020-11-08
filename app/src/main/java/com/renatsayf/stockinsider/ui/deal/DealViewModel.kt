@@ -38,6 +38,7 @@ class DealViewModel @ViewModelInject constructor(
     override fun onCleared()
     {
         super.onCleared()
+        repositoryImpl.destructor()
         appLog.print(TAG, "********************* onCleared() **************************")
     }
 
