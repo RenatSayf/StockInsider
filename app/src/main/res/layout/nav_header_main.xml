@@ -16,7 +16,7 @@
         android:id="@+id/imageView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:contentDescription="@string/nav_header_desc"
+        android:contentDescription="@string/app_name"
         android:src="@drawable/exchange_bar_yellow"
         android:visibility="gone"/>
 
