@@ -30,7 +30,7 @@
     <string name="text_deal_value">Объем сделки $</string>
     <string name="text_company_name">Компания</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
-    <string name="text_p_purchase">P - Purchase</string>
+    <string name="text_p_purchase">P - Покупка</string>
     <string name="text_10000000">10000000</string>
     <string name="text_insider_name">Имя инсайдера</string>
     <string name="text_nothing_found">Ничего не найдено</string>
@@ -42,17 +42,17 @@
     <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>
     <string name="text_searching_is_created">Поиск по расписанию был создан</string>
     <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>
-    <string name="text_cancel_search">Are you wish cancelled these searching notifications?</string>
-    <string name="text_search_is_disabled">Search notification is disabled</string>
+    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>
+    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>
     <string name="locale_en_US">en-US</string>
     <string name="app_time_zone">America/Chicago</string>
-    <string name="discription_text_to_notification">Daily notifications about transactions that have occurred on US exchanges</string>
+    <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
     <string name="text_title_home">Поиск SEC Form 4</string>
     <string name="text_trading_strategy">Торговая стратегия</string>
     <string name="text_exit">Выход</string>
-    <string name="base_notification_text">Every day at 6 to 22 o \'clock Washington time we will check new deals</string>
+    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>
     <string name="text_title_trade_type">Trade Type</string>
-    <string name="text_title_price">Price, $</string>
+    <string name="text_title_price">Цена, $</string>
     <string name="text_title_qty">Qty</string>
     <string name="text_title_owned">Owned</string>
     <string name="delta_own_title">ΔOwn</string>
@@ -79,19 +79,19 @@
     </string-array>
     
     <string-array name="list_for_filing_date">
-        <item>All dates</item>
-        <item>Latest day</item>
-        <item>Last 2 days</item>
-        <item>Last 3 days</item>
-        <item>Last 1 week</item>
-        <item>Last 2 weeks</item>
-        <item>Last 1 month</item>
-        <item>Last 2 months</item>
-        <item>Last 3 months</item>
-        <item>Last 6 months</item>
-        <item>Last 1 year</item>
-        <item>Last 2 years</item>
-        <item>Last 4 years</item>
+        <item>За все время</item>
+        <item>За последний день</item>
+        <item>За последние 2 дня</item>
+        <item>За последние 3 дня</item>
+        <item>За последнюю неделю</item>
+        <item>За последние 2 недели</item>
+        <item>За последний месяц</item>
+        <item>За последние 2 месяца</item>
+        <item>За последние 3 месяца</item>
+        <item>За последние 6 месяца</item>
+        <item>За последний год</item>
+        <item>За последние 2 года</item>
+        <item>За последние 4 года</item>
     </string-array>
     <integer-array name="value_for_filing_date">
         <item>0</item>
@@ -110,8 +110,8 @@
     </integer-array>
 
     <string-array name="list_for_grouping">
-        <item>Filing</item>
-        <item>Company</item>
+        <item>Дата регистрации</item>
+        <item>Компания</item>
     </string-array>
     <integer-array name="value_for_grouping">
         <item>0</item>
@@ -119,10 +119,10 @@
     </integer-array>
 
     <string-array name="list_for_sorting">
-        <item>Filing Date</item>
-        <item>Trade Date</item>
-        <item>Ticker Symbol</item>
-        <item>Trade Value</item>
+        <item>Дата регистрации</item>
+        <item>Дата сделки</item>
+        <item>Тикер</item>
+        <item>Объем сделки</item>
     </string-array>
     <integer-array name="value_for_sorting">
         <item>0</item>
