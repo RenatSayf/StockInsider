@@ -51,12 +51,12 @@
     <string name="text_trading_strategy">Торговая стратегия</string>
     <string name="text_exit">Выход</string>
     <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>
-    <string name="text_title_trade_type">Trade Type</string>
+    <string name="text_title_trade_type">Тип сделки</string>
     <string name="text_title_price">Цена, $</string>
-    <string name="text_title_qty">Qty</string>
-    <string name="text_title_owned">Owned</string>
-    <string name="delta_own_title">ΔOwn</string>
-    <string name="value_title">Value,  $</string>
+    <string name="text_title_qty">Количество акций в сделке</string>
+    <string name="text_title_owned">Колич. акций во владении</string>
+    <string name="delta_own_title">Прирост/Утрата, %</string>
+    <string name="value_title">Объем сделки,  $</string>
     <string name="text_deals_for_7_days">Сделки за 7 дней</string>
     <string name="text_latest_purchases_1">Покупки больше 1 милл.$</string>
     <string name="text_latest_purchases_5">Покупки больше 5 милл.$</string>
@@ -141,7 +141,7 @@
     <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
     <string name="text_insider">Инсайдер:</string>
     <string name="text_company">Компания:</string>
-    <string name="text_financial_support">Поддержать финансово</string>
+    <string name="text_financial_support">Сделать пожертвование</string>
     <string name="text_watch_ads">Посмотреть рекламу</string>
     <string name="title_trading_screen">Торговый экран</string>
     <string name="text_default_set_name">default_set</string>
