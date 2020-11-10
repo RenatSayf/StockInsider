@@ -3,13 +3,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.latest.purchases25.Purchases25Fragment">
+    tools:context=".ui.result.ticker.TradingByTickerFragment">
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:text="This section is under development"
-        android:textSize="18sp"/>
+        android:text="Hello" />
 
 </FrameLayout>

@@ -2,30 +2,32 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest
+class SearchRequest @Inject constructor()
 {
     private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
-    private var disposable : Disposable? = null
+    var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
     fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
-        return io.reactivex.Observable.create {emmiter ->
+        return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             searchTicker = set.ticker
-            disposable = openInsiderService.getInsiderTrading(
+            val subscriber = openInsiderService.getTradingScreen(
                 set.ticker,
                 set.filingPeriod,
                 set.tradePeriod,
                 set.isPurchase,
                 set.isSale,
+                set.excludeDerivRelated,
                 set.tradedMin,
                 set.tradedMax,
                 set.isOfficer,
@@ -42,21 +44,22 @@ class SearchRequest
                 set.sortBy
             )
                 .map { document ->
-                    dealList = doParseDocument(document)
+                    dealList = doMainParsing(document)
                 }
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe({
-                    emmiter.onNext(dealList)
+                    emitter.onNext(dealList)
                 }, { error: Throwable ->
-                    emmiter.onError(error)
+                    emitter.onError(error)
                 }, {
-                    emmiter.onComplete()
+                    emitter.onComplete()
                 })
+            composite.add(subscriber)
         }
     }
 
-    private fun doParseDocument(document : Document) : ArrayList<Deal>
+    private fun doMainParsing(document : Document) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
@@ -64,7 +67,7 @@ class SearchRequest
         if (bodyText != null && bodyText.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = "Data is not available, please, try later"
+            deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
@@ -72,7 +75,7 @@ class SearchRequest
         if (error != null && error.contains("ERROR:"))
         {
             val deal = Deal("")
-            deal.error = "Data is not available, please, try later"
+            deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
@@ -114,7 +117,75 @@ class SearchRequest
         return listDeal
     }
 
+    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
+    {
+        return Single.create { emitter ->
+            var dealList: ArrayList<Deal> = arrayListOf()
+            val subscribe = openInsiderService.getInsiderTrading(insider)
+                .map { doc ->
+                    dealList = doAdditionalParsing(doc, "#subjectDetails")
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                    emitter.onSuccess(dealList)
+                }, {
+                    emitter.onError(it)
+                })
+            composite.add(subscribe)
+        }
+    }
 
+    private fun doAdditionalParsing(document: Document, tagId: String) : ArrayList<Deal>
+    {
+        val listDeal : ArrayList<Deal> = arrayListOf()
+        val elements = document.select("$tagId > table > tbody")
+        if (elements.size > 0)
+        {
+            val tbody = elements[0]
+            var trIndex = 1
+            tbody.children().forEach {
+                val filingDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").text()
+                val deal = Deal(filingDate).apply {
+                    filingDateRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").attr("href")
+                    tradeDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(3) > div").text()
+                    ticker = tbody.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
+                    company = ""
+                    insiderName = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").text()
+                    insiderNameRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").attr("href")
+                    insiderTitle = tbody.select("tr:nth-child($trIndex) > td:nth-child(6)").text()
+                    tradeType = tbody.select("tr:nth-child($trIndex) > td:nth-child(7)").text()
+                    price = tbody.select("tr:nth-child($trIndex) > td:nth-child(8)").text()
+                    qty = tbody.select("tr:nth-child($trIndex) > td:nth-child(9)").text()
+                    owned = tbody.select("tr:nth-child($trIndex) > td:nth-child(10)").text()
+                    deltaOwn = tbody.select("tr:nth-child($trIndex) > td:nth-child(11)").text()
+                    volumeStr = tbody.select("tr:nth-child($trIndex) > td:nth-child(12)").text()
+                    trIndex++
+                }
+                listDeal.add(deal)
+            }
+        }
+        return listDeal
+    }
+
+    fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
+    {
+        return Single.create { emitter ->
+            var dealList: ArrayList<Deal> = arrayListOf()
+            val subscribe = openInsiderService.getTradingByTicker(ticker)
+                .map { doc ->
+                    dealList = doAdditionalParsing(doc, "#tablewrapper")
+                }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({
+                               emitter.onSuccess(dealList)
+                           }, {
+                               emitter.onError(it)
+                           })
+            composite.add(subscribe)
+        }
+    }
 
 
 

@@ -27,7 +27,8 @@ data class Deal(var filingDate : String?) : Parcelable
     var insiderNameRefer : String? = ""
         set(value)
         {
-            field = "http://openinsider.com$value"
+            val newValue = value?.replace(Regex("^/"), "")
+            field = newValue
         }
     var insiderTitle : String? = ""
     var tradeType : String? = ""

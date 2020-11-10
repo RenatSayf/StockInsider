@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.models
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
@@ -24,5 +25,12 @@ class DataTransferModel : ViewModel()
     {
         return _dealList
     }
+
+    private val _data = MutableLiveData<Any>()
+    fun pushData(data: Any)
+    {
+        _data.value = data
+    }
+    var data: LiveData<Any> = _data
 
 }

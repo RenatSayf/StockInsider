@@ -100,7 +100,8 @@
             app:layout_constraintEnd_toStartOf="@+id/filingDateTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/ticker_bottom" />
+            app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
+            app:layout_constraintBottom_toTopOf="@+id/filing_date_bottom"/>
 
         <TextView
             android:id="@+id/filingDateTV"
@@ -114,6 +115,7 @@
             app:layout_constraintHorizontal_weight="7"
             app:layout_constraintStart_toEndOf="@+id/filing_date_header"
             app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
+            app:layout_constraintBottom_toTopOf="@+id/filing_date_bottom"
             tools:text="2020-04-09 11:20:36" />
 
         <include android:id="@+id/filingDateAnimView"
@@ -121,9 +123,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintStart_toStartOf="@+id/filing_date_header"
-            app:layout_constraintTop_toTopOf="@id/filingDateTV"
+            app:layout_constraintTop_toBottomOf="@id/ticker_bottom"
             app:layout_constraintEnd_toEndOf="@id/filingDateTV"
-            app:layout_constraintBottom_toBottomOf="@id/filingDateTV"/>
+            app:layout_constraintBottom_toTopOf="@id/filing_date_bottom"/>
 
         <View
             android:id="@+id/filing_date_bottom"
@@ -141,9 +143,10 @@
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
             app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
-            app:layout_constraintHorizontal_weight="3"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/filing_date_bottom" />
+            app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
+            app:layout_constraintBottom_toTopOf="@id/trade_date_bottom"/>
 
         <TextView
             android:id="@+id/tradeDateTV"
@@ -152,9 +155,10 @@
             android:textAlignment="textEnd"
             style="@style/AppTableTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="7"
+            app:layout_constraintHorizontal_weight="1"
             app:layout_constraintStart_toEndOf="@id/trade_date_title"
             app:layout_constraintTop_toBottomOf="@id/filing_date_bottom"
+            app:layout_constraintBottom_toTopOf="@id/trade_date_bottom"
             tools:text="2020-04-09 11:20:36" />
 
         <View
@@ -175,7 +179,8 @@
             app:layout_constraintEnd_toStartOf="@+id/insiderNameTV"
             app:layout_constraintHorizontal_weight="4"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/trade_date_bottom" />
+            app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
+            app:layout_constraintBottom_toTopOf="@+id/insider_name_bottom"/>
 
         <TextView
             android:id="@+id/insiderNameTV"
@@ -189,6 +194,7 @@
             app:layout_constraintHorizontal_weight="6"
             app:layout_constraintStart_toEndOf="@id/insider_name_title"
             app:layout_constraintTop_toBottomOf="@id/trade_date_bottom"
+            app:layout_constraintBottom_toTopOf="@+id/insider_name_bottom"
             tools:text="Angrick William P III"
             android:clickable="true"
             android:focusable="true" />
@@ -198,10 +204,10 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layoutDescription="@xml/click_scene"
-            app:layout_constraintBottom_toBottomOf="@id/insider_name_title"
+            app:layout_constraintBottom_toTopOf="@id/insider_name_bottom"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="@id/insider_name_title">
+            app:layout_constraintTop_toBottomOf="@id/trade_date_bottom">
 
             <View
                 android:id="@+id/animView"
@@ -231,7 +237,7 @@
             android:textSize="18sp"
             android:paddingTop="10dp"
             android:paddingBottom="10dp"
-            app:layout_constraintEnd_toStartOf="@+id/tradeDateTV"
+            app:layout_constraintEnd_toStartOf="@+id/insiderTitleTV"
             app:layout_constraintHorizontal_weight="3"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/insider_name_bottom" />
@@ -243,8 +249,8 @@
             android:textAlignment="textEnd"
             style="@style/AppTableTextStyle"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
-            app:layout_constraintStart_toEndOf="@id/trade_date_title"
+            app:layout_constraintHorizontal_weight="2"
+            app:layout_constraintStart_toEndOf="@id/insider_title_title"
             app:layout_constraintTop_toBottomOf="@id/insider_name_bottom"
             tools:text="Dir" />
 

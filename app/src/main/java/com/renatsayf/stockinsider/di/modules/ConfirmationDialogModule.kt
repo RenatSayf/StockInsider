@@ -14,6 +14,6 @@ object ConfirmationDialogModule
     @Provides
     fun provideConfirmationDialog() : ConfirmationDialog
     {
-        return ConfirmationDialog("", "")
+        return ConfirmationDialog("", "", "")
     }
 }

@@ -1,9 +1,10 @@
 package com.renatsayf.stockinsider.ui.main
 
+import android.content.Context
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.AdapterView
+import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -12,36 +13,38 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.DataTransferModel
-import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
+import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
+import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
 import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
-import kotlinx.android.synthetic.main.load_progress_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
+import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainFragment : Fragment()
 {
-    companion object
-    {
-        const val DEFAULT_SET : String = "default set"
-    }
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var dataTransferModel : DataTransferModel
+    private lateinit var searchDialogListObserver : SearchListDialog.EventObserver //TODO Sending events between Activities/Fragments: Step 6
+    private lateinit var searchName : String
 
     @Inject
     lateinit var confirmationDialog : ConfirmationDialog
+
+    @Inject
+    lateinit var appLog: AppLog
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -50,29 +53,29 @@ class MainFragment : Fragment()
                              ) : View?
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
-        dataTransferModel = activity?.run {
-            ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
-        }!!
+        searchName = getString(R.string.text_current_set_name)
+
+        searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState : Bundle?)
     {
         super.onActivityCreated(savedInstanceState)
+        setHasOptionsMenu(true)
 
-        activity?.let { a ->
-            when((a as MainActivity).isServiceRunning())
-            {
-                true -> alarmOffButton.visibility = View.VISIBLE
-                else -> alarmOffButton.visibility = View.GONE
-            }
+        val isAgree = requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.KEY_IS_AGREE, false)
+        if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
+
+        when ((requireActivity() as MainActivity).isServiceRunning())
+        {
+            true -> alarmOffButton.visibility = View.VISIBLE
+            else -> alarmOffButton.visibility = View.GONE
         }
 
         mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
             val tickerListAdapter = companies?.let {
-                context?.let { _ ->
-                    TickersListAdapter(activity as MainActivity, it)
-                }
+                TickersListAdapter(requireActivity(), it)
             }
             ticker_ET.setAdapter(tickerListAdapter)
             //ticker_ET.threshold = 1
@@ -113,6 +116,7 @@ class MainFragment : Fragment()
         mainViewModel.searchSet.observe(viewLifecycleOwner, {
             if (it != null)
             {
+                ticker_ET.setText("")
                 ticker_ET.setText(it.ticker)
                 filingDateSpinner.setSelection(it.filingPeriod)
                 tradeDateSpinner.setSelection(it.tradePeriod)
@@ -127,33 +131,24 @@ class MainFragment : Fragment()
                 sort_spinner.setSelection(it.sortBy)
             }
         })
-        val roomSearchSet = mainViewModel.getSearchSet(DEFAULT_SET)
-        mainViewModel.setSearchSet(roomSearchSet)
+
+        CoroutineScope(Dispatchers.Main).launch {
+            val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
+            mainViewModel.setSearchSet(roomSearchSet)
+        }
+
+        //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
+        searchDialogListObserver.data.observe(viewLifecycleOwner, { event ->
+            event.getContent()?.let {
+                mainViewModel.setSearchSet(it)
+            }
+        })
 
         search_button.setOnClickListener {
-            val mainActivity = activity as MainActivity
-            mainActivity.loadProgreesBar.visibility = View.VISIBLE
-            val searchSet = SearchSet("custom set")
-            val tickersString = ticker_ET.text.toString().trim()
-            searchSet.ticker = mainActivity.getTickersString(tickersString)
-            searchSet.filingPeriod = mainActivity.getFilingOrTradeValue(filingDateSpinner.selectedItemPosition)
-            searchSet.tradePeriod = mainActivity.getFilingOrTradeValue(tradeDateSpinner.selectedItemPosition)
-            searchSet.isPurchase = mainActivity.getCheckBoxValue(purchaseCheckBox)
-            searchSet.isSale = mainActivity.getCheckBoxValue(saleCheckBox)
-            searchSet.tradedMin = traded_min_ET.text.toString().trim()
-            searchSet.tradedMax = traded_max_ET.text.toString().trim()
-            searchSet.isOfficer = mainActivity.getCheckBoxValue(officer_CheBox)
-            searchSet.isDirector = mainActivity.getCheckBoxValue(director_CheBox)
-            searchSet.isTenPercent = mainActivity.getCheckBoxValue(owner10_CheBox)
-            searchSet.groupBy = mainActivity.getGroupingValue(group_spinner.selectedItemPosition)
-            searchSet.sortBy = mainActivity.getSortingValue(sort_spinner.selectedItemPosition)
-
-            mainViewModel.getDealList(searchSet)
-
             val set = RoomSearchSet(
-                    DEFAULT_SET,
+                    searchName,
                     "",
-                    ticker_ET.text.toString().trim(),
+                    ticker_ET.text.toString(),
                     filingDateSpinner.selectedItemPosition,
                     tradeDateSpinner.selectedItemPosition,
                     purchaseCheckBox.isChecked,
@@ -166,8 +161,19 @@ class MainFragment : Fragment()
                     group_spinner.selectedItemPosition,
                     sort_spinner.selectedItemPosition
                                    )
-            mainActivity.hideKeyBoard(ticker_ET)
-            mainViewModel.saveDefaultSearch(set)
+            (requireActivity() as MainActivity).hideKeyBoard(ticker_ET)
+            CoroutineScope(Dispatchers.Main).launch {
+                val result = mainViewModel.saveSearchSet(set)
+                if (result > -1)
+                {
+                    mainViewModel.setSearchSet(set)
+                    val bundle = Bundle().apply {
+                        putString(ResultFragment.ARG_QUERY_NAME, searchName)
+                        putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+                    }
+                    search_button.findNavController().navigate(R.id.nav_result, bundle)
+                }
+            }
         }
 
         alarmOffButton.setOnClickListener {
@@ -204,37 +210,47 @@ class MainFragment : Fragment()
             }
         })
 
-        mainViewModel.dealList.apply {
-            value = null
-            observe(viewLifecycleOwner, { list ->
-                list?.let{
-                    requireActivity().loadProgreesBar?.visibility = View.GONE
-                    dataTransferModel.setDealList(list)
-                    search_button.findNavController().navigate(R.id.nav_result, null)
+        filingDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
+        {
+            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long)
+            {
+                val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
+                val selectedItem = array[p2]
+                when
+                {
+                    selectedItem < 3 && selectedItem != 0 -> tradeDateSpinner.setSelection(3)
+                    selectedItem == 0 -> tradeDateSpinner.setSelection(0)
+                    else -> tradeDateSpinner.setSelection(p2)
                 }
-            })
+            }
+
+            override fun onNothingSelected(p0: AdapterView<*>?)
+            {
+
+            }
         }
 
-        mainViewModel.documentError.apply {
-            value = null
-            observe(viewLifecycleOwner, {
-                it?.let {
-                    requireActivity().loadProgreesBar?.visibility = View.GONE
-                    when (it) {
-                        is IndexOutOfBoundsException ->
-                        {
-                            val dealList: ArrayList<Deal> = arrayListOf()
-                            dataTransferModel.setDealList(dealList)
-                            search_button.findNavController().navigate(R.id.nav_result, null)
-                        }
-                        else ->
-                        {
-                            Snackbar.make(search_button, it.message.toString(), Snackbar.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            })
+        requireActivity().onBackPressedDispatcher.addCallback(this){
+            (activity as MainActivity).finish()
         }
+
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean
+    {
+        when(item.itemId)
+        {
+            R.id.action_default_search ->
+            {
+                val searchName = getString(R.string.text_default_set_name)
+
+                CoroutineScope(Dispatchers.Main).launch {
+                    val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
+                    mainViewModel.setSearchSet(roomSearchSet)
+                }
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
 

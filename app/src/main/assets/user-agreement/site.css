@@ -1,0 +1,12 @@
+body {
+    padding: 1em;
+}
+
+.introduction {
+    text-align: justify;
+}
+
+p {
+    text-indent: 4vw;
+    text-align: justify;
+}

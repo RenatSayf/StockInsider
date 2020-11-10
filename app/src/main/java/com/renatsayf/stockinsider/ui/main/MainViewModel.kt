@@ -10,6 +10,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import io.reactivex.disposables.Disposable
+import kotlinx.coroutines.*
 
 class MainViewModel @ViewModelInject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
 {
@@ -24,27 +25,44 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
         _searchSet.value = set
     }
 
-    fun getSearchSet(setName: String) : RoomSearchSet = run {
+    suspend fun getAllSearchSets() : List<RoomSearchSet>
+    {
+        return repositoryImpl.getAllSearchSetsFromDbAsync()
+    }
+
+    suspend fun getUserSearchSets() : List<RoomSearchSet>
+    {
+        return repositoryImpl.getUserSearchSetsFromDbAsync()
+    }
+
+    suspend fun getSearchSetAsync(setName: String) : RoomSearchSet = run {
         repositoryImpl.getSearchSetFromDbAsync(setName)
     }
 
-    fun saveDefaultSearch(set : RoomSearchSet)
+    suspend fun saveSearchSet(set: RoomSearchSet) : Long
     {
-        repositoryImpl.saveDefaultSearchAsync(set)
+        return repositoryImpl.saveSearchSetAsync(set)
+    }
+
+    suspend fun deleteSearchSet(set: RoomSearchSet) = run {
+        repositoryImpl.deleteSearchSetAsync(set)
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        value = getCompanies()
+        CoroutineScope(Dispatchers.IO).launch {
+            val c = getCompanies()
+            postValue(c)
+        }
     }
     var companies : LiveData<Array<Companies>> = _companies
 
-    private fun getCompanies() : Array<Companies>? = run{
+    private suspend fun getCompanies() : Array<Companies>? = run {
         repositoryImpl.getCompaniesFromDbAsync()
     }
 
     fun getDealList(set: SearchSet)
     {
-        subscribe = repositoryImpl.getDealListFromNetAsync(set)
+        subscribe = repositoryImpl.getTradingScreenFromNetAsync(set)
             .subscribe({ list ->
                            dealList.value = list
                        }, { t ->
@@ -59,6 +77,7 @@ class MainViewModel @ViewModelInject constructor(private val repositoryImpl: Dat
     override fun onCleared()
     {
         subscribe?.dispose()
+        repositoryImpl.destructor()
         super.onCleared()
     }
 }

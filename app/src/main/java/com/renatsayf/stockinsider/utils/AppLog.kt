@@ -4,13 +4,12 @@ import android.content.Context
 import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
 import java.io.File
-import javax.inject.Inject
 
 class AppLog(private val context: Context)
 {
     companion object
     {
-       private const val isLog: Boolean = true //TODO to release version switch to false
+       private const val isLog: Boolean = false //TODO to release version switch to false
     }
 
     init

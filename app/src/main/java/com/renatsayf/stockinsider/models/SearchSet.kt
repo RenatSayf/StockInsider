@@ -7,6 +7,7 @@ data class SearchSet(var searchName : String?)
     var tradePeriod : String = ""
     var isPurchase : String = ""
     var isSale : String = ""
+    var excludeDerivRelated : String = "1"
     var tradedMin : String = ""
     var tradedMax : String = ""
     var isOfficer : String = ""
