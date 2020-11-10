@@ -66,7 +66,7 @@ class MainActivity : AppCompatActivity()
 
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
-    private lateinit var appDialogListener : AppDialog.EventListener
+    private lateinit var appDialogObserver : AppDialog.EventObserver
     private lateinit var drawerLayout : DrawerLayout
     private lateinit var ad: InterstitialAd
 
@@ -96,10 +96,11 @@ class MainActivity : AppCompatActivity()
         val navView : NavigationView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
 
-
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home, R.id.nav_strategy),
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home,
+            R.id.nav_strategy, R.id.nav_result, R.id.nav_deal, R.id.nav_insider_trading,
+            R.id.nav_trading_by_ticker, R.id.nav_about_app),
             drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
@@ -112,15 +113,15 @@ class MainActivity : AppCompatActivity()
         }
 
         //region TODO перед релизом удалить или закомментировать
-        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-            putBoolean(KEY_NO_SHOW_AGAIN, false)
-            //putBoolean(KEY_IS_AGREE, false)
-            apply()
-        }
+//        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+//            putBoolean(KEY_NO_SHOW_AGAIN, false)
+//            //putBoolean(KEY_IS_AGREE, false)
+//            apply()
+//        }
         //endregion
         loadProgreesBar.visibility = View.GONE
 
-        appDialogListener = ViewModelProvider(this)[AppDialog.EventListener::class.java]
+        appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
         expandMenu.apply {
@@ -319,7 +320,7 @@ class MainActivity : AppCompatActivity()
             })
         }
 
-        appDialogListener.data.observe(this, { event ->
+        appDialogObserver.data.observe(this, { event ->
             event.getContent()?.let {
                 if (it.first == "show_strategy")
                 {
@@ -416,18 +417,9 @@ class MainActivity : AppCompatActivity()
                 appLog.getDeviceLogsInFile()
                 return true
             }
-            R.id.nav_home ->
-            {
-                drawerLayout.openDrawer(GravityCompat.START)
-                return true
-            }
             R.id.action_my_search ->
             {
                 SearchListDialog().show(supportFragmentManager, SearchListDialog.TAG)
-            }
-            R.id.action_settings ->
-            {
-
             }
         }
         return super.onOptionsItemSelected(item)

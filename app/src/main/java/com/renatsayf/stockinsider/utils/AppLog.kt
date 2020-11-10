@@ -10,7 +10,7 @@ class AppLog(private val context: Context)
 {
     companion object
     {
-       private const val isLog: Boolean = true //TODO to release version switch to false
+       private const val isLog: Boolean = false //TODO to release version switch to false
     }
 
     init

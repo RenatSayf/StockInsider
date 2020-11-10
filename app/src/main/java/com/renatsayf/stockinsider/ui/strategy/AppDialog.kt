@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.app_dialog_layout.view.*
 
 class AppDialog : DialogFragment()
 {
-    private lateinit var listener: EventListener
+    private lateinit var observer: EventObserver
 
     companion object
     {
@@ -48,7 +48,7 @@ class AppDialog : DialogFragment()
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        listener = ViewModelProvider(activity as MainActivity)[EventListener::class.java]
+        observer = ViewModelProvider(activity as MainActivity)[EventObserver::class.java]
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
@@ -62,7 +62,7 @@ class AppDialog : DialogFragment()
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
                     val pair = Pair(dialogTag, p1)
-                    listener.data.value = Event(pair)
+                    observer.data.value = Event(pair)
                 }
             })
         }
@@ -80,7 +80,7 @@ class AppDialog : DialogFragment()
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    listener.data.value = Event(Pair(dialogTag, p1))
+                    observer.data.value = Event(Pair(dialogTag, p1))
                     dismiss()
                 }
             })
@@ -90,7 +90,7 @@ class AppDialog : DialogFragment()
 
 
 
-    class EventListener : ViewModel()
+    class EventObserver : ViewModel()
     {
         val data = MutableLiveData<Event<Pair<String?, Int>>>()
     }
