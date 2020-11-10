@@ -4,7 +4,6 @@ import android.content.Context
 import android.util.Log
 import com.hypertrack.hyperlog.HyperLog
 import java.io.File
-import javax.inject.Inject
 
 class AppLog(private val context: Context)
 {
