@@ -23,7 +23,7 @@
     <string name="text_10_owner">10% Владелец</string>
     <string name="text_insider_title">Должность инсайдера</string>
     <string name="text_group_by">Группировка по</string>
-    <string name="text_group_and_sort">Группировка и сортировака</string>
+    <string name="text_group_and_sort">Группировка и сортировка</string>
     <string name="text_sort_by">Сортировка по</string>
     <string name="text_trade_date">Дата сделки</string>
     <string name="text_trading_screen">Торговый экран</string>
@@ -88,7 +88,7 @@
         <item>За последний месяц</item>
         <item>За последние 2 месяца</item>
         <item>За последние 3 месяца</item>
-        <item>За последние 6 месяца</item>
+        <item>За последние 6 месяцев</item>
         <item>За последний год</item>
         <item>За последние 2 года</item>
         <item>За последние 4 года</item>
