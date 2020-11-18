@@ -176,7 +176,19 @@ class MainActivity : AppCompatActivity()
                         8 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            finish()
+                            if (isNetworkConnectivity())
+                            {
+                                if (ad.isLoaded)
+                                {
+                                    ad.show()
+                                }
+                                ad.adListener = object : AdListener(){
+                                    override fun onAdClosed() {
+                                        finish()
+                                    }
+                                }
+                            }
+                            else finish()
                         }
                     }
                     return false
@@ -351,7 +363,7 @@ class MainActivity : AppCompatActivity()
             }
             else
             {
-                getString(R.string.release_interstitial_ads_id)
+                getString(R.string.full_screen_ad_1)
             }
             loadAd(AdRequest.Builder().build())
             adListener = object : AdListener()

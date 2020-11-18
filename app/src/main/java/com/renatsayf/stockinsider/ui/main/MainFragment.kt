@@ -2,13 +2,18 @@ package com.renatsayf.stockinsider.ui.main
 
 import android.content.Context
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.InterstitialAd
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -22,7 +27,6 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.date_layout.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.general_layout.*
@@ -30,7 +34,9 @@ import kotlinx.android.synthetic.main.group_layout.*
 import kotlinx.android.synthetic.main.insider_layout.*
 import kotlinx.android.synthetic.main.ticker_layout.view.*
 import kotlinx.android.synthetic.main.traded_layout.*
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -46,6 +52,9 @@ class MainFragment : Fragment()
     @Inject
     lateinit var appLog: AppLog
 
+    @Inject
+    lateinit var ad: InterstitialAd
+
     override fun onCreateView(
             inflater : LayoutInflater,
             container : ViewGroup?,
@@ -54,6 +63,7 @@ class MainFragment : Fragment()
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         searchName = getString(R.string.text_current_set_name)
+        //ad.loadAd(AdRequest.Builder().build())
 
         searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -231,7 +241,19 @@ class MainFragment : Fragment()
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this){
-            (activity as MainActivity).finish()
+            if ((requireActivity() as MainActivity).isNetworkConnectivity())
+            {
+                if (ad.isLoaded)
+                {
+                    ad.show()
+                }
+                ad.adListener = object : AdListener(){
+                    override fun onAdClosed() {
+                        (activity as MainActivity).finish()
+                    }
+                }
+            }
+            else (activity as MainActivity).finish()
         }
 
     }
