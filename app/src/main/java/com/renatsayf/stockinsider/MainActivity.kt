@@ -36,7 +36,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -68,7 +67,6 @@ class MainActivity : AppCompatActivity()
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     private lateinit var drawerLayout : DrawerLayout
-    private lateinit var ad: InterstitialAd
 
     @Inject
     lateinit var notification : ServiceNotification
@@ -81,6 +79,9 @@ class MainActivity : AppCompatActivity()
 
     @Inject
     lateinit var confirmationDialog: ConfirmationDialog
+
+    @Inject
+    lateinit var ad: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -318,6 +319,12 @@ class MainActivity : AppCompatActivity()
                                 if (ad.isLoaded)
                                 {
                                     ad.show()
+                                    ad.adListener = object : AdListener()
+                                    {
+                                        override fun onAdClosed() {
+                                            ad.loadAd(AdRequest.Builder().build())
+                                        }
+                                    }
                                 }
                                 else
                                 {
@@ -355,8 +362,7 @@ class MainActivity : AppCompatActivity()
             }
         })
 
-        MobileAds.initialize(this){}
-        ad = InterstitialAd(this).apply {
+        ad.apply {
             adUnitId = if (BuildConfig.DEBUG)
             {
                 getString(R.string.test_interstitial_ads_id)
@@ -366,12 +372,6 @@ class MainActivity : AppCompatActivity()
                 getString(R.string.full_screen_ad_1)
             }
             loadAd(AdRequest.Builder().build())
-            adListener = object : AdListener()
-            {
-                override fun onAdClosed() {
-                    ad.loadAd(AdRequest.Builder().build())
-                }
-            }
         }
     }
 

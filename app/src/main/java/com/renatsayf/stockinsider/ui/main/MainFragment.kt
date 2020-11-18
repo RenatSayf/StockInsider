@@ -13,8 +13,10 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -63,7 +65,17 @@ class MainFragment : Fragment()
     {
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         searchName = getString(R.string.text_current_set_name)
-        //ad.loadAd(AdRequest.Builder().build())
+        ad.apply {
+            adUnitId = if (BuildConfig.DEBUG)
+            {
+                requireContext().getString(R.string.test_interstitial_ads_id)
+            }
+            else
+            {
+                requireContext().getString(R.string.full_screen_ad_2)
+            }
+            loadAd(AdRequest.Builder().build())
+        }
 
         searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
