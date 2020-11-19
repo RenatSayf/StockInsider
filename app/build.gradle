@@ -11,7 +11,7 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 29
-        versionCode 9 // TODO before release requires change the version code
+        versionCode 10 // TODO before release requires change the version code
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true //todo Enable multidex. Step 2 (to go to step 3 go to the manifest file)
