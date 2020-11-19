@@ -66,7 +66,7 @@ class MainFragment : Fragment()
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         searchName = getString(R.string.text_current_set_name)
         ad.apply {
-            adUnitId = if (!BuildConfig.DEBUG)
+            adUnitId = if (BuildConfig.DEBUG)
             {
                 requireContext().getString(R.string.test_interstitial_ads_id)
             }

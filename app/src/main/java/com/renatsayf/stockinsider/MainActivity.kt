@@ -353,7 +353,7 @@ class MainActivity : AppCompatActivity()
         })
 
         ad.apply {
-            adUnitId = if (!BuildConfig.DEBUG)
+            adUnitId = if (BuildConfig.DEBUG)
             {
                 getString(R.string.test_interstitial_ads_id)
             }
