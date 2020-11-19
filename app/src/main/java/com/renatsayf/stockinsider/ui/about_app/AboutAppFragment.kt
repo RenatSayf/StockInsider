@@ -31,7 +31,14 @@ class AboutAppFragment : Fragment()
         super.onActivityCreated(savedInstanceState)
 
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
-        val versionName = "v.${packageInfo.versionName}"
+        val versionName = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P)
+        {
+            "v.${packageInfo.versionName}.${packageInfo.longVersionCode}"
+        }
+        else
+        {
+            "v.${packageInfo.versionName}"
+        }
         versionNameView.text = versionName
 
         btnEvaluate.setOnClickListener {
