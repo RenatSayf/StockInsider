@@ -1,5 +1,18 @@
 <resources>
+
+<!--    don't translate-->
     <string name="app_name">Stock Insider</string>
+    <string name="locale_en_US">en-US</string>
+    <string name="app_time_zone">America/Chicago</string>
+    <string name="full_screen_ad_1">ca-app-pub-4071145618173901~3517008411</string>
+    <string name="full_screen_ad_2">ca-app-pub-4071145618173901/9546520676</string>
+    <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
+    <string name="text_default_set_name">default_set</string>
+    <string name="text_current_set_name">current_set</string>
+
+
+<!--    translation to other languages-->
     <string name="action_settings">Настройки</string>
     <string name="app_link">https://play.google.com/store/apps/details?id=</string>
     <string name="menu_home">Home</string>
@@ -44,8 +57,6 @@
     <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>
     <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>
     <string name="text_search_is_disabled">Поисковые уведомления отключены</string>
-    <string name="locale_en_US">en-US</string>
-    <string name="app_time_zone">America/Chicago</string>
     <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
     <string name="text_title_home">Поиск SEC Form 4</string>
     <string name="text_trading_strategy">Торговая стратегия</string>
@@ -135,17 +146,12 @@
         <item>100</item>
         <item>200</item>
     </string-array>
-    
-    <string name="full_screen_ads">ca-app-pub-4071145618173901~3517008411</string>
-    <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
+
     <string name="text_insider">Инсайдер:</string>
     <string name="text_company">Компания:</string>
     <string name="text_financial_support">Сделать пожертвование</string>
     <string name="text_watch_ads">Посмотреть рекламу</string>
     <string name="title_trading_screen">Торговый экран</string>
-    <string name="text_default_set_name">default_set</string>
-    <string name="text_current_set_name">current_set</string>
     <string name="text_purchases_more_1">Покупки более 1 милл.$ за неделю</string>
     <string name="text_purchases_more_5">Покупки более 5 милл.$ за неделю</string>
     <string name="text_latest_sales_1">Продажи более 1 милл.$</string>
