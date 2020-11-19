@@ -255,10 +255,7 @@ class MainFragment : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this){
             if ((requireActivity() as MainActivity).isNetworkConnectivity())
             {
-                if (ad.isLoaded)
-                {
-                    ad.show()
-                }
+                if (ad.isLoaded) ad.show() else (activity as MainActivity).finish()
                 ad.adListener = object : AdListener(){
                     override fun onAdClosed() {
                         (activity as MainActivity).finish()
