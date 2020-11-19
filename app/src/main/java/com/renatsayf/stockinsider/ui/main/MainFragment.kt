@@ -66,7 +66,7 @@ class MainFragment : Fragment()
         mainViewModel = ViewModelProvider(this).get(MainViewModel::class.java)
         searchName = getString(R.string.text_current_set_name)
         ad.apply {
-            adUnitId = if (BuildConfig.DEBUG)
+            adUnitId = if (!BuildConfig.DEBUG)
             {
                 requireContext().getString(R.string.test_interstitial_ads_id)
             }
@@ -255,10 +255,7 @@ class MainFragment : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this){
             if ((requireActivity() as MainActivity).isNetworkConnectivity())
             {
-                if (ad.isLoaded)
-                {
-                    ad.show()
-                }
+                if (ad.isLoaded) ad.show() else (activity as MainActivity).finish()
                 ad.adListener = object : AdListener(){
                     override fun onAdClosed() {
                         (activity as MainActivity).finish()

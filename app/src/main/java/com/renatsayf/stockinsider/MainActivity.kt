@@ -179,10 +179,7 @@ class MainActivity : AppCompatActivity()
                             drawerLayout.closeDrawer(GravityCompat.START)
                             if (isNetworkConnectivity())
                             {
-                                if (ad.isLoaded)
-                                {
-                                    ad.show()
-                                }
+                                if (ad.isLoaded) ad.show() else finish()
                                 ad.adListener = object : AdListener(){
                                     override fun onAdClosed() {
                                         finish()
@@ -316,19 +313,12 @@ class MainActivity : AppCompatActivity()
                         {
                             if (isNetworkConnectivity())
                             {
-                                if (ad.isLoaded)
+                                if (ad.isLoaded) ad.show() else ad.loadAd(AdRequest.Builder().build())
+                                ad.adListener = object : AdListener()
                                 {
-                                    ad.show()
-                                    ad.adListener = object : AdListener()
-                                    {
-                                        override fun onAdClosed() {
-                                            ad.loadAd(AdRequest.Builder().build())
-                                        }
+                                    override fun onAdClosed() {
+                                        ad.loadAd(AdRequest.Builder().build())
                                     }
-                                }
-                                else
-                                {
-                                    ad.loadAd(AdRequest.Builder().build())
                                 }
                             }
                         }
@@ -363,7 +353,7 @@ class MainActivity : AppCompatActivity()
         })
 
         ad.apply {
-            adUnitId = if (BuildConfig.DEBUG)
+            adUnitId = if (!BuildConfig.DEBUG)
             {
                 getString(R.string.test_interstitial_ads_id)
             }

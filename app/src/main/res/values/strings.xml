@@ -4,10 +4,10 @@
     <string name="app_name">Stock Insider</string>
     <string name="locale_en_US">en-US</string>
     <string name="app_time_zone">America/Chicago</string>
-    <string name="full_screen_ad_1">ca-app-pub-4071145618173901~3517008411</string>
+    <string name="full_screen_ad_1">ca-app-pub-4071145618173901/6731179324</string>
     <string name="full_screen_ad_2">ca-app-pub-4071145618173901/9546520676</string>
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="release_interstitial_ads_id">ca-app-pub-4071145618173901/6731179324</string>
+    <string name="ad_mob_app_id">ca-app-pub-4071145618173901~3517008411</string>
     <string name="text_default_set_name">default_set</string>
     <string name="text_current_set_name">current_set</string>
 
