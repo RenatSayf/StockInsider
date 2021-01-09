@@ -72,7 +72,7 @@ class MainFragment : Fragment()
             }
             else
             {
-                requireContext().getString(R.string.full_screen_ad_2)
+                requireContext().getString(R.string.interstitial_ad_2)
             }
             loadAd(AdRequest.Builder().build())
         }
