@@ -4,10 +4,8 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.MainActivity
-import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import javax.inject.Inject
 
 class BootCompletedReceiver : BroadcastReceiver()
 {
@@ -28,8 +26,15 @@ class BootCompletedReceiver : BroadcastReceiver()
                 {
                     true ->
                     {
-                        val seviceIntent = Intent(c, StockInsiderService::class.java)
-                        c.startService(seviceIntent)
+                        try
+                        {
+                            val serviceIntent = Intent(c, StockInsiderService::class.java)
+                            c.startService(serviceIntent)
+                        }
+                        catch (e: Exception)
+                        {
+                            e.printStackTrace()
+                        }
                     }
                     else -> return
                 }
