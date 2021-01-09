@@ -359,7 +359,7 @@ class MainActivity : AppCompatActivity()
             }
             else
             {
-                getString(R.string.full_screen_ad_1)
+                getString(R.string.interstitial_ad_1)
             }
             loadAd(AdRequest.Builder().build())
         }
