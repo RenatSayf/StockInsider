@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.dialogs
 
 import android.app.AlertDialog
@@ -5,24 +7,24 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.SaveSearchLayoutBinding
 import com.renatsayf.stockinsider.utils.Event
-import kotlinx.android.synthetic.main.save_search_layout.view.*
 
 class SaveSearchDialog : DialogFragment()
 {
+    private lateinit var binding: SaveSearchLayoutBinding
     private lateinit var observer: EventObserver
 
     companion object
     {
-        val TAG = this::class.java.canonicalName.plus("_tag")
-        val KEY_SEARCH_NAME = this::class.java.canonicalName.plus("_key_search_name")
+        val TAG = this::class.java.simpleName.plus("_tag")
+        val KEY_SEARCH_NAME = this::class.java.simpleName.plus("_key_search_name")
         private var instance: SaveSearchDialog? = null
         fun getInstance(searchName: String = ""): SaveSearchDialog = if (instance == null)
         {
@@ -44,20 +46,20 @@ class SaveSearchDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.save_search_layout, LinearLayout(requireContext()), false)
+        binding = SaveSearchLayoutBinding.inflate(LayoutInflater.from(requireContext()))
 
-        dialogView.searchNameView.setText(arguments?.getString(KEY_SEARCH_NAME).toString())
+        binding.searchNameView.setText(arguments?.getString(KEY_SEARCH_NAME).toString())
 
         val builder = AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.text_saving_search))
-            setView(dialogView)
+            setView(binding.root)
             setPositiveButton(getString(R.string.text_save), object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    if (!dialogView.searchNameView.text.isNullOrEmpty())
+                    if (!binding.searchNameView.text.isNullOrEmpty())
                     {
-                        val name = dialogView.searchNameView.text.toString()
+                        val name = binding.searchNameView.text.toString()
                         observer.data.value = Event(Pair(KEY_SEARCH_NAME, name))
                     }
                 }

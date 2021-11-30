@@ -14,7 +14,6 @@ import javax.inject.Singleton
 object DataRepositoryModule
 {
     @Provides
-    @Singleton
     fun provideDataRepository(searchRequest: SearchRequest, db: AppDao) : DataRepositoryImpl
     {
         return DataRepositoryImpl(searchRequest, db)

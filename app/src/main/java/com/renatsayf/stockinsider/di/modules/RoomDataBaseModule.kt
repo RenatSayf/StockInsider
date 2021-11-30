@@ -16,7 +16,6 @@ import javax.inject.Singleton
 object RoomDataBaseModule
 {
     @Provides
-    @Singleton
     fun provideRoomDataBase(@ApplicationContext context: Context) : AppDao
     {
         return AppDataBase.getInstance(context).searchSetDao()

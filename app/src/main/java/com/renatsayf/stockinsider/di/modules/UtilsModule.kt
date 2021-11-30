@@ -12,7 +12,6 @@ import javax.inject.Singleton
 object UtilsModule
 {
     @Provides
-    @Singleton
     fun provideUtils() : Utils
     {
         return Utils()

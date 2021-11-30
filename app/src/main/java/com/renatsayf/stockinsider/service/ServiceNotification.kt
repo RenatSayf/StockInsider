@@ -8,14 +8,11 @@ import android.content.Context
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.utils.AppLog
-import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-class ServiceNotification @Inject constructor(private val appLog: AppLog) : Notification()
+class ServiceNotification @Inject constructor() : Notification()
 {
     companion object
     {

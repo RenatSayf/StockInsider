@@ -7,14 +7,10 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.annotation.RequiresApi
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Companies
-import kotlinx.android.synthetic.main.ticker_layout.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -81,7 +77,7 @@ class TickersListAdapter(
         }
     }
 
-    override fun getItem(position : Int) : String?
+    override fun getItem(position : Int) : String
     {
         return suggestions[position].toString()
     }
@@ -107,8 +103,8 @@ class TickersListAdapter(
     {
         val inflater= LayoutInflater.from(context)
         val layout = inflater.inflate(R.layout.ticker_layout, parent, false) as LinearLayout
-        layout.tickerTV.text = suggestions[position].ticker
-        layout.companyNameTV.text = suggestions[position].company
+        layout.findViewById<TextView>(R.id.tickerTV).text = suggestions[position].ticker
+        layout.findViewById<TextView>(R.id.companyNameTV).text = suggestions[position].company
         return layout
     }
 

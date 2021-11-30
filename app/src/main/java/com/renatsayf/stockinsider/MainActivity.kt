@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider
 
 import android.app.Activity
@@ -16,6 +18,7 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
+import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
@@ -36,8 +39,10 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -47,48 +52,39 @@ import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.load_progress_layout.*
 import javax.inject.Inject
 
-@AndroidEntryPoint //TODO Hilt step 6
+
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
     companion object
     {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
-        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("_key_no_show_again")
-        val KEY_IS_AGREE = this::class.java.canonicalName.plus("_key_is_agree")
+        val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
+        val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
     }
 
+    private lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     private lateinit var drawerLayout : DrawerLayout
 
-    @Inject
-    lateinit var notification : ServiceNotification
-
-    @Inject
-    lateinit var appLog: AppLog
-
-    @Inject
-    lateinit var donateDialog: DonateDialog
-
-    @Inject
-    lateinit var confirmationDialog: ConfirmationDialog
-
-    @Inject
-    lateinit var ad: InterstitialAd
+    private lateinit var ad: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        setTheme(R.style.AppTheme_NoActionBar)
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        setTheme(R.style.AppTheme_NoActionBar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        MobileAds.initialize(this)
+        ad = InterstitialAd(this)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -120,12 +116,13 @@ class MainActivity : AppCompatActivity()
 //            apply()
 //        }
         //endregion
-        loadProgreesBar.visibility = View.GONE
+
+        binding.appBarMain.contentMain.loadProgressLayout.loadProgreesBar.visibility = View.GONE
 
         appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
-        expandMenu.apply {
+        binding.expandMenu.apply {
             setAdapter(expandableMenuAdapter)
             setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener
             {
@@ -306,7 +303,7 @@ class MainActivity : AppCompatActivity()
                         {
                             if (isNetworkConnectivity())
                             {
-                                donateDialog.show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             }
                         }
                         p2 == 5 && p3 == 1 ->
@@ -401,30 +398,6 @@ class MainActivity : AppCompatActivity()
         val string3 = "\n"+getString(R.string.text_strategy_dialog_2)
         spannableStringBuilder.append(SpannableString(string3))
         return spannableStringBuilder
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean
-    {
-        when(item.itemId)
-        {
-            R.id.action_log_file ->
-            {
-                appLog.getDeviceLogsInFile()
-                return true
-            }
-            R.id.action_my_search ->
-            {
-                SearchListDialog().show(supportFragmentManager, SearchListDialog.TAG)
-            }
-        }
-        return super.onOptionsItemSelected(item)
     }
 
     override fun onSupportNavigateUp() : Boolean
@@ -546,7 +519,7 @@ class MainActivity : AppCompatActivity()
                     NetworkCapabilities.TRANSPORT_WIFI))
             }
         }
-        Snackbar.make(expandMenu,
+        Snackbar.make(binding.expandMenu,
             getString(R.string.text_inet_not_connection),
             Snackbar.LENGTH_LONG).show()
         return false

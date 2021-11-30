@@ -23,7 +23,6 @@ class StockInsiderService : Service()
     private lateinit var utils: Utils
     private lateinit var notification: ServiceNotification
     private lateinit var appCalendar: AppCalendar
-    private lateinit var appLog: AppLog
 
     private lateinit var alarmReceiver: AlarmReceiver
     private lateinit var unlockedReceiver: PhoneUnlockedReceiver
@@ -52,8 +51,7 @@ class StockInsiderService : Service()
 
         utils = Utils()
         appCalendar = AppCalendar(TimeZone.getTimeZone(getString(R.string.app_time_zone)))
-        appLog = AppLog(this)
-        notification = ServiceNotification(appLog)
+        notification = ServiceNotification()
 
         serviceEvent.value = Event(START_KEY)
 
@@ -74,7 +72,6 @@ class StockInsiderService : Service()
             setExact(AlarmManager.RTC_WAKEUP, time, alarmPendingIntent)
         }
         val message = "Next request will be at ${utils.getFormattedDateTime(0, Date(time))}."
-        appLog.print(ResultFragment.TAG, message)
 
         val actionIntent = Intent(Intent.ACTION_MAIN)
         actionIntent.setClass(this, MainActivity::class.java)
@@ -88,7 +85,6 @@ class StockInsiderService : Service()
 
         appNotification.notification?.let {
             startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
-            appLog.print(TAG, "Service has been started at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
         }
 
     }
@@ -102,14 +98,11 @@ class StockInsiderService : Service()
                 this.getString(R.string.text_not_memory),
                 R.drawable.ic_stock_hause_cold
         ).show()
-        appLog.print(TAG, this.getString(R.string.text_not_memory))
     }
 
     override fun onTaskRemoved(rootIntent: Intent?)
     {
         super.onTaskRemoved(rootIntent)
-        appLog.print(TAG, "************* onTaskRemoved is fired *************")
-        //onCreate()
         startService(Intent(this, StockInsiderService::class.java))
     }
 
@@ -121,7 +114,6 @@ class StockInsiderService : Service()
         serviceEvent.value = Event(STOP_KEY)
         AlarmPendingIntent.cancel(this)
         notification.cancelNotifications(this)
-        appLog.print(TAG, "Service is closed...")
     }
 
 
@@ -141,14 +133,12 @@ class StockInsiderService : Service()
                     val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
                     if (intent.action == Intent.ACTION_SCREEN_ON)
                     {
-                        appLog.print(TAG, "**********  Screen has been unlocked  ***********************")
                         if (!AlarmPendingIntent.isAlarmSetup(context) && isAlarmSetting)
                         {
                             AlarmPendingIntent.create(context).let { result ->
                                 alarmManager.apply {
                                     setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
                                     val message = "**********  Alarm has been recreated  **************"
-                                    appLog.print(TAG, message)
                                 }
                             }
                         }

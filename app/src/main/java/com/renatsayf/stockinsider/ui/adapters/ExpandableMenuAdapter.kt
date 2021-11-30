@@ -1,3 +1,5 @@
+@file:Suppress("ReplacePutWithAssignment")
+
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context

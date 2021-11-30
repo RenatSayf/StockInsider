@@ -12,7 +12,6 @@ import javax.inject.Singleton
 object SearchRequestModule
 {
     @Provides
-    @Singleton
     fun provideSearchRequest(): SearchRequest
     {
         return SearchRequest()

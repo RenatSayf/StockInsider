@@ -10,11 +10,13 @@ import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import kotlinx.android.synthetic.main.about_app_fragment.*
+import com.renatsayf.stockinsider.databinding.AboutAppFragmentBinding
 
 
-class AboutAppFragment : Fragment()
+class AboutAppFragment : Fragment(R.layout.about_app_fragment)
 {
+    private lateinit var binding: AboutAppFragmentBinding
+
     companion object
     {
         fun getInstance() = AboutAppFragment()
@@ -27,9 +29,11 @@ class AboutAppFragment : Fragment()
         return inflater.inflate(R.layout.about_app_fragment, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        super.onActivityCreated(savedInstanceState)
+        super.onViewCreated(view, savedInstanceState)
+
+        binding = AboutAppFragmentBinding.bind(view)
 
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
         val versionName = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P)
@@ -40,15 +44,15 @@ class AboutAppFragment : Fragment()
         {
             "v.${packageInfo.versionName}"
         }
-        versionNameView.text = versionName
+        binding.versionNameView.text = versionName
 
-        btnEvaluate.setOnClickListener {
+        binding.btnEvaluate.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data = Uri.parse(getString(R.string.app_link).plus(packageInfo.packageName))
             startActivity(intent)
         }
 
-        privacyPolicyLinkView.setOnClickListener {
+        binding.privacyPolicyLinkView.setOnClickListener {
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
             startActivity(intent)
         }
@@ -56,7 +60,6 @@ class AboutAppFragment : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this){
             (activity as MainActivity).navController.navigate(R.id.nav_home)
         }
-
     }
 
 }

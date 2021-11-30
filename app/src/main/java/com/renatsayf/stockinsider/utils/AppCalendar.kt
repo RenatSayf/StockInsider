@@ -4,7 +4,7 @@ import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import javax.inject.Inject
 
-class AppCalendar(private val timeZone: TimeZone)
+class AppCalendar @Inject constructor(private val timeZone: TimeZone)
 {
     companion object
     {

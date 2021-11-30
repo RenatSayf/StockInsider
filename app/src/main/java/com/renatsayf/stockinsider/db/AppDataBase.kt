@@ -6,7 +6,6 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
-import com.renatsayf.stockinsider.utils.AppLog
 import java.io.File
 import java.io.FileOutputStream
 
@@ -27,7 +26,6 @@ abstract class AppDataBase : RoomDatabase()
             override fun migrate(database : SupportSQLiteDatabase)
             {
                 val version = database.version
-                mContext?.let { AppLog(it).print(this@Companion::class.java.canonicalName.toString(), "************* Migration DB from version $version to version $DB_VERSION ****************") }
                 if (database.needUpgrade(DB_VERSION))
                 {
                     val path = database.path

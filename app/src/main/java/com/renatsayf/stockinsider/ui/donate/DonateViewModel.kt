@@ -1,17 +1,20 @@
 package com.renatsayf.stockinsider.ui.donate
 
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.android.billingclient.api.*
 import com.renatsayf.stockinsider.utils.Event
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class DonateViewModel @ViewModelInject constructor() : ViewModel()
+
+@HiltViewModel
+class DonateViewModel @Inject constructor() : ViewModel()
 {
     val eventPurchased : MutableLiveData<Event<String>> = MutableLiveData()
 

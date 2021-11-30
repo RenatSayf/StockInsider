@@ -1,95 +1,68 @@
-package com.renatsayf.stockinsider.receivers
+package com.renatsayf.stockinsider.service
 
-import android.app.AlarmManager
 import android.app.PendingIntent
-import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import androidx.work.*
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
-import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.Utils
-import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.*
 import java.util.*
-import javax.inject.Inject
+import java.util.concurrent.TimeUnit
 
-@AndroidEntryPoint
-class AlarmReceiver @Inject constructor() : BroadcastReceiver()
+
+class InsiderWorker constructor(private val context: Context,
+    parameters: WorkerParameters): Worker(context, parameters)
 {
-    companion object
-    {
-        val TAG : String = this::class.java.name
+    companion object {
+
+        val TAG = this::class.java.simpleName.plus(".Tag")
+        val periodicWorkRequest = PeriodicWorkRequest.Builder(InsiderWorker::class.java, 15, TimeUnit.MINUTES).apply {
+            setConstraints(constraints)
+        }.build()
+
+        private val constraints = Constraints.Builder().apply {
+            setRequiredNetworkType(NetworkType.CONNECTED)
+        }.build()
+
+//        fun createPeriodicRequest(): PeriodicWorkRequest {
+//
+//        }
     }
 
-    @Inject
-    lateinit var utils : Utils
-
-    @Inject
-    lateinit var notification: ServiceNotification
-
-    @Inject
-    lateinit var db : AppDao
-
-    @Inject
-    lateinit var searchRequest : SearchRequest
-
-    @Inject
-    lateinit var appCalendar: AppCalendar
+    private var utils : Utils = Utils()
 
     private var disposable: Disposable? = null
 
-    override fun onReceive(context: Context?, intent: Intent?)
+    override fun doWork(): Result
     {
-        if (context != null && intent != null)
+        return try
         {
-            val isAlarmSettings = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-            val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            val message = "******  ${this.javaClass.simpleName}  Alarm has been fired at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}  **************************"
-
-            if (intent.action == AlarmPendingIntent.ACTION_START_ALARM)
-            {
-                notification.createNotification(context, null, message, R.drawable.ic_stock_hause_cold).show()
-                when(isAlarmSettings)
-                {
-                    true ->
-                    {
-                        val nextCalendar = appCalendar.getNextCalendar()
-                        AlarmPendingIntent.create(context, nextCalendar).let { result ->
-                            alarmManager.apply {
-                                setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
-                            }
-                        }
-                        runAlarmTask(context)
-                    }
-                    else ->
-                    {
-                        AlarmPendingIntent.getAlarmIntent(context)?.cancel()
-                    }
-                }
-            }
+            runAlarmTask()
+            Result.success()
+        }
+        catch (e: Exception)
+        {
+            Result.failure()
         }
     }
 
     private fun getSearchSet(setName: String) : RoomSearchSet = runBlocking {
         return@runBlocking withContext(Dispatchers.Default) {
-            db.getSetByName(setName)
+            AppDataBase.getInstance(context).searchSetDao().getSetByName(setName)
         }
     }
 
-    private fun runAlarmTask(context: Context)
+    private fun runAlarmTask()
     {
         val roomSearchSet = getSearchSet(context.getString(R.string.text_default_set_name))
         val requestParams = SearchSet(roomSearchSet.queryName).apply {
@@ -107,16 +80,16 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
             sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
         }
 
-        disposable = searchRequest.getTradingScreen(requestParams)
+        disposable = SearchRequest().getTradingScreen(requestParams)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list: ArrayList<Deal>? ->
-                           list?.let {
-                               onDealListReady(context, list)
-                           }
-                       }, { e ->
-                           onDocumentError(context, e)
-                       })
+                list?.let {
+                    onDealListReady(context, list)
+                }
+            }, { e ->
+                onDocumentError(context, e)
+            })
 
     }
 
@@ -128,7 +101,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
         val message = "$time (в.мест) \n" +
                 "An error occurred while executing the request:\n" +
                 "${throwable.message}"
-        notification.createNotification(context = context, pendingIntent = null, text = message).show()
+        ServiceNotification().createNotification(context = context, pendingIntent = null, text = message).show()
     }
 
     private fun onDealListReady(context: Context, dealList: ArrayList<Deal>)
@@ -143,7 +116,6 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
             flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-        notification.createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
+        ServiceNotification().createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
     }
-
 }

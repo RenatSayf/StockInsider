@@ -40,7 +40,8 @@
             layout="@layout/set_alert_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"/>
+            android:layout_gravity="end"
+            />
 
     </LinearLayout>
 
@@ -88,7 +89,16 @@
         app:layout_constraintBottom_toBottomOf="parent"
         />
 
-    <include layout="@layout/no_result_layout" tools:visibility="invisible"/>
+    <include
+        android:id="@+id/noResult"
+        layout="@layout/no_result_layout"
+        tools:visibility="invisible"/>
+
+    <include
+        android:id="@+id/loadProgressLayout"
+        layout="@layout/load_progress_layout"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/saveSearchBtnView"

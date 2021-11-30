@@ -16,7 +16,6 @@ import javax.inject.Singleton
 object AppCalendarModule
 {
     @Provides
-    @Singleton
     fun provideAppCalendar(@ApplicationContext context: Context) : AppCalendar
     {
         val timeZone = TimeZone.getTimeZone(context.getString(R.string.app_time_zone))

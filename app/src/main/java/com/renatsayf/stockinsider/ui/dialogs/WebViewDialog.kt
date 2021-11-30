@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.dialogs
 
 import android.app.AlertDialog
@@ -6,31 +8,29 @@ import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
-import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import kotlinx.android.synthetic.main.web_view_dialog.view.*
+import com.renatsayf.stockinsider.databinding.WebViewDialogBinding
 
 class WebViewDialog : DialogFragment()
 {
     companion object
     {
-        val TAG = this::class.java.canonicalName.plus(".tag")
+        val TAG = this::class.java.simpleName.plus(".tag")
     }
 
-    private lateinit var dialogView: View
+    private lateinit var binding: WebViewDialogBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.web_view_dialog, ConstraintLayout(requireContext()), false)
-        dialogView.apply {
-            dialogWebView.loadUrl("file:///android_asset/user-agreement/index.html")
+        binding = WebViewDialogBinding.inflate(LayoutInflater.from(requireContext()))
+
+        binding.root.apply {
+            binding.dialogWebView.loadUrl("file:///android_asset/user-agreement/index.html")
         }
         val builder = AlertDialog.Builder(requireContext()).apply {
-            setView(dialogView)
+            setView(binding.root)
             setTitle(getString(R.string.text_user_agreement))
             setPositiveButton(getString(R.string.text_accept), object : DialogInterface.OnClickListener
             {
@@ -54,20 +54,6 @@ class WebViewDialog : DialogFragment()
             }
         }
         return builder.create()
-    }
-
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
-
-        dialogView.dialogWebView.setOnTouchListener(object : View.OnTouchListener
-        {
-            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
-            {
-                p0?.performClick()
-                return false
-            }
-        })
     }
 
     override fun onDestroy()

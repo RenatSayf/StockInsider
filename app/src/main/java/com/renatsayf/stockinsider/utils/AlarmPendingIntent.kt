@@ -62,7 +62,6 @@ object AlarmPendingIntent
     fun isAlarmSetup(context: Context) : Boolean
     {
         val intent = getAlarmIntent(context)
-        AppLog(context).print(TAG, "********  AlarmPendingIntent = ${intent.toString()}  **************")
         return intent != null
     }
 
