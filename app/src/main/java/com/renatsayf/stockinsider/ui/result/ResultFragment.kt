@@ -85,40 +85,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         if (savedInstanceState == null)
         {
-            val queryName = arguments?.getString(ARG_QUERY_NAME)
+            val searchSet = arguments?.getSerializable(ARG_SEARCH_SET) as SearchSet
 
-
-            if (!queryName.isNullOrEmpty())
-            {
-                val mainActivity = activity as MainActivity
-
-                CoroutineScope(Dispatchers.Main).launch {
-                    roomSearchSet = mainViewModel.getSearchSetAsync(queryName)
-                    searchSet = SearchSet(roomSearchSet.queryName).apply {
-                        ticker = mainActivity.getTickersString(roomSearchSet.ticker)
-                        filingPeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.filingPeriod)
-                        tradePeriod = mainActivity.getFilingOrTradeValue(roomSearchSet.tradePeriod)
-                        isPurchase = mainActivity.getCheckBoxValue(roomSearchSet.isPurchase)
-                        isSale = mainActivity.getCheckBoxValue(roomSearchSet.isSale)
-                        tradedMin = roomSearchSet.tradedMin
-                        tradedMax = roomSearchSet.tradedMax
-                        isOfficer = mainActivity.getOfficerValue(roomSearchSet.isOfficer)
-                        isDirector = mainActivity.getCheckBoxValue(roomSearchSet.isDirector)
-                        isTenPercent = mainActivity.getCheckBoxValue(roomSearchSet.isTenPercent)
-                        groupBy = mainActivity.getGroupingValue(roomSearchSet.groupBy)
-                        sortBy = mainActivity.getSortingValue(roomSearchSet.sortBy)
-                    }
-                    mainViewModel.getDealList(searchSet)
-                }
-            }
+            resultVM.getDealList(searchSet)
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this){
-            roomSearchSet.queryName = requireContext().getString(R.string.text_current_set_name)
-            CoroutineScope(Dispatchers.Main).launch {
-                mainViewModel.saveSearchSet(roomSearchSet)
-                (activity as MainActivity).navController.navigate(R.id.nav_home)
-            }
+            (activity as MainActivity).navController.popBackStack()
         }
     }
 
@@ -135,21 +108,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         binding = FragmentResultBinding.bind(view)
 
-
-
         //region Показываем фейковый список пока подгружаются данные
         val fakeList = ArrayList<Deal>()
         for (i in 0..10) fakeList.add(Deal("xxxxxxxx"))
-
-        resultVM.state.observe(viewLifecycleOwner, { state ->
-            when(state)
-            {
-                is ResultViewModel.State.Initial -> {
-                    binding.noResult.noResultLayout.visibility = View.GONE
-                    binding.loadProgressLayout.loadProgreesBar.visibility = View.VISIBLE
-                }
-            }
-        })
 
         binding.tradeListRV.apply {
             val linearManager = LinearLayoutManager(activity)
@@ -159,6 +120,110 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
             adapter = dealListAdapter
         }
         //endregion
+
+        resultVM.state.observe(viewLifecycleOwner, { state ->
+            when(state)
+            {
+                is ResultViewModel.State.Initial -> {
+                    binding.noResult.noResultLayout.visibility = View.GONE
+                    binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
+                }
+
+                is ResultViewModel.State.DataReceived ->
+                {
+                    state.deals.let { list ->
+                        binding.includedProgress.loadProgressBar.visibility = View.GONE
+                        when
+                        {
+                            list.size > 0 && list[0].error!!.isEmpty()     ->
+                            {
+                                binding.saveSearchBtnView.visibility = View.VISIBLE
+                                binding.resultTV.text = list.size.toString()
+                                val linearLayoutManager = LinearLayoutManager(activity)
+                                val dealListAdapter = DealListAdapter(list)
+                                dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                                binding.tradeListRV.apply {
+                                    setHasFixedSize(true)
+                                    layoutManager = linearLayoutManager
+                                    adapter = dealListAdapter
+                                }
+                                return@let
+                            }
+                            list.size == 1 && list[0].error!!.isNotEmpty() ->
+                            {
+                                binding.resultTV.text = 0.toString()
+                                binding.noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
+                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                            }
+                            else                                           ->
+                            {
+                                binding.resultTV.text = list.size.toString()
+                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                            }
+                        }
+                    }
+                }
+                is ResultViewModel.State.DataError ->
+                {
+                    state.throwable.let {
+                        binding.includedProgress.loadProgressBar.visibility = View.GONE
+                        when (it) {
+                            is IndexOutOfBoundsException ->
+                            {
+                                val dealList: ArrayList<Deal> = arrayListOf()
+                                when
+                                {
+                                    dealList.size > 0 && dealList[0].error!!.isEmpty()     ->
+                                    {
+                                        binding.resultTV.text = dealList.size.toString()
+                                        val linearLayoutManager = LinearLayoutManager(activity)
+                                        val dealListAdapter = DealListAdapter(dealList)
+                                        dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                                        binding.tradeListRV.apply {
+                                            setHasFixedSize(true)
+                                            layoutManager = linearLayoutManager
+                                            adapter = dealListAdapter
+                                        }
+                                    }
+                                    dealList.size == 1 && dealList[0].error!!.isNotEmpty() ->
+                                    {
+                                        with(binding) {
+                                            resultTV.text = 0.toString()
+                                            noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
+                                            noResult.noResultLayout.visibility = View.VISIBLE
+                                        }
+                                    }
+                                    else                                                   ->
+                                    {
+                                        with(binding) {
+                                            resultTV.text = dealList.size.toString()
+                                            noResult.noResultLayout.visibility = View.VISIBLE
+                                        }
+                                    }
+                                }
+                            }
+                            else ->
+                            {
+                                if ((activity as MainActivity).isNetworkConnectivity())
+                                {
+                                    Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                                }
+                                else
+                                {
+                                    with(binding) {
+                                        resultTV.text = 0.toString()
+                                        noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
+                                        noResult.noResultLayout.visibility = View.VISIBLE
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        })
+
+
 
         resultVM.addAlarmVisibility.observe(viewLifecycleOwner, {
             it?.let{ binding.alertLayout.addAlarmImgView.visibility = it }
@@ -172,98 +237,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         val title = arguments?.getString(ARG_TITLE) ?: ""
         resultVM.setToolBarTitle(title)
-
-        mainViewModel.dealList.observe(viewLifecycleOwner, {
-            it.let { list ->
-                binding.loadProgressLayout.loadProgreesBar.visibility = View.GONE
-                when
-                {
-                    list.size > 0 && list[0].error!!.isEmpty()     ->
-                    {
-                        binding.saveSearchBtnView.visibility = View.VISIBLE
-                        binding.resultTV.text = list.size.toString()
-                        val linearLayoutManager = LinearLayoutManager(activity)
-                        val dealListAdapter = DealListAdapter(list)
-                        dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                        binding.tradeListRV.apply {
-                            setHasFixedSize(true)
-                            layoutManager = linearLayoutManager
-                            adapter = dealListAdapter
-                        }
-                        return@let
-                    }
-                    list.size == 1 && list[0].error!!.isNotEmpty() ->
-                    {
-                        binding.resultTV.text = 0.toString()
-                        binding.noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                        binding.noResult.noResultLayout.visibility = View.VISIBLE
-                    }
-                    else                                           ->
-                    {
-                        binding.resultTV.text = list.size.toString()
-                        binding.noResult.noResultLayout.visibility = View.VISIBLE
-                    }
-                }
-            }
-        })
-
-        mainViewModel.documentError.observe(viewLifecycleOwner, {
-            binding.loadProgressLayout.loadProgreesBar.visibility = View.GONE
-            when (it) {
-                is IndexOutOfBoundsException ->
-                {
-                    val dealList: ArrayList<Deal> = arrayListOf()
-                    when
-                    {
-                        dealList.size > 0 && dealList[0].error!!.isEmpty()     ->
-                        {
-                            binding.resultTV.text = dealList.size.toString()
-                            val linearLayoutManager = LinearLayoutManager(activity)
-                            val dealListAdapter = DealListAdapter(dealList)
-                            dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                            binding.tradeListRV.apply {
-                                setHasFixedSize(true)
-                                layoutManager = linearLayoutManager
-                                adapter = dealListAdapter
-                            }
-                        }
-                        dealList.size == 1 && dealList[0].error!!.isNotEmpty() ->
-                        {
-                            with(binding) {
-                                resultTV.text = 0.toString()
-                                noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                noResult.noResultLayout.visibility = View.VISIBLE
-                            }
-                        }
-                        else                                                   ->
-                        {
-                            with(binding) {
-                                resultTV.text = dealList.size.toString()
-                                noResult.noResultLayout.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                }
-                else ->
-                {
-                    if (it != null)
-                    {
-                        if ((activity as MainActivity).isNetworkConnectivity())
-                        {
-                            Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
-                        }
-                        else
-                        {
-                            with(binding) {
-                                resultTV.text = 0.toString()
-                                noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                noResult.noResultLayout.visibility = View.VISIBLE
-                            }
-                        }
-                    }
-                }
-            }
-        })
 
         binding.alertLayout.addAlarmImgView.setOnClickListener {
             confirmationDialog.apply {
@@ -340,7 +313,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun onDestroy()
     {
         super.onDestroy()
-        binding.loadProgressLayout.loadProgreesBar.visibility = View.GONE
+        binding.includedProgress.loadProgressBar.visibility = View.GONE
     }
 
     override fun onPositiveClick(flag: String)

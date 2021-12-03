@@ -44,6 +44,20 @@ class MainFragment : Fragment(R.layout.fragment_home)
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         ad = InterstitialAd(requireContext())
+
+        if (savedInstanceState == null) {
+            ad.apply {
+                adUnitId = if (BuildConfig.DEBUG)
+                {
+                    requireContext().getString(R.string.test_interstitial_ads_id)
+                }
+                else
+                {
+                    requireContext().getString(R.string.interstitial_ad_2)
+                }
+                loadAd(AdRequest.Builder().build())
+            }
+        }
     }
 
     override fun onCreateView(
@@ -54,17 +68,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
     {
 
         searchName = getString(R.string.text_current_set_name)
-        ad.apply {
-            adUnitId = if (BuildConfig.DEBUG)
-            {
-                requireContext().getString(R.string.test_interstitial_ads_id)
-            }
-            else
-            {
-                requireContext().getString(R.string.interstitial_ad_2)
-            }
-            loadAd(AdRequest.Builder().build())
-        }
+
 
         searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
@@ -196,7 +200,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                 val bundle = Bundle().apply {
                     putString(ResultFragment.ARG_QUERY_NAME, searchName)
                     putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
-                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
+                    putSerializable(ResultFragment.ARG_SEARCH_SET, set.toSearchSet())
                 }
                 binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
             }

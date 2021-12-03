@@ -95,7 +95,7 @@
         tools:visibility="invisible"/>
 
     <include
-        android:id="@+id/loadProgressLayout"
+        android:id="@+id/includedProgress"
         layout="@layout/load_progress_layout"
         android:visibility="gone"
         tools:visibility="visible"/>

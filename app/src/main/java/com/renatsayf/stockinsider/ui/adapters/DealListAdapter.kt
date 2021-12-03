@@ -12,6 +12,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
+import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.utils.Event
@@ -33,8 +34,21 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
-        binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context))
-        return ViewHolder(binding.root)
+        this.context = parent.context
+        when (childLayoutId)
+        {
+            R.layout.deal_layout ->
+            {
+                binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context))
+                return ViewHolder(binding.root)
+            }
+            R.layout.fake_deal_layout ->
+            {
+                val fakeBinding = FakeDealLayoutBinding.inflate(LayoutInflater.from(parent.context))
+                return ViewHolder(fakeBinding.root)
+            }
+        }
+        return ViewHolder(View(parent.context))
     }
 
     override fun getItemCount() : Int
@@ -45,7 +59,7 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
     override fun onBindViewHolder(holder : ViewHolder, position : Int)
     {
         val itemView = holder.itemView
-        when (itemView.id)
+        when (childLayoutId)
         {
             R.layout.deal_layout ->
             {

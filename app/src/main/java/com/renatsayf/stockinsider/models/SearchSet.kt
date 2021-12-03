@@ -1,6 +1,9 @@
 package com.renatsayf.stockinsider.models
 
-data class SearchSet(var searchName : String?)
+import com.renatsayf.stockinsider.db.RoomSearchSet
+import java.io.Serializable
+
+data class SearchSet(var searchName : String?): Serializable
 {
     var ticker : String = ""
     var filingPeriod : String = ""
@@ -15,4 +18,5 @@ data class SearchSet(var searchName : String?)
     var isTenPercent : String = ""
     var groupBy : String = ""
     var sortBy : String = ""
+
 }

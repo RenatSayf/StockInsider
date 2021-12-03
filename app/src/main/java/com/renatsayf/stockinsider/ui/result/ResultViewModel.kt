@@ -24,7 +24,9 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     private val composite = CompositeDisposable()
     private var subscribe: Disposable? = null
 
-    private var _state = MutableLiveData<State>(State.Initial)
+    private var _state = MutableLiveData<State>().apply {
+        value = State.Initial
+    }
     val state: LiveData<State> = _state
     fun setState(state: State)
     {

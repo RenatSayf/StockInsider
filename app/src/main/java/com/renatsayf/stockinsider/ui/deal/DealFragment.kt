@@ -31,6 +31,7 @@ import java.util.*
 
 
 
+@AndroidEntryPoint
 class DealFragment : Fragment(R.layout.fragment_deal)
 {
     private lateinit var binding: FragmentDealBinding
@@ -107,7 +108,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
             }
         }
 
-        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgreesBar)
+        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgressBar)
 
         binding.insiderNameMotionLayout.apply {
             setOnClickListener {
@@ -236,7 +237,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
     private fun clickAnimationCompleted(deal: Deal, layout: MotionLayout?)
     {
-        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgreesBar)
+        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgressBar)
 
         loadProgressBar.visibility = View.VISIBLE
         deal.ticker?.let {t ->

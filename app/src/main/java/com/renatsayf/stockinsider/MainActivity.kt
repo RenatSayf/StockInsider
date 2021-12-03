@@ -117,7 +117,7 @@ class MainActivity : AppCompatActivity()
 //        }
         //endregion
 
-        binding.appBarMain.contentMain.loadProgressLayout.loadProgreesBar.visibility = View.GONE
+        binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
 
         appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 
