@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.ui.main
 import android.app.Application
 import androidx.lifecycle.*
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
@@ -21,8 +22,6 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
 {
     sealed class State {
         data class Initial(val set: RoomSearchSet): State()
-        data class DataSelected(val data: Any): State()
-        data class DataSaved(val id: Long): State()
     }
 
     private var _state = MutableLiveData<State>().apply {
@@ -44,21 +43,21 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
         _searchSet.value = set
     }
 
-    fun get_UserSearchSets() {
-        viewModelScope.launch {
-            val sets = repositoryImpl.getUserSearchSetsFromDbAsync()
-            _state.value = State.DataSelected(sets)
-        }
-    }
+//    fun get_UserSearchSets() {
+//        viewModelScope.launch {
+//            val sets = repositoryImpl.getUserSearchSetsFromDbAsync()
+//            _state.value = State.Current(sets)
+//        }
+//    }
 
     private suspend fun getUserSearchSets() : MutableList<RoomSearchSet>
     {
         return repositoryImpl.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
     }
 
-    suspend fun getSearchSetAsync(setName: String) : RoomSearchSet = run {
-        repositoryImpl.getSearchSetFromDbAsync(setName)
-    }
+//    suspend fun getSearchSetAsync(setName: String) : RoomSearchSet = run {
+//        repositoryImpl.getSearchSetFromDbAsync(setName)
+//    }
 
     private var _searchSetList = MutableLiveData<MutableList<RoomSearchSet>>().apply {
         viewModelScope.launch {
@@ -78,7 +77,6 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
     {
         viewModelScope.launch {
             val id = repositoryImpl.saveSearchSetAsync(set)
-            _state.value = State.DataSaved(id)
         }
     }
 

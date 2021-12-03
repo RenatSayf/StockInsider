@@ -4,6 +4,7 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
+import java.io.Serializable
 
 @Entity(tableName = "search_set", indices = [Index("set_name")])
 data class RoomSearchSet(
@@ -50,4 +51,4 @@ data class RoomSearchSet(
 
         @ColumnInfo(name = "sort_by")
         val sortBy : Int
-                        )
+                        ): Serializable

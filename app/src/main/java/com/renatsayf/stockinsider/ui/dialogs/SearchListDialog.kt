@@ -34,17 +34,13 @@ class SearchListDialog : DialogFragment()
             return SearchListDialog()
         }
     }
-    private val mainViewModel: MainViewModel by lazy {
-        ViewModelProvider(this)[MainViewModel::class.java]
-    }
+
     private lateinit var observer: EventObserver //TODO Sending events between Activities/Fragments: Step 3
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
         observer = ViewModelProvider(requireActivity())[EventObserver::class.java] //TODO Sending events between Activities/Fragments: Step 4
-
-        mainViewModel.get_UserSearchSets()
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog

@@ -88,7 +88,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
         mainViewModel.state.observe(viewLifecycleOwner, { state ->
             when(state) {
-                is MainViewModel.State.Initial      ->
+                is MainViewModel.State.Initial   ->
                 {
                     val set = state.set
                     with(binding) {
@@ -110,17 +110,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                     (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
                     binding.general.tickerET.clearFocus()
                 }
-                is MainViewModel.State.DataSelected ->
-                {
 
-                }
-                is MainViewModel.State.DataSaved    ->
-                {
-                    if (state.id > 0)
-                    {
-
-                    }
-                }
             }
         })
 
@@ -163,11 +153,11 @@ class MainFragment : Fragment(R.layout.fragment_home)
             tickerText = ""
         }
 
-        mainViewModel.searchSet.observe(viewLifecycleOwner, {
+//        mainViewModel.searchSet.observe(viewLifecycleOwner, {
+//
+//        })
 
-        })
-
-        mainViewModel.getCurrentSearchSet(searchName)
+//        mainViewModel.getCurrentSearchSet(searchName)
 
 //        CoroutineScope(Dispatchers.Main).launch {
 //            val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
@@ -200,15 +190,16 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.sortSpinner.selectedItemPosition
                                        )
                 mainViewModel.saveSearchSet(set)
-            }
 
-            (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
+                (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
 
-            val bundle = Bundle().apply {
-                putString(ResultFragment.ARG_QUERY_NAME, searchName)
-                putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+                val bundle = Bundle().apply {
+                    putString(ResultFragment.ARG_QUERY_NAME, searchName)
+                    putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
+                }
+                binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
             }
-            binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
         }
 
         binding.alarmOffButton.setOnClickListener {

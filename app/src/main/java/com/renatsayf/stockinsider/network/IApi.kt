@@ -13,7 +13,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import java.util.concurrent.TimeUnit
 
-interface OpenInsiderService
+interface IApi
 {
     @Headers(
             userAgentHeader,
@@ -55,7 +55,7 @@ interface OpenInsiderService
     {
         private const val userAgentHeader = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
 
-        fun create() : OpenInsiderService
+        fun create() : IApi
         {
             val interceptor = HttpLoggingInterceptor()
             interceptor.level = HttpLoggingInterceptor.Level.BASIC
@@ -72,7 +72,7 @@ interface OpenInsiderService
                 .baseUrl("http://openinsider.com/")
                 .client(okHttpClient).build()
 
-            return retrofit.create(OpenInsiderService::class.java)
+            return retrofit.create(IApi::class.java)
         }
 
     }

@@ -43,6 +43,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     companion object
     {
         val TAG = this::class.java.simpleName.toString().plus("_tag")
+        val ARG_SEARCH_SET = this::class.java.simpleName.plus(".search_set_tag")
         val ARG_QUERY_NAME = this::class.java.simpleName.toString().plus("_arg_set_name")
         val ARG_TITLE = this::class.java.simpleName.toString().plus("_arg_title")
     }
@@ -85,6 +86,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         if (savedInstanceState == null)
         {
             val queryName = arguments?.getString(ARG_QUERY_NAME)
+
 
             if (!queryName.isNullOrEmpty())
             {

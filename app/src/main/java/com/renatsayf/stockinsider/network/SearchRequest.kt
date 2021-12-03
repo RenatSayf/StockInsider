@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.network
 
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
@@ -12,7 +13,7 @@ import javax.inject.Inject
 
 class SearchRequest @Inject constructor()
 {
-    private var openInsiderService: OpenInsiderService = OpenInsiderService.create()
+    private var api: IApi = IApi.create()
     var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
@@ -21,7 +22,7 @@ class SearchRequest @Inject constructor()
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             searchTicker = set.ticker
-            val subscriber = openInsiderService.getTradingScreen(
+            val subscriber = api.getTradingScreen(
                 set.ticker,
                 set.filingPeriod,
                 set.tradePeriod,
@@ -121,7 +122,7 @@ class SearchRequest @Inject constructor()
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = openInsiderService.getInsiderTrading(insider)
+            val subscribe = api.getInsiderTrading(insider)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#subjectDetails")
                 }
@@ -172,7 +173,7 @@ class SearchRequest @Inject constructor()
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = openInsiderService.getTradingByTicker(ticker)
+            val subscribe = api.getTradingByTicker(ticker)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#tablewrapper")
                 }
