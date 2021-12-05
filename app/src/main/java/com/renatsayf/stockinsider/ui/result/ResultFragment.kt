@@ -7,6 +7,7 @@ import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -21,6 +22,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.InsiderWorker
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
+import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -34,8 +36,7 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Listener
-{
+class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Listener, DealListAdapter.Listener {
     companion object
     {
         val TAG = this::class.java.simpleName.toString().plus("_tag")
@@ -125,7 +126,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                                 binding.saveSearchBtnView.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
                                 val linearLayoutManager = LinearLayoutManager(activity)
-                                val dealListAdapter = DealListAdapter(list)
+                                val dealListAdapter = DealListAdapter(list, listener = this)
                                 dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                                 binding.tradeListRV.apply {
                                     setHasFixedSize(true)
@@ -336,10 +337,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
     {
-
-
         inflater.inflate(R.menu.main, menu)
         super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onRecyclerViewItemClick(deal: Deal) {
+        val bundle = Bundle()
+        bundle.putParcelable(DealFragment.ARG_DEAL, deal)
+        (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
     }
 
 

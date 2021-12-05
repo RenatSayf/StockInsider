@@ -21,14 +21,12 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import dagger.hilt.android.AndroidEntryPoint
 import io.reactivex.disposables.CompositeDisposable
 import java.text.NumberFormat
 import java.util.*
-
 
 
 @AndroidEntryPoint
@@ -69,36 +67,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         })
 
         val deal = arguments?.get(ARG_DEAL) as Deal
-        //viewModel.setDeal(deal)
-        deal.let{
-            DealListAdapter.dealAdapterItemClick.observe(viewLifecycleOwner, { event ->
-                if (!event.hasBeenHandled)
-                {
-                    event.getContent()?.let {
-                        viewModel.setLayOutBackground(it)
-                        binding.mainDealLayout.background = it
-                    }
-
-                    val uri = Uri.parse(deal.tickerRefer)
-                    Glide.with(this).load(uri)
-                        .listener(object : RequestListener<Drawable>{
-                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean
-                            {
-                                binding.imgLoadProgBar.visibility = View.GONE
-                                return false
-                            }
-
-                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean
-                            {
-                                resource?.let { viewModel.setChart(it) }
-                                binding.imgLoadProgBar.visibility = View.GONE
-                                return false
-                            }
-                        })
-                        .into(binding.chartImagView)
-                }
-            })
-        }
+        viewModel.setDeal(deal)
 
         binding.chartAnimView.clickMotionLayout.apply {
             setOnClickListener {
@@ -199,6 +168,26 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
         viewModel.deal.observe(viewLifecycleOwner, { d ->
             with(binding) {
+
+                val uri = Uri.parse(deal.tickerRefer)
+                Glide.with(this@DealFragment).load(uri)
+                        .listener(object : RequestListener<Drawable>{
+                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean
+                            {
+                                binding.imgLoadProgBar.visibility = View.GONE
+                                return false
+                            }
+
+                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean
+                            {
+                                resource?.let { viewModel.setChart(it) }
+                                binding.imgLoadProgBar.visibility = View.GONE
+                                return false
+                            }
+                        }).into(binding.chartImagView)
+
+                mainDealLayout.setBackgroundColor(deal.color)
+
                 companyNameTV.text = d.company
                 companyNameTV.setOnClickListener {
                     companyAnimView.clickMotionLayout.transitionToEnd()

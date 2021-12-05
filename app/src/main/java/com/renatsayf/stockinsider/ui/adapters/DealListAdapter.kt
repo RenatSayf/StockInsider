@@ -1,31 +1,22 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.content.Context
-import android.graphics.drawable.Drawable
-import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.lifecycle.MutableLiveData
-import androidx.navigation.findNavController
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.ui.deal.DealFragment
-import com.renatsayf.stockinsider.utils.Event
 import java.text.NumberFormat
 import java.util.*
 
 class DealListAdapter(private val dealList: ArrayList<Deal>,
-                        private val childLayoutId: Int = R.layout.deal_layout) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+                        private val childLayoutId: Int = R.layout.deal_layout,
+                        private val listener: Listener? = null) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
-    companion object
-    {
-        val dealAdapterItemClick : MutableLiveData<Event<Drawable>> = MutableLiveData()
-    }
-
     private lateinit var binding: DealLayoutBinding
     private lateinit var context: Context
 
@@ -129,14 +120,12 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
                     }
                 }
 
-                binding.dealConstraintLayout.setOnClickListener {
-                    val bundle = Bundle()
-                    bundle.putParcelable(DealFragment.ARG_DEAL, deal)
+                holder.itemView.findViewById<ConstraintLayout>(R.id.dealConstraintLayout).setOnClickListener {
                     val defaultColor = binding.dealCardView.cardBackgroundColor.defaultColor
-                    dealAdapterItemClick.value = Event(binding.dealCardView.background)
-                    binding.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
-
+                    deal.color = defaultColor
+                    listener?.onRecyclerViewItemClick(deal)
                 }
+
             }
             R.layout.fake_deal_layout ->
             {
@@ -144,6 +133,10 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
             }
         }
 
+    }
+
+    interface Listener {
+        fun onRecyclerViewItemClick(deal: Deal)
     }
 
 }
