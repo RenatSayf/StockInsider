@@ -62,9 +62,9 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
 
 
 
-    override suspend fun getCompaniesFromDbAsync(): Array<Companies> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getCompaniesFromDbAsync(): Array<Companies>? = CoroutineScope(Dispatchers.IO).run {
         val companies = async {
-            db.getAllCompanies().toTypedArray()
+            db.getAllCompanies()?.toTypedArray()
         }
         companies.await()
     }

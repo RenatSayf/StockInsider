@@ -30,7 +30,7 @@ interface AppDao
     suspend fun getAllTickers() : List<String>
 
     @Query("SELECT * FROM companies")
-    suspend fun getAllCompanies() : List<Companies>
+    suspend fun getAllCompanies() : List<Companies>?
 
 
 }

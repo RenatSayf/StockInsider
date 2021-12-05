@@ -111,7 +111,8 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginStart="16dp"
         android:layout_marginBottom="16dp"
-        />
+        android:contentDescription="@string/app_name"
+        android:focusableInTouchMode="true"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/searchButton"
@@ -122,6 +123,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
-        />
+        android:contentDescription="@string/app_name"
+        android:focusableInTouchMode="true"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

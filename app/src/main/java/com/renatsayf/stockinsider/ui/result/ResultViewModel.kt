@@ -22,7 +22,6 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     }
 
     private val composite = CompositeDisposable()
-    private var subscribe: Disposable? = null
 
     private var _state = MutableLiveData<State>().apply {
         value = State.Initial
@@ -60,7 +59,6 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     private val _toolBarTitle = MutableLiveData<String>().apply {
         value
     }
-    val toolBarTitle: LiveData<String> = _toolBarTitle
 
     fun setToolBarTitle(title: String)
     {

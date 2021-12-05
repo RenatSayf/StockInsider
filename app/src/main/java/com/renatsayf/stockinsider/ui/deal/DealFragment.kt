@@ -69,7 +69,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         })
 
         val deal = arguments?.get(ARG_DEAL) as Deal
-        viewModel.setDeal(deal)
+        //viewModel.setDeal(deal)
         deal.let{
             DealListAdapter.dealAdapterItemClick.observe(viewLifecycleOwner, { event ->
                 if (!event.hasBeenHandled)

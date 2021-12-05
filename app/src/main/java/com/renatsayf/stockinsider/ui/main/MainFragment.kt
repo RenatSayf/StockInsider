@@ -32,7 +32,13 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainFragment : Fragment(R.layout.fragment_home)
 {
     private lateinit var binding: FragmentHomeBinding
-    private lateinit var mainViewModel : MainViewModel
+    private val mainVM : MainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java].apply {
+            getCurrentSearchSet(getString(R.string.text_current_set_name)).observe(this@MainFragment, {
+                this.setState(MainViewModel.State.Initial(it))
+            })
+        }
+    }
     private lateinit var searchDialogListObserver : SearchListDialog.EventObserver //TODO Sending events between Activities/Fragments: Step 6
     private lateinit var searchName : String
 
@@ -41,7 +47,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
 
         ad = InterstitialAd(requireContext())
 
@@ -90,7 +95,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
             else -> binding.alarmOffButton.visibility = View.GONE
         }
 
-        mainViewModel.state.observe(viewLifecycleOwner, { state ->
+        mainVM.state.observe(viewLifecycleOwner, { state ->
             when(state) {
                 is MainViewModel.State.Initial   ->
                 {
@@ -110,19 +115,21 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    mainViewModel.saveSearchSet(set)
+                    mainVM.saveSearchSet(set)
                     (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
                     binding.general.tickerET.clearFocus()
+                    binding.searchButton.requestFocus()
                 }
-
             }
         })
 
-        mainViewModel.companies.observe(viewLifecycleOwner, { companies ->
+        mainVM.companies.observe(viewLifecycleOwner, { companies ->
             val tickerListAdapter = companies?.let {
                 TickersListAdapter(requireActivity(), it)
             }
             binding.general.tickerET.setAdapter(tickerListAdapter)
+            binding.general.tickerET.clearFocus()
+            (activity as MainActivity).hideKeyBoard(binding.general.tickerET)
         })
 
         var tickerText = ""
@@ -157,21 +164,10 @@ class MainFragment : Fragment(R.layout.fragment_home)
             tickerText = ""
         }
 
-//        mainViewModel.searchSet.observe(viewLifecycleOwner, {
-//
-//        })
-
-//        mainViewModel.getCurrentSearchSet(searchName)
-
-//        CoroutineScope(Dispatchers.Main).launch {
-//            val roomSearchSet = mainViewModel.getSearchSetAsync(searchName)
-//            mainViewModel.setSearchSet(roomSearchSet)
-//        }
-
         //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
         searchDialogListObserver.data.observe(viewLifecycleOwner, { event ->
             event.getContent()?.let {
-                mainViewModel.setSearchSet(it)
+                mainVM.setSearchSet(it)
             }
         })
 
@@ -193,12 +189,11 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.groupSpinner.selectedItemPosition,
                         sorting.sortSpinner.selectedItemPosition
                                        )
-                mainViewModel.saveSearchSet(set)
+                mainVM.saveSearchSet(set)
 
                 (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
 
                 val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_QUERY_NAME, searchName)
                     putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
                     putSerializable(ResultFragment.ARG_SEARCH_SET, set.toSearchSet())
                 }
@@ -291,7 +286,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                 sorting.groupSpinner.selectedItemPosition,
                 sorting.sortSpinner.selectedItemPosition
             )
-            mainViewModel.setState(MainViewModel.State.Initial(set))
+            mainVM.setState(MainViewModel.State.Initial(set))
             //mainViewModel.saveSearchSet(set)
         }
         super.onPause()
@@ -310,16 +305,18 @@ class MainFragment : Fragment(R.layout.fragment_home)
             R.id.action_default_search ->
             {
                 val searchName = getString(R.string.text_default_set_name)
-                mainViewModel.getCurrentSearchSet(searchName)
+                mainVM.getCurrentSearchSet(searchName).observe(viewLifecycleOwner, {
+                    mainVM.setState(MainViewModel.State.Initial(it))
+                })
             }
             R.id.action_my_search ->
             {
-                val list = mainViewModel.searchSetList.value
+                val list = mainVM.searchSetList.value
                 list?.let {
                     SearchListDialog.newInstance(it, object : SearchListDialog.Listener {
                         override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet)
                         {
-                            mainViewModel.deleteSearchSet(roomSearchSet)
+                            mainVM.deleteSearchSet(roomSearchSet)
                         }
                     }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
                 }
@@ -330,12 +327,12 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
     override fun onDestroy()
     {
-        val value = mainViewModel.state.value
+        val value = mainVM.state.value
         value?.let { state ->
             if (state is MainViewModel.State.Initial)
             {
                 val set = state.set
-                mainViewModel.saveSearchSet(set)
+                mainVM.saveSearchSet(set)
             }
         }
 

@@ -1,12 +1,10 @@
 package com.renatsayf.stockinsider.ui.result
 
 import android.content.Context
-import android.icu.util.TimeZone
 import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
 import androidx.core.content.edit
-import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -20,16 +18,13 @@ import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.service.InsiderWorker
-import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import com.renatsayf.stockinsider.utils.AppCalendar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -45,7 +40,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     {
         val TAG = this::class.java.simpleName.toString().plus("_tag")
         val ARG_SEARCH_SET = this::class.java.simpleName.plus(".search_set_tag")
-        val ARG_QUERY_NAME = this::class.java.simpleName.toString().plus("_arg_set_name")
         val ARG_TITLE = this::class.java.simpleName.toString().plus("_arg_title")
     }
 
@@ -56,19 +50,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     private lateinit var searchSet: SearchSet
     private lateinit var roomSearchSet: RoomSearchSet
 
-    private val searchRequest: SearchRequest by lazy {
-        SearchRequest()
-    }
-
-    private val notification : ServiceNotification by lazy {
-        ServiceNotification()
-    }
-
-    private val appCalendar: AppCalendar by lazy {
-        val timeZone = TimeZone.getTimeZone(requireContext().getString(R.string.app_time_zone))
-        AppCalendar(timeZone)
-    }
-
     private val confirmationDialog: ConfirmationDialog by lazy {
         ConfirmationDialog().apply {
             setOnClickListener(this@ResultFragment)
@@ -78,9 +59,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-        requireActivity().actionBar?.setHomeButtonEnabled(true)
-        requireActivity().actionBar?.setDisplayHomeAsUpEnabled(true)
+        setHasOptionsMenu(false)
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         resultVM = ViewModelProvider(this)[ResultViewModel::class.java]
@@ -88,6 +67,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         if (savedInstanceState == null)
         {
+            val title = arguments?.getString(ARG_TITLE)
+            (activity as MainActivity).supportActionBar?.title = title
             val searchSet = arguments?.getSerializable(ARG_SEARCH_SET) as SearchSet
 
             resultVM.getDealList(searchSet)

@@ -1,16 +1,13 @@
 package com.renatsayf.stockinsider.ui.main
 
-import android.app.Application
-import androidx.lifecycle.*
-import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.db.AppDao
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.disposables.Disposable
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -18,7 +15,7 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repositoryImpl: DataRepositoryImpl, private val app: Application) : AndroidViewModel(app)
+class MainViewModel @Inject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
 {
     sealed class State {
         data class Initial(val set: RoomSearchSet): State()
@@ -32,32 +29,19 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
         _state.value = state
     }
 
-    private var subscribe: Disposable? = null
-
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }
-    var searchSet : LiveData<RoomSearchSet> = _searchSet
+    var searchSet : LiveData<RoomSearchSet>? = _searchSet
     fun setSearchSet(set : RoomSearchSet)
     {
         _searchSet.value = set
     }
 
-//    fun get_UserSearchSets() {
-//        viewModelScope.launch {
-//            val sets = repositoryImpl.getUserSearchSetsFromDbAsync()
-//            _state.value = State.Current(sets)
-//        }
-//    }
-
     private suspend fun getUserSearchSets() : MutableList<RoomSearchSet>
     {
         return repositoryImpl.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
     }
-
-//    suspend fun getSearchSetAsync(setName: String) : RoomSearchSet = run {
-//        repositoryImpl.getSearchSetFromDbAsync(setName)
-//    }
 
     private var _searchSetList = MutableLiveData<MutableList<RoomSearchSet>>().apply {
         viewModelScope.launch {
@@ -66,18 +50,22 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
     }
     val searchSetList: LiveData<MutableList<RoomSearchSet>> = _searchSetList
 
-    fun getCurrentSearchSet(setName: String) {
+    fun getCurrentSearchSet(setName: String): LiveData<RoomSearchSet> {
+        val set = MutableLiveData<RoomSearchSet>()
         viewModelScope.launch {
             val searchSet = repositoryImpl.getSearchSetFromDbAsync(setName)
-            _state.value = State.Initial(searchSet)
+            set.value = searchSet
         }
+        return set
     }
 
-    fun saveSearchSet(set: RoomSearchSet)
+    fun saveSearchSet(set: RoomSearchSet): LiveData<Long>
     {
+        val id = MutableLiveData<Long>()
         viewModelScope.launch {
-            val id = repositoryImpl.saveSearchSetAsync(set)
+            id.value = repositoryImpl.saveSearchSetAsync(set)
         }
+        return id
     }
 
     fun deleteSearchSet(set: RoomSearchSet)  {
@@ -102,30 +90,12 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
         repositoryImpl.getCompaniesFromDbAsync()
     }
 
-    fun getDealList(set: SearchSet)
-    {
-        subscribe = repositoryImpl.getTradingScreenFromNetAsync(set)
-            .subscribe({ list ->
-                           dealList.value = list
-                       }, { t ->
-                           documentError.value = t
-                       })
-    }
-
-    var dealList: MutableLiveData<ArrayList<Deal>> = MutableLiveData()
-
-    var documentError : MutableLiveData<Throwable> = MutableLiveData()
-
-    init
-    {
-        val setName = app.getString(R.string.text_current_set_name)
-        getCurrentSearchSet(setName)
-    }
-
     override fun onCleared()
     {
-        subscribe?.dispose()
         repositoryImpl.destructor()
         super.onCleared()
     }
+
+
+
 }

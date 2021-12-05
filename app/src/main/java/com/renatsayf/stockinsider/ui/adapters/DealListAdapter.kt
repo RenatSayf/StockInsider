@@ -132,6 +132,7 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
                 binding.dealConstraintLayout.setOnClickListener {
                     val bundle = Bundle()
                     bundle.putParcelable(DealFragment.ARG_DEAL, deal)
+                    val defaultColor = binding.dealCardView.cardBackgroundColor.defaultColor
                     dealAdapterItemClick.value = Event(binding.dealCardView.background)
                     binding.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
 
