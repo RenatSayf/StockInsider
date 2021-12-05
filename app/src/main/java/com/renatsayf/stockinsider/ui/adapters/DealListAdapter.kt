@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.lifecycle.MutableLiveData
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -39,12 +38,12 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
         {
             R.layout.deal_layout ->
             {
-                binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context))
+                binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(binding.root)
             }
             R.layout.fake_deal_layout ->
             {
-                val fakeBinding = FakeDealLayoutBinding.inflate(LayoutInflater.from(parent.context))
+                val fakeBinding = FakeDealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(fakeBinding.root)
             }
         }
@@ -58,7 +57,6 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
 
     override fun onBindViewHolder(holder : ViewHolder, position : Int)
     {
-        val itemView = holder.itemView
         when (childLayoutId)
         {
             R.layout.deal_layout ->
@@ -132,34 +130,12 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
                 }
 
                 binding.dealConstraintLayout.setOnClickListener {
-                    binding.dealMotionLayout.transitionToEnd()
+                    val bundle = Bundle()
+                    bundle.putParcelable(DealFragment.ARG_DEAL, deal)
+                    dealAdapterItemClick.value = Event(binding.dealCardView.background)
+                    binding.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
 
                 }
-
-                binding.dealMotionLayout.setTransitionListener(object : MotionLayout.TransitionListener{
-                    override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
-                    {
-
-                    }
-
-                    override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
-                    {
-
-                    }
-
-                    override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
-                    {
-
-                    }
-
-                    override fun onTransitionCompleted(p0: MotionLayout?, p1: Int)
-                    {
-                        val bundle = Bundle()
-                        bundle.putParcelable(DealFragment.ARG_DEAL, deal)
-                        dealAdapterItemClick.value = Event(binding.dealCardView.background)
-                        binding.dealCardView.findNavController().navigate(R.id.nav_deal, bundle)
-                    }
-                })
             }
             R.layout.fake_deal_layout ->
             {

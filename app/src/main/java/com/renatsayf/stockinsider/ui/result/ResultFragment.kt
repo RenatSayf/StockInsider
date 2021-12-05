@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.*
 import androidx.activity.addCallback
 import androidx.core.content.edit
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -77,7 +78,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun onCreate(savedInstanceState: Bundle?)
     {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(false)
+        setHasOptionsMenu(true)
+        requireActivity().actionBar?.setHomeButtonEnabled(true)
+        requireActivity().actionBar?.setDisplayHomeAsUpEnabled(true)
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         resultVM = ViewModelProvider(this)[ResultViewModel::class.java]
@@ -132,6 +135,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                 is ResultViewModel.State.DataReceived ->
                 {
                     state.deals.let { list ->
+                        binding.noResult.noResultLayout.visibility = View.GONE
                         binding.includedProgress.loadProgressBar.visibility = View.GONE
                         when
                         {
@@ -347,6 +351,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                 WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(InsiderWorker.TAG, ExistingPeriodicWorkPolicy.KEEP, InsiderWorker.periodicWorkRequest)
             }
         }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
+    {
+
+
+        inflater.inflate(R.menu.main, menu)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
 

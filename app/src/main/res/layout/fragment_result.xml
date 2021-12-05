@@ -110,6 +110,7 @@
         android:layout_margin="16dp"
         android:visibility="gone"
         tools:visibility="visible"
-        android:contentDescription="@string/app_name" />
+        android:contentDescription="@string/app_name"
+        android:theme="@style/Widget.Design.FloatingActionButton"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
