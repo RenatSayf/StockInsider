@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fillViewport="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainDealLayout"
@@ -481,6 +482,13 @@
             app:layout_constraintTop_toTopOf="@id/chartImagView"
             app:layout_constraintEnd_toEndOf="@id/chartImagView"
             app:layout_constraintBottom_toBottomOf="@id/chartImagView"/>
+
+        <include
+            android:id="@+id/includedProgress"
+            layout="@layout/load_progress_layout"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

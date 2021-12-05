@@ -62,9 +62,9 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
         binding = FragmentDealBinding.bind(view)
 
-        viewModel.background.observe(viewLifecycleOwner, {
-            it?.let { binding.mainDealLayout.background = it }
-        })
+//        viewModel.background.observe(viewLifecycleOwner, {
+//            it?.let { binding.mainDealLayout.background = it }
+//        })
 
         val deal = arguments?.get(ARG_DEAL) as Deal
         viewModel.setDeal(deal)
@@ -76,8 +76,6 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 activity?.startActivity(intent)
             }
         }
-
-        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgressBar)
 
         binding.insiderNameMotionLayout.apply {
             setOnClickListener {
@@ -92,27 +90,21 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                 override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
                 {
-                    loadProgressBar.visibility = View.VISIBLE
+                    binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
                     val insiderNameRefer = deal.insiderNameRefer
+
                     insiderNameRefer?.let { name ->
-                        val subscribe = viewModel.getInsiderTrading(name)
-                            .subscribe({ list ->
-                                loadProgressBar.visibility = View.GONE
-                                           val bundle = Bundle().apply {
-                                               putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
-                                               putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
-                                               putParcelableArrayList(
-                                                       InsiderTradingFragment.ARG_INSIDER_DEALS,
-                                                       list
-                                               )
-                                           }
-                                           layout?.findNavController()?.navigate(R.id.nav_insider_trading, bundle)
-                                       },
-                                       { err ->
-                                           err.printStackTrace()
-                                           loadProgressBar.visibility = View.GONE
-                                       })
-                        composite.add(subscribe)
+                        viewModel.getInsiderDeals(name).observe(viewLifecycleOwner, { list ->
+                            binding.includedProgress.loadProgressBar.visibility = View.GONE
+                            if (list.isNotEmpty()) {
+                                val bundle = Bundle().apply {
+                                    putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
+                                    putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
+                                    putParcelableArrayList(InsiderTradingFragment.ARG_INSIDER_DEALS, list)
+                                }
+                                (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
+                            }
+                        })
                     }
                 }
 
@@ -226,13 +218,11 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
     private fun clickAnimationCompleted(deal: Deal, layout: MotionLayout?)
     {
-        val loadProgressBar = (activity as MainActivity).findViewById<ProgressBar>(R.id.loadProgressBar)
-
-        loadProgressBar.visibility = View.VISIBLE
+        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
         deal.ticker?.let {t ->
             viewModel.getTradingByTicker(t)
                 .subscribe({ list ->
-                    loadProgressBar.visibility = View.GONE
+                    binding.includedProgress.loadProgressBar.visibility = View.GONE
                                if (list.size > 0)
                                {
                                    val bundle = Bundle().apply {
@@ -245,7 +235,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                            },
                            { err ->
                                err.printStackTrace()
-                               loadProgressBar.visibility = View.GONE
+                               binding.includedProgress.loadProgressBar.visibility = View.GONE
                            })
         }
     }

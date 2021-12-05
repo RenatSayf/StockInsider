@@ -8,6 +8,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Single
+import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 
@@ -16,25 +17,23 @@ class DealViewModel @Inject constructor(
         private val repositoryImpl: DataRepositoryImpl
 ) : ViewModel()
 {
+    private var composite = CompositeDisposable()
+
     private var _background = MutableLiveData<Drawable>().apply {
         value = background?.value
     }
     var background: LiveData<Drawable> = _background
 
-    fun setLayOutBackground(drawable: Drawable)
-    {
-        _background.value = drawable
-    }
-
-    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
-    {
-        return repositoryImpl.getInsiderTradingFromNetAsync(insider)
-    }
-
-    override fun onCleared()
-    {
-        super.onCleared()
-        repositoryImpl.destructor()
+    fun getInsiderDeals(insider: String): LiveData<ArrayList<Deal>> {
+        val deals = MutableLiveData<ArrayList<Deal>>()
+        composite.add(repositoryImpl.getInsiderTradingFromNetAsync(insider)
+                .subscribe({ list ->
+                   deals.value = list
+                }, { t ->
+                    t.printStackTrace()
+                    deals.value = arrayListOf()
+                }))
+        return deals
     }
 
     private var _ticker = MutableLiveData<String>().apply {
@@ -63,5 +62,15 @@ class DealViewModel @Inject constructor(
     fun getTradingByTicker(ticker: String) : Single<ArrayList<Deal>>
     {
         return repositoryImpl.getTradingByTickerAsync(ticker)
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        composite.apply {
+            dispose()
+            clear()
+        }
+        repositoryImpl.destructor()
     }
 }

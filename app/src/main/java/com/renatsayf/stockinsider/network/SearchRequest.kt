@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.network
 
-import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
