@@ -4,10 +4,11 @@
     <option name="filePathToZoomLevelMap">
       <map>
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/about_app_fragment.xml" value="0.19791666666666666" />
+        <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/click_motion_layout.xml" value="0.19791666666666666" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/date_layout.xml" value="0.35520833333333335" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/deal_layout.xml" value="0.35520833333333335" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/fake_deal_layout.xml" value="0.35520833333333335" />
-        <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/fragment_deal.xml" value="0.35520833333333335" />
+        <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/fragment_deal.xml" value="0.22" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/fragment_result.xml" value="0.22" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/load_progress_layout.xml" value="0.19791666666666666" />
         <entry key="..\:/Development_for_Android/Projects/StockInsider/app/src/main/res/layout/no_result_layout.xml" value="0.25" />
@@ -24,6 +25,9 @@
   </component>
   <component name="ProjectType">
     <option name="id" value="Android" />
+  </component>
+  <component name="SuppressKotlinCodeStyleNotification">
+    <option name="disableForAll" value="true" />
   </component>
   <component name="masterDetails">
     <states>
