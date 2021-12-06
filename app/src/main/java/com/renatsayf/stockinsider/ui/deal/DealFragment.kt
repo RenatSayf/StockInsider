@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ProgressBar
 import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -38,6 +37,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
     {
         val TAG = "${this::class.java.simpleName}.Tag"
         val ARG_DEAL = "${this::class.java.simpleName}.deal"
+        val ARG_TITLE = "${this::class.java.simpleName}.title"
     }
 
     private lateinit var viewModel : DealViewModel
@@ -62,12 +62,17 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
         binding = FragmentDealBinding.bind(view)
 
-//        viewModel.background.observe(viewLifecycleOwner, {
-//            it?.let { binding.mainDealLayout.background = it }
-//        })
-
         val deal = arguments?.get(ARG_DEAL) as Deal
-        viewModel.setDeal(deal)
+
+        if (savedInstanceState == null)
+        {
+            val title = arguments?.getString(ARG_TITLE)
+            if (!title.isNullOrEmpty()) {
+                (activity as MainActivity).supportActionBar?.title = title
+            }
+
+            viewModel.setDeal(deal)
+        }
 
         binding.chartAnimView.clickMotionLayout.apply {
             setOnClickListener {
@@ -127,7 +132,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                 override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
                 {
-                    clickAnimationCompleted(deal, layout)
+                    clickAnimationCompleted(deal)
                 }
 
                 override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
@@ -149,7 +154,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                 override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
                 {
-                    clickAnimationCompleted(deal, layout)
+                    clickAnimationCompleted(deal)
                 }
 
                 override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
@@ -216,27 +221,21 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
     }
 
-    private fun clickAnimationCompleted(deal: Deal, layout: MotionLayout?)
+    private fun clickAnimationCompleted(deal: Deal)
     {
         binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
         deal.ticker?.let {t ->
-            viewModel.getTradingByTicker(t)
-                .subscribe({ list ->
-                    binding.includedProgress.loadProgressBar.visibility = View.GONE
-                               if (list.size > 0)
-                               {
-                                   val bundle = Bundle().apply {
-                                       putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
-                                       putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
-                                       putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
-                                   }
-                                   layout?.findNavController()?.navigate(R.id.nav_trading_by_ticker, bundle)
-                               }
-                           },
-                           { err ->
-                               err.printStackTrace()
-                               binding.includedProgress.loadProgressBar.visibility = View.GONE
-                           })
+            viewModel.getTradingByTicker(t).observe(viewLifecycleOwner, { list ->
+                binding.includedProgress.loadProgressBar.visibility = View.GONE
+                if(list.isNotEmpty()) {
+                    val bundle = Bundle().apply {
+                        putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
+                        putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
+                        putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
+                    }
+                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_trading_by_ticker, bundle)
+                }
+            })
         }
     }
 

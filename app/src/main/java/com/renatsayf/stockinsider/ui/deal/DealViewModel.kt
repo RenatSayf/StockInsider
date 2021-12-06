@@ -19,11 +19,6 @@ class DealViewModel @Inject constructor(
 {
     private var composite = CompositeDisposable()
 
-    private var _background = MutableLiveData<Drawable>().apply {
-        value = background?.value
-    }
-    var background: LiveData<Drawable> = _background
-
     fun getInsiderDeals(insider: String): LiveData<ArrayList<Deal>> {
         val deals = MutableLiveData<ArrayList<Deal>>()
         composite.add(repositoryImpl.getInsiderTradingFromNetAsync(insider)
@@ -59,9 +54,17 @@ class DealViewModel @Inject constructor(
         _chart.value = chart
     }
 
-    fun getTradingByTicker(ticker: String) : Single<ArrayList<Deal>>
+    fun getTradingByTicker(ticker: String) : LiveData<ArrayList<Deal>>
     {
-        return repositoryImpl.getTradingByTickerAsync(ticker)
+        val deals = MutableLiveData<ArrayList<Deal>>()
+        composite.add(repositoryImpl.getTradingByTickerAsync(ticker)
+                .subscribe({ list ->
+                    deals.value = list
+                }, { t ->
+                    t.printStackTrace()
+                    deals.value = arrayListOf()
+                }))
+        return deals
     }
 
     override fun onCleared()

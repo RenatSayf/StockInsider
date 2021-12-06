@@ -64,4 +64,6 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result)
         }
     }
 
+    //TODO реализовать интерфейс DealListAdapter.Listener
+
 }
