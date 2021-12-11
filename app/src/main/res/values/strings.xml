@@ -195,5 +195,6 @@
     <string name="text_about_app">О программе</string>
     <string name="text_insider_deals">Сделки инсайдера</string>
     <string name="text_trading_by_company">Торги по акциям компании</string>
+    <string name="text_search_param_is_saved">Параметры поиска сохранены.</string>
 
 </resources>

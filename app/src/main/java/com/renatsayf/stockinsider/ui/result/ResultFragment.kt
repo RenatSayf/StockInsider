@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.ui.result
 import android.content.Context
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
@@ -18,7 +19,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.service.InsiderWorker
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -28,15 +28,12 @@ import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import java.util.*
 import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Listener, DealListAdapter.Listener {
+class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Listener, DealListAdapter.Listener, SaveSearchDialog.Listener {
     companion object
     {
         val TAG = this::class.java.simpleName.toString().plus("_tag")
@@ -47,8 +44,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     private lateinit var binding: FragmentResultBinding
     private lateinit var resultVM : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
-    private lateinit var saveDialogObserver : SaveSearchDialog.EventObserver
-    private lateinit var searchSet: SearchSet
     private lateinit var roomSearchSet: RoomSearchSet
 
     private val confirmationDialog: ConfirmationDialog by lazy {
@@ -64,15 +59,16 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
         resultVM = ViewModelProvider(this)[ResultViewModel::class.java]
-        saveDialogObserver = ViewModelProvider(activity as MainActivity)[SaveSearchDialog.EventObserver::class.java]
 
         if (savedInstanceState == null)
         {
             val title = arguments?.getString(ARG_TITLE)
             (activity as MainActivity).supportActionBar?.title = title
-            val searchSet = arguments?.getSerializable(ARG_SEARCH_SET) as SearchSet
+            roomSearchSet = arguments?.getSerializable(ARG_SEARCH_SET) as RoomSearchSet
 
-            resultVM.getDealList(searchSet)
+            roomSearchSet.let {
+                resultVM.getDealList(it.toSearchSet())
+            }
         }
 
         requireActivity().onBackPressedDispatcher.addCallback(this){
@@ -271,29 +267,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         })
 
         binding.saveSearchBtnView.setOnClickListener {
-            val name = (if (searchSet.ticker.isEmpty()) "All" else searchSet.ticker)
-                .plus("/period"+searchSet.filingPeriod)
-                .plus(if (searchSet.isPurchase == "1") "/Pur" else "")
-                .plus(if (searchSet.isSale == "1") "/Sale" else "")
-                .plus(if (searchSet.tradedMin.isNotEmpty()) "/min${searchSet.tradedMin}" else "")
-                .plus(if (searchSet.tradedMax.isNotEmpty()) "/max${searchSet.tradedMax}" else "")
-                .plus(if (searchSet.isOfficer.isNotEmpty()) "/Officer" else "")
-                .plus(if (searchSet.isDirector == "1") "/Dir" else "")
-                .plus(if (searchSet.isTenPercent == "1") "/10%Owner" else "")
-            SaveSearchDialog.getInstance(name).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+            val name = (if (roomSearchSet.ticker.isEmpty()) "All" else roomSearchSet.ticker)
+                .plus("/period"+roomSearchSet.filingPeriod)
+                .plus(if (roomSearchSet.isPurchase) "/Pur" else "")
+                .plus(if (roomSearchSet.isSale) "/Sale" else "")
+                .plus(if (roomSearchSet.tradedMin.isNotEmpty()) "/min${roomSearchSet.tradedMin}" else "")
+                .plus(if (roomSearchSet.tradedMax.isNotEmpty()) "/max${roomSearchSet.tradedMax}" else "")
+                .plus(if (roomSearchSet.isOfficer) "/Officer" else "")
+                .plus(if (roomSearchSet.isDirector) "/Dir" else "")
+                .plus(if (roomSearchSet.isTenPercent) "/10%Owner" else "")
+            SaveSearchDialog.getInstance(name, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
 
-        saveDialogObserver.data.observe(viewLifecycleOwner, { event ->
-            event.getContent()?.let {
-                if (it.first == SaveSearchDialog.KEY_SEARCH_NAME)
-                {
-                    roomSearchSet.queryName = it.second
-                    CoroutineScope(Dispatchers.Main).launch {
-                        mainViewModel.saveSearchSet(roomSearchSet)
-                    }
-                }
-            }
-        })
     }
 
     override fun onDestroy()
@@ -345,6 +330,16 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
         (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+    }
+
+    override fun saveSearchDialogOnPositiveClick(searchName: String) {
+        mainViewModel.saveSearchSet(roomSearchSet.apply {
+            queryName = searchName
+        }).observe(this, {
+            if (it > 0) {
+                Toast.makeText(requireContext(), getString(R.string.text_search_param_is_saved), Toast.LENGTH_LONG).show()
+            }
+        })
     }
 
 

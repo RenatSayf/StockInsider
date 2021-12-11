@@ -195,7 +195,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
                 val bundle = Bundle().apply {
                     putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
-                    putSerializable(ResultFragment.ARG_SEARCH_SET, set.toSearchSet())
+                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
                 }
                 binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
             }
@@ -311,15 +311,14 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }
             R.id.action_my_search ->
             {
-                val list = mainVM.searchSetList.value
-                list?.let {
-                    SearchListDialog.newInstance(it, object : SearchListDialog.Listener {
+                mainVM.getSearchSetList().observe(viewLifecycleOwner, { list ->
+                    SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
                         override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet)
                         {
                             mainVM.deleteSearchSet(roomSearchSet)
                         }
                     }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
-                }
+                })
             }
         }
         return super.onOptionsItemSelected(item)
