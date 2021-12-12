@@ -6,17 +6,10 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.View
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.*
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -35,14 +28,6 @@ class SearchListDialog : DialogFragment()
         }
     }
 
-    private lateinit var observer: EventObserver //TODO Sending events between Activities/Fragments: Step 3
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        observer = ViewModelProvider(requireActivity())[EventObserver::class.java] //TODO Sending events between Activities/Fragments: Step 4
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
         list.removeIf { s -> s.queryName == getString(R.string.text_current_set_name) }
@@ -55,7 +40,7 @@ class SearchListDialog : DialogFragment()
         var index: Int = -1
         return AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.text_my_search_requests))
-            if (list.isEmpty()) setMessage("Нет сохраненных поисковых запросов")
+            if (list.isEmpty()) setMessage(getString(R.string.text_no_search_request))
             setSingleChoiceItems(searchIdList.toTypedArray(),
                 -1,
                 object : DialogInterface.OnClickListener
@@ -72,9 +57,7 @@ class SearchListDialog : DialogFragment()
                     if (index > -1)
                     {
                         val roomSearchSet = list[index]
-                        //TODO Sending events between Activities/Fragments: Step 5
-                        // next step in com.renatsayf.stockinsider.ui.dialogs.MainFragment.kt
-                        observer.data.value = Event(roomSearchSet)
+                        listener.onSearchDialogPositiveClick(roomSearchSet)
                     }
                     dismiss()
                 }
@@ -99,16 +82,8 @@ class SearchListDialog : DialogFragment()
         }.create()
     }
 
-
-
-    //TODO Sending events between Activities/Fragments: Step 2 - create this class,
-    // next step in com.renatsayf.stockinsider.ui.dialogs.SearchListDialog.kt
-    class EventObserver : ViewModel()
-    {
-        val data = MutableLiveData<Event<RoomSearchSet>>()
-    }
-
     interface Listener {
+        fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet)
         fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet)
     }
 }

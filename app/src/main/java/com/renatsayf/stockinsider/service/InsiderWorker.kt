@@ -13,6 +13,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.utils.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
@@ -26,6 +27,7 @@ class InsiderWorker constructor(private val context: Context,
     companion object {
 
         val TAG = this::class.java.simpleName.plus(".Tag")
+
         val periodicWorkRequest = PeriodicWorkRequest.Builder(InsiderWorker::class.java, 15, TimeUnit.MINUTES).apply {
             setConstraints(constraints)
         }.build()
@@ -41,7 +43,7 @@ class InsiderWorker constructor(private val context: Context,
 
     private var utils : Utils = Utils()
 
-    private var disposable: Disposable? = null
+    private val composite = CompositeDisposable()
 
     override fun doWork(): Result
     {
@@ -65,22 +67,9 @@ class InsiderWorker constructor(private val context: Context,
     private fun runAlarmTask()
     {
         val roomSearchSet = getSearchSet(context.getString(R.string.text_default_set_name))
-        val requestParams = SearchSet(roomSearchSet.queryName).apply {
-            ticker = roomSearchSet.ticker
-            filingPeriod = utils.getFilingOrTradeValue(context, roomSearchSet.filingPeriod)
-            tradePeriod = utils.getFilingOrTradeValue(context, roomSearchSet.tradePeriod)
-            isPurchase = utils.convertBoolToString(roomSearchSet.isPurchase)
-            isSale = utils.convertBoolToString(roomSearchSet.isSale)
-            tradedMin = roomSearchSet.tradedMin
-            tradedMax = roomSearchSet.tradedMax
-            isOfficer = utils.isOfficerToString(roomSearchSet.isOfficer)
-            isDirector = utils.convertBoolToString(roomSearchSet.isDirector)
-            isTenPercent = utils.convertBoolToString(roomSearchSet.isTenPercent)
-            groupBy = utils.getGroupingValue(context, roomSearchSet.groupBy)
-            sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
-        }
+        val requestParams = roomSearchSet.toSearchSet()
 
-        disposable = SearchRequest().getTradingScreen(requestParams)
+        composite.add(SearchRequest().getTradingScreen(requestParams)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list: ArrayList<Deal>? ->
@@ -89,13 +78,16 @@ class InsiderWorker constructor(private val context: Context,
                 }
             }, { e ->
                 onDocumentError(context, e)
-            })
+            }))
 
     }
 
     private fun onDocumentError(context: Context, throwable: Throwable)
     {
-        disposable?.dispose()
+        composite.apply {
+            dispose()
+            clear()
+        }
         throwable.printStackTrace()
         val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
         val message = "$time (в.мест) \n" +
@@ -106,7 +98,10 @@ class InsiderWorker constructor(private val context: Context,
 
     private fun onDealListReady(context: Context, dealList: ArrayList<Deal>)
     {
-        disposable?.dispose()
+        composite.apply {
+            dispose()
+            clear()
+        }
         val time = utils.getFormattedDateTime(0, Calendar.getInstance().time)
         val message = "The request has been performed at \n" +
                 "$time (в.мест) \n" +

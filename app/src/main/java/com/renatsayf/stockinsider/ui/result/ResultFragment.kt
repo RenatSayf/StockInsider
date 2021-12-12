@@ -29,6 +29,7 @@ import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 
@@ -40,6 +41,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         val ARG_SEARCH_SET = this::class.java.simpleName.plus(".search_set_tag")
         val ARG_TITLE = this::class.java.simpleName.toString().plus("_arg_title")
     }
+
+    @Inject
+    lateinit var workManager: WorkManager
 
     private lateinit var binding: FragmentResultBinding
     private lateinit var resultVM : ResultViewModel
@@ -301,7 +305,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                         Snackbar.make(binding.tradeListRV, msg, Snackbar.LENGTH_LONG).show()
                     }
                 }
-                WorkManager.getInstance(requireContext()).cancelAllWork()
+               workManager.cancelAllWork()
             }
             else ->
             {
@@ -315,7 +319,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                     Snackbar.make(binding.alertLayout.alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
                 }
 
-                WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(InsiderWorker.TAG, ExistingPeriodicWorkPolicy.KEEP, InsiderWorker.periodicWorkRequest)
+                workManager.enqueueUniquePeriodicWork(InsiderWorker.TAG, ExistingPeriodicWorkPolicy.KEEP, InsiderWorker.periodicWorkRequest)
             }
         }
     }

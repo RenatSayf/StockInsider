@@ -27,6 +27,7 @@ import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
+import java.net.URLConnection
 
 @AndroidEntryPoint
 class MainFragment : Fragment(R.layout.fragment_home)
@@ -39,7 +40,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
             })
         }
     }
-    private lateinit var searchDialogListObserver : SearchListDialog.EventObserver //TODO Sending events between Activities/Fragments: Step 6
     private lateinit var searchName : String
 
     private lateinit var ad: InterstitialAd
@@ -71,11 +71,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
             savedInstanceState : Bundle?
                              ) : View?
     {
-
         searchName = getString(R.string.text_current_set_name)
-
-
-        searchDialogListObserver = ViewModelProvider(requireActivity())[SearchListDialog.EventObserver::class.java]
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
@@ -163,13 +159,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
             binding.general.tickerET.setText("")
             tickerText = ""
         }
-
-        //TODO Sending events between Activities/Fragments: Step 7 - observe data (complete)
-        searchDialogListObserver.data.observe(viewLifecycleOwner, { event ->
-            event.getContent()?.let {
-                mainVM.setSearchSet(it)
-            }
-        })
 
         binding.searchButton.setOnClickListener {
             with(binding) {
@@ -313,6 +302,10 @@ class MainFragment : Fragment(R.layout.fragment_home)
             {
                 mainVM.getSearchSetList().observe(viewLifecycleOwner, { list ->
                     SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
+                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet)
+                        {
+                            mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
+                        }
                         override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet)
                         {
                             mainVM.deleteSearchSet(roomSearchSet)

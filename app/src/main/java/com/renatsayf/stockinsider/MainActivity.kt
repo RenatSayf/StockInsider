@@ -21,6 +21,7 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ExpandableListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
@@ -133,6 +134,11 @@ class MainActivity : AppCompatActivity()
                         }
                         4 ->
                         {
+                            navController.navigate(R.id.action_nav_home_to_trackingListFragment)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        5 ->
+                        {
                             when (getSharedPreferences(APP_SETTINGS,
                                 Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
                             {
@@ -154,17 +160,17 @@ class MainActivity : AppCompatActivity()
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        6 ->
+                        7 ->
                         {
                             navController.navigate(R.id.nav_about_app)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        7 ->
+                        8 ->
                         {
                             doShare()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        8 ->
+                        9 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             if (isNetworkConnectivity())
