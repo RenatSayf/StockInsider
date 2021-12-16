@@ -48,7 +48,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
             value = getUserSearchSets()
         }
     }
-    //val searchSetList: LiveData<MutableList<RoomSearchSet>> = _searchSetList
+    //val searchSets: LiveData<MutableList<RoomSearchSet>> = _searchSetList
 
     fun getCurrentSearchSet(setName: String): LiveData<RoomSearchSet> {
         val set = MutableLiveData<RoomSearchSet>()
