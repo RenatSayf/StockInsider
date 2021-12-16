@@ -198,5 +198,6 @@
     <string name="text_search_param_is_saved">Параметры поиска сохранены.</string>
     <string name="text_no_search_request">Нет сохраненных поисковых запросов</string>
     <string name="text_deals_for_14_days">Сделки за 14 дней</string>
+    <string name="text_tracking_list">Список отслеживания</string>
 
 </resources>

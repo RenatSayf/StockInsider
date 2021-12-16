@@ -25,7 +25,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataHeader.add(context.getString(R.string.text_deals_for_3_days))
         listDataHeader.add(context.getString(R.string.text_deals_for_7_days))
         listDataHeader.add(context.getString(R.string.text_deals_for_14_days))
-        listDataHeader.add("Список отслеживания")
+        listDataHeader.add(context.getString(R.string.text_tracking_list))
         listDataHeader.add(context.getString(R.string.text_trading_strategy))
         listDataHeader.add(context.getString(R.string.text_support_project))
         listDataHeader.add(context.getString(R.string.text_about_app))
