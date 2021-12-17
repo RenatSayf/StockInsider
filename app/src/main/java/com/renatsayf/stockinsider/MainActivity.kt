@@ -203,7 +203,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("pur_more1_for_3").observe(this@MainActivity, {
                                     Bundle().apply {
                                         putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
-                                        putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                        putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 })
                         }
@@ -212,7 +212,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("pur_more5_for_3").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -221,7 +221,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sale_more1_for_3").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
 
@@ -231,7 +231,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sale_more5_for_3").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -240,7 +240,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("purchases_more_1").observe(this@MainActivity, {
                                 val bundle = Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
                             })
@@ -250,7 +250,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("purchases_more_5").observe(this@MainActivity, {
                                 val bundle = Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
                             })
@@ -260,7 +260,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sales_more_1").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -269,7 +269,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sales_more_5").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -278,7 +278,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("pur_more1_for_14").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -287,7 +287,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("pur_more5_for_14").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -296,7 +296,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sale_more1_for_14").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
@@ -305,7 +305,7 @@ class MainActivity : AppCompatActivity()
                             mainVM.getCurrentSearchSet("sale_more5_for_14").observe(this@MainActivity, {
                                 Bundle().apply {
                                     putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
-                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it.toSearchSet())
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }

@@ -67,6 +67,12 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         companies.await()
     }
 
+//    override suspend fun getAllTrackedSets(): List<TrackedRoomSet>  = CoroutineScope(Dispatchers.IO).run {
+//        return@run withContext(Dispatchers.Main) {
+//            db.getAllTrackedSets()
+//        }
+//    }
+
     override fun destructor()
     {
         request.composite.clear()

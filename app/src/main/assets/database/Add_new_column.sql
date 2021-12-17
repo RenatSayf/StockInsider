@@ -1,0 +1,2 @@
+ALTER TABLE search_set ADD 'is_tracked' INTEGER NOT NULL DEFAULT 0
+

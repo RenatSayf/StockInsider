@@ -3,9 +3,16 @@ package com.renatsayf.stockinsider.ui.tracking
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class TrackingListViewModel : ViewModel() {
+
+@HiltViewModel
+class TrackingListViewModel @Inject constructor(private val repository: DataRepositoryImpl) : ViewModel() {
 
     sealed class State {
         data class Initial(val list: List<RoomSearchSet>): State()
@@ -16,5 +23,6 @@ class TrackingListViewModel : ViewModel() {
     fun setState(state: State) {
         _state.value = state
     }
+
 
 }

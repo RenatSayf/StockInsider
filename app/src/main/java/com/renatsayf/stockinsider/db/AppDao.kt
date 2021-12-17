@@ -32,5 +32,4 @@ interface AppDao
     @Query("SELECT * FROM companies")
     suspend fun getAllCompanies() : List<Companies>?
 
-
 }

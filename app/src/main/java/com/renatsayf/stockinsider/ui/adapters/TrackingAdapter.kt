@@ -21,8 +21,8 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val roomSearchSet = list[position]
-        holder.bind(roomSearchSet)
+        val sets = list[position]
+        holder.bind(sets)
     }
 
     override fun getItemCount(): Int {
@@ -38,13 +38,13 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
             binding.trackerName.text = set.queryName
             val dealType = if (set.isPurchase && !set.isSale) {
                 binding.root.setCardBackgroundColor(context.getColor(R.color.buy1000000))
-                context.getString(R.string.text_p_purchase)
+                context.getString(R.string.text_purchase)
             }
             else if (set.isSale && !set.isPurchase) {
                 binding.root.setBackgroundColor(context.getColor(R.color.sale1000000))
                 context.getString(R.string.text_sale)
             }
-            else "${context.getString(R.string.text_p_purchase)} / ${context.getString(R.string.text_sale)}"
+            else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
 
             binding.dealType.text = dealType
 
