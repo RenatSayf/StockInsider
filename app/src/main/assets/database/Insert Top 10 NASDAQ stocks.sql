@@ -1,4 +1,4 @@
-INSERT INTO search_set (
+INSERT OR replace INTO search_set (
 set_name, 
 company_name, 
 ticker, 
@@ -16,7 +16,7 @@ sort_by,
 target,
 is_tracked,
 is_default) VALUES (
-"Dow Jones top 30 stocks",
+"NASDAQ top 10 stocks",
  "",
- "AXP AMGN AAPL BA CAT CSCO CVX GS HD HON IBM INTC JNJ KO JPM MCD MMM MRK MSFT NKE PG TRV UNH CRM VZ V WBA WMT DIS DOW",
+ "AAPL MSFT AMZN TSLA NVDA GOOG FB NFLX INTC CSCO",
  1, 3, 1, 0, "", "", 1, 1, 1, 0, 3, "tracking", 1, 1)
