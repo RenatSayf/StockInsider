@@ -276,7 +276,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
                 sorting.sortSpinner.selectedItemPosition
             )
             mainVM.setState(MainViewModel.State.Initial(set))
-            //mainViewModel.saveSearchSet(set)
         }
         super.onPause()
     }

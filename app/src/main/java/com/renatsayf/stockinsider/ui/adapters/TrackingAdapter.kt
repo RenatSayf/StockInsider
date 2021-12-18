@@ -1,8 +1,11 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.CompoundButton
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
@@ -12,8 +15,9 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
                         private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
 
     interface Listener {
-        fun onTrackingAdapterEditButtonClick()
-        fun onTrackingAdapterDeleteButtonClick()
+        fun onTrackingAdapterEditButtonClick(set: RoomSearchSet)
+        fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet)
+        fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -51,14 +55,21 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
 
             if (set.isDefault) binding.editButton.visibility = View.GONE
             if (set.isDefault) binding.deleteButton.visibility = View.GONE
+            binding.trackingSwitcher.isChecked = set.isTracked
 
-            binding.editButton.setOnClickListener {
-                listener?.onTrackingAdapterEditButtonClick()
+                binding.editButton.setOnClickListener {
+                listener?.onTrackingAdapterEditButtonClick(set)
             }
 
             binding.deleteButton.setOnClickListener {
-                listener?.onTrackingAdapterDeleteButtonClick()
+                listener?.onTrackingAdapterDeleteButtonClick(set)
             }
+
+            binding.trackingSwitcher.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+                override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
+                    listener?.onTrackingAdapterSwitcherOnChange(set)
+                }
+            })
         }
 
     }

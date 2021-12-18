@@ -7,10 +7,9 @@ import androidx.room.PrimaryKey
 import com.renatsayf.stockinsider.models.SearchSet
 import java.io.Serializable
 
-@Entity(tableName = "search_set", indices = [Index("set_name")])
+@Entity(tableName = "search_set", indices = [Index("_id")])
 data class RoomSearchSet(
 
-        @PrimaryKey
         @ColumnInfo(name = "set_name")
         var queryName : String,
 
@@ -63,6 +62,10 @@ data class RoomSearchSet(
 
         @ColumnInfo(name = "is_default", defaultValue = "1")
         var isDefault : Boolean = true
+
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "_id", defaultValue = "0")
+        var id : Int = 0
 
         fun toSearchSet(): SearchSet {
                 return SearchSet(queryName).apply {

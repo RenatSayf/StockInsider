@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -62,12 +63,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         })
     }
 
-    override fun onTrackingAdapterEditButtonClick() {
+    override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet) {
         Toast.makeText(requireContext(), "BBBBBBBBBBBBBB", Toast.LENGTH_SHORT).show()
     }
 
-    override fun onTrackingAdapterDeleteButtonClick() {
+    override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet) {
         Toast.makeText(requireContext(), "AAAAAAAAAAAAAAAA", Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet) {
+
     }
 
 

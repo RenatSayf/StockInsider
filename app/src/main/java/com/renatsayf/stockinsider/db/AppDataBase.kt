@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-private const val DB_VERSION = 17
+private const val DB_VERSION = 18
 
 @Database(entities = [RoomSearchSet::class, Companies::class],
     version = DB_VERSION,
@@ -39,8 +39,9 @@ abstract class AppDataBase : RoomDatabase()
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE)
                 .addMigrations(object : Migration(DB_VERSION - 1, DB_VERSION) {
                     override fun migrate(database: SupportSQLiteDatabase) {
+                        val version = database.version
                         if (database.needUpgrade(DB_VERSION)) {
-                            database.execSQL(query1)
+                            //database.execSQL(query1)
                         }
                     }
                 })
