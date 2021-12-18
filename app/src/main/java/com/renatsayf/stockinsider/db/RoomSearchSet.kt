@@ -50,7 +50,11 @@ data class RoomSearchSet(
         val groupBy : Int,
 
         @ColumnInfo(name = "sort_by")
-        val sortBy : Int
+        val sortBy : Int,
+
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "_id", defaultValue = "0")
+        val id : Int = 0
 
                         ): Serializable
 {
@@ -62,10 +66,6 @@ data class RoomSearchSet(
 
         @ColumnInfo(name = "is_default", defaultValue = "1")
         var isDefault : Boolean = true
-
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "_id", defaultValue = "0")
-        var id : Int = 0
 
         fun toSearchSet(): SearchSet {
                 return SearchSet(queryName).apply {

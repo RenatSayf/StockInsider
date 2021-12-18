@@ -5,8 +5,6 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 private const val DB_VERSION = 18
 
@@ -30,6 +28,10 @@ abstract class AppDataBase : RoomDatabase()
             return instance ?: synchronized(this){
                 instance ?: buildDataBase(context).also {
                     instance = it
+                }.apply {
+                    if (DB_VERSION == 17) {
+                        this.mDatabase.execSQL(query17)
+                    }
                 }
             }
         }
@@ -37,14 +39,6 @@ abstract class AppDataBase : RoomDatabase()
         private fun buildDataBase(context : Context) : AppDataBase
         {
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE)
-                .addMigrations(object : Migration(DB_VERSION - 1, DB_VERSION) {
-                    override fun migrate(database: SupportSQLiteDatabase) {
-                        val version = database.version
-                        if (database.needUpgrade(DB_VERSION)) {
-                            //database.execSQL(query1)
-                        }
-                    }
-                })
                 .createFromAsset("database/$DATABASE")
                 .allowMainThreadQueries()
                 .build()
@@ -54,7 +48,7 @@ abstract class AppDataBase : RoomDatabase()
 }
 
 
-private val query = """INSERT INTO search_set (
+private const val query = """INSERT INTO search_set (
 set_name, 
 company_name, 
 ticker, 
@@ -77,4 +71,4 @@ is_default) VALUES (
  "AXP AMGN AAPL BA CAT CSCO CVX GS HD HON IBM INTC JNJ KO JPM MCD MMM MRK MSFT NKE PG TRV UNH CRM VZ V WBA WMT DIS DOW",
  1, 3, 1, 0, "", "", 1, 1, 1, 0, 3, "tracking", 1, 1)"""
 
-private val query1 = """UPDATE search_set SET set_name = 'NASDAQ top 10 stocks' WHERE set_name == 'Top 10 NASDAQ stocks'"""
+private const val query17 = """UPDATE search_set SET set_name = 'NASDAQ top 10 stocks' WHERE set_name == 'Top 10 NASDAQ stocks'"""
