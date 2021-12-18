@@ -11,13 +11,13 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 
-class TrackingAdapter(private val list: List<RoomSearchSet>,
+class TrackingAdapter(private val list: MutableList<RoomSearchSet>,
                         private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
 
     interface Listener {
-        fun onTrackingAdapterEditButtonClick(set: RoomSearchSet)
-        fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet)
-        fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet)
+        fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int)
+        fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int)
+        fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -27,16 +27,20 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val sets = list[position]
-        holder.bind(sets)
+        holder.bind(sets, position)
     }
 
     override fun getItemCount(): Int {
         return list.size
     }
 
+    fun modifyItem(set: RoomSearchSet, position: Int) {
+        list[position] = set
+    }
+
     inner class ViewHolder(private val binding: TrackingItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(set: RoomSearchSet) {
+        fun bind(set: RoomSearchSet, position: Int) {
 
             val context = binding.trackerName.context
 
@@ -58,16 +62,16 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
             binding.trackingSwitcher.isChecked = set.isTracked
 
                 binding.editButton.setOnClickListener {
-                listener?.onTrackingAdapterEditButtonClick(set)
+                listener?.onTrackingAdapterEditButtonClick(set, position)
             }
 
             binding.deleteButton.setOnClickListener {
-                listener?.onTrackingAdapterDeleteButtonClick(set)
+                listener?.onTrackingAdapterDeleteButtonClick(set, position)
             }
 
             binding.trackingSwitcher.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                 override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
-                    listener?.onTrackingAdapterSwitcherOnChange(set)
+                    listener?.onTrackingAdapterSwitcherOnChange(set, p1, position)
                 }
             })
         }

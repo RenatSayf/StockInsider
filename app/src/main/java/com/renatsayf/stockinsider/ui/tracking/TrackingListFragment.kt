@@ -1,11 +1,10 @@
 package com.renatsayf.stockinsider.ui.tracking
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -28,6 +27,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     private lateinit var binding: TrackingListFragmentBinding
+    private var trackingAdapter: TrackingAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -53,9 +53,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         trackersRV.apply {
                             setHasFixedSize(true)
                             layoutManager = LinearLayoutManager(requireContext())
-                            adapter = TrackingAdapter(state.list, this@TrackingListFragment).apply {
+                            trackingAdapter = TrackingAdapter(state.list as MutableList<RoomSearchSet>, this@TrackingListFragment).apply {
                                 stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                             }
+                            adapter = trackingAdapter
                         }
                     }
                 }
@@ -63,16 +64,17 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         })
     }
 
-    override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet) {
-        Toast.makeText(requireContext(), "BBBBBBBBBBBBBB", Toast.LENGTH_SHORT).show()
+    override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int) {
+
     }
 
-    override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet) {
-        Toast.makeText(requireContext(), "AAAAAAAAAAAAAAAA", Toast.LENGTH_SHORT).show()
+    override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int) {
+
     }
 
-    override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet) {
-
+    override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
+        set.isTracked = checked
+        trackingAdapter?.modifyItem(set, position)
     }
 
 
