@@ -1,21 +1,24 @@
 package com.renatsayf.stockinsider.ui.main
 
+import androidx.compose.ui.text.toLowerCase
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel()
+class MainViewModel @Inject constructor(private val repository: DataRepositoryImpl) : ViewModel()
 {
     sealed class State {
         data class Initial(val set: RoomSearchSet): State()
@@ -40,7 +43,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
 
     private suspend fun getUserSearchSets() : MutableList<RoomSearchSet>
     {
-        return repositoryImpl.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
+        return repository.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
     }
 
     private var _searchSetList = MutableLiveData<MutableList<RoomSearchSet>>().apply {
@@ -53,7 +56,7 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
     fun getCurrentSearchSet(setName: String): LiveData<RoomSearchSet> {
         val set = MutableLiveData<RoomSearchSet>()
         viewModelScope.launch {
-            val searchSet = repositoryImpl.getSearchSetFromDbAsync(setName)
+            val searchSet = repository.getSearchSetFromDbAsync(setName)
             set.value = searchSet
         }
         return set
@@ -67,18 +70,26 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
         return list
     }
 
+    fun getSearchSetsByTarget(target: Target): LiveData<List<RoomSearchSet>> {
+        val sets = MutableLiveData<List<RoomSearchSet>>()
+        viewModelScope.launch {
+            sets.value = repository.getSearchSetsByTarget(target)
+        }
+        return sets
+    }
+
     fun saveSearchSet(set: RoomSearchSet): LiveData<Long>
     {
         val id = MutableLiveData<Long>()
         viewModelScope.launch {
-            id.value = repositoryImpl.saveSearchSetAsync(set)
+            id.value = repository.saveSearchSetAsync(set)
         }
         return id
     }
 
     fun deleteSearchSet(set: RoomSearchSet)  {
         viewModelScope.launch {
-            val res = repositoryImpl.deleteSearchSetAsync(set)
+            val res = repository.deleteSearchSetAsync(set)
             if (res > 0) {
                 _searchSetList.value = getUserSearchSets()
                 _searchSetList
@@ -95,12 +106,12 @@ class MainViewModel @Inject constructor(private val repositoryImpl: DataReposito
     var companies : LiveData<Array<Companies>> = _companies
 
     private suspend fun getCompanies() : Array<Companies>? = run {
-        repositoryImpl.getCompaniesFromDbAsync()
+        repository.getCompaniesFromDbAsync()
     }
 
     override fun onCleared()
     {
-        repositoryImpl.destructor()
+        repository.destructor()
         super.onCleared()
     }
 

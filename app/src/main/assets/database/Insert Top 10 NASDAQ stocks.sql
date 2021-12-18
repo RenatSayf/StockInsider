@@ -1,4 +1,5 @@
-INSERT INTO user_search_sets (set_name, 
+INSERT INTO search_set (
+set_name, 
 company_name, 
 ticker, 
 filing_period, 
@@ -12,8 +13,10 @@ is_director,
 is_ten_percent, 
 group_by, 
 sort_by,
-is_tracked) VALUES (
-"Top 10 NASDAQ stocks",
+target,
+is_tracked,
+is_default) VALUES (
+"Dow Jones top 30 stocks",
  "",
- "AAPL MSFT AMZN TSLA NVDA GOOG FB NFLX INTC CSCO",
- 1, 3, 0, 1, "", "", 1, 1, 1, 0, 3, 1)
+ "AXP AMGN AAPL BA CAT CSCO CVX GS HD HON IBM INTC JNJ KO JPM MCD MMM MRK MSFT NKE PG TRV UNH CRM VZ V WBA WMT DIS DOW",
+ 1, 3, 1, 0, "", "", 1, 1, 1, 0, 3, "tracking", 1, 1)

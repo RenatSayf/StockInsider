@@ -309,14 +309,14 @@ class MainActivity : AppCompatActivity()
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             })
                         }
-                        p2 == 5 && p3 == 0 ->
+                        p2 == 6 && p3 == 0 ->
                         {
                             if (isNetworkConnectivity())
                             {
                                 DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             }
                         }
-                        p2 == 5 && p3 == 1 ->
+                        p2 == 6 && p3 == 1 ->
                         {
                             if (isNetworkConnectivity())
                             {

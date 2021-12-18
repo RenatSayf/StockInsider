@@ -6,6 +6,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
+import com.renatsayf.stockinsider.models.Target
 
 interface IDataRepository
 {
@@ -26,6 +27,8 @@ interface IDataRepository
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Int
 
     suspend fun getCompaniesFromDbAsync() : Array<Companies>?
+
+    suspend fun getSearchSetsByTarget(target: Target) : List<RoomSearchSet>
 
     fun destructor()
 }

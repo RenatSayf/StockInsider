@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
@@ -47,6 +48,9 @@ class TrackingAdapter(private val list: List<RoomSearchSet>,
             else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
 
             binding.dealType.text = dealType
+
+            if (set.isDefault) binding.editButton.visibility = View.GONE
+            if (set.isDefault) binding.deleteButton.visibility = View.GONE
 
             binding.editButton.setOnClickListener {
                 listener?.onTrackingAdapterEditButtonClick()

@@ -52,10 +52,19 @@ data class RoomSearchSet(
 
         @ColumnInfo(name = "sort_by")
         val sortBy : Int
+
                         ): Serializable
 {
-        fun toSearchSet(): SearchSet
-        {
+        @ColumnInfo(name = "target")
+        var target : String? = null
+
+        @ColumnInfo(name = "is_tracked")
+        var isTracked : Boolean = false
+
+        @ColumnInfo(name = "is_default", defaultValue = "1")
+        var isDefault : Boolean = true
+
+        fun toSearchSet(): SearchSet {
                 return SearchSet(queryName).apply {
                         ticker = formatTicker(this@RoomSearchSet.ticker)
                         filingPeriod = getFilingOrTradeValue(this@RoomSearchSet.filingPeriod)

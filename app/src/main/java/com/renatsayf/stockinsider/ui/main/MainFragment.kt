@@ -163,21 +163,21 @@ class MainFragment : Fragment(R.layout.fragment_home)
         binding.searchButton.setOnClickListener {
             with(binding) {
                 val set = RoomSearchSet(
-                        searchName,
-                        "",
-                        general.tickerET.text.toString(),
-                        date.filingDateSpinner.selectedItemPosition,
-                        date.tradeDateSpinner.selectedItemPosition,
-                        traded.purchaseCheckBox.isChecked,
-                        traded.saleCheckBox.isChecked,
-                        traded.tradedMinET.text.toString().trim(),
-                        traded.tradedMaxET.text.toString().trim(),
-                        insider.officerCheBox.isChecked,
-                        insider.directorCheBox.isChecked,
-                        insider.owner10CheBox.isChecked,
-                        sorting.groupSpinner.selectedItemPosition,
-                        sorting.sortSpinner.selectedItemPosition
-                                       )
+                    searchName,
+                    "",
+                    general.tickerET.text.toString(),
+                    date.filingDateSpinner.selectedItemPosition,
+                    date.tradeDateSpinner.selectedItemPosition,
+                    traded.purchaseCheckBox.isChecked,
+                    traded.saleCheckBox.isChecked,
+                    traded.tradedMinET.text.toString().trim(),
+                    traded.tradedMaxET.text.toString().trim(),
+                    insider.officerCheBox.isChecked,
+                    insider.directorCheBox.isChecked,
+                    insider.owner10CheBox.isChecked,
+                    sorting.groupSpinner.selectedItemPosition,
+                    sorting.sortSpinner.selectedItemPosition
+                )
                 mainVM.saveSearchSet(set)
 
                 (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)

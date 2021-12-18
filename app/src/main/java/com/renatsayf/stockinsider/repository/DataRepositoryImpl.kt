@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.repository
 
+import androidx.compose.ui.text.toLowerCase
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -10,6 +11,9 @@ import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import com.renatsayf.stockinsider.models.Target
+import java.util.*
+import kotlin.collections.ArrayList
 
 class DataRepositoryImpl @Inject constructor(private val request: SearchRequest, private val db: AppDao) : IDataRepository
 {
@@ -67,11 +71,11 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         companies.await()
     }
 
-//    override suspend fun getAllTrackedSets(): List<TrackedRoomSet>  = CoroutineScope(Dispatchers.IO).run {
-//        return@run withContext(Dispatchers.Main) {
-//            db.getAllTrackedSets()
-//        }
-//    }
+    override suspend fun getSearchSetsByTarget(target: Target): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
+        return withContext(Dispatchers.Main) {
+            db.getSearchSetsByTarget(target.name.lowercase(Locale.getDefault()))
+        }
+    }
 
     override fun destructor()
     {

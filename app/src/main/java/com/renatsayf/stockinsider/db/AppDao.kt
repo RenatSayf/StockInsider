@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
+import com.renatsayf.stockinsider.models.Target
 
 @Dao
 interface AppDao
@@ -31,5 +32,8 @@ interface AppDao
 
     @Query("SELECT * FROM companies")
     suspend fun getAllCompanies() : List<Companies>?
+
+    @Query("SELECT * FROM search_set WHERE target = :target")
+    suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
 }

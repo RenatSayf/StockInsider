@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
+import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -39,7 +40,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState == null) {
-            mainVM.getSearchSetList().observe(viewLifecycleOwner, { list ->
+            mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
             })
         }
