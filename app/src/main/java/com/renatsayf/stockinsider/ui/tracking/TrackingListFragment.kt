@@ -62,6 +62,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 }
             }
         })
+
+//        binding.addButton.setOnClickListener {
+//
+//        }
     }
 
     override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int) {
@@ -74,7 +78,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
         set.isTracked = checked
-        trackingAdapter?.modifyItem(set, position)
+        mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
+            if (it > 0) trackingAdapter?.modifyItem(set, position)
+        })
+
     }
 
 

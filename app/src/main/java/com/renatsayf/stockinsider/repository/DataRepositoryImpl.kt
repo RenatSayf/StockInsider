@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.repository
 
-import androidx.compose.ui.text.toLowerCase
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
