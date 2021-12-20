@@ -6,6 +6,8 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.navigation.findNavController
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 
@@ -24,6 +26,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = TrackingFragmentBinding.bind(view)
+
+        (activity as MainActivity).supportActionBar?.hide()
+
+        binding.includedToolBar.toolBarBtnBack.setOnClickListener {
+            requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+        }
     }
 
 }

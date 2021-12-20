@@ -63,9 +63,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             }
         })
 
-//        binding.addButton.setOnClickListener {
-//
-//        }
+        binding.addButton.setOnClickListener {
+
+        }
+
     }
 
     override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int) {

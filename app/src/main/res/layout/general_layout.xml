@@ -41,7 +41,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
-        android:autofillHints=""
+        android:autofillHints="XXXXX"
         android:completionThreshold="1"
         android:inputType="textAutoComplete|textMultiLine"
         android:hint="@string/text_all_tickers"
