@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
@@ -41,7 +43,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        (activity as MainActivity).supportActionBar?.hide()
+        binding.includedToolBar.apply {
+            toolBarTitleView.text = getString(R.string.text_tracking_list)
+            toolBarBtnBack.setOnClickListener {
+                requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+            }
+        }
 
         if (savedInstanceState == null) {
             mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
@@ -86,6 +93,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             if (it > 0) trackingAdapter?.modifyItem(set, position)
         })
 
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as MainActivity).supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+        (activity as MainActivity).supportActionBar?.show()
+        super.onStop()
     }
 
 

@@ -34,4 +34,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         }
     }
 
+    override fun onDestroy() {
+        (activity as MainActivity).supportActionBar?.show()
+
+        super.onDestroy()
+    }
+
 }
