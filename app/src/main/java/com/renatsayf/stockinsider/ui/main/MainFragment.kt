@@ -27,7 +27,7 @@ import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import java.net.URLConnection
+
 
 @AndroidEntryPoint
 class MainFragment : Fragment(R.layout.fragment_home)
@@ -161,33 +161,16 @@ class MainFragment : Fragment(R.layout.fragment_home)
         }
 
         binding.searchButton.setOnClickListener {
-            with(binding) {
-                val set = RoomSearchSet(
-                    searchName,
-                    "",
-                    general.tickerET.text.toString(),
-                    date.filingDateSpinner.selectedItemPosition,
-                    date.tradeDateSpinner.selectedItemPosition,
-                    traded.purchaseCheckBox.isChecked,
-                    traded.saleCheckBox.isChecked,
-                    traded.tradedMinET.text.toString().trim(),
-                    traded.tradedMaxET.text.toString().trim(),
-                    insider.officerCheBox.isChecked,
-                    insider.directorCheBox.isChecked,
-                    insider.owner10CheBox.isChecked,
-                    sorting.groupSpinner.selectedItemPosition,
-                    sorting.sortSpinner.selectedItemPosition
-                )
-                mainVM.saveSearchSet(set)
+            val set = scanScreen(binding)
+            mainVM.saveSearchSet(set)
 
-                (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
+            (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
 
-                val bundle = Bundle().apply {
-                    putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
-                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
-                }
-                binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
+            val bundle = Bundle().apply {
+                putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+                putSerializable(ResultFragment.ARG_SEARCH_SET, set)
             }
+            binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
         }
 
         binding.alarmOffButton.setOnClickListener {
@@ -258,8 +241,14 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
     override fun onPause()
     {
-        with(binding) {
-            val set = RoomSearchSet(
+        val set = scanScreen(binding)
+        mainVM.setState(MainViewModel.State.Initial(set))
+        super.onPause()
+    }
+
+    private fun scanScreen(b: FragmentHomeBinding): RoomSearchSet {
+        return with(b) {
+            RoomSearchSet(
                 searchName,
                 "",
                 general.tickerET.text.toString(),
@@ -275,9 +264,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                 sorting.groupSpinner.selectedItemPosition,
                 sorting.sortSpinner.selectedItemPosition
             )
-            mainVM.setState(MainViewModel.State.Initial(set))
         }
-        super.onPause()
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)

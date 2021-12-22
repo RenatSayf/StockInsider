@@ -13,6 +13,10 @@ import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 
 class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
+    companion object {
+        val ARG_SET = "${this::class.java.simpleName}.set"
+    }
+
     private lateinit var binding: TrackingFragmentBinding
 
     override fun onCreateView(
@@ -29,13 +33,28 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
         (activity as MainActivity).supportActionBar?.hide()
 
-        binding.includedToolBar.toolBarBtnBack.setOnClickListener {
-            requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+        with(binding) {
+            includedToolBar.toolBarBtnBack.setOnClickListener {
+                requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+            }
+
+
         }
+
+
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (activity as MainActivity).supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+        (activity as MainActivity).supportActionBar?.show()
+        super.onStop()
     }
 
     override fun onDestroy() {
-        (activity as MainActivity).supportActionBar?.show()
 
         super.onDestroy()
     }

@@ -72,7 +72,15 @@
         android:id="@+id/trackingListFragment"
         android:name="com.renatsayf.stockinsider.ui.tracking.TrackingListFragment"
         android:label="@string/text_tracking_list"
-        tools:layout="@layout/tracking_list_fragment" />
+        tools:layout="@layout/tracking_list_fragment" >
+        <action
+            android:id="@+id/action_trackingListFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.TrackingFragment"
+        android:label="@string/text_tracking_params" />
 
 
 </navigation>

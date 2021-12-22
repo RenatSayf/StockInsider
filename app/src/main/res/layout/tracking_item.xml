@@ -12,7 +12,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/trackerName"
@@ -59,6 +59,17 @@
             app:layout_constraintStart_toEndOf="@+id/trackingSwitcher"
             app:layout_constraintTop_toTopOf="@+id/trackingSwitcher"
             tools:ignore="SpeakableTextPresentCheck" />
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btnVisibility"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ButtonBar.AlertDialog"
+            android:layout_marginHorizontal="16dp"
+            app:layout_constraintStart_toEndOf="@+id/editButton"
+            app:layout_constraintTop_toTopOf="@+id/editButton"
+            app:layout_constraintBottom_toBottomOf="@+id/editButton"
+            android:src="@drawable/ic_visibility" />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/deleteButton"

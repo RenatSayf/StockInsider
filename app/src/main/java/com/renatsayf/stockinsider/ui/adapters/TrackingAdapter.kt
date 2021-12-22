@@ -18,6 +18,7 @@ class TrackingAdapter(private val list: MutableList<RoomSearchSet>,
         fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int)
+        fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -42,38 +43,44 @@ class TrackingAdapter(private val list: MutableList<RoomSearchSet>,
 
         fun bind(set: RoomSearchSet, position: Int) {
 
-            val context = binding.trackerName.context
+            with(binding) {
+                val context = trackerName.context
 
-            binding.trackerName.text = set.queryName
-            val dealType = if (set.isPurchase && !set.isSale) {
-                binding.root.setCardBackgroundColor(context.getColor(R.color.buy1000000))
-                context.getString(R.string.text_purchase)
-            }
-            else if (set.isSale && !set.isPurchase) {
-                binding.root.setBackgroundColor(context.getColor(R.color.sale1000000))
-                context.getString(R.string.text_sale)
-            }
-            else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
-
-            binding.dealType.text = dealType
-
-            if (set.isDefault) binding.editButton.visibility = View.GONE
-            if (set.isDefault) binding.deleteButton.visibility = View.GONE
-            binding.trackingSwitcher.isChecked = set.isTracked
-
-                binding.editButton.setOnClickListener {
-                listener?.onTrackingAdapterEditButtonClick(set, position)
-            }
-
-            binding.deleteButton.setOnClickListener {
-                listener?.onTrackingAdapterDeleteButtonClick(set, position)
-            }
-
-            binding.trackingSwitcher.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-                override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
-                    listener?.onTrackingAdapterSwitcherOnChange(set, p1, position)
+                trackerName.text = set.queryName
+                val dealType = if (set.isPurchase && !set.isSale) {
+                    root.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+                    context.getString(R.string.text_purchase)
                 }
-            })
+                else if (set.isSale && !set.isPurchase) {
+                    root.setBackgroundColor(context.getColor(R.color.sale1000000))
+                    context.getString(R.string.text_sale)
+                }
+                else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
+
+                binding.dealType.text = dealType
+
+                if (set.isDefault) editButton.visibility = View.GONE
+                if (set.isDefault) deleteButton.visibility = View.GONE
+                trackingSwitcher.isChecked = set.isTracked
+
+                editButton.setOnClickListener {
+                    listener?.onTrackingAdapterEditButtonClick(set, position)
+                }
+
+                deleteButton.setOnClickListener {
+                    listener?.onTrackingAdapterDeleteButtonClick(set, position)
+                }
+
+                trackingSwitcher.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+                    override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
+                        listener?.onTrackingAdapterSwitcherOnChange(set, p1, position)
+                    }
+                })
+
+                btnVisibility.setOnClickListener {
+                    listener?.onTrackingAdapterVisibilityButtonClick(set, position)
+                }
+            }
         }
 
     }
