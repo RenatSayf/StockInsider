@@ -98,6 +98,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int) {
         (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
             putSerializable(TrackingFragment.ARG_SET, set)
+            putString(TrackingFragment.ARG_TITLE, "Отслеживание")
         })
     }
 

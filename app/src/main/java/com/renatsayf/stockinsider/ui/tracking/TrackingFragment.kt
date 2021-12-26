@@ -10,14 +10,23 @@ import androidx.navigation.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
+import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
+import com.renatsayf.stockinsider.ui.main.MainViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+
+@AndroidEntryPoint
 class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
     companion object {
         val ARG_SET = "${this::class.java.simpleName}.set"
+        val ARG_TITLE = "${this::class.java.simpleName}.title"
     }
 
     private lateinit var binding: TrackingFragmentBinding
+    private val mainVM: MainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -33,12 +42,22 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
         (activity as MainActivity).supportActionBar?.hide()
 
+        val title = arguments?.getString(ARG_TITLE)
+
         with(binding) {
+
+            includedToolBar.toolBarTitleView.text = title
+
             includedToolBar.toolBarBtnBack.setOnClickListener {
                 requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
             }
 
-
+            mainVM.companies.observe(viewLifecycleOwner, { companies ->
+                companies?.let {
+                    val tickersListAdapter = TickersListAdapter(requireActivity(), it)
+                    tickersView.setAdapter(tickersListAdapter)
+                }
+            })
         }
 
 
