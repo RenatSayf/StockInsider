@@ -25,10 +25,10 @@ data class RoomSearchSet(
         @ColumnInfo(name = "trade_period")
         val tradePeriod : Int,
 
-        @ColumnInfo(name = "is_purchase")
+        @ColumnInfo(name = "is_purchase", defaultValue = "1")
         val isPurchase : Boolean = true,
 
-        @ColumnInfo(name = "is_sale")
+        @ColumnInfo(name = "is_sale", defaultValue = "0")
         val isSale : Boolean = false,
 
         @ColumnInfo(name = "trade_min")
@@ -61,11 +61,11 @@ data class RoomSearchSet(
         @ColumnInfo(name = "target")
         var target : String? = null
 
-        @ColumnInfo(name = "is_tracked")
+        @ColumnInfo(name = "is_tracked", defaultValue = "0")
         var isTracked : Boolean = false
 
-        @ColumnInfo(name = "is_default", defaultValue = "1")
-        var isDefault : Boolean = true
+        @ColumnInfo(name = "is_default", defaultValue = "0")
+        var isDefault : Boolean = false
 
         fun toSearchSet(): SearchSet {
                 return SearchSet(queryName).apply {

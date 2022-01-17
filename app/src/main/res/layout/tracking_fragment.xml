@@ -25,7 +25,7 @@
         <include
             android:id="@+id/includedToolBar"
             app:layout_constraintTop_toTopOf="parent"
-            layout="@layout/app_tool_bar" />
+            layout="@layout/app_tool_bar_layout" />
     </FrameLayout>
 
     <ScrollView

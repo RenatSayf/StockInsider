@@ -46,9 +46,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
         with(binding) {
 
-            includedToolBar.toolBarTitleView.text = title
+            includedToolBar.appToolbar.title = title
 
-            includedToolBar.toolBarBtnBack.setOnClickListener {
+            includedToolBar.appToolbar.setNavigationOnClickListener {
                 requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
             }
 

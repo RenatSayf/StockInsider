@@ -18,7 +18,7 @@
 
         <include
             android:id="@+id/includedToolBar"
-            layout="@layout/app_tool_bar" />
+            layout="@layout/app_tool_bar_layout" />
 
     </FrameLayout>
 

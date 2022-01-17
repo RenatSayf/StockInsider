@@ -44,8 +44,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         binding.includedToolBar.apply {
-            toolBarTitleView.text = getString(R.string.text_tracking_list)
-            toolBarBtnBack.setOnClickListener {
+            appToolbar.title = getString(R.string.text_tracking_list)
+            appToolbar.setNavigationOnClickListener {
                 requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
             }
         }
