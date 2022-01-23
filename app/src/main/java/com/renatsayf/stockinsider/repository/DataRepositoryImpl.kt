@@ -11,10 +11,11 @@ import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.network.ISearchRequest
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DataRepositoryImpl @Inject constructor(private val request: SearchRequest, private val db: AppDao) : IDataRepository
+class DataRepositoryImpl @Inject constructor(private val request: ISearchRequest, private val db: AppDao) : IDataRepository
 {
     override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
@@ -78,6 +79,8 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
 
     override fun destructor()
     {
-        request.composite.clear()
+        if (request is SearchRequest) {
+            request.composite.clear()
+        }
     }
 }

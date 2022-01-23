@@ -2,16 +2,11 @@ package com.renatsayf.stockinsider.network
 
 import io.reactivex.Observable
 import io.reactivex.Single
-import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import org.jsoup.nodes.Document
-import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.http.GET
 import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.util.concurrent.TimeUnit
 
 interface IApi
 {
@@ -54,26 +49,5 @@ interface IApi
     companion object Factory
     {
         private const val userAgentHeader = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
-
-        fun create() : IApi
-        {
-            val interceptor = HttpLoggingInterceptor()
-            interceptor.level = HttpLoggingInterceptor.Level.BASIC
-
-            val okHttpClient = OkHttpClient().newBuilder()
-                .addInterceptor(interceptor)
-                .connectTimeout(60, TimeUnit.SECONDS)
-                .readTimeout(60, TimeUnit.SECONDS)
-                .writeTimeout(60, TimeUnit.SECONDS).build()
-
-            val retrofit = Retrofit.Builder()
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-                .addConverterFactory(DocumAdapter.FACTORY)
-                .baseUrl("http://openinsider.com/")
-                .client(okHttpClient).build()
-
-            return retrofit.create(IApi::class.java)
-        }
-
     }
 }

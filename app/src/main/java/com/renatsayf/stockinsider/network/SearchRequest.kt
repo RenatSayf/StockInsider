@@ -10,13 +10,12 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest @Inject constructor()
+class SearchRequest @Inject constructor(private val api: IApi) : ISearchRequest
 {
-    private var api: IApi = IApi.create()
     var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
-    fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
+    override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
@@ -117,7 +116,7 @@ class SearchRequest @Inject constructor()
         return listDeal
     }
 
-    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
+    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
@@ -142,24 +141,24 @@ class SearchRequest @Inject constructor()
         val elements = document.select("$tagId > table > tbody")
         if (elements.size > 0)
         {
-            val tbody = elements[0]
+            val tBody = elements[0]
             var trIndex = 1
-            tbody.children().forEach {
-                val filingDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").text()
+            tBody.children().forEach { element ->
+                val filingDate = element.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").text()
                 val deal = Deal(filingDate).apply {
-                    filingDateRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").attr("href")
-                    tradeDate = tbody.select("tr:nth-child($trIndex) > td:nth-child(3) > div").text()
-                    ticker = tbody.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
+                    filingDateRefer = element.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").attr("href")
+                    tradeDate = element.select("tr:nth-child($trIndex) > td:nth-child(3) > div").text()
+                    ticker = element.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
                     company = ""
-                    insiderName = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").text()
-                    insiderNameRefer = tbody.select("tr:nth-child($trIndex) > td:nth-child(5) > a").attr("href")
-                    insiderTitle = tbody.select("tr:nth-child($trIndex) > td:nth-child(6)").text()
-                    tradeType = tbody.select("tr:nth-child($trIndex) > td:nth-child(7)").text()
-                    price = tbody.select("tr:nth-child($trIndex) > td:nth-child(8)").text()
-                    qty = tbody.select("tr:nth-child($trIndex) > td:nth-child(9)").text()
-                    owned = tbody.select("tr:nth-child($trIndex) > td:nth-child(10)").text()
-                    deltaOwn = tbody.select("tr:nth-child($trIndex) > td:nth-child(11)").text()
-                    volumeStr = tbody.select("tr:nth-child($trIndex) > td:nth-child(12)").text()
+                    insiderName = element.select("tr:nth-child($trIndex) > td:nth-child(5) > a").text()
+                    insiderNameRefer = element.select("tr:nth-child($trIndex) > td:nth-child(5) > a").attr("href")
+                    insiderTitle = element.select("tr:nth-child($trIndex) > td:nth-child(6)").text()
+                    tradeType = element.select("tr:nth-child($trIndex) > td:nth-child(7)").text()
+                    price = element.select("tr:nth-child($trIndex) > td:nth-child(8)").text()
+                    qty = element.select("tr:nth-child($trIndex) > td:nth-child(9)").text()
+                    owned = element.select("tr:nth-child($trIndex) > td:nth-child(10)").text()
+                    deltaOwn = element.select("tr:nth-child($trIndex) > td:nth-child(11)").text()
+                    volumeStr = element.select("tr:nth-child($trIndex) > td:nth-child(12)").text()
                     trIndex++
                 }
                 listDeal.add(deal)
@@ -168,7 +167,7 @@ class SearchRequest @Inject constructor()
         return listDeal
     }
 
-    fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
+    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()

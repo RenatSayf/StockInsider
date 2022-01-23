@@ -8,6 +8,8 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.network.IApi
+import com.renatsayf.stockinsider.network.ISearchRequest
 import com.renatsayf.stockinsider.network.SearchRequest
 import com.renatsayf.stockinsider.utils.Utils
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -19,7 +21,8 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
-class InsiderWorker constructor(
+class InsiderWorker @Inject constructor(
+    private val searchRequest: ISearchRequest,
     private val context: Context,
     parameters: WorkerParameters): Worker(context, parameters)
 {
@@ -93,7 +96,7 @@ class InsiderWorker constructor(
         val roomSearchSet = getSearchSet(setName)
         val requestParams = roomSearchSet.toSearchSet()
 
-        composite.add(SearchRequest().getTradingScreen(requestParams)
+        composite.add(searchRequest.getTradingScreen(requestParams)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list: ArrayList<Deal>? ->
