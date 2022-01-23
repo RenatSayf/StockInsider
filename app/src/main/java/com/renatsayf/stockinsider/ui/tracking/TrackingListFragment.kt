@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.service.InsiderWorker
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -22,6 +23,8 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
+    private lateinit var binding: TrackingListFragmentBinding
+
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
@@ -29,8 +32,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
-    private lateinit var binding: TrackingListFragmentBinding
-    private var trackingAdapter: TrackingAdapter? = null
+    private val trackingAdapter: TrackingAdapter by lazy {
+        TrackingAdapter(listener = this).apply {
+            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -50,6 +56,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             }
         }
 
+        binding.trackersRV.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(requireContext())
+            adapter = trackingAdapter
+        }
+
         if (savedInstanceState == null) {
             mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
@@ -59,16 +71,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         trackingVM.state.observe(viewLifecycleOwner, { state ->
             when(state) {
                 is TrackingListViewModel.State.Initial -> {
-                    with(binding) {
-                        trackersRV.apply {
-                            setHasFixedSize(true)
-                            layoutManager = LinearLayoutManager(requireContext())
-                            trackingAdapter = TrackingAdapter(state.list as MutableList<RoomSearchSet>, this@TrackingListFragment).apply {
-                                stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                            }
-                            adapter = trackingAdapter
-                        }
-                    }
+                    trackingAdapter.setItems(state.list as MutableList<RoomSearchSet>)
                 }
             }
         })
@@ -90,7 +93,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
         set.isTracked = checked
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
-            if (it > 0) trackingAdapter?.modifyItem(set, position)
+            if (it > 0) {
+                trackingAdapter.modifyItem(set, position)
+                InsiderWorker.addWorkRequest(set.queryName)
+            }
         })
 
     }

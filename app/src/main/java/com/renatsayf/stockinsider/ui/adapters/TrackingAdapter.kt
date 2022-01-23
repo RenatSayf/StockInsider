@@ -2,6 +2,7 @@
 
 package com.renatsayf.stockinsider.ui.adapters
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,7 +12,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 
-class TrackingAdapter(private val list: MutableList<RoomSearchSet>,
+class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
                         private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
 
     interface Listener {
@@ -33,6 +34,12 @@ class TrackingAdapter(private val list: MutableList<RoomSearchSet>,
 
     override fun getItemCount(): Int {
         return list.size
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    fun setItems(list: MutableList<RoomSearchSet>) {
+        this.list = list
+        notifyDataSetChanged()
     }
 
     fun modifyItem(set: RoomSearchSet, position: Int) {

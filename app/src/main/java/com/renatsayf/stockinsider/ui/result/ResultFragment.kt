@@ -12,7 +12,9 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
+import androidx.work.WorkRequest
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -318,8 +320,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                 context?.getString(R.string.text_searching_is_created)?.let { msg ->
                     Snackbar.make(binding.alertLayout.alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
                 }
-
-                workManager.enqueueUniquePeriodicWork(InsiderWorker.TAG, ExistingPeriodicWorkPolicy.KEEP, InsiderWorker.periodicWorkRequest)
             }
         }
     }
