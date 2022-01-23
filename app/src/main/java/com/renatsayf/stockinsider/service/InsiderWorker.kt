@@ -22,6 +22,7 @@ import javax.inject.Inject
 
 
 class InsiderWorker @Inject constructor(
+    private val db: AppDao,
     private val searchRequest: ISearchRequest,
     private val context: Context,
     parameters: WorkerParameters): Worker(context, parameters)
@@ -55,9 +56,6 @@ class InsiderWorker @Inject constructor(
             WorkManager.getInstance(context).enqueue(requestList)
         }
     }
-
-    @Inject
-    lateinit var db: AppDao
 
     private var utils : Utils = Utils()
 
