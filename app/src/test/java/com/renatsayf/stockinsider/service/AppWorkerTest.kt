@@ -59,11 +59,9 @@ class AppWorkerTest {
     @Test
     fun workManagerEnqueueTest() {
 
-        val task = WorkTask().apply {
-            createPeriodicTask("Microsoft")
-        }
+        WorkTask.createPeriodicTask("Microsoft")
 
-        val actualWorkRequests = task.getTaskList()
+        val actualWorkRequests = WorkTask.getTaskList()
         assertTrue(actualWorkRequests.isNotEmpty())
 
         val workManager = WorkManager.getInstance(context)
@@ -108,7 +106,7 @@ class AppWorkerTest {
             inputData = Data(workDataOf(AppWorker.SEARCH_SET_KEY to "Microsoft"))
         ).build()
 
-        worker.injectDependencies(db, network)
+        worker.injectDependencies(db, network, FakeServiceNotification.notify)
 
         val result = worker.doWork()
 

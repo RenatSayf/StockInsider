@@ -4,9 +4,12 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
+import com.renatsayf.stockinsider.BuildConfig
 import java.util.concurrent.TimeUnit
 
-class WorkTask: IWorkTask {
+object WorkTask: IWorkTask {
+
+    private val timePeriod = if(BuildConfig.DEBUG) 20L else 480L
 
     private val taskList = mutableSetOf<PeriodicWorkRequest>()
 
@@ -15,7 +18,7 @@ class WorkTask: IWorkTask {
     }.build()
 
     override fun createPeriodicTask(name: String): PeriodicWorkRequest {
-        val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, 15, TimeUnit.MINUTES).apply {
+        val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
             val data = Data.Builder().putString(AppWorker.SEARCH_SET_KEY, name).build()
             setInputData(data)
             setConstraints(constraints)
