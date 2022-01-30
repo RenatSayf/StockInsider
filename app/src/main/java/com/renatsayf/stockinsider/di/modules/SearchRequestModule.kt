@@ -2,8 +2,8 @@ package com.renatsayf.stockinsider.di.modules
 
 import com.renatsayf.stockinsider.network.DocumAdapter
 import com.renatsayf.stockinsider.network.IApi
-import com.renatsayf.stockinsider.network.ISearchRequest
-import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.network.INetworkRepository
+import com.renatsayf.stockinsider.network.NetworkRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit
 object SearchRequestModule
 {
     @Provides
-    fun provideSearchRequest(api: IApi): ISearchRequest
+    fun provideSearchRequest(api: IApi): INetworkRepository
     {
-        return SearchRequest(api)
+        return NetworkRepository(api)
     }
 
     @Provides

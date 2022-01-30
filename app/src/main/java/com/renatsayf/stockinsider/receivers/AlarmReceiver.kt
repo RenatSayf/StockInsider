@@ -11,7 +11,7 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.network.NetworkRepository
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import com.renatsayf.stockinsider.utils.AppCalendar
@@ -44,7 +44,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
     lateinit var db : AppDao
 
     @Inject
-    lateinit var searchRequest : SearchRequest
+    lateinit var networkRepository : NetworkRepository
 
     @Inject
     lateinit var appCalendar: AppCalendar
@@ -107,7 +107,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
             sortBy = utils.getSortingValue(context, roomSearchSet.sortBy)
         }
 
-        disposable = searchRequest.getTradingScreen(requestParams)
+        disposable = networkRepository.getTradingScreen(requestParams)
             .subscribeOn(Schedulers.newThread())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe({ list: ArrayList<Deal>? ->

@@ -26,6 +26,10 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+        debug {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 
     buildFeatures {
@@ -43,6 +47,9 @@ android {
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0-beta04"
+    }
+    testOptions {
+        unitTests.includeAndroidResources = true
     }
 }
 
@@ -69,14 +76,8 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
     implementation 'androidx.test.ext:junit-ktx:1.1.3'
 
-
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha03'
-
     //Hilt   TODO Hilt step 3
     implementation "com.google.dagger:hilt-android:2.38.1"
-    androidTestImplementation 'androidx.test:rules:1.4.1-alpha03'
     kapt "com.google.dagger:hilt-compiler:2.38.1"
 
     //Recyclerview
@@ -106,6 +107,7 @@ dependencies {
     implementation 'androidx.room:room-ktx:2.4.0'
     kapt 'androidx.room:room-compiler:2.4.0'
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.6.10"
+    androidTestImplementation "android.arch.persistence.room:testing:1.1.1"
 
     //WorkManager library
     def work_version = "2.7.1"
@@ -136,6 +138,18 @@ dependencies {
 
     //AdMob
     implementation 'com.google.android.gms:play-services-ads:19.6.0'
+
+    //Testing
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation "android.arch.core:core-testing:1.1.1"
+    androidTestImplementation "androidx.test:runner:1.4.1-alpha03"
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0-alpha03'
+    androidTestImplementation 'androidx.test:rules:1.4.1-alpha03'
+
+    //Robolectric
+    testImplementation 'org.robolectric:robolectric:4.6'
+
 
 
 }

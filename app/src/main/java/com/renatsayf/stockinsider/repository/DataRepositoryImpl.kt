@@ -5,26 +5,26 @@ import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.network.NetworkRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.network.ISearchRequest
+import com.renatsayf.stockinsider.network.INetworkRepository
 import java.util.*
 import kotlin.collections.ArrayList
 
-class DataRepositoryImpl @Inject constructor(private val request: ISearchRequest, private val db: AppDao) : IDataRepository
+class DataRepositoryImpl @Inject constructor(private val network: INetworkRepository, private val db: AppDao) : IDataRepository
 {
     override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
-        return request.getTradingScreen(set)
+        return network.getTradingScreen(set)
     }
 
     override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
     {
-        return request.getInsiderTrading(insider)
+        return network.getInsiderTrading(insider)
     }
 
     override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
@@ -35,7 +35,7 @@ class DataRepositoryImpl @Inject constructor(private val request: ISearchRequest
 
     override fun getTradingByTickerAsync(ticker: String): Single<ArrayList<Deal>>
     {
-        return request.getTradingByTicker(ticker)
+        return network.getTradingByTicker(ticker)
     }
 
     override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
@@ -79,8 +79,8 @@ class DataRepositoryImpl @Inject constructor(private val request: ISearchRequest
 
     override fun destructor()
     {
-        if (request is SearchRequest) {
-            request.composite.clear()
+        if (network is NetworkRepository) {
+            network.composite.clear()
         }
     }
 }

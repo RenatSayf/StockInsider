@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class SearchRequest @Inject constructor(private val api: IApi) : ISearchRequest
+class NetworkRepository @Inject constructor(private val api: IApi) : INetworkRepository
 {
     var composite = CompositeDisposable()
     private var searchTicker : String = ""

@@ -14,7 +14,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.service.InsiderWorker
+import com.renatsayf.stockinsider.service.AppWorker
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
@@ -95,7 +95,6 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
             if (it > 0) {
                 trackingAdapter.modifyItem(set, position)
-                InsiderWorker.addWorkRequest(set.queryName)
             }
         })
 
