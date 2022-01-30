@@ -17,7 +17,7 @@ object WorkTask: IWorkTask {
         setRequiredNetworkType(NetworkType.CONNECTED)
     }.build()
 
-    override fun createPeriodicTask(name: String): PeriodicWorkRequest {
+    override fun createPeriodicTask(name: String): IWorkTask {
         val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
             val data = Data.Builder().putString(AppWorker.SEARCH_SET_KEY, name).build()
             setInputData(data)
@@ -25,11 +25,12 @@ object WorkTask: IWorkTask {
 
         }.build()
         taskList.add(request)
-        return request
+        return this
     }
 
-    override fun addPeriodicTask(task: PeriodicWorkRequest) {
+    override fun addPeriodicTask(task: PeriodicWorkRequest): IWorkTask {
         taskList.add(task)
+        return this
     }
 
     override fun getTaskList(): List<PeriodicWorkRequest> {
