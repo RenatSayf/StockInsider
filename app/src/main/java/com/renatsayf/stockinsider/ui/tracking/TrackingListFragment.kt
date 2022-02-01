@@ -1,5 +1,8 @@
 package com.renatsayf.stockinsider.ui.tracking
 
+import android.app.AlarmManager
+import android.content.Context
+import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -15,11 +18,16 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.schedule.IScheduler
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.AppWorker
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
+import javax.inject.Inject
 
 
 @AndroidEntryPoint
@@ -39,6 +47,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
     }
+
+    @Inject
+    lateinit var scheduler: IScheduler
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -93,17 +104,19 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
-        set.isTracked = checked
-        mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
-            if (it > 0) {
-                trackingAdapter.modifyItem(set, position)
-                if (checked) {
-                    val taskList = WorkTask.createPeriodicTask(set.queryName).getTaskList()
-                    WorkManager.getInstance(requireContext()).enqueue(taskList)
-                }
+        val isAlarmSetup = scheduler.isAlarmSetup(set.queryName)
+        if (checked && !isAlarmSetup) {
+            val result = scheduler.scheduleOne(startTime = System.currentTimeMillis(), setName = set.queryName)
+            if (result) {
+                set.isTracked = checked
+                mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
+                    if (it > 0) trackingAdapter.modifyItem(set, position)
+                })
             }
-        })
-
+        }
+        else if (!checked && isAlarmSetup) {
+            scheduler.cancel(Scheduler.REQUEST_CODE, Scheduler.REPEAT_SHOOT_ACTION, set.queryName)
+        }
     }
 
     override fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int) {
