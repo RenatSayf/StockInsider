@@ -1,8 +1,5 @@
 package com.renatsayf.stockinsider.ui.tracking
 
-import android.app.AlarmManager
-import android.content.Context
-import android.icu.util.Calendar
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -12,21 +9,15 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.schedule.IScheduler
-import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.service.AppWorker
-import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 
@@ -77,6 +68,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         if (savedInstanceState == null) {
             mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
+                val mutableList = list as MutableList
+                mutableList.forEach { item ->
+                    val pendingIntent = scheduler.isAlarmSetup(item.queryName)
+                    item.isTracked = pendingIntent != null
+                }
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
             })
         }
@@ -104,8 +100,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
-        val isAlarmSetup = scheduler.isAlarmSetup(set.queryName)
-        if (checked && !isAlarmSetup) {
+        val pendingIntent = scheduler.isAlarmSetup(set.queryName)
+        if (checked && pendingIntent == null) {
             val result = scheduler.scheduleOne(startTime = System.currentTimeMillis(), setName = set.queryName)
             if (result) {
                 set.isTracked = checked
@@ -114,8 +110,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 })
             }
         }
-        else if (!checked && isAlarmSetup) {
-            scheduler.cancel(Scheduler.REQUEST_CODE, Scheduler.REPEAT_SHOOT_ACTION, set.queryName)
+        else if (!checked && pendingIntent != null) {
+            scheduler.cancel(pendingIntent)
+            set.isTracked = checked
+            mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
+                if (it > 0) trackingAdapter.modifyItem(set, position)
+            })
         }
     }
 

@@ -11,6 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.schedule.IScheduler
+import com.renatsayf.stockinsider.schedule.Scheduler
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
+
+
 
 class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
                         private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {

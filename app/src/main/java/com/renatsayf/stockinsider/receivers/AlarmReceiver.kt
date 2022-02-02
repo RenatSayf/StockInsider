@@ -59,9 +59,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
                     }
                     else ->
                     {
-                        if (setName != null) {
-                            scheduler.cancel(Scheduler.REQUEST_CODE, Scheduler.ONE_SHOOT_ACTION, setName)
-                        }
+
                     }
                 }
             }

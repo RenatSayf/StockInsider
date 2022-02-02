@@ -21,7 +21,7 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
         val SET_NAME = "${this::class.java.simpleName}.setName"
     }
 
-    private val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+    private val alarmManager = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     private fun createPendingIntent(action: String, setName: String): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
@@ -42,7 +42,8 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
             alarmManager.apply {
                 setExact(AlarmManager.RTC, startTime + overTime, pendingIntent)
             }
-            true
+            val isAlarmSetup = isAlarmSetup(setName)
+            return isAlarmSetup != null
         } catch (e: Exception) {
             false
         }
@@ -60,28 +61,26 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
         }
     }
 
-    override fun isAlarmSetup(setName: String): Boolean {
+    override fun isAlarmSetup(setName: String, isRepeat: Boolean): PendingIntent? {
         val intent = Intent(context, AlarmReceiver::class.java).let {
-            it.action = AlarmPendingIntent.ACTION_START_ALARM
+            it.action = when(isRepeat) {
+                true -> REPEAT_SHOOT_ACTION
+                else -> ONE_SHOOT_ACTION
+            }
             it.putExtra(SET_NAME, setName)
         }
-        val pendingIntent = PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_NO_CREATE)
-        return pendingIntent != null
+        val pendingIntent: PendingIntent? = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+        } else {
+            PendingIntent.getBroadcast(context, REQUEST_CODE, intent, PendingIntent.FLAG_NO_CREATE)
+        }
+        return pendingIntent
     }
 
-    override fun cancel(requestCode: Int, action: String, setName: String) {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
-            this.action = action
-            putExtra(SET_NAME, setName)
-        }
-        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
-        } else {
-            PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE)
-        }
-        pendingIntent?.let {
-            alarmManager.cancel(it)
-        }
+    override fun cancel(pendingIntent: PendingIntent): Boolean {
+        alarmManager.cancel(pendingIntent)
+        //pendingIntent.cancel()
+        return true
     }
 
 
