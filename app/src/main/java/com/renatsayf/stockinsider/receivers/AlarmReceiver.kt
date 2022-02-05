@@ -40,12 +40,8 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
                 {
                     true ->
                     {
-                        val nextCalendar = appCalendar.getNextCalendar()
-                        if (setName != null) {
-                            //scheduler.scheduleOne(startTime = nextCalendar.timeInMillis, overTime = 0, setName = setName, requestCode = setName.hashCode())
-                        }
                         CoroutineScope(Dispatchers.IO).launch {
-                            println("***************** START ********************")
+                            println("***************** START $setName ********************")
                             delay(20000)
                             withContext(Dispatchers.Main) {
                                 ServiceNotification().createNotification(
@@ -54,7 +50,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
                                     text = context.getString(R.string.base_notification_text)
                                 ).show()
                             }
-                            println("******************* END ********************")
+                            println("******************* END $setName ********************")
                         }
                     }
                     else ->

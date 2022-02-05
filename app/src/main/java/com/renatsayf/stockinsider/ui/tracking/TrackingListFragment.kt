@@ -17,6 +17,9 @@ import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.START_TIME
+import com.renatsayf.stockinsider.utils.TIME_INTERVAL
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -41,6 +44,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     @Inject
     lateinit var scheduler: IScheduler
+
+    @Inject
+    lateinit var calendar: AppCalendar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -70,7 +76,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
                 val mutableList = list as MutableList
                 mutableList.forEach { item ->
-                    val pendingIntent = scheduler.isAlarmSetup(item.queryName, requestCode = item.queryName.hashCode())
+                    val pendingIntent = scheduler.isAlarmSetup(item.queryName, requestCode = item.queryName.hashCode(), isRepeat = true)
                     item.isTracked = pendingIntent != null
                 }
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
@@ -102,7 +108,13 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
         val pendingIntent = scheduler.isAlarmSetup(set.queryName, requestCode = set.queryName.hashCode(), isRepeat = true)
         if (checked && pendingIntent == null) {
-            val result = scheduler.scheduleRepeat(setName = set.queryName, requestCode = set.queryName.hashCode(), overTime = 10000, interval = 30000)
+
+            val result = scheduler.scheduleRepeat(
+                setName = set.queryName,
+                requestCode = set.queryName.hashCode(),
+                overTime = START_TIME,
+                interval = TIME_INTERVAL
+            )
             if (result) {
                 set.isTracked = checked
                 mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {

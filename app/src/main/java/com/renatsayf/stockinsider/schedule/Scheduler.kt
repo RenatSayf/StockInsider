@@ -36,7 +36,7 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
         alarmManager.apply {
             setExact(AlarmManager.RTC, startTime + overTime, pendingIntent)
         }
-        val isAlarmSetup = isAlarmSetup(setName, requestCode = requestCode)
+        val isAlarmSetup = isAlarmSetup(setName, requestCode = requestCode, isRepeat = false)
         return isAlarmSetup != null
     }
 
@@ -66,6 +66,7 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
 
     override fun cancel(pendingIntent: PendingIntent) {
         alarmManager.cancel(pendingIntent)
+        pendingIntent.cancel()
     }
 
 
