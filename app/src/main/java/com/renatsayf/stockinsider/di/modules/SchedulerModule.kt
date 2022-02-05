@@ -1,6 +1,8 @@
 package com.renatsayf.stockinsider.di.modules
 
+import android.app.Application
 import android.content.Context
+import androidx.test.core.app.ApplicationProvider
 import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.schedule.Scheduler
 import dagger.Module

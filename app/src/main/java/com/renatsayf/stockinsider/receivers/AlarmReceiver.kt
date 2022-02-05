@@ -42,7 +42,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
                     {
                         val nextCalendar = appCalendar.getNextCalendar()
                         if (setName != null) {
-                            scheduler.scheduleOne(startTime = nextCalendar.timeInMillis, overTime = 0, setName = setName)
+                            //scheduler.scheduleOne(startTime = nextCalendar.timeInMillis, overTime = 0, setName = setName, requestCode = setName.hashCode())
                         }
                         CoroutineScope(Dispatchers.IO).launch {
                             println("***************** START ********************")
