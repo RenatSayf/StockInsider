@@ -76,7 +76,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
                 val mutableList = list as MutableList
                 mutableList.forEach { item ->
-                    val pendingIntent = scheduler.isAlarmSetup(item.queryName, requestCode = item.queryName.hashCode(), isRepeat = true)
+                    val pendingIntent = scheduler.isAlarmSetup(item.queryName, isRepeat = true)
                     item.isTracked = pendingIntent != null
                 }
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
@@ -106,12 +106,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
-        val pendingIntent = scheduler.isAlarmSetup(set.queryName, requestCode = set.queryName.hashCode(), isRepeat = true)
+        val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
         if (checked && pendingIntent == null) {
 
             val result = scheduler.scheduleRepeat(
-                setName = set.queryName,
-                requestCode = set.queryName.hashCode(),
+                name = set.queryName,
                 overTime = START_TIME,
                 interval = TIME_INTERVAL
             )

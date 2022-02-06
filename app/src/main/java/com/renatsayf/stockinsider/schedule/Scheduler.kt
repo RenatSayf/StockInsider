@@ -21,27 +21,27 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
 
     private val alarmManager = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
-    private fun createPendingIntent(action: String, setName: String, requestCode: Int): PendingIntent {
+    private fun createPendingIntent(action: String, intentName: String, requestCode: Int): PendingIntent {
         val intent = Intent(context, AlarmReceiver::class.java).apply {
             this.action = action
-            putExtra(SET_NAME, setName)
+            putExtra(SET_NAME, intentName)
         }
         val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         return pendingIntent
     }
 
 
-    override fun scheduleOne(startTime: Long, overTime: Long, setName: String, requestCode: Int): Boolean {
-        val pendingIntent = createPendingIntent(ONE_SHOOT_ACTION, setName, requestCode)
+    override fun scheduleOne(startTime: Long, overTime: Long, name: String): Boolean {
+        val pendingIntent = createPendingIntent(ONE_SHOOT_ACTION, name, name.hashCode())
         alarmManager.apply {
             setExact(AlarmManager.RTC, startTime + overTime, pendingIntent)
         }
-        val isAlarmSetup = isAlarmSetup(setName, requestCode = requestCode, isRepeat = false)
+        val isAlarmSetup = isAlarmSetup(name, isRepeat = false)
         return isAlarmSetup != null
     }
 
-    override fun scheduleRepeat(overTime: Long, interval: Long, setName: String, requestCode: Int): Boolean {
-        val pendingIntent = createPendingIntent(REPEAT_SHOOT_ACTION, setName, requestCode)
+    override fun scheduleRepeat(overTime: Long, interval: Long, name: String): Boolean {
+        val pendingIntent = createPendingIntent(REPEAT_SHOOT_ACTION, name, name.hashCode())
         return try {
             alarmManager.apply {
                 setRepeating(AlarmManager.RTC, System.currentTimeMillis() + overTime, interval, pendingIntent)
@@ -52,15 +52,15 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
         }
     }
 
-    override fun isAlarmSetup(setName: String, isRepeat: Boolean, requestCode: Int): PendingIntent? {
+    override fun isAlarmSetup(name: String, isRepeat: Boolean): PendingIntent? {
         val intent = Intent(context, AlarmReceiver::class.java).let {
             it.action = when(isRepeat) {
                 true -> REPEAT_SHOOT_ACTION
                 else -> ONE_SHOOT_ACTION
             }
-            it.putExtra(SET_NAME, setName)
+            it.putExtra(SET_NAME, name)
         }
-        val pendingIntent: PendingIntent? = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
+        val pendingIntent: PendingIntent? = PendingIntent.getBroadcast(context, name.hashCode(), intent, PendingIntent.FLAG_NO_CREATE or PendingIntent.FLAG_IMMUTABLE)
         return pendingIntent
     }
 

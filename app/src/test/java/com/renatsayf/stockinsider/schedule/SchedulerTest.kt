@@ -29,18 +29,18 @@ class SchedulerTest {
     @Test
     fun scheduleOne() {
         val setName = "default_set"
-        val isOne = scheduler.scheduleOne(startTime = System.currentTimeMillis(), overTime = 60000, setName = setName, requestCode = setName.hashCode())
+        val isOne = scheduler.scheduleOne(startTime = System.currentTimeMillis(), overTime = 60000, name = setName)
 
         Assert.assertTrue(isOne)
 
-        var pendingIntent = scheduler.isAlarmSetup(setName, requestCode = setName.hashCode(), isRepeat = false)
+        var pendingIntent = scheduler.isAlarmSetup(setName, isRepeat = false)
 
         Assert.assertTrue(pendingIntent != null)
 
         if (pendingIntent != null) {
             scheduler.cancel(pendingIntent)
 
-            pendingIntent = scheduler.isAlarmSetup(setName, requestCode = setName.hashCode(), isRepeat = false)
+            pendingIntent = scheduler.isAlarmSetup(setName, isRepeat = false)
             Assert.assertTrue(pendingIntent == null)
         }
         else throw NullPointerException("********** pendingIntent is null *************")
@@ -50,16 +50,16 @@ class SchedulerTest {
     fun scheduleRepeat() {
         val setName = "default_set"
 
-        val isRepeat = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, setName = setName, requestCode = setName.hashCode())
+        val isRepeat = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, name = setName)
 
         Assert.assertTrue(isRepeat)
 
-        var pendingIntent = scheduler.isAlarmSetup(setName, requestCode = setName.hashCode(), isRepeat = true)
+        var pendingIntent = scheduler.isAlarmSetup(setName, isRepeat = true)
 
         if (pendingIntent != null) {
             scheduler.cancel(pendingIntent)
 
-            pendingIntent = scheduler.isAlarmSetup(setName, requestCode = setName.hashCode(), isRepeat = true)
+            pendingIntent = scheduler.isAlarmSetup(setName, isRepeat = true)
             Assert.assertTrue(pendingIntent == null)
         }
         else throw NullPointerException("********** pendingIntent is null *************")
@@ -70,13 +70,13 @@ class SchedulerTest {
         val setName1 = "name1"
         val setName2 = "name2"
 
-        val isRepeat1 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, setName = setName1, requestCode = setName1.hashCode())
-        val isRepeat2 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, setName = setName2, requestCode = setName2.hashCode())
+        val isRepeat1 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, name = setName1)
+        val isRepeat2 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, name = setName2)
 
         Assert.assertTrue(isRepeat1 == isRepeat2)
 
-        var pendingIntent1 = scheduler.isAlarmSetup(setName1, requestCode = setName1.hashCode(), isRepeat = true)
-        var pendingIntent2 = scheduler.isAlarmSetup(setName2, requestCode = setName2.hashCode(), isRepeat = true)
+        var pendingIntent1 = scheduler.isAlarmSetup(setName1, isRepeat = true)
+        var pendingIntent2 = scheduler.isAlarmSetup(setName2, isRepeat = true)
 
         Assert.assertTrue(pendingIntent1 != null && pendingIntent2 != null)
         Assert.assertTrue(pendingIntent1 != pendingIntent2)
@@ -84,7 +84,7 @@ class SchedulerTest {
         if (pendingIntent1 != null) {
             scheduler.cancel(pendingIntent1)
 
-            pendingIntent1 = scheduler.isAlarmSetup(setName1, requestCode = setName1.hashCode(), isRepeat = true)
+            pendingIntent1 = scheduler.isAlarmSetup(setName1, isRepeat = true)
             Assert.assertTrue(pendingIntent1 == null)
         }
         else throw NullPointerException("********** pendingIntent is null *************")
@@ -92,7 +92,7 @@ class SchedulerTest {
         if (pendingIntent2 != null) {
             scheduler.cancel(pendingIntent2)
 
-            pendingIntent2 = scheduler.isAlarmSetup(setName2, requestCode = setName2.hashCode(), isRepeat = true)
+            pendingIntent2 = scheduler.isAlarmSetup(setName2, isRepeat = true)
             Assert.assertTrue(pendingIntent2 == null)
         }
         else throw NullPointerException("********** pendingIntent is null *************")

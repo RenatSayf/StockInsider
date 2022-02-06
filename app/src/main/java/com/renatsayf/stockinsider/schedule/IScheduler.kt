@@ -4,9 +4,9 @@ import android.app.PendingIntent
 import android.icu.util.Calendar
 
 interface IScheduler {
-    fun scheduleOne(startTime: Long, overTime: Long = 30000L, setName: String, requestCode: Int): Boolean
-    fun scheduleRepeat(overTime: Long, interval: Long, setName: String, requestCode: Int): Boolean
-    fun isAlarmSetup(setName: String, isRepeat: Boolean, requestCode: Int): PendingIntent?
+    fun scheduleOne(startTime: Long, overTime: Long = 30000L, name: String): Boolean
+    fun scheduleRepeat(overTime: Long, interval: Long, name: String): Boolean
+    fun isAlarmSetup(name: String, isRepeat: Boolean): PendingIntent?
     fun cancel(pendingIntent: PendingIntent)
 
 }
