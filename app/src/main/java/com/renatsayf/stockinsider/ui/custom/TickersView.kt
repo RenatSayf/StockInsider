@@ -24,6 +24,12 @@ class TickersView @JvmOverloads constructor(
     private var showButtonView: Button? = null
     private var clearButtonView: AppCompatImageView? = null
 
+    interface Listener {
+        fun onShowAllClick(list: List<String>)
+    }
+
+    private var listener: Listener? = null
+
     init {
         init(attrs)
     }
@@ -88,7 +94,10 @@ class TickersView @JvmOverloads constructor(
             text = btnText
             setTextColor(btnTextColor)
             setOnClickListener {
-                contentTextView?.showDropDown()
+                contentTextView?.let {
+                    val list = it.text.toString().split(" ")
+                    listener?.onShowAllClick(list)
+                }
             }
         }
 
@@ -102,6 +111,10 @@ class TickersView @JvmOverloads constructor(
         attrsArray.recycle()
     }
 
+    fun setOnShowAllClickListener(listener: Listener) {
+        this.listener = listener
+    }
+
     fun setContentText(text: String) {
         contentTextView?.setText(text)
     }
@@ -109,4 +122,33 @@ class TickersView @JvmOverloads constructor(
     fun <T>setAdapter(adapter: T) where T : ListAdapter?, T : Filterable? {
         contentTextView?.setAdapter(adapter)
     }
+
+    var editable: Boolean = false
+        get() {
+            return when {
+                clearButtonView?.visibility == View.VISIBLE &&
+                        contentTextView?.isClickable == true &&
+                        contentTextView?.isFocusable == true -> true
+                else -> false
+            }
+        }
+        set(value) {
+            if (value) {
+                clearButtonView?.visibility = View.VISIBLE
+                contentTextView?.apply {
+                    isClickable = true
+                    isFocusable = true
+                }
+            }
+            else {
+                clearButtonView?.visibility = View.GONE
+                contentTextView?.apply {
+                    isClickable = false
+                    isFocusable = false
+                }
+            }
+            field = value
+        }
+
+
 }

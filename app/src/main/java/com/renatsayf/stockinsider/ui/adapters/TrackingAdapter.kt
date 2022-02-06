@@ -19,6 +19,7 @@ import javax.inject.Inject
 
 
 class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
+                      private val scheduler: IScheduler,
                         private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
 
     interface Listener {
@@ -74,7 +75,9 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
 
                 if (set.isDefault) editButton.visibility = View.GONE
                 if (set.isDefault) deleteButton.visibility = View.GONE
-                trackingSwitcher.isChecked = set.isTracked
+
+                val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
+                trackingSwitcher.isChecked = (pendingIntent != null)
 
                 editButton.setOnClickListener {
                     listener?.onTrackingAdapterEditButtonClick(set, position)

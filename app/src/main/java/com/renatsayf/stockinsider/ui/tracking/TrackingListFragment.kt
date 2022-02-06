@@ -29,6 +29,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     private lateinit var binding: TrackingListFragmentBinding
 
+    @Inject
+    lateinit var scheduler: IScheduler
+
+    @Inject
+    lateinit var calendar: AppCalendar
+
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
@@ -37,16 +43,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     private val trackingAdapter: TrackingAdapter by lazy {
-        TrackingAdapter(listener = this).apply {
+        TrackingAdapter(scheduler = this.scheduler, listener = this).apply {
             stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
         }
     }
-
-    @Inject
-    lateinit var scheduler: IScheduler
-
-    @Inject
-    lateinit var calendar: AppCalendar
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -73,23 +73,18 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         if (savedInstanceState == null) {
-            mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner, { list ->
-                val mutableList = list as MutableList
-                mutableList.forEach { item ->
-                    val pendingIntent = scheduler.isAlarmSetup(item.queryName, isRepeat = true)
-                    item.isTracked = pendingIntent != null
-                }
+            mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner) { list ->
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
-            })
+            }
         }
 
-        trackingVM.state.observe(viewLifecycleOwner, { state ->
-            when(state) {
+        trackingVM.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
                 is TrackingListViewModel.State.Initial -> {
                     trackingAdapter.setItems(state.list as MutableList<RoomSearchSet>)
                 }
             }
-        })
+        }
 
         binding.addButton.setOnClickListener {
 
@@ -108,25 +103,14 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
         val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
         if (checked && pendingIntent == null) {
-
-            val result = scheduler.scheduleRepeat(
+            scheduler.scheduleRepeat(
                 name = set.queryName,
                 overTime = START_TIME,
                 interval = TIME_INTERVAL
             )
-            if (result) {
-                set.isTracked = checked
-                mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
-                    if (it > 0) trackingAdapter.modifyItem(set, position)
-                })
-            }
         }
         else if (!checked && pendingIntent != null) {
             scheduler.cancel(pendingIntent)
-            set.isTracked = checked
-            mainVM.saveSearchSet(set).observe(viewLifecycleOwner, {
-                if (it > 0) trackingAdapter.modifyItem(set, position)
-            })
         }
     }
 
@@ -134,6 +118,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
             putSerializable(TrackingFragment.ARG_SET, set)
             putString(TrackingFragment.ARG_TITLE, "Отслеживание")
+            putBoolean(TrackingFragment.ARG_IS_EDIT, false)
         })
     }
 
