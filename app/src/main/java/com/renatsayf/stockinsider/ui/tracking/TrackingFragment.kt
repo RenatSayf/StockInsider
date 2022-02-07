@@ -15,6 +15,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.custom.TickersView
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -89,7 +90,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
             tickersView.setOnShowAllClickListener(object : TickersView.Listener {
                 override fun onShowAllClick(list: List<String>) {
-                    list //TODO Показать список компаний в поисковом наборе (показать CompaniesFragment)
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .add(R.id.fragmentContainer, CompaniesFragment::class.java, Bundle())
+                        .addToBackStack(null)
+                        //.setCustomAnimations()
+                        .commit()
                 }
             })
 

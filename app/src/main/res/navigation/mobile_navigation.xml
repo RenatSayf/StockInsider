@@ -80,7 +80,16 @@
     <fragment
         android:id="@+id/trackingFragment"
         android:name="com.renatsayf.stockinsider.ui.tracking.TrackingFragment"
-        android:label="@string/text_tracking_params" />
+        android:label="@string/text_tracking_params" >
+        <action
+            android:id="@+id/action_trackingFragment_to_companiesFragment"
+            app:destination="@id/companiesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/companiesFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment"
+        android:label="companies_fragment"
+        tools:layout="@layout/companies_fragment" />
 
 
 </navigation>
