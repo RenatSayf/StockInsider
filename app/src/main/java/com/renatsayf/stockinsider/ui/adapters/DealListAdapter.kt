@@ -25,20 +25,20 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
         this.context = parent.context
-        when (childLayoutId)
+        when
         {
-            R.layout.deal_layout ->
+            dealList.isNotEmpty() ->
             {
                 binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(binding.root)
             }
-            R.layout.fake_deal_layout ->
+            else ->
             {
                 val fakeBinding = FakeDealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
                 return ViewHolder(fakeBinding.root)
             }
         }
-        return ViewHolder(View(parent.context))
+        //return ViewHolder(View(parent.context))
     }
 
     override fun getItemCount() : Int

@@ -3,9 +3,14 @@ package com.renatsayf.stockinsider.ui.tracking.companies
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -24,5 +29,16 @@ class CompaniesViewModel @Inject constructor(
 
     fun setState(state: State) {
         _state.value = state
+    }
+
+    fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Companies>?> {
+        val companies = MutableLiveData<List<Companies>?>(null)
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                val result = repository.getCompanyByTicker(tickers)
+                companies.value = result
+            }
+        }
+        return companies
     }
 }

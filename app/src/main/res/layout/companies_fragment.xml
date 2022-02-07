@@ -1,32 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/rootLayout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/colorPrimary"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".ui.tracking.companies.CompaniesFragment">
+    tools:context=".ui.tracking.companies.CompaniesFragment"
+    >
 
-    <FrameLayout
-        android:id="@+id/toolBarView"
+    <ImageView
+        android:id="@+id/imgBackground"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
+        android:src="@drawable/stock_chart"
+        android:scaleType="fitXY"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/app_name" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/appToolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="@color/colorTransparent70"
-        >
-        <include
-            android:id="@+id/includedToolBar"
-            app:layout_constraintTop_toTopOf="parent"
-            layout="@layout/app_tool_bar_layout" />
-    </FrameLayout>
+        app:titleTextColor="@color/colorWhite"
+        app:navigationIcon="@drawable/ic_clear_grey"
+        app:popupTheme="@style/AppTheme.PopupOverlay"
+        app:title="@string/text_company_list"
+        android:background="@color/colorTransparent70"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="0dp"
         android:padding="12dp"
-        app:layout_constraintTop_toBottomOf="@id/toolBarView">
+        android:background="@color/colorTransparent70"
+        app:layout_constraintTop_toBottomOf="@id/appToolbar"
+        app:layout_constraintBottom_toBottomOf="parent">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/companyRV"
@@ -64,8 +74,8 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="16dp"
             android:contentDescription="@string/app_name"
-            android:focusableInTouchMode="true"/>
+            android:focusableInTouchMode="false"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.appcompat.widget.LinearLayoutCompat>
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -77,6 +77,12 @@ class DataRepositoryImpl @Inject constructor(private val network: INetworkReposi
         }
     }
 
+    override suspend fun getCompanyByTicker(list: List<String>): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+        withContext(Dispatchers.Main) {
+            db.getCompanyByTicker(list)
+        }
+    }
+
     override fun destructor()
     {
         if (network is NetworkRepository) {

@@ -4,7 +4,8 @@
     android:layout_height="match_parent"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools">
+    xmlns:tools="http://schemas.android.com/tools"
+    >
 
     <ImageView
         android:id="@+id/imgBackground"
@@ -57,7 +58,9 @@
                 tools:contentText="AAPL MSFT"
                 app:contentTextColor="@color/colorWhite"
                 app:buttonText="Показать все"
-                app:buttonTextColor="@color/colorWhite"/>
+                app:buttonTextColor="@color/colorWhite"
+
+                />
 
             <View
                 android:id="@+id/general_date_divider"

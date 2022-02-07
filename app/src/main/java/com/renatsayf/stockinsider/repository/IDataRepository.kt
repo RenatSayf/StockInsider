@@ -30,5 +30,7 @@ interface IDataRepository
 
     suspend fun getSearchSetsByTarget(target: Target) : List<RoomSearchSet>
 
+    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+
     fun destructor()
 }

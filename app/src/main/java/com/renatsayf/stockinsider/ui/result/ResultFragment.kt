@@ -97,7 +97,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         binding.tradeListRV.apply {
             val linearManager = LinearLayoutManager(activity)
-            val dealListAdapter = DealListAdapter(fakeList, R.layout.fake_deal_layout)
+            val dealListAdapter = DealListAdapter(arrayListOf())
             setHasFixedSize(true)
             layoutManager = linearManager
             adapter = dealListAdapter

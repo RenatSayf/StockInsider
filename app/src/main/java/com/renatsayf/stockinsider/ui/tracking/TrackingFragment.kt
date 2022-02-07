@@ -7,7 +7,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
+import com.google.android.material.transition.MaterialContainerTransform
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
@@ -90,13 +93,17 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
             tickersView.setOnShowAllClickListener(object : TickersView.Listener {
                 override fun onShowAllClick(list: List<String>) {
-                    requireActivity().supportFragmentManager.beginTransaction()
-                        .add(R.id.fragmentContainer, CompaniesFragment::class.java, Bundle())
-                        .addToBackStack(null)
-                        //.setCustomAnimations()
-                        .commit()
+                    val extras = FragmentNavigatorExtras(view to "XXXXX")
+                    val bundle = Bundle().apply {
+                        putStringArrayList(CompaniesFragment.ARG_TICKERS_LIST, list as ArrayList)
+                    }
+                    requireActivity().findNavController(R.id.nav_host_fragment)
+                        .navigate(R.id.action_trackingFragment_to_companiesFragment, bundle, null, null)
                 }
             })
+
+
+
 
 
         }
