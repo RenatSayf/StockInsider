@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.models
 import android.os.Parcel
 import android.os.Parcelable
 
+
 data class Deal(var filingDate : String?) : Parcelable
 {
     var filingDateRefer : String? = ""
@@ -149,3 +150,5 @@ data class Deal(var filingDate : String?) : Parcelable
         }
     }
 }
+
+

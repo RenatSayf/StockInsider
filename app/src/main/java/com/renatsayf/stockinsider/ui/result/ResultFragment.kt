@@ -11,7 +11,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -26,9 +25,6 @@ import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -39,9 +35,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         val ARG_SEARCH_SET = this::class.java.simpleName.plus(".search_set_tag")
         val ARG_TITLE = this::class.java.simpleName.toString().plus("_arg_title")
     }
-
-    @Inject
-    lateinit var workManager: WorkManager
 
     private lateinit var binding: FragmentResultBinding
     private lateinit var resultVM : ResultViewModel
@@ -91,109 +84,60 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         binding = FragmentResultBinding.bind(view)
 
-        //region Показываем фейковый список пока подгружаются данные
-        val fakeList = ArrayList<Deal>()
-        for (i in 0..10) fakeList.add(Deal("xxxxxxxx"))
-
         binding.tradeListRV.apply {
-            val linearManager = LinearLayoutManager(activity)
-            val dealListAdapter = DealListAdapter(arrayListOf())
+            layoutManager = LinearLayoutManager(requireContext())
             setHasFixedSize(true)
-            layoutManager = linearManager
-            adapter = dealListAdapter
+            adapter = DealListAdapter(arrayListOf(), this@ResultFragment)
         }
-        //endregion
 
-        resultVM.state.observe(viewLifecycleOwner, { state ->
-            when(state)
-            {
+        resultVM.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
                 is ResultViewModel.State.Initial -> {
                     binding.noResult.noResultLayout.visibility = View.GONE
                     binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
                 }
 
-                is ResultViewModel.State.DataReceived ->
-                {
+                is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
                         binding.noResult.noResultLayout.visibility = View.GONE
                         binding.includedProgress.loadProgressBar.visibility = View.GONE
-                        when
-                        {
-                            list.size > 0 && list[0].error!!.isEmpty()     ->
-                            {
+                        when {
+                            list.size > 0 && list[0].error!!.isEmpty() -> {
                                 binding.saveSearchBtnView.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
-                                val linearLayoutManager = LinearLayoutManager(activity)
-                                val dealListAdapter = DealListAdapter(list, listener = this)
-                                dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
                                 binding.tradeListRV.apply {
-                                    setHasFixedSize(true)
-                                    layoutManager = linearLayoutManager
-                                    adapter = dealListAdapter
+                                    adapter = DealListAdapter(list, this@ResultFragment).apply {
+                                        stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+                                    }
                                 }
                                 return@let
                             }
-                            list.size == 1 && list[0].error!!.isNotEmpty() ->
-                            {
+                            list.size == 1 && list[0].error!!.isNotEmpty() -> {
                                 binding.resultTV.text = 0.toString()
                                 binding.noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
                                 binding.noResult.noResultLayout.visibility = View.VISIBLE
                             }
-                            else                                           ->
-                            {
+                            else -> {
                                 binding.resultTV.text = list.size.toString()
                                 binding.noResult.noResultLayout.visibility = View.VISIBLE
                             }
                         }
                     }
                 }
-                is ResultViewModel.State.DataError ->
-                {
+                is ResultViewModel.State.DataError -> {
                     state.throwable.let {
                         binding.includedProgress.loadProgressBar.visibility = View.GONE
                         when (it) {
-                            is IndexOutOfBoundsException ->
-                            {
-                                val dealList: ArrayList<Deal> = arrayListOf()
-                                when
-                                {
-                                    dealList.size > 0 && dealList[0].error!!.isEmpty()     ->
-                                    {
-                                        binding.resultTV.text = dealList.size.toString()
-                                        val linearLayoutManager = LinearLayoutManager(activity)
-                                        val dealListAdapter = DealListAdapter(dealList)
-                                        dealListAdapter.stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                                        binding.tradeListRV.apply {
-                                            setHasFixedSize(true)
-                                            layoutManager = linearLayoutManager
-                                            adapter = dealListAdapter
-                                        }
-                                    }
-                                    dealList.size == 1 && dealList[0].error!!.isNotEmpty() ->
-                                    {
-                                        with(binding) {
-                                            resultTV.text = 0.toString()
-                                            noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                            noResult.noResultLayout.visibility = View.VISIBLE
-                                        }
-                                    }
-                                    else                                                   ->
-                                    {
-                                        with(binding) {
-                                            resultTV.text = dealList.size.toString()
-                                            noResult.noResultLayout.visibility = View.VISIBLE
-                                        }
-                                    }
+                            is IndexOutOfBoundsException -> {
+                                with(binding) {
+                                    resultTV.text = "0"
+                                    noResult.noResultLayout.visibility = View.VISIBLE
                                 }
                             }
-                            else ->
-                            {
-                                if ((activity as MainActivity).isNetworkConnectivity())
-                                {
+                            else -> {
+                                if ((activity as MainActivity).isNetworkConnectivity()) {
                                     Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
-                                }
-                                else
-                                {
+                                } else {
                                     with(binding) {
                                         resultTV.text = 0.toString()
                                         noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
@@ -205,19 +149,19 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                     }
                 }
             }
-        })
+        }
 
 
 
-        resultVM.addAlarmVisibility.observe(viewLifecycleOwner, {
-            it?.let{ binding.alertLayout.addAlarmImgView.visibility = it }
-        })
+        resultVM.addAlarmVisibility.observe(viewLifecycleOwner) {
+            it?.let { binding.alertLayout.addAlarmImgView.visibility = it }
+        }
 
-        resultVM.alarmOnVisibility.observe(viewLifecycleOwner, {
-            it?.let{
+        resultVM.alarmOnVisibility.observe(viewLifecycleOwner) {
+            it?.let {
                 binding.alertLayout.alarmOnImgView.visibility = it
             }
-        })
+        }
 
         val title = arguments?.getString(ARG_TITLE) ?: ""
         resultVM.setToolBarTitle(title)
@@ -240,24 +184,12 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
             activity?.onBackPressed()
         }
 
-        activity?.let{ a ->
-            when ((a as MainActivity).isServiceRunning())
-            {
-                true ->
-                {
-                    resultVM.setAddAlarmVisibility(View.GONE)
-                    resultVM.setAlarmOnVisibility(View.VISIBLE)
-                }
-            }
-        }
 
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, { event ->
-            if (!event.hasBeenHandled)
-            {
-                when (event.getContent())
-                {
-                    StockInsiderService.STOP_KEY ->
-                    {
+
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner) { event ->
+            if (!event.hasBeenHandled) {
+                when (event.getContent()) {
+                    StockInsiderService.STOP_KEY -> {
                         context?.getString(R.string.text_search_is_disabled)?.let { msg ->
                             resultVM.setAddAlarmVisibility(View.VISIBLE)
                             resultVM.setAlarmOnVisibility(View.GONE)
@@ -266,10 +198,10 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                     }
                 }
             }
-        })
+        }
 
         binding.saveSearchBtnView.setOnClickListener {
-            val name = (if (roomSearchSet.ticker.isEmpty()) "All" else roomSearchSet.ticker)
+            val name = (roomSearchSet.ticker.ifEmpty { "All" })
                 .plus("/period"+roomSearchSet.filingPeriod)
                 .plus(if (roomSearchSet.isPurchase) "/Pur" else "")
                 .plus(if (roomSearchSet.isSale) "/Sale" else "")
@@ -303,7 +235,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                         Snackbar.make(binding.tradeListRV, msg, Snackbar.LENGTH_LONG).show()
                     }
                 }
-               workManager.cancelAllWork()
             }
             else ->
             {
@@ -335,11 +266,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun saveSearchDialogOnPositiveClick(searchName: String) {
         mainViewModel.saveSearchSet(roomSearchSet.apply {
             queryName = searchName
-        }).observe(this, {
+        }).observe(this) {
             if (it > 0) {
                 Toast.makeText(requireContext(), getString(R.string.text_search_param_is_saved), Toast.LENGTH_LONG).show()
             }
-        })
+        }
     }
 
 

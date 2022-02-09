@@ -1,67 +1,88 @@
+@file:Suppress("MoveVariableDeclarationIntoWhen")
+
 package com.renatsayf.stockinsider.ui.adapters
 
-import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.models.Deal
 import java.text.NumberFormat
 import java.util.*
+import kotlin.collections.ArrayList
+
+
 
 class DealListAdapter(private val dealList: ArrayList<Deal>,
-                        private val childLayoutId: Int = R.layout.deal_layout,
                         private val listener: Listener? = null) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     private lateinit var binding: DealLayoutBinding
-    private lateinit var context: Context
+    private var skeletonList = ArrayList<Deal>().apply {
+        repeat(10) {
+            add(Deal(null))
+        }
+    }
 
-    class ViewHolder(itemView : View) : RecyclerView.ViewHolder(itemView)
+    override fun getItemViewType(position: Int): Int {
+        return when {
+            dealList.isNotEmpty() -> 1
+            else -> -1
+        }
+    }
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
-        this.context = parent.context
-        when
-        {
-            dealList.isNotEmpty() ->
-            {
+        return when(viewType) {
+            1 -> {
                 binding = DealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return ViewHolder(binding.root)
+                ViewHolder(binding)
             }
-            else ->
-            {
+            else -> {
                 val fakeBinding = FakeDealLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-                return ViewHolder(fakeBinding.root)
+                ViewHolder(fakeBinding)
             }
         }
-        //return ViewHolder(View(parent.context))
     }
 
     override fun getItemCount() : Int
     {
-        return dealList.size
+        return when {
+            dealList.isEmpty() -> skeletonList.size
+            else -> dealList.size
+        }
     }
 
     override fun onBindViewHolder(holder : ViewHolder, position : Int)
     {
-        when (childLayoutId)
-        {
-            R.layout.deal_layout ->
-            {
-                val deal = dealList[position]
+        val viewType = holder.itemViewType
+        if (viewType == 1) {
+            ViewHolder(binding).bind(dealList[position])
+        }
+    }
+
+    interface Listener {
+        fun onRecyclerViewItemClick(deal: Deal)
+    }
+
+    inner class ViewHolder(private val binding : ViewBinding) : RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(deal: Deal) {
+            if (binding is DealLayoutBinding) {
                 binding.filingDateTV.text = deal.filingDate
                 binding.tickerTV.text = deal.ticker
                 binding.companyNameTV.text = deal.company
                 binding.tradeTypeTV.text = deal.tradeType
                 val numberFormat = NumberFormat.getInstance(Locale.getDefault())
-                val formatedVolume = numberFormat.format(deal.volume)
-                binding.dealValueTV.text = formatedVolume
+                val formattedVolume = numberFormat.format(deal.volume)
+                binding.dealValueTV.text = formattedVolume
                 binding.insiderNameTV.text = deal.insiderName
                 binding.insiderTitleTV.text = deal.insiderTitle
+
+                val context = binding.dealConstraintLayout.context
+
                 if (deal.tradeTypeInt > 0)
                 {
                     if (deal.volume <= 999)
@@ -120,23 +141,14 @@ class DealListAdapter(private val dealList: ArrayList<Deal>,
                     }
                 }
 
-                holder.itemView.findViewById<ConstraintLayout>(R.id.dealConstraintLayout).setOnClickListener {
+                binding.dealConstraintLayout.setOnClickListener {
                     val defaultColor = binding.dealCardView.cardBackgroundColor.defaultColor
                     deal.color = defaultColor
                     listener?.onRecyclerViewItemClick(deal)
                 }
-
-            }
-            R.layout.fake_deal_layout ->
-            {
-
             }
         }
 
-    }
-
-    interface Listener {
-        fun onRecyclerViewItemClick(deal: Deal)
     }
 
 }

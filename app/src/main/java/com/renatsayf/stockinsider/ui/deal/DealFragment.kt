@@ -99,7 +99,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                     val insiderNameRefer = deal.insiderNameRefer
 
                     insiderNameRefer?.let { name ->
-                        viewModel.getInsiderDeals(name).observe(viewLifecycleOwner, { list ->
+                        viewModel.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
                             binding.includedProgress.loadProgressBar.visibility = View.GONE
                             if (list.isNotEmpty()) {
                                 val bundle = Bundle().apply {
@@ -109,7 +109,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                                 }
                                 (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
                             }
-                        })
+                        }
                     }
                 }
 
@@ -163,25 +163,23 @@ class DealFragment : Fragment(R.layout.fragment_deal)
             })
         }
 
-        viewModel.deal.observe(viewLifecycleOwner, { d ->
+        viewModel.deal.observe(viewLifecycleOwner) { d ->
             with(binding) {
 
                 val uri = Uri.parse(deal.tickerRefer)
                 Glide.with(this@DealFragment).load(uri)
-                        .listener(object : RequestListener<Drawable>{
-                            override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean
-                            {
-                                binding.imgLoadProgBar.visibility = View.GONE
-                                return false
-                            }
+                    .listener(object : RequestListener<Drawable> {
+                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                            binding.imgLoadProgBar.visibility = View.GONE
+                            return false
+                        }
 
-                            override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean
-                            {
-                                resource?.let { viewModel.setChart(it) }
-                                binding.imgLoadProgBar.visibility = View.GONE
-                                return false
-                            }
-                        }).into(binding.chartImagView)
+                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                            resource?.let { viewModel.setChart(it) }
+                            binding.imgLoadProgBar.visibility = View.GONE
+                            return false
+                        }
+                    }).into(binding.chartImagView)
 
                 mainDealLayout.setBackgroundColor(deal.color)
 
@@ -213,11 +211,11 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 deltaOwnTV.text = d.deltaOwn
                 valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
             }
-        })
+        }
 
-        viewModel.chart.observe(viewLifecycleOwner, {
+        viewModel.chart.observe(viewLifecycleOwner) {
             binding.chartImagView.setImageDrawable(it)
-        })
+        }
 
     }
 
@@ -225,9 +223,9 @@ class DealFragment : Fragment(R.layout.fragment_deal)
     {
         binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
         deal.ticker?.let {t ->
-            viewModel.getTradingByTicker(t).observe(viewLifecycleOwner, { list ->
+            viewModel.getTradingByTicker(t).observe(viewLifecycleOwner) { list ->
                 binding.includedProgress.loadProgressBar.visibility = View.GONE
-                if(list.isNotEmpty()) {
+                if (list.isNotEmpty()) {
                     val bundle = Bundle().apply {
                         putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
                         putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
@@ -235,7 +233,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                     }
                     (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_trading_by_ticker, bundle)
                 }
-            })
+            }
         }
     }
 
