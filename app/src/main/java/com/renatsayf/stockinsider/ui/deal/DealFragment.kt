@@ -7,7 +7,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.constraintlayout.motion.widget.MotionLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -74,93 +73,9 @@ class DealFragment : Fragment(R.layout.fragment_deal)
             viewModel.setDeal(deal)
         }
 
-        binding.chartAnimView.clickMotionLayout.apply {
-            setOnClickListener {
-                binding.chartAnimView.clickMotionLayout.transitionToEnd()
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
-                activity?.startActivity(intent)
-            }
-        }
-
-        binding.insiderNameMotionLayout.apply {
-            setOnClickListener {
-                this.transitionToEnd()
-            }
-            setTransitionListener(object : MotionLayout.TransitionListener{
-                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
-                {}
-
-                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
-                {}
-
-                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
-                {
-                    binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
-                    val insiderNameRefer = deal.insiderNameRefer
-
-                    insiderNameRefer?.let { name ->
-                        viewModel.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
-                            binding.includedProgress.loadProgressBar.visibility = View.GONE
-                            if (list.isNotEmpty()) {
-                                val bundle = Bundle().apply {
-                                    putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
-                                    putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
-                                    putParcelableArrayList(InsiderTradingFragment.ARG_INSIDER_DEALS, list)
-                                }
-                                (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
-                            }
-                        }
-                    }
-                }
-
-                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
-                {}
-
-            })
-        }
-
-        binding.tickerAnimView.clickMotionLayout.apply {
-            setOnClickListener {
-                this.transitionToEnd()
-            }
-            setTransitionListener(object : MotionLayout.TransitionListener{
-                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
-                {}
-
-                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
-                {}
-
-                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
-                {
-                    clickAnimationCompleted(deal)
-                }
-
-                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
-                {}
-
-            })
-        }
-
-        binding.companyAnimView.clickMotionLayout.apply {
-            setOnClickListener {
-                this.transitionToEnd()
-            }
-            setTransitionListener(object : MotionLayout.TransitionListener{
-                override fun onTransitionStarted(p0: MotionLayout?, p1: Int, p2: Int)
-                {}
-
-                override fun onTransitionChange(p0: MotionLayout?, p1: Int, p2: Int, p3: Float)
-                {}
-
-                override fun onTransitionCompleted(layout: MotionLayout?, p1: Int)
-                {
-                    clickAnimationCompleted(deal)
-                }
-
-                override fun onTransitionTrigger(p0: MotionLayout?, p1: Int, p2: Boolean, p3: Float)
-                {}
-
-            })
+        binding.chartImagView.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
+            activity?.startActivity(intent)
         }
 
         viewModel.deal.observe(viewLifecycleOwner) { d ->
@@ -185,22 +100,21 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                 companyNameTV.text = d.company
                 companyNameTV.setOnClickListener {
-                    companyAnimView.clickMotionLayout.transitionToEnd()
+                    companyNameOnClick(deal)
                 }
                 tickerTV.text = d.ticker
                 tickerTV.setOnClickListener {
-                    tickerAnimView.clickMotionLayout.transitionToEnd()
+                    companyNameOnClick(deal)
                 }
                 filingDateTV.text = d.filingDate
                 filingDateTV.setOnClickListener {
-                    filingDateAnimView.clickMotionLayout.transitionToEnd()
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
                     activity?.startActivity(intent)
                 }
                 tradeDateTV.text = d.tradeDate
                 insiderNameTV.text = d.insiderName
                 insiderNameTV.setOnClickListener {
-                    insiderNameMotionLayout.transitionToEnd()
+                    transitionToInsiderDeals(d)
                 }
 
                 insiderTitleTV.text = d.insiderTitle
@@ -219,8 +133,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
     }
 
-    private fun clickAnimationCompleted(deal: Deal)
-    {
+    private fun companyNameOnClick(deal: Deal) {
         binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
         deal.ticker?.let {t ->
             viewModel.getTradingByTicker(t).observe(viewLifecycleOwner) { list ->
@@ -232,6 +145,25 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                         putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
                     }
                     (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_trading_by_ticker, bundle)
+                }
+            }
+        }
+    }
+
+    private fun transitionToInsiderDeals(deal: Deal) {
+        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
+        val insiderNameRefer = deal.insiderNameRefer
+
+        insiderNameRefer?.let { name ->
+            viewModel.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
+                binding.includedProgress.loadProgressBar.visibility = View.GONE
+                if (list.isNotEmpty()) {
+                    val bundle = Bundle().apply {
+                        putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
+                        putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
+                        putParcelableArrayList(InsiderTradingFragment.ARG_INSIDER_DEALS, list)
+                    }
+                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
                 }
             }
         }

@@ -94,13 +94,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
             when (state) {
                 is ResultViewModel.State.Initial -> {
                     binding.noResult.noResultLayout.visibility = View.GONE
-                    binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
+                    binding.includedProgress.visibility = View.VISIBLE
                 }
 
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
                         binding.noResult.noResultLayout.visibility = View.GONE
-                        binding.includedProgress.loadProgressBar.visibility = View.GONE
+                        binding.includedProgress.visibility = View.GONE
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
                                 binding.saveSearchBtnView.visibility = View.VISIBLE
@@ -126,7 +126,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                 }
                 is ResultViewModel.State.DataError -> {
                     state.throwable.let {
-                        binding.includedProgress.loadProgressBar.visibility = View.GONE
+                        binding.includedProgress.visibility = View.GONE
                         when (it) {
                             is IndexOutOfBoundsException -> {
                                 with(binding) {
@@ -218,7 +218,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun onDestroy()
     {
         super.onDestroy()
-        binding.includedProgress.loadProgressBar.visibility = View.GONE
+        binding.includedProgress.visibility = View.GONE
     }
 
     override fun onPositiveClick(flag: String)
