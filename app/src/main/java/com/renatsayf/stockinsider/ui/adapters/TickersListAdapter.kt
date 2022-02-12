@@ -15,17 +15,17 @@ import java.util.*
 import kotlin.collections.ArrayList
 
 class TickersListAdapter(
-        context : Activity, items : Array<Companies> = arrayOf()
+        context : Context, items : Array<Companies> = arrayOf()
                         ) : ArrayAdapter<Any>(context, R.layout.ticker_layout), Filterable
 {
-    private var _context : Context? = null
+    //private var _context : Context? = null
 
     internal var tempItems : MutableList<Companies> = mutableListOf()
     internal var suggestions : MutableList<Companies> = mutableListOf()
 
     init
     {
-        _context = context
+        //_context = context
         tempItems = items.toMutableList()
         suggestions = ArrayList()
     }
@@ -89,13 +89,17 @@ class TickersListAdapter(
 
     override fun getFilter() : Filter
     {
-
         return filter
     }
 
     override fun getCount() : Int
     {
         return suggestions.size
+    }
+
+    fun addItems(list: List<Companies>) {
+        tempItems = list.toMutableList()
+        notifyDataSetChanged()
     }
 
     @SuppressLint("ViewHolder")

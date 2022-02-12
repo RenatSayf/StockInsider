@@ -83,6 +83,12 @@ class DataRepositoryImpl @Inject constructor(private val network: INetworkReposi
         }
     }
 
+    override suspend fun getAllSimilar(pattern: String): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+        withContext(Dispatchers.Main) {
+            db.getAllSimilar(pattern)
+        }
+    }
+
     override fun destructor()
     {
         if (network is NetworkRepository) {

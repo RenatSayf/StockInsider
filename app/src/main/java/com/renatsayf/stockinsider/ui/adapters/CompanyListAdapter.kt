@@ -58,10 +58,7 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
                 tickerLayout.setOnClickListener {
                     listener?.onItemClick(company)
                 }
-
             }
-
-
         }
 
     }

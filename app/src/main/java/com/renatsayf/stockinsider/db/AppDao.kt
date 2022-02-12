@@ -39,4 +39,7 @@ interface AppDao
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")
     suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
 
+    @Query("SELECT DISTINCT * FROM companies WHERE company_name like '%' || :pattern || '%' OR ticker like '%' || :pattern || '%'")
+    suspend fun getAllSimilar(pattern: String) : List<Companies>
+
 }

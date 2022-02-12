@@ -7,14 +7,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import androidx.core.widget.doOnTextChanged
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.CompaniesFragmentBinding
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
+import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -75,6 +76,21 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
 
             btnAdd.setOnClickListener {
                 companiesVM.setState(CompaniesViewModel.State.OnAdding)
+            }
+
+            val tickerListAdapter = TickersListAdapter(requireContext(), emptyArray())
+            tickerET.setAdapter(tickerListAdapter)
+
+            tickerET.doOnTextChanged { text, start, before, count ->
+                if (!text.isNullOrEmpty()) {
+                    companiesVM.getAllSimilarCompanies(text.toString()).observe(viewLifecycleOwner) { list ->
+                        if (list != null) {
+                            tickerListAdapter.addItems(list)
+                            tickerET.showDropDown()
+                            //TODO допилить выбор из выпадающего списка
+                        }
+                    }
+                }
             }
 
         }

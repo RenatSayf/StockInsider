@@ -32,5 +32,7 @@ interface IDataRepository
 
     suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
 
+    suspend fun getAllSimilar(pattern: String) : List<Companies>
+
     fun destructor()
 }

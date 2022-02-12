@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.regex.Pattern
 import javax.inject.Inject
 
 
@@ -36,6 +37,17 @@ class CompaniesViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 val result = repository.getCompanyByTicker(tickers)
+                companies.value = result
+            }
+        }
+        return companies
+    }
+
+    fun getAllSimilarCompanies(pattern: String): LiveData<List<Companies>?> {
+        val companies = MutableLiveData<List<Companies>?>(null)
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                val result = repository.getAllSimilar(pattern)
                 companies.value = result
             }
         }

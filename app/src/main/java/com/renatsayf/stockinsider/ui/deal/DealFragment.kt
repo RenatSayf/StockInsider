@@ -22,7 +22,6 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import dagger.hilt.android.AndroidEntryPoint
-import io.reactivex.disposables.CompositeDisposable
 import java.text.NumberFormat
 import java.util.*
 
@@ -40,7 +39,6 @@ class DealFragment : Fragment(R.layout.fragment_deal)
     }
 
     private lateinit var viewModel : DealViewModel
-    private var composite = CompositeDisposable()
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -167,12 +165,6 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 }
             }
         }
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        composite.dispose()
     }
 
 }

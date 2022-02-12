@@ -35,9 +35,9 @@ class MainFragment : Fragment(R.layout.fragment_home)
     private lateinit var binding: FragmentHomeBinding
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
-            getCurrentSearchSet(getString(R.string.text_current_set_name)).observe(this@MainFragment, {
+            getCurrentSearchSet(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
                 this.setState(MainViewModel.State.Initial(it))
-            })
+            }
         }
     }
     private lateinit var searchName : String
@@ -91,10 +91,9 @@ class MainFragment : Fragment(R.layout.fragment_home)
             else -> binding.alarmOffButton.visibility = View.GONE
         }
 
-        mainVM.state.observe(viewLifecycleOwner, { state ->
-            when(state) {
-                is MainViewModel.State.Initial   ->
-                {
+        mainVM.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is MainViewModel.State.Initial -> {
                     val set = state.set
                     with(binding) {
                         general.tickerET.setText("")
@@ -117,16 +116,16 @@ class MainFragment : Fragment(R.layout.fragment_home)
                     binding.searchButton.requestFocus()
                 }
             }
-        })
+        }
 
-        mainVM.companies.observe(viewLifecycleOwner, { companies ->
+        mainVM.companies.observe(viewLifecycleOwner) { companies ->
             val tickerListAdapter = companies?.let {
-                TickersListAdapter(requireActivity(), it)
+                TickersListAdapter(requireContext(), it)
             }
             binding.general.tickerET.setAdapter(tickerListAdapter)
             binding.general.tickerET.clearFocus()
             (activity as MainActivity).hideKeyBoard(binding.general.tickerET)
-        })
+        }
 
         var tickerText = ""
         binding.general.tickerET.doOnTextChanged { text, _, _, _ ->
@@ -191,18 +190,16 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner, {
-            if (!it.hasBeenHandled)
-            {
-                if (it.getContent() == StockInsiderService.STOP_KEY)
-                {
+        StockInsiderService.serviceEvent.observe(viewLifecycleOwner) {
+            if (!it.hasBeenHandled) {
+                if (it.getContent() == StockInsiderService.STOP_KEY) {
                     context?.getString(R.string.text_search_is_disabled)?.let { msg ->
                         binding.alarmOffButton.visibility = View.GONE
                         Snackbar.make(binding.searchButton, msg, Snackbar.LENGTH_LONG).show()
                     }
                 }
             }
-        })
+        }
 
         binding.date.filingDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
         {
@@ -280,24 +277,23 @@ class MainFragment : Fragment(R.layout.fragment_home)
             R.id.action_default_search ->
             {
                 val searchName = getString(R.string.text_default_set_name)
-                mainVM.getCurrentSearchSet(searchName).observe(viewLifecycleOwner, {
+                mainVM.getCurrentSearchSet(searchName).observe(viewLifecycleOwner) {
                     mainVM.setState(MainViewModel.State.Initial(it))
-                })
+                }
             }
             R.id.action_my_search ->
             {
-                mainVM.getSearchSetList().observe(viewLifecycleOwner, { list ->
+                mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
                     SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
-                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet)
-                        {
+                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet) {
                             mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
                         }
-                        override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet)
-                        {
+
+                        override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
                             mainVM.deleteSearchSet(roomSearchSet)
                         }
                     }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
-                })
+                }
             }
         }
         return super.onOptionsItemSelected(item)
