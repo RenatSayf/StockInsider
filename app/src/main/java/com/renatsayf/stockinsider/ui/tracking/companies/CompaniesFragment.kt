@@ -14,6 +14,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.CompaniesFragmentBinding
+import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
+import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import dagger.hilt.android.AndroidEntryPoint
@@ -51,6 +53,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
         companiesVM.state.observe(viewLifecycleOwner) { state ->
             when(state) {
                 is CompaniesViewModel.State.Initial -> {
+                    binding.tickerET.text.clear()
                     binding.tickerET.visibility = View.GONE
                     binding.btnAdd.visibility = View.VISIBLE
                 }
@@ -87,10 +90,18 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                         if (list != null) {
                             tickerListAdapter.addItems(list)
                             tickerET.showDropDown()
-                            //TODO допилить выбор из выпадающего списка
                         }
                     }
                 }
+            }
+            tickerET.setOnItemClickListener { adapterView, view, i, l ->
+                val tickerLayout = TickerLayoutBinding.bind(view)
+                val ticker = tickerLayout.tickerTV.text.toString()
+                val company = tickerLayout.companyNameTV.text.toString()
+                val companies = listOf(Companies(ticker, company))
+                companiesAdapter.addItems(companies)
+                companiesVM.setState(CompaniesViewModel.State.Initial)
+                //TODO запилить сохранение в БД добавленного тикера
             }
 
         }
