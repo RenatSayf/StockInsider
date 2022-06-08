@@ -23,6 +23,7 @@ class CompaniesViewModel @Inject constructor(
     sealed class State {
         object Initial: State()
         object OnAdding: State()
+        data class Error(val message: String): State()
     }
 
     private var _state = MutableLiveData<State>(State.Initial)
@@ -52,5 +53,20 @@ class CompaniesViewModel @Inject constructor(
             }
         }
         return companies
+    }
+
+    fun addCompanyToSearch(id: Int, value: String): LiveData<Int> {
+        val result = MutableLiveData(-1)
+        viewModelScope.launch(Dispatchers.IO) {
+            withContext(Dispatchers.Main) {
+                try {
+                    result.value = repository.updateSearchSetTicker(id, value)
+                    _state.value = State.Initial
+                } catch (e: Exception) {
+                    result.value = -1
+                }
+            }
+        }
+        return result
     }
 }

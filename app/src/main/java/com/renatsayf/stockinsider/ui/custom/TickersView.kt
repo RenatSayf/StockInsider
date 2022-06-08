@@ -150,5 +150,7 @@ class TickersView @JvmOverloads constructor(
             field = value
         }
 
+    val contentText: String
+        get() = contentTextView?.text.toString()
 
 }

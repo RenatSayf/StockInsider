@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetworkRepository
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.jvm.Throws
 
 class DataRepositoryImpl @Inject constructor(private val network: INetworkRepository, private val db: AppDao) : IDataRepository
 {
@@ -88,6 +89,18 @@ class DataRepositoryImpl @Inject constructor(private val network: INetworkReposi
             db.getAllSimilar(pattern)
         }
     }
+
+    @Throws(Exception::class)
+    override suspend fun insertCompanies(list: List<Companies>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.insertCompanies(list)
+        }
+    }
+
+    override fun updateSearchSetTicker(id: Int, value: String): Int {
+        return db.updateSearchSetTicker(id, value)
+    }
+
 
     override fun destructor()
     {

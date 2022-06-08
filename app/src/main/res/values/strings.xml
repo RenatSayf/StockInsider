@@ -201,5 +201,6 @@
     <string name="text_tracking_list">Список отслеживания</string>
     <string name="text_tracking_params">Параметры отслеживания</string>
     <string name="text_company_list">Список компаний</string>
+    <string name="text_ticker_already_exists">Такой тикер уже есть в списке</string>
 
 </resources>

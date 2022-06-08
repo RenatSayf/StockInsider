@@ -35,8 +35,11 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
     }
 
     fun addItems(list: List<Companies>) {
-        this.list.addAll(list)
-        notifyDataSetChanged()
+
+        if (!this.list.containsAll(list)) {
+            this.list.addAll(list)
+            notifyDataSetChanged()
+        }
     }
 
     inner class ViewHolder(private val binding: TickerLayoutBinding): RecyclerView.ViewHolder(binding.root) {

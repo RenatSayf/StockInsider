@@ -7,7 +7,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,6 +20,7 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
+import com.renatsayf.stockinsider.ui.main.MainViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -27,6 +30,8 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     companion object {
 
         val ARG_TICKERS_LIST = "${this::class.java.simpleName}.tickersList"
+        val ARG_TICKERS_STR = "${this::class.java.simpleName}.tickersStr"
+        val ARG_SET_ID = "${this::class.java.simpleName}.setId"
 
         fun newInstance() = CompaniesFragment()
     }
@@ -35,8 +40,18 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     private val companiesVM: CompaniesViewModel by lazy {
         ViewModelProvider(this)[CompaniesViewModel::class.java]
     }
+    private val mainVM: MainViewModel by viewModels()
 
     private val companiesAdapter = CompanyListAdapter()
+    private val setId: Int by lazy {
+        this.arguments?.getInt(ARG_SET_ID) ?: -1
+    }
+    private val tickers: ArrayList<String>? by lazy {
+        this.arguments?.getStringArrayList(ARG_TICKERS_LIST)
+    }
+    private val tickersStr: String? by lazy {
+        this.arguments?.getString(ARG_TICKERS_STR)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,9 +72,15 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                     binding.tickerET.visibility = View.GONE
                     binding.btnAdd.visibility = View.VISIBLE
                 }
-                CompaniesViewModel.State.OnAdding -> {
+                is CompaniesViewModel.State.OnAdding -> {
                     binding.tickerET.visibility = View.VISIBLE
                     binding.btnAdd.visibility = View.GONE
+                }
+                is CompaniesViewModel.State.Error -> {
+                    Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
+                    binding.tickerET.text.clear()
+                    binding.tickerET.visibility = View.GONE
+                    binding.btnAdd.visibility = View.VISIBLE
                 }
             }
         }
@@ -100,22 +121,27 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 val company = tickerLayout.companyNameTV.text.toString()
                 val companies = listOf(Companies(ticker, company))
                 companiesAdapter.addItems(companies)
-                companiesVM.setState(CompaniesViewModel.State.Initial)
-                //TODO запилить сохранение в БД добавленного тикера
-            }
 
+                if (tickersStr?.contains(ticker) == false) {
+                    val newTickersStr = tickersStr.plus(" ").plus(ticker)
+                    companiesVM.addCompanyToSearch(setId, newTickersStr).observe(viewLifecycleOwner) {
+                        if (it < 0) companiesVM.setState(CompaniesViewModel.State.Error("Failed to update database"))
+                    }
+                }
+                else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))
+            }
         }
 
-        arguments?.let {
-            val tickers = it.getStringArrayList(ARG_TICKERS_LIST)
-            if (savedInstanceState == null && tickers != null) {
-                companiesVM.getCompaniesByTicker(tickers).observe(viewLifecycleOwner) { list ->
-                    list?.let{ companies ->
+        if (savedInstanceState == null) {
+            tickers?.let { tList ->
+                companiesVM.getCompaniesByTicker(tList).observe(viewLifecycleOwner) { list ->
+                    list?.let { companies ->
                         companiesAdapter.addItems(companies)
                     }
                 }
             }
         }
+
     }
 
     override fun onStart() {
