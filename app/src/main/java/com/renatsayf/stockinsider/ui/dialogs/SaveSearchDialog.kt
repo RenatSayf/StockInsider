@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.dialogs
 
 import android.app.AlertDialog
@@ -5,60 +7,49 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.utils.Event
-import kotlinx.android.synthetic.main.save_search_layout.view.*
+import com.renatsayf.stockinsider.databinding.SaveSearchLayoutBinding
 
 class SaveSearchDialog : DialogFragment()
 {
-    private lateinit var observer: EventObserver
+    private lateinit var binding: SaveSearchLayoutBinding
 
     companion object
     {
-        val TAG = this::class.java.canonicalName.plus("_tag")
-        val KEY_SEARCH_NAME = this::class.java.canonicalName.plus("_key_search_name")
+        val TAG = this::class.java.simpleName.plus("_tag")
         private var instance: SaveSearchDialog? = null
-        fun getInstance(searchName: String = ""): SaveSearchDialog = if (instance == null)
+        private var listener: Listener? = null
+        private var name: String? = null
+
+        fun getInstance(name: String, listener: Listener? = null): SaveSearchDialog = if (instance == null)
         {
-            SaveSearchDialog().apply {
-                arguments = Bundle().apply {
-                    putString(KEY_SEARCH_NAME, searchName)
-                }
-            }
+            this.name = name
+            this.listener = listener
+            SaveSearchDialog()
         }
         else instance as SaveSearchDialog
 
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        observer = ViewModelProvider(activity as MainActivity)[EventObserver::class.java]
-    }
-
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.save_search_layout, LinearLayout(requireContext()), false)
+        binding = SaveSearchLayoutBinding.inflate(LayoutInflater.from(requireContext()))
 
-        dialogView.searchNameView.setText(arguments?.getString(KEY_SEARCH_NAME).toString())
+        binding.searchNameView.setText(name)
 
         val builder = AlertDialog.Builder(requireContext()).apply {
             setTitle(getString(R.string.text_saving_search))
-            setView(dialogView)
+            setView(binding.root)
             setPositiveButton(getString(R.string.text_save), object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)
                 {
-                    if (!dialogView.searchNameView.text.isNullOrEmpty())
+                    if (!binding.searchNameView.text.isNullOrEmpty())
                     {
-                        val name = dialogView.searchNameView.text.toString()
-                        observer.data.value = Event(Pair(KEY_SEARCH_NAME, name))
+                        val name = binding.searchNameView.text.toString()
+                        listener?.saveSearchDialogOnPositiveClick(name)
+                        dismiss()
                     }
                 }
 
@@ -75,9 +66,8 @@ class SaveSearchDialog : DialogFragment()
         return builder.create()
     }
 
-    class EventObserver : ViewModel()
-    {
-        val data = MutableLiveData<Event<Pair<String?, String>>>()
+    interface Listener {
+        fun saveSearchDialogOnPositiveClick(searchName: String)
     }
 
 

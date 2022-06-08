@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.models
 import android.os.Parcel
 import android.os.Parcelable
 
+
 data class Deal(var filingDate : String?) : Parcelable
 {
     var filingDateRefer : String? = ""
@@ -87,6 +88,8 @@ data class Deal(var filingDate : String?) : Parcelable
 
     var error : String? = ""
 
+    var color: Int = 0
+
     constructor(parcel : Parcel) : this(parcel.readString())
     {
         filingDateRefer = parcel.readString()
@@ -104,6 +107,7 @@ data class Deal(var filingDate : String?) : Parcelable
         volumeStr = parcel.readString()
         volume = parcel.readDouble()
         error = parcel.readString()
+        color = parcel.readInt()
     }
 
     override fun writeToParcel(parcel : Parcel, flags : Int)
@@ -124,6 +128,7 @@ data class Deal(var filingDate : String?) : Parcelable
         parcel.writeString(volumeStr)
         parcel.writeDouble(volume)
         parcel.writeString(error)
+        parcel.writeInt(color)
     }
 
     override fun describeContents() : Int
@@ -145,3 +150,5 @@ data class Deal(var filingDate : String?) : Parcelable
         }
     }
 }
+
+

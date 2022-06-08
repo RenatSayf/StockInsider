@@ -5,22 +5,27 @@ import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.SearchRequest
+import com.renatsayf.stockinsider.network.NetworkRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
+import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.network.INetworkRepository
+import java.util.*
+import kotlin.collections.ArrayList
+import kotlin.jvm.Throws
 
-class DataRepositoryImpl @Inject constructor(private val request: SearchRequest, private val db: AppDao) : IDataRepository
+class DataRepositoryImpl @Inject constructor(private val network: INetworkRepository, private val db: AppDao) : IDataRepository
 {
     override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
-        return request.getTradingScreen(set)
+        return network.getTradingScreen(set)
     }
 
     override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
     {
-        return request.getInsiderTrading(insider)
+        return network.getInsiderTrading(insider)
     }
 
     override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
@@ -31,7 +36,7 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
 
     override fun getTradingByTickerAsync(ticker: String): Single<ArrayList<Deal>>
     {
-        return request.getTradingByTicker(ticker)
+        return network.getTradingByTicker(ticker)
     }
 
     override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
@@ -60,17 +65,47 @@ class DataRepositoryImpl @Inject constructor(private val request: SearchRequest,
         }
     }
 
-
-
-    override suspend fun getCompaniesFromDbAsync(): Array<Companies> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getCompaniesFromDbAsync(): Array<Companies>? = CoroutineScope(Dispatchers.IO).run {
         val companies = async {
-            db.getAllCompanies().toTypedArray()
+            db.getAllCompanies()?.toTypedArray()
         }
         companies.await()
     }
 
+    override suspend fun getSearchSetsByTarget(target: Target): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
+        return withContext(Dispatchers.Main) {
+            db.getSearchSetsByTarget(target.name.lowercase(Locale.getDefault()))
+        }
+    }
+
+    override suspend fun getCompanyByTicker(list: List<String>): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+        withContext(Dispatchers.Main) {
+            db.getCompanyByTicker(list)
+        }
+    }
+
+    override suspend fun getAllSimilar(pattern: String): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+        withContext(Dispatchers.Main) {
+            db.getAllSimilar(pattern)
+        }
+    }
+
+    @Throws(Exception::class)
+    override suspend fun insertCompanies(list: List<Companies>) {
+        CoroutineScope(Dispatchers.IO).launch {
+            db.insertCompanies(list)
+        }
+    }
+
+    override fun updateSearchSetTicker(id: Int, value: String): Int {
+        return db.updateSearchSetTicker(id, value)
+    }
+
+
     override fun destructor()
     {
-        request.composite.clear()
+        if (network is NetworkRepository) {
+            network.composite.clear()
+        }
     }
 }

@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.strategy
 
 import android.os.Bundle
@@ -10,13 +12,13 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.FragmentStrategyBinding
 import com.renatsayf.stockinsider.models.DataTransferModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.fragment_strategy.*
-import kotlinx.android.synthetic.main.fragment_strategy.view.*
 
-@AndroidEntryPoint
-class StrategyFragment : Fragment()
+
+
+class StrategyFragment : Fragment(R.layout.fragment_strategy)
 {
     companion object
     {
@@ -24,6 +26,7 @@ class StrategyFragment : Fragment()
         fun getInstance(): StrategyFragment = if (instance == null) StrategyFragment() else instance as StrategyFragment
     }
 
+    private lateinit var binding: FragmentStrategyBinding
     private lateinit var strategyViewModel: StrategyViewModel
     private lateinit var dataTransferModel: DataTransferModel
 
@@ -34,31 +37,34 @@ class StrategyFragment : Fragment()
         requireActivity().onBackPressedDispatcher.addCallback(this){
             (activity as MainActivity).navController.navigate(R.id.nav_home)
         }
+
+        strategyViewModel = ViewModelProvider(this)[StrategyViewModel::class.java]
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
+    override fun onCreateView(inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        strategyViewModel = ViewModelProvider(this).get(StrategyViewModel::class.java)
-        val root = inflater.inflate(R.layout.fragment_strategy, container, false)
-        root.apply {
-            webView.loadUrl("file:///android_asset/strategy/index.html")
-        }
-        return root
+        savedInstanceState: Bundle?): View?
+    {
+        return inflater.inflate(R.layout.fragment_strategy, container, false)
     }
 
-    override fun onActivityCreated(savedInstanceState: Bundle?)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        super.onActivityCreated(savedInstanceState)
-        webView.setOnTouchListener(object : View.OnTouchListener{
+        super.onViewCreated(view, savedInstanceState)
+
+        binding = FragmentStrategyBinding.bind(view)
+
+        binding.webView.apply {
+            loadUrl("file:///android_asset/strategy/index.html")
+        }
+
+        binding.webView.setOnTouchListener(object : View.OnTouchListener{
             override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
             {
                 p0?.performClick()
                 return false
             }
         })
-
     }
+
 }

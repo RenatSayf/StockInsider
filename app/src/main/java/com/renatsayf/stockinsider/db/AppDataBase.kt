@@ -1,68 +1,37 @@
 package com.renatsayf.stockinsider.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
-import com.renatsayf.stockinsider.utils.AppLog
-import java.io.File
-import java.io.FileOutputStream
 
-private const val DB_VERSION = 10
+private const val DB_VERSION = 18
 
-@Database(entities = [RoomSearchSet::class, Companies::class], version = DB_VERSION, exportSchema = false)
+@Database(entities = [RoomSearchSet::class, Companies::class],
+    version = DB_VERSION,
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = DB_VERSION - 1, to = DB_VERSION)])
 abstract class AppDataBase : RoomDatabase()
 {
     abstract fun searchSetDao() : AppDao
 
     companion object
     {
-        private const val DATABASE = "stock-insider.db"
-        private var mContext: Context? = null
+        const val DATABASE = "stock-insider.db"
 
-        private val MIGRATION : Migration = object : Migration(DB_VERSION - 1, DB_VERSION)
-        {
-            override fun migrate(database : SupportSQLiteDatabase)
-            {
-                val version = database.version
-                mContext?.let { AppLog(it).print(this@Companion::class.java.canonicalName.toString(), "************* Migration DB from version $version to version $DB_VERSION ****************") }
-                if (database.needUpgrade(DB_VERSION))
-                {
-                    val path = database.path
-                    val dbFile = File(path)
-                    if (dbFile.exists() && mContext != null)
-                    {
-                        dbFile.delete()
-                        //получаем локальную бд из assets как поток
-                        val inStream = mContext!!.assets.open("database/$DATABASE")
-                        //открываем пустой файл
-                        val outStream = FileOutputStream(path)
-                        // побайтово копируем данные в него
-                        val buffer = ByteArray(1024)
-                        var length: Int
-                        while (inStream.read(buffer).also {length = it} > 0)
-                        {
-                            outStream.write(buffer, 0, length)
-                        }
-                        outStream.flush()
-                        outStream.close()
-                        inStream.close()
-                    }
-                }
-            }
-        }
-
-        @Volatile
+       @Volatile
         private var instance : AppDataBase? = null
 
         fun getInstance(context : Context) : AppDataBase
         {
-            mContext = context
             return instance ?: synchronized(this){
                 instance ?: buildDataBase(context).also {
                     instance = it
+                }.apply {
+                    if (DB_VERSION == 17) {
+                        this.mDatabase.execSQL(query17)
+                    }
                 }
             }
         }
@@ -70,12 +39,36 @@ abstract class AppDataBase : RoomDatabase()
         private fun buildDataBase(context : Context) : AppDataBase
         {
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE)
-                .addMigrations(MIGRATION)
-                .createFromAsset("database/$DATABASE")//.fallbackToDestructiveMigration()
+                .createFromAsset("database/$DATABASE")
                 .allowMainThreadQueries()
                 .build()
         }
     }
 
-
 }
+
+
+private const val query = """INSERT INTO search_set (
+set_name, 
+company_name, 
+ticker, 
+filing_period, 
+trade_period, 
+is_purchase, 
+is_sale, 
+trade_min, 
+trade_max, 
+is_officer, 
+is_director, 
+is_ten_percent, 
+group_by, 
+sort_by,
+target,
+is_tracked,
+is_default) VALUES (
+"DOW JONES top 30 stocks",
+ "",
+ "AXP AMGN AAPL BA CAT CSCO CVX GS HD HON IBM INTC JNJ KO JPM MCD MMM MRK MSFT NKE PG TRV UNH CRM VZ V WBA WMT DIS DOW",
+ 1, 3, 1, 0, "", "", 1, 1, 1, 0, 3, "tracking", 1, 1)"""
+
+private const val query17 = """UPDATE search_set SET set_name = 'NASDAQ top 10 stocks' WHERE set_name == 'Top 10 NASDAQ stocks'"""

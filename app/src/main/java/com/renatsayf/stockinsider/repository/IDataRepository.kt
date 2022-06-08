@@ -6,6 +6,9 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
+import com.renatsayf.stockinsider.models.Target
+import java.lang.Exception
+import kotlin.jvm.Throws
 
 interface IDataRepository
 {
@@ -25,7 +28,18 @@ interface IDataRepository
 
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Int
 
-    suspend fun getCompaniesFromDbAsync() : Array<Companies>
+    suspend fun getCompaniesFromDbAsync() : Array<Companies>?
+
+    suspend fun getSearchSetsByTarget(target: Target) : List<RoomSearchSet>
+
+    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+
+    suspend fun getAllSimilar(pattern: String) : List<Companies>
+
+    @Throws(Exception::class)
+    suspend fun insertCompanies(list : List<Companies>)
+
+    fun updateSearchSetTicker(id: Int, value: String) : Int
 
     fun destructor()
 }

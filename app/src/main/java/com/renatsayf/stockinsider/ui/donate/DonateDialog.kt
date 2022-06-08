@@ -5,29 +5,29 @@ import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.ViewModelProvider
 import com.android.billingclient.api.*
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.donate_fragment.*
 
-@AndroidEntryPoint
+
+
+
 class DonateDialog : DialogFragment(), PurchasesUpdatedListener
 {
-    private var dialogView: View? = null
+    private lateinit var binding: DonateFragmentBinding
     private var skuList: MutableList<SkuDetails> = arrayListOf()
     private lateinit var billingClient: BillingClient
 
+
     companion object
     {
-        val TAG = this::class.java.canonicalName
+        val TAG = this::class.java.simpleName.toString()
         private var instance: DonateDialog? = null
         fun getInstance() = if (instance == null)
         {
@@ -43,26 +43,18 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.donate_fragment, ConstraintLayout(requireContext()), false)
-        val builder = AlertDialog.Builder(requireContext()).setView(dialogView)
+        binding = DonateFragmentBinding.inflate(LayoutInflater.from(requireContext()))
+        val builder = AlertDialog.Builder(requireContext()).setView(binding.root)
         return builder.create().apply {
             window?.setBackgroundDrawableResource(R.drawable.rectangle_frame_background)
         }
     }
 
-    override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View?
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
-        viewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
-        return dialogView
-    }
+        super.onViewCreated(view, savedInstanceState)
 
-    override fun onActivityCreated(savedInstanceState: Bundle?)
-    {
-        super.onActivityCreated(savedInstanceState)
+        viewModel = ViewModelProvider(this).get(DonateViewModel::class.java)
 
         billingClient = BillingClient.newBuilder(requireContext())
             .setListener(this)
@@ -98,20 +90,20 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
                         R.layout.app_spinner_item,
                         priceList
                 )
-                sumSpinnerView.adapter = adapter
+                binding.sumSpinnerView.adapter = adapter
             }
         })
 
         val thanksText = requireContext().getString(R.string.text_thanks).plus(" ")
             .plus(requireContext().getString(R.string.app_name))
-        thanksTView.text = thanksText
+        binding.thanksTView.text = thanksText
 
-        btnCancel.setOnClickListener {
+        binding.btnCancel.setOnClickListener {
             dismiss()
         }
 
-        btnDoDonate.setOnClickListener {
-            val selectedPrice = sumSpinnerView.selectedItem.toString()
+        binding.btnDoDonate.setOnClickListener {
+            val selectedPrice = binding.sumSpinnerView.selectedItem.toString()
             if(!skuList.isNullOrEmpty())
             {
                 skuList.forEach {
@@ -128,7 +120,7 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
         viewModel.eventPurchased.observe(viewLifecycleOwner, {
             if (!it.hasBeenHandled)
             {
-                Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_thanks_for_donating), Snackbar.LENGTH_LONG).show()
+                Snackbar.make((requireActivity() as MainActivity).findViewById(R.id.main_content_layout), getString(R.string.text_thanks_for_donating), Snackbar.LENGTH_LONG).show()
                 dismiss()
             }
         })
@@ -145,7 +137,7 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
         }
         else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED)
         {
-            Snackbar.make((requireActivity() as MainActivity).expandMenu, getString(R.string.text_purchase_canceled), Snackbar.LENGTH_LONG).show()
+            Snackbar.make((requireActivity() as MainActivity).findViewById(R.id.main_content_layout), getString(R.string.text_purchase_canceled), Snackbar.LENGTH_LONG).show()
             dismiss()
         }
     }

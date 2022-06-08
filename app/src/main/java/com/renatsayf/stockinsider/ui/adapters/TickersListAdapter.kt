@@ -7,29 +7,25 @@ import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.LinearLayout
+import android.widget.*
 import androidx.annotation.RequiresApi
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Companies
-import kotlinx.android.synthetic.main.ticker_layout.view.*
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TickersListAdapter(
-        context : Activity, items : Array<Companies> = arrayOf()
+        context : Context, items : Array<Companies> = arrayOf()
                         ) : ArrayAdapter<Any>(context, R.layout.ticker_layout), Filterable
 {
-    private var _context : Context? = null
+    //private var _context : Context? = null
 
     internal var tempItems : MutableList<Companies> = mutableListOf()
     internal var suggestions : MutableList<Companies> = mutableListOf()
 
     init
     {
-        _context = context
+        //_context = context
         tempItems = items.toMutableList()
         suggestions = ArrayList()
     }
@@ -81,7 +77,7 @@ class TickersListAdapter(
         }
     }
 
-    override fun getItem(position : Int) : String?
+    override fun getItem(position : Int) : String
     {
         return suggestions[position].toString()
     }
@@ -93,7 +89,6 @@ class TickersListAdapter(
 
     override fun getFilter() : Filter
     {
-
         return filter
     }
 
@@ -102,13 +97,18 @@ class TickersListAdapter(
         return suggestions.size
     }
 
+    fun addItems(list: List<Companies>) {
+        tempItems = list.toMutableList()
+        notifyDataSetChanged()
+    }
+
     @SuppressLint("ViewHolder")
     override fun getView(position : Int, convertView : View?, parent : ViewGroup) : View
     {
         val inflater= LayoutInflater.from(context)
         val layout = inflater.inflate(R.layout.ticker_layout, parent, false) as LinearLayout
-        layout.tickerTV.text = suggestions[position].ticker
-        layout.companyNameTV.text = suggestions[position].company
+        layout.findViewById<TextView>(R.id.tickerTV).text = suggestions[position].ticker
+        layout.findViewById<TextView>(R.id.companyNameTV).text = suggestions[position].company
         return layout
     }
 

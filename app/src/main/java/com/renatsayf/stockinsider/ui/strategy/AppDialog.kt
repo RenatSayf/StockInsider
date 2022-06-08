@@ -6,29 +6,29 @@ import android.content.DialogInterface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
 import android.view.LayoutInflater
-import android.widget.LinearLayout
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
-import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.AppDialogLayoutBinding
 import com.renatsayf.stockinsider.utils.Event
-import kotlinx.android.synthetic.main.app_dialog_layout.view.*
 
 class AppDialog : DialogFragment()
 {
+    private lateinit var binding: AppDialogLayoutBinding
     private lateinit var observer: EventObserver
 
     companion object
     {
-        val TAG = this::class.java.canonicalName.plus("_tag")
+        val TAG = this::class.java.simpleName.plus("_tag")
         private lateinit var message: SpannableStringBuilder
         private lateinit var positiveText: String
         private var negativeText: String? = null
         private var neutralText: String? = null
         private var dialogTag: String = ""
         private var instance: AppDialog? = null
+
         fun getInstance(tag: String,
                         message: SpannableStringBuilder,
                         positiveText: String = "OK",
@@ -53,10 +53,10 @@ class AppDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        val dialogView = LayoutInflater.from(requireContext()).inflate(R.layout.app_dialog_layout, LinearLayout(requireContext()), false)
-        dialogView.dialogTextView.text = message
+        binding = AppDialogLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        binding.dialogTextView.text = message
         val builder = AlertDialog.Builder(requireContext()).apply {
-            setView(dialogView)
+            setView(binding.root)
             setPositiveButton(positiveText, object : DialogInterface.OnClickListener
             {
                 override fun onClick(p0: DialogInterface?, p1: Int)

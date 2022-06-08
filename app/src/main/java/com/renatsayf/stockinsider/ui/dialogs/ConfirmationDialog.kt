@@ -2,24 +2,29 @@ package com.renatsayf.stockinsider.ui.dialogs
 
 import android.app.AlertDialog
 import android.app.Dialog
+import android.content.DialogInterface
 import android.os.Bundle
 import androidx.fragment.app.DialogFragment
-import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.utils.Event
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
-@AndroidEntryPoint
-class ConfirmationDialog constructor(var message : String,
-                                     private var btnOkText: String,
-                                     var flag : String) : DialogFragment()
+
+class ConfirmationDialog constructor(var message : String = "",
+                                     private var btnOkText: String = "Ok",
+                                     var flag : String = "") : DialogFragment()
 {
     companion object{
-        val TAG = this::class.java.canonicalName.plus("_confirmation_dialog")
-        val FLAG_CANCEL = this::class.java.canonicalName.plus("flag_cancel")
+        val TAG = this::class.java.simpleName.plus("_confirmation_dialog")
+        val FLAG_CANCEL = this::class.java.simpleName.plus("flag_cancel")
     }
-    val eventOk : MutableLiveData<Event<String>> = MutableLiveData()
+
+    private var listener: Listener? = null
+
+    fun setOnClickListener(listener: Listener)
+    {
+        this.listener = listener
+    }
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -31,20 +36,26 @@ class ConfirmationDialog constructor(var message : String,
     {
         val builder = AlertDialog.Builder(activity)
         builder.setMessage(message)
-            .setPositiveButton(btnOkText) { _, _ ->
+            .setPositiveButton(btnOkText) { _: DialogInterface?, _: Int ->
                 if (flag != FLAG_CANCEL)
                 {
-                    eventOk.value = Event("")
+                    listener?.onPositiveClick("")
                 }
                 else
                 {
-                    eventOk.value = Event(FLAG_CANCEL)
+                    listener?.onPositiveClick(FLAG_CANCEL)
                 }
+
             }
             .setNegativeButton(getString(R.string.text_cancel)){ _, _ ->
                 dismiss()
             }
 
         return builder.create()
+    }
+
+    interface Listener
+    {
+        fun onPositiveClick(flag: String)
     }
 }

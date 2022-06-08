@@ -195,5 +195,12 @@
     <string name="text_about_app">О программе</string>
     <string name="text_insider_deals">Сделки инсайдера</string>
     <string name="text_trading_by_company">Торги по акциям компании</string>
+    <string name="text_search_param_is_saved">Параметры поиска сохранены.</string>
+    <string name="text_no_search_request">Нет сохраненных поисковых запросов</string>
+    <string name="text_deals_for_14_days">Сделки за 14 дней</string>
+    <string name="text_tracking_list">Список отслеживания</string>
+    <string name="text_tracking_params">Параметры отслеживания</string>
+    <string name="text_company_list">Список компаний</string>
+    <string name="text_ticker_already_exists">Такой тикер уже есть в списке</string>
 
 </resources>

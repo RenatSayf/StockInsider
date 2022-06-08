@@ -5,22 +5,38 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
+import android.content.Intent
+import android.icu.util.Calendar
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.utils.AppLog
-import dagger.hilt.android.AndroidEntryPoint
+import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.utils.Utils
 import javax.inject.Inject
 
 
-class ServiceNotification @Inject constructor(private val appLog: AppLog) : Notification()
+class ServiceNotification @Inject constructor() : Notification()
 {
     companion object
     {
-        private val CHANEL_ID : String = "${this::class.java.simpleName}.service_notification"
+        private val CHANNEL_ID : String = "${this::class.java.simpleName}.service_notification"
         const val NOTIFICATION_ID : Int = 15917
+
+        val notify: (Context, ArrayList<Deal>) -> Unit = { context: Context, list: ArrayList<Deal> ->
+
+            val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
+            val message = "The request has been performed at \n" +
+                    "$time (в.мест) \n" +
+                    "${list.size} results found"
+            val intent = Intent(context, MainActivity::class.java).apply {
+                putParcelableArrayListExtra(Deal.KEY_DEAL_LIST, list)
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+            ServiceNotification().createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
+        }
     }
 
     var notification: Notification? = null
@@ -35,7 +51,7 @@ class ServiceNotification @Inject constructor(private val appLog: AppLog) : Noti
     {
         this.context = context
 
-        notification = NotificationCompat.Builder(context, CHANEL_ID)
+        notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setPriority(NotificationManager.IMPORTANCE_NONE)
             .setCategory(CATEGORY_RECOMMENDATION)
             .setSmallIcon(iconResource)
@@ -50,7 +66,7 @@ class ServiceNotification @Inject constructor(private val appLog: AppLog) : Noti
             val name = context.getString(R.string.app_name)
             val descriptionText = this.context!!.getString(R.string.discription_text_to_notification)
             val importance = NotificationManager.IMPORTANCE_HIGH
-            val channel = NotificationChannel(CHANEL_ID, name, importance).apply {
+            val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText
             }
             notificationManager.createNotificationChannel(channel)

@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider
 
 import android.app.Activity
@@ -16,11 +18,10 @@ import android.text.style.ClickableSpan
 import android.text.style.ForegroundColorSpan
 import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ExpandableListView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
@@ -36,59 +37,51 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
-import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
-import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
-import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
+import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
-import com.renatsayf.stockinsider.utils.AppLog
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.load_progress_layout.*
-import javax.inject.Inject
 
-@AndroidEntryPoint //TODO Hilt step 6
+
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity()
 {
     companion object
     {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
-        val KEY_NO_SHOW_AGAIN = this::class.java.canonicalName.plus("_key_no_show_again")
-        val KEY_IS_AGREE = this::class.java.canonicalName.plus("_key_is_agree")
+        val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
+        val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
     }
 
+    private lateinit var binding: ActivityMainBinding
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     private lateinit var drawerLayout : DrawerLayout
+    private val mainVM: MainViewModel by lazy {
+        ViewModelProvider(this)[MainViewModel::class.java]
+    }
 
-    @Inject
-    lateinit var notification : ServiceNotification
-
-    @Inject
-    lateinit var appLog: AppLog
-
-    @Inject
-    lateinit var donateDialog: DonateDialog
-
-    @Inject
-    lateinit var confirmationDialog: ConfirmationDialog
-
-    @Inject
-    lateinit var ad: InterstitialAd
+    private lateinit var ad: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
-        setTheme(R.style.AppTheme_NoActionBar)
-
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+
+        setTheme(R.style.AppTheme_NoActionBar)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
+        MobileAds.initialize(this)
+        ad = InterstitialAd(this)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -99,10 +92,7 @@ class MainActivity : AppCompatActivity()
 
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home,
-            R.id.nav_strategy, R.id.nav_result, R.id.nav_deal, R.id.nav_insider_trading,
-            R.id.nav_trading_by_ticker, R.id.nav_about_app),
-            drawerLayout)
+        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawerLayout)
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener { item ->
@@ -120,12 +110,13 @@ class MainActivity : AppCompatActivity()
 //            apply()
 //        }
         //endregion
-        loadProgreesBar.visibility = View.GONE
+
+        binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
 
         appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 
         val expandableMenuAdapter = ExpandableMenuAdapter(this)
-        expandMenu.apply {
+        binding.expandMenu.apply {
             setAdapter(expandableMenuAdapter)
             setOnGroupClickListener(object : ExpandableListView.OnGroupClickListener
             {
@@ -142,6 +133,11 @@ class MainActivity : AppCompatActivity()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         4 ->
+                        {
+                            navController.navigate(R.id.action_nav_home_to_trackingListFragment)
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        5 ->
                         {
                             when (getSharedPreferences(APP_SETTINGS,
                                 Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
@@ -164,17 +160,17 @@ class MainActivity : AppCompatActivity()
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        6 ->
+                        7 ->
                         {
                             navController.navigate(R.id.nav_about_app)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        7 ->
+                        8 ->
                         {
                             doShare()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        8 ->
+                        9 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             if (isNetworkConnectivity())
@@ -204,112 +200,123 @@ class MainActivity : AppCompatActivity()
                     {
                         p2 == 1 && p3 == 0 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_3")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_pur_more1_for_3))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("pur_more1_for_3").observe(this@MainActivity, {
+                                    Bundle().apply {
+                                        putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
+                                        putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                    }.run { navController.navigate(R.id.nav_result, this) }
+                                })
                         }
                         p2 == 1 && p3 == 1 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_3")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_pur_more5_for_3))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("pur_more5_for_3").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 1 && p3 == 2 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_3")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sale_more1_for_3))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("sale_more1_for_3").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
+
                         }
                         p2 == 1 && p3 == 3 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_3")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sale_more5_for_3))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("sale_more5_for_3").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 2 && p3 == 0 ->
                         {
-                            val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_1")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_purchases_more_1))
-                            }
-                            navController.navigate(R.id.nav_result, bundle)
+                            mainVM.getCurrentSearchSet("purchases_more_1").observe(this@MainActivity, {
+                                val bundle = Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }
+                                navController.navigate(R.id.nav_result, bundle)
+                            })
                         }
                         p2 == 2 && p3 == 1 ->
                         {
-                            val bundle = Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "purchases_more_5")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_purchases_more_5))
-                            }
-                            navController.navigate(R.id.nav_result, bundle)
+                            mainVM.getCurrentSearchSet("purchases_more_5").observe(this@MainActivity, {
+                                val bundle = Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }
+                                navController.navigate(R.id.nav_result, bundle)
+                            })
                         }
                         p2 == 2 && p3 == 2 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_1")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sales_more_1))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("sales_more_1").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 2 && p3 == 3 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sales_more_5")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sales_more_5))
-                            }.run {
-                                navController.navigate(R.id.nav_result, this)
-                            }
+                            mainVM.getCurrentSearchSet("sales_more_5").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 3 && p3 == 0 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more1_for_14")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_pur_more1_for_14))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("pur_more1_for_14").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 3 && p3 == 1 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "pur_more5_for_14")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_pur_more5_for_14))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("pur_more5_for_14").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 3 && p3 == 2 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more1_for_14")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sale_more1_for_14))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("sale_more1_for_14").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
                         p2 == 3 && p3 == 3 ->
                         {
-                            Bundle().apply {
-                                putString(ResultFragment.ARG_QUERY_NAME, "sale_more5_for_14")
-                                putString(ResultFragment.ARG_TITLE,
-                                    context.getString(R.string.text_sale_more5_for_14))
-                            }.run { navController.navigate(R.id.nav_result, this) }
+                            mainVM.getCurrentSearchSet("sale_more5_for_14").observe(this@MainActivity, {
+                                Bundle().apply {
+                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            })
                         }
-                        p2 == 5 && p3 == 0 ->
+                        p2 == 6 && p3 == 0 ->
                         {
                             if (isNetworkConnectivity())
                             {
-                                donateDialog.show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             }
                         }
-                        p2 == 5 && p3 == 1 ->
+                        p2 == 6 && p3 == 1 ->
                         {
                             if (isNetworkConnectivity())
                             {
@@ -403,30 +410,6 @@ class MainActivity : AppCompatActivity()
         return spannableStringBuilder
     }
 
-    override fun onCreateOptionsMenu(menu: Menu?): Boolean
-    {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        menuInflater.inflate(R.menu.main, menu)
-        return true
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean
-    {
-        when(item.itemId)
-        {
-            R.id.action_log_file ->
-            {
-                appLog.getDeviceLogsInFile()
-                return true
-            }
-            R.id.action_my_search ->
-            {
-                SearchListDialog().show(supportFragmentManager, SearchListDialog.TAG)
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
     override fun onSupportNavigateUp() : Boolean
     {
         val navController = findNavController(R.id.nav_host_fragment)
@@ -445,70 +428,6 @@ class MainActivity : AppCompatActivity()
                 stopService(serviceIntent)
             }
         }
-    }
-
-    fun getFilingOrTradeValue(position: Int) : String
-    {
-        val filingValue : String
-        return try
-        {
-            val filingValues = this.resources?.getIntArray(R.array.value_for_filing_date)
-            filingValue = filingValues?.get(position).toString()
-            filingValue
-        }
-        catch (e: Exception)
-        {
-            e.printStackTrace()
-            ""
-        }
-    }
-
-    fun getGroupingValue(position: Int) : String
-    {
-        val groupingValue : String
-        return try
-        {
-            val groupingValues = this.resources?.getIntArray(R.array.value_for_grouping)
-            groupingValue = groupingValues?.get(position).toString()
-            groupingValue
-        }
-        catch (e: Exception)
-        {
-            e.printStackTrace()
-            ""
-        }
-    }
-
-    fun getSortingValue(position: Int) : String
-    {
-        val sortingValue : String
-        return try
-        {
-            val sortingValues = this.resources?.getIntArray(R.array.value_for_sorting)
-            sortingValue = sortingValues?.get(position).toString()
-            sortingValue
-        }
-        catch (e: Exception)
-        {
-            e.printStackTrace()
-            ""
-        }
-    }
-
-    fun getOfficerValue(value: Boolean) : String
-    {
-        return if (value) "1&iscob=1&isceo=1&ispres=1&iscoo=1&iscfo=1&isgc=1&isvp=1" else ""
-    }
-
-    fun getCheckBoxValue(value: Boolean) : String
-    {
-        return if (value) "1" else ""
-    }
-
-    fun getTickersString(string: String) : String
-    {
-        val pattern = Regex("\\s")
-        return string.trim().replace(pattern, "+")
     }
 
     fun hideKeyBoard(view: View)
@@ -546,7 +465,7 @@ class MainActivity : AppCompatActivity()
                     NetworkCapabilities.TRANSPORT_WIFI))
             }
         }
-        Snackbar.make(expandMenu,
+        Snackbar.make(binding.expandMenu,
             getString(R.string.text_inet_not_connection),
             Snackbar.LENGTH_LONG).show()
         return false

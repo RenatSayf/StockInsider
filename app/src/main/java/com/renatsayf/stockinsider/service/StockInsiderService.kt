@@ -15,19 +15,16 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 class StockInsiderService : Service()
 {
-    private lateinit var utils: Utils
-    private lateinit var notification: ServiceNotification
-    private lateinit var appCalendar: AppCalendar
-    private lateinit var appLog: AppLog
-
-    private lateinit var alarmReceiver: AlarmReceiver
-    private lateinit var unlockedReceiver: PhoneUnlockedReceiver
-
     companion object
     {
         val TAG = this::class.java.simpleName
@@ -50,45 +47,19 @@ class StockInsiderService : Service()
     {
         super.onCreate()
 
-        utils = Utils()
-        appCalendar = AppCalendar(TimeZone.getTimeZone(getString(R.string.app_time_zone)))
-        appLog = AppLog(this)
-        notification = ServiceNotification(appLog)
-
-        serviceEvent.value = Event(START_KEY)
-
-        alarmReceiver = AlarmReceiver()
-        val alarmFilter = IntentFilter()
-        alarmFilter.addAction(AlarmPendingIntent.ACTION_START_ALARM)
-        registerReceiver(alarmReceiver, alarmFilter)
-
-        unlockedReceiver = PhoneUnlockedReceiver()
-        val filter = IntentFilter()
-        filter.addAction(Intent.ACTION_SCREEN_ON)
-        registerReceiver(unlockedReceiver, filter)
-
-        val nextCalendar = appCalendar.getNextCalendar()
-        val (time, alarmPendingIntent) = AlarmPendingIntent.create(this, nextCalendar)
-        val alarmManager = this.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-        alarmManager.apply {
-            setExact(AlarmManager.RTC_WAKEUP, time, alarmPendingIntent)
-        }
-        val message = "Next request will be at ${utils.getFormattedDateTime(0, Date(time))}."
-        appLog.print(ResultFragment.TAG, message)
-
-        val actionIntent = Intent(Intent.ACTION_MAIN)
-        actionIntent.setClass(this, MainActivity::class.java)
-        actionIntent.flags = Intent.FLAG_ACTIVITY_MULTIPLE_TASK
-        val notificationPendingIntent = PendingIntent.getActivity(this, 0, actionIntent, PendingIntent.FLAG_UPDATE_CURRENT)
-        val appNotification = notification.createNotification(
+        val appNotification = ServiceNotification().createNotification(
                 context = this,
-                pendingIntent = notificationPendingIntent,
+                null,
                 text = getString(R.string.base_notification_text)
         )
 
         appNotification.notification?.let {
             startForeground(ServiceNotification.NOTIFICATION_ID, appNotification.notification)
-            appLog.print(TAG, "Service has been started at ${utils.getFormattedDateTime(0, Date(System.currentTimeMillis()))}")
+        }
+
+        CoroutineScope(Dispatchers.Default).launch {
+            delay(10000L)
+            stopForeground(true)
         }
 
     }
@@ -96,65 +67,43 @@ class StockInsiderService : Service()
     override fun onLowMemory()
     {
         super.onLowMemory()
-        notification.createNotification(
+        ServiceNotification().createNotification(
                 this,
                 null,
                 this.getString(R.string.text_not_memory),
                 R.drawable.ic_stock_hause_cold
         ).show()
-        appLog.print(TAG, this.getString(R.string.text_not_memory))
-    }
-
-    override fun onTaskRemoved(rootIntent: Intent?)
-    {
-        super.onTaskRemoved(rootIntent)
-        appLog.print(TAG, "************* onTaskRemoved is fired *************")
-        //onCreate()
-        startService(Intent(this, StockInsiderService::class.java))
-    }
-
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        unregisterReceiver(unlockedReceiver)
-        unregisterReceiver(alarmReceiver)
-        serviceEvent.value = Event(STOP_KEY)
-        AlarmPendingIntent.cancel(this)
-        notification.cancelNotifications(this)
-        appLog.print(TAG, "Service is closed...")
     }
 
 
 
 
-    inner class PhoneUnlockedReceiver : BroadcastReceiver()
-    {
-
-        // TODO: обработчик событий нажатия кнопки блокировки, выключения экрана....
-        override fun onReceive(context: Context?, intent: Intent?)
-        {
-            context?.let{
-                if (intent != null)
-                {
-                    val isAlarmSetting = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
-                        .getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
-                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                    if (intent.action == Intent.ACTION_SCREEN_ON)
-                    {
-                        appLog.print(TAG, "**********  Screen has been unlocked  ***********************")
-                        if (!AlarmPendingIntent.isAlarmSetup(context) && isAlarmSetting)
-                        {
-                            AlarmPendingIntent.create(context).let { result ->
-                                alarmManager.apply {
-                                    setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
-                                    val message = "**********  Alarm has been recreated  **************"
-                                    appLog.print(TAG, message)
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+//    inner class PhoneUnlockedReceiver : BroadcastReceiver()
+//    {
+//
+//        // TODO: обработчик событий нажатия кнопки блокировки, выключения экрана....
+//        override fun onReceive(context: Context?, intent: Intent?)
+//        {
+//            context?.let{
+//                if (intent != null)
+//                {
+//                    val isAlarmSetting = context.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
+//                        .getBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, false)
+//                    val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
+//                    if (intent.action == Intent.ACTION_SCREEN_ON)
+//                    {
+//                        if (!AlarmPendingIntent.isAlarmSetup(context) && isAlarmSetting)
+//                        {
+//                            AlarmPendingIntent.create(context).let { result ->
+//                                alarmManager.apply {
+//                                    setExact(AlarmManager.RTC_WAKEUP, result.time, result.instance)
+//                                    val message = "**********  Alarm has been recreated  **************"
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//    }
 }

@@ -1,0 +1,167 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 14,
+    "identityHash": "2a9d0c60f8242a809fe6a1fedd122324",
+    "entities": [
+      {
+        "tableName": "search_set",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`set_name` TEXT NOT NULL, `company_name` TEXT NOT NULL, `ticker` TEXT NOT NULL, `filing_period` INTEGER NOT NULL, `trade_period` INTEGER NOT NULL, `is_purchase` INTEGER NOT NULL, `is_sale` INTEGER NOT NULL, `trade_min` TEXT NOT NULL, `trade_max` TEXT NOT NULL, `is_officer` INTEGER NOT NULL, `is_director` INTEGER NOT NULL, `is_ten_percent` INTEGER NOT NULL, `group_by` INTEGER NOT NULL, `sort_by` INTEGER NOT NULL, `target` TEXT, `is_tracked` INTEGER NOT NULL, `is_default` INTEGER NOT NULL DEFAULT 1, PRIMARY KEY(`set_name`))",
+        "fields": [
+          {
+            "fieldPath": "queryName",
+            "columnName": "set_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "companyName",
+            "columnName": "company_name",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "ticker",
+            "columnName": "ticker",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "filingPeriod",
+            "columnName": "filing_period",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tradePeriod",
+            "columnName": "trade_period",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isPurchase",
+            "columnName": "is_purchase",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isSale",
+            "columnName": "is_sale",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tradedMin",
+            "columnName": "trade_min",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "tradedMax",
+            "columnName": "trade_max",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isOfficer",
+            "columnName": "is_officer",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDirector",
+            "columnName": "is_director",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isTenPercent",
+            "columnName": "is_ten_percent",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "groupBy",
+            "columnName": "group_by",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sortBy",
+            "columnName": "sort_by",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "target",
+            "columnName": "target",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "isTracked",
+            "columnName": "is_tracked",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "isDefault",
+            "columnName": "is_default",
+            "affinity": "INTEGER",
+            "notNull": true,
+            "defaultValue": "1"
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "set_name"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [
+          {
+            "name": "index_search_set_set_name",
+            "unique": false,
+            "columnNames": [
+              "set_name"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_search_set_set_name` ON `${TABLE_NAME}` (`set_name`)"
+          }
+        ],
+        "foreignKeys": []
+      },
+      {
+        "tableName": "companies",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`ticker` TEXT NOT NULL, `company_name` TEXT NOT NULL, PRIMARY KEY(`ticker`))",
+        "fields": [
+          {
+            "fieldPath": "ticker",
+            "columnName": "ticker",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "company",
+            "columnName": "company_name",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "columnNames": [
+            "ticker"
+          ],
+          "autoGenerate": false
+        },
+        "indices": [],
+        "foreignKeys": []
+      }
+    ],
+    "views": [],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '2a9d0c60f8242a809fe6a1fedd122324')"
+    ]
+  }
+}

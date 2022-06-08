@@ -1,45 +1,34 @@
 package com.renatsayf.stockinsider.ui.deal
 
 import android.graphics.drawable.Drawable
-import androidx.hilt.lifecycle.ViewModelInject
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
-import com.renatsayf.stockinsider.utils.AppLog
-import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.reactivex.Single
-import io.reactivex.functions.Consumer
+import io.reactivex.disposables.CompositeDisposable
+import javax.inject.Inject
 
 
-class DealViewModel @ViewModelInject constructor(
-        private val repositoryImpl: DataRepositoryImpl,
-        private val appLog: AppLog
+@HiltViewModel
+class DealViewModel @Inject constructor(
+        private val repositoryImpl: DataRepositoryImpl
 ) : ViewModel()
 {
-    private val TAG = this::class.java.canonicalName.toString()
+    private var composite = CompositeDisposable()
 
-    private var _background = MutableLiveData<Drawable>().apply {
-        value = background?.value
-    }
-    var background: LiveData<Drawable> = _background
-
-    fun setLayOutBackground(drawable: Drawable)
-    {
-        _background.value = drawable
-    }
-
-    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
-    {
-        return repositoryImpl.getInsiderTradingFromNetAsync(insider)
-    }
-
-    override fun onCleared()
-    {
-        super.onCleared()
-        repositoryImpl.destructor()
-        appLog.print(TAG, "********************* onCleared() **************************")
+    fun getInsiderDeals(insider: String): LiveData<ArrayList<Deal>> {
+        val deals = MutableLiveData<ArrayList<Deal>>()
+        composite.add(repositoryImpl.getInsiderTradingFromNetAsync(insider)
+                .subscribe({ list ->
+                   deals.value = list
+                }, { t ->
+                    t.printStackTrace()
+                    deals.value = arrayListOf()
+                }))
+        return deals
     }
 
     private var _ticker = MutableLiveData<String>().apply {
@@ -65,8 +54,26 @@ class DealViewModel @ViewModelInject constructor(
         _chart.value = chart
     }
 
-    fun getTradingByTicker(ticker: String) : Single<ArrayList<Deal>>
+    fun getTradingByTicker(ticker: String) : LiveData<ArrayList<Deal>>
     {
-        return repositoryImpl.getTradingByTickerAsync(ticker)
+        val deals = MutableLiveData<ArrayList<Deal>>()
+        composite.add(repositoryImpl.getTradingByTickerAsync(ticker)
+                .subscribe({ list ->
+                    deals.value = list
+                }, { t ->
+                    t.printStackTrace()
+                    deals.value = arrayListOf()
+                }))
+        return deals
+    }
+
+    override fun onCleared()
+    {
+        super.onCleared()
+        composite.apply {
+            dispose()
+            clear()
+        }
+        repositoryImpl.destructor()
     }
 }

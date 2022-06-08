@@ -1,19 +1,20 @@
 package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
+import android.icu.util.TimeUnit
 import android.icu.util.TimeZone
+import com.renatsayf.stockinsider.BuildConfig
 import javax.inject.Inject
 
-class AppCalendar(private val timeZone: TimeZone)
+class AppCalendar @Inject constructor(private val timeZone: TimeZone)
 {
     companion object
     {
-        // TODO to release version switch to 5 - 23 hours, through 2 hours
-        const val START_HOUR : Int = 5
+        private val START_HOUR : Int = if (BuildConfig.DEBUG) 0 else 5
         const val START_MINUTE : Int = 0
         const val END_HOUR : Int = 23
         private const val END_MINUTE : Int = 0
-        private const val LOAD_INTERVAL : Long = 60 * 120 * 1000
+        private val LOAD_INTERVAL : Long = if (BuildConfig.DEBUG)  30 * 1000 else 60 * 60 * 1000
     }
 
     private val isCheckWeekend = true
@@ -73,8 +74,7 @@ class AppCalendar(private val timeZone: TimeZone)
         val currentCalendar = Calendar.getInstance(timeZone)
         val isFilingTime = currentCalendar.after(startCalendar) && currentCalendar.before(endCalendar)
 
-        val isAfterFiling: Boolean
-        isAfterFiling = currentCalendar.after(endCalendar)
+        val isAfterFiling: Boolean = currentCalendar.after(endCalendar)
 
         return Result(isFilingTime, isAfterFiling)
     }

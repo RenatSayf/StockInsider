@@ -16,6 +16,9 @@
         <action
             android:id="@+id/action_nav_home_to_nav_strategy"
             app:destination="@id/nav_strategy" />
+        <action
+            android:id="@+id/action_nav_home_to_trackingListFragment"
+            app:destination="@id/trackingListFragment" />
     </fragment>
 
     <fragment
@@ -65,6 +68,28 @@
         android:name="com.renatsayf.stockinsider.ui.about_app.AboutAppFragment"
         android:label="@string/text_about_app"
         tools:layout="@layout/about_app_fragment" />
+    <fragment
+        android:id="@+id/trackingListFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.TrackingListFragment"
+        android:label="@string/text_tracking_list"
+        tools:layout="@layout/tracking_list_fragment" >
+        <action
+            android:id="@+id/action_trackingListFragment_to_trackingFragment"
+            app:destination="@id/trackingFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/trackingFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.TrackingFragment"
+        android:label="@string/text_tracking_params" >
+        <action
+            android:id="@+id/action_trackingFragment_to_companiesFragment"
+            app:destination="@id/companiesFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/companiesFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment"
+        android:label="companies_fragment"
+        tools:layout="@layout/companies_fragment" />
 
 
 </navigation>

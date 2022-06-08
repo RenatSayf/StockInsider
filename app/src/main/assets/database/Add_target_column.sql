@@ -1,0 +1,1 @@
+ALTER TABLE search_set ADD 'target' TEXT
