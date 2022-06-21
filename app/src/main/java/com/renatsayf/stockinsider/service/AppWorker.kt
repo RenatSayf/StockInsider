@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 class AppWorker @Inject constructor(
     private val context: Context,
-    parameters: WorkerParameters): Worker(context, parameters) {
+    parameters: WorkerParameters): CoroutineWorker(context, parameters) {
 
     companion object {
         val TAG = this::class.java.simpleName.plus(".Tag")
@@ -25,8 +25,11 @@ class AppWorker @Inject constructor(
 
     private val composite = CompositeDisposable()
 
-    private var db: AppDao? = null
-    private var networkRepository: INetworkRepository? = null
+    @Inject
+    lateinit var db: AppDao
+
+    @Inject
+    lateinit var networkRepository: INetworkRepository
     private var function: ((Context, ArrayList<Deal>) -> Unit)? = null
 
     fun injectDependencies(db: AppDao, networkRepository: INetworkRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
@@ -35,7 +38,7 @@ class AppWorker @Inject constructor(
         this.function = function
     }
 
-    override fun doWork(): Result
+    override suspend fun doWork(): Result
     {
         return try
         {
@@ -73,22 +76,22 @@ class AppWorker @Inject constructor(
         }
     }
 
-    private fun getSearchSet(setName: String) : RoomSearchSet? = runBlocking {
-        return@runBlocking withContext(Dispatchers.Default) {
-            db?.getSetByName(setName)
+    private suspend fun getSearchSetAsync(setName: String) : Deferred<RoomSearchSet?> = coroutineScope {
+        async {
+            db.getSetByName(setName)
         }
     }
 
-    private fun performPayload(setName: String) : WorkerResult
+    private suspend fun performPayload(setName: String) : WorkerResult
     {
         var result: WorkerResult = WorkerResult.Error(Throwable("Unknown error"))
 
-        val roomSearchSet = getSearchSet(setName)
+        val roomSearchSet = getSearchSetAsync(setName).await()
         val requestParams = roomSearchSet?.toSearchSet()
 
         if (roomSearchSet != null && requestParams != null) {
 
-            val subscribe = networkRepository?.getTradingScreen(requestParams)?.subscribe({ list: ArrayList<Deal>? ->
+            val subscribe = networkRepository.getTradingScreen(requestParams).subscribe({ list: ArrayList<Deal>? ->
                 if (!list.isNullOrEmpty()) {
                     result = WorkerResult.Success(list)
                 }

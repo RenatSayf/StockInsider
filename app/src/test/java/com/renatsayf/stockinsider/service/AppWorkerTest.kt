@@ -6,6 +6,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import androidx.work.impl.utils.SynchronousExecutor
+import androidx.work.testing.TestListenableWorkerBuilder
 import androidx.work.testing.TestWorkerBuilder
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.FakeAppDao
@@ -13,6 +14,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.FakeNetworkRepository
 import io.reactivex.Observable
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -100,18 +102,17 @@ class AppWorkerTest {
 
         (db as FakeAppDao).setExpectedResult("Microsoft", roomSearchSet)
 
-        val worker = TestWorkerBuilder<AppWorker>(
+        val worker = TestListenableWorkerBuilder<AppWorker>(
             context,
-            Executors.newSingleThreadExecutor(),
             inputData = Data(workDataOf(AppWorker.SEARCH_SET_KEY to "Microsoft"))
         ).build()
 
         worker.injectDependencies(db, network, FakeServiceNotification.notify)
 
-        val result = worker.doWork()
-
-        assertTrue(result is ListenableWorker.Result.Success)
-
+        runBlocking{
+            val result = worker.doWork()
+            assertTrue(result is ListenableWorker.Result.Success)
+        }
     }
 }
 
