@@ -68,7 +68,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         binding.trackersRV.apply {
             setHasFixedSize(true)
-            layoutManager = LinearLayoutManager(requireContext())
+            //layoutManager = LinearLayoutManager(requireContext())
             adapter = trackingAdapter
         }
 
@@ -82,6 +82,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             when (state) {
                 is TrackingListViewModel.State.Initial -> {
                     trackingAdapter.setItems(state.list as MutableList<RoomSearchSet>)
+                }
+                is TrackingListViewModel.State.Edit -> {
+
                 }
             }
         }

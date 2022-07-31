@@ -18,7 +18,7 @@ abstract class AppDataBase : RoomDatabase()
 
     companion object
     {
-        const val DATABASE = "stock-insider.db"
+        private const val DATABASE = "stock-insider.db"
 
        @Volatile
         private var instance : AppDataBase? = null
@@ -29,8 +29,9 @@ abstract class AppDataBase : RoomDatabase()
                 instance ?: buildDataBase(context).also {
                     instance = it
                 }.apply {
-                    if (DB_VERSION == 17) {
-                        this.mDatabase.execSQL(query17)
+                    val version = this.mDatabase?.version ?: 1
+                    if (DB_VERSION > version) {
+                        this.mDatabase?.execSQL(query17)
                     }
                 }
             }

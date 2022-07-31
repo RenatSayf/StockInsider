@@ -55,7 +55,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             binding.titleTView.text = title
             binding.insiderNameTView.text = insiderName
 
-            val linearLayoutManager = LinearLayoutManager(activity)
+            val linearLayoutManager = LinearLayoutManager(requireContext())
             val dealListAdapter = DealListAdapter(dealList, listener = this).apply {
                 stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
             }

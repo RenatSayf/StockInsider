@@ -12,10 +12,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.schedule.IScheduler
-import com.renatsayf.stockinsider.schedule.Scheduler
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
-
 
 
 class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
@@ -35,8 +31,8 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val sets = list[position]
-        holder.bind(sets, position)
+        val set = list[position]
+        holder.bind(set, position)
     }
 
     override fun getItemCount(): Int {
