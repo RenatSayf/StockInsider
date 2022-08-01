@@ -31,6 +31,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    flavorDimensions "data_source"
+    productFlavors {
+        network {
+            buildConfigField 'String', 'DATA_SOURCE', '\"NETWORK\"'
+        }
+        localhost {
+            buildConfigField 'String', 'DATA_SOURCE', '\"LOCALHOST\"'
+        }
+    }
 
     buildFeatures {
         viewBinding true

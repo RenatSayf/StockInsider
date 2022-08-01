@@ -103,7 +103,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                         binding.includedProgress.visibility = View.GONE
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
-                                binding.saveSearchBtnView.visibility = View.VISIBLE
+                                binding.btnAddToTracking.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
                                 binding.tradeListRV.apply {
                                     adapter = DealListAdapter(list, this@ResultFragment).apply {
@@ -168,14 +168,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         binding.alertLayout.addAlarmImgView.setOnClickListener {
             confirmationDialog.apply {
-                message = getString(R.string.text_confirm_search)
+                message = this@ResultFragment.getString(R.string.text_confirm_search)
                 flag = ""
             }.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
 
         binding.alertLayout.alarmOnImgView.setOnClickListener {
             confirmationDialog.apply {
-                message = getString(R.string.text_cancel_search)
+                message = this@ResultFragment.getString(R.string.text_cancel_search)
                 flag = ConfirmationDialog.FLAG_CANCEL
             }.show(parentFragmentManager, ConfirmationDialog.TAG)
         }
@@ -200,7 +200,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
             }
         }
 
-        binding.saveSearchBtnView.setOnClickListener {
+        binding.btnAddToTracking.setOnClickListener {
             val name = (roomSearchSet.ticker.ifEmpty { "All" })
                 .plus("/period"+roomSearchSet.filingPeriod)
                 .plus(if (roomSearchSet.isPurchase) "/Pur" else "")

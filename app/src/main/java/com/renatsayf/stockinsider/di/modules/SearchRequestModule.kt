@@ -1,12 +1,12 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.network.DocumAdapter
-import com.renatsayf.stockinsider.network.IApi
-import com.renatsayf.stockinsider.network.INetworkRepository
-import com.renatsayf.stockinsider.network.NetworkRepository
+import android.content.Context
+import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.network.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,7 +25,7 @@ object SearchRequestModule
     }
 
     @Provides
-    fun api(): IApi {
+    fun api(@ApplicationContext context: Context): IApi {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BASIC
 
@@ -41,6 +41,9 @@ object SearchRequestModule
             .baseUrl("http://openinsider.com/")
             .client(okHttpClient).build()
 
-        return retrofit.create(IApi::class.java)
+        return when(BuildConfig.DATA_SOURCE) {
+            "NETWORK" -> retrofit.create(IApi::class.java)
+            else -> MockApi(context)
+        }
     }
 }

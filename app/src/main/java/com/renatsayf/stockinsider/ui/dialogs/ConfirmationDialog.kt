@@ -10,9 +10,12 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 
-class ConfirmationDialog constructor(var message : String = "",
-                                     private var btnOkText: String = "Ok",
-                                     var flag : String = "") : DialogFragment()
+@AndroidEntryPoint
+class ConfirmationDialog constructor(
+    var message: String = "",
+    private var btnOkText: String = "Ok",
+    var flag: String = ""
+) : DialogFragment()
 {
     companion object{
         val TAG = this::class.java.simpleName.plus("_confirmation_dialog")

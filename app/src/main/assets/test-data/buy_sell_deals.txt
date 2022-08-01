@@ -1,0 +1,3379 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <script type="text/javascript" src="/js/sic.js" async></script>
+  <meta charset="utf-8">
+  <title>Insider Trading Screener -  - OpenInsider</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Insider Trading Screener. Monitor SEC Form 4 Insider Trading Filings for Insider Buying and Selling. Real-time Insider Trading Stock Screener. Long and Short Trading Ideas using Insider Transaction Data.">
+  <meta name="keywords" content="insider buying, insider trading, insider transactions, Form 4, insider score, insider monitor, gurufocus, insider selling, stocks to buy, stocks to sell, stocks to short">
+  <style type="text/css">
+#logotext { margin:0px;padding:0px 3px;font-size:16px;
+}
+.menu{
+	border:0px;
+	margin:0px;
+	padding:0px;
+	font-family:sans-serif,arial,verdana,geneva,helvetica,sans-serif;
+	font-size:14px;
+	font-weight:normal;
+	}
+.menu ul{
+	height:28px;
+	list-style:none;
+	margin:0px;
+	padding:0px;
+	}
+	.menu li{
+		background:#222244;
+		border-top:1px solid #ddd;
+		border-left:1px solid #ccc;
+		border-right:1px solid #555;
+		border-bottom:1px solid #555;
+		float:left;
+		height:28px;
+		margin:0px 0px 0px 0px;
+		padding:0px;
+		}
+	.menu li a{
+		color:#fff;
+		display:block;
+		font-weight:normal;
+		line-height:28px;
+		margin:0px;
+		padding:0px 7px;
+		text-align:center;
+		text-decoration:none;
+		}
+	.menu li a:hover{
+		background:#ff6600;
+		color:#fff;
+		text-decoration:none;
+		}
+	.menu li ul{
+		background:#333;
+		margin:0px;
+		padding:0px;
+		border-top:1px solid #ccc;
+		border-left:1px solid #ccc;
+		border-right:1px solid #555;
+		border-bottom:1px solid #555;
+		display:none;
+		line-height:auto;
+		height:auto;
+		filter:alpha(opacity=95);
+		opacity:0.95;
+		position:absolute;
+		width:340px;
+		z-index:200;
+		/*top:1em;
+		/*left:0;*/
+		}
+	.menu li:hover ul{
+		display:block;
+		}
+	.menu li li {
+		margin:0px;
+		padding:0px;
+		border:0px;
+		display:block;
+		float:none;
+		width:340px;
+		}
+	.menu li ul a{
+		height:26px;
+		margin:0px;
+		padding:0px;
+		border:0px;
+		display:block;
+		font-size:14px;
+		font-style:normal;
+		padding:0px 0px 0px 7px;
+		text-align:left;
+		}
+	.menu li ul a:hover{
+		background:#ff6600;
+		color:#fff;
+		opacity:1.0;
+		filter:alpha(opacity=100);
+		}
+	.menu p{
+		clear:left;
+		}
+	.menu #current{
+		background:#333366;
+		color:#ffffff;
+		}
+	.menu #current:hover{
+		background:#ff6600;
+		color:#ffffff;
+		}
+</style>
+  <style type="text/css">
+.box{
+    display: none;
+    width: 100%;
+}
+
+a:hover + .box,.box:hover{
+    display: block;
+    position: relative;
+    z-index: 100;
+}
+
+#menuwrapper { position: fixed; top: 0; width:100%; background:#000000; }
+#maxmin { max-width: 1200px; min-width:600px; margin: 0 auto; border: none; padding: 0; }
+  a:link { color:#1a0dab; text-decoration:none; }
+  a:visited { color:#660066; text-decoration:none; }
+  a:hover { color:#1a0dab; text-decoration:underline; }
+
+* {margin:0; padding:0; outline:0;}
+#branding {font:11px Arial,Verdana;}
+body {font:11px sans-serif,Arial,Verdana; font-weight:400; color:#242424; margin:0px 1px 5px; background:#f5f9fc; text-align:left;}
+.h1title h1 {margin:0px 0px 2px; padding:2px 6px; color:#fff; background:#333366; font:16px sans-serif,Arial,Verdana; font-weight:600; text-decoration:none; text-align:left;}
+.h1title h1 a {margin:0px 0px 2px; padding:2px 6px; color:#fff; background:#333366; font:16px sans-serif,Arial,Verdana; font-weight:600; text-decoration:none; text-align:left;}
+.h1title h1 a:hover {color:#ff6600; text-decoration:none;}
+.h2title h2 {clear:both; margin:0px; padding:4px 6px; color:#eee; background:#222; font:16px sans-serif,Arial,Verdana; text-decoration:none; text-align:left;}
+.h2title h2:hover {color:#fff; background:#ff6600; text-decoration:none;}
+#titlelink {text-decoration:none;}
+img { border:none; vertical-align:top;}
+#tablewrapper { max-width:1230px; min-width:760px; margin:0 auto;}
+#tableheader {height:55px;}
+.search {float:left; padding:6px; border:1px solid #c6d5e1; background:#fff;}
+#tableheader select {float:left; font-size:11px; width:125px; padding:2px 4px 4px;}
+#tableheader input {float:left; font-size:11px; width:225px; padding:2px 4px 4px; margin-left:4px;}
+.details {float:right; padding-top:12px;}
+.details div {float:left; margin-left:15px; font-size:11px;}
+.tinytable { max-width:1230px; min-width:760px; solid #c6d5e1; solid #c6d5e1; border-bottom:none;}
+.tinytable th {background:#cce6ff; text-align:left; color:#000; border:1px solid #fff;}
+.tinytable th h3 {font:12px sans-serif,Arial,Verdana; font-weight:400; padding:2px 1px;}
+.tinytable td {padding:5px 2px; border-bottom:1px solid #c6d5e1; border-right:1px solid #c6d5e1;}
+.tinytable td div {overflow: hidden; white-space: nowrap;}
+.tinytable .head h3 {background:url(/images/sort.gif) 7px center no-repeat; cursor:pointer; padding-left:18px;}
+.tinytable .desc {background:#12648a;color:#fff;}
+.tinytable .asc {background:#12648a;color:#fff;}
+.tinytable .desc h3 {background:url(/images/desc.gif) 7px center no-repeat; cursor:pointer; padding-left:18px;}
+.tinytable .asc h3 {background:url(/images/asc.gif) 7px  center no-repeat; cursor:pointer; padding-left:18px;}
+.tinytable .head:hover {background:#12648a;color:#fff;}
+.tinytable .desc:hover {background:#12648a;color:#fff;}
+.tinytable .asc:hover {background:#12648a;color:#fff;}
+.tinytable .evenrow td {background:#fff}
+.tinytable .oddrow td {background:#ecf2f6}
+.tinytable td.evenselected {background:#ecf2f6}
+.tinytable td.oddselected {background:#dce6ee}
+.tinytable tfoot {background:#fff; font-weight:bold;}
+.tinytable tfoot td {text-align:right; padding:2px 3px 2px 0px;}
+#tablefooter {height:15px; margin-top:20px;}
+#tablenav {float:left;}
+#tablenav img {cursor:pointer;}
+#tablenav div {float:left; margin-right:15px;}
+#tablelocation {float:right; font-size:11px;}
+#tablelocation select {margin-right:3px;}
+#tablelocation div {float:left; margin-left:15px;}
+.page {margin-top:2px; font-style:italic;}
+#selectedrow td {background:#c6d5e1;}
+.tinytable tr:hover td {background-color:#cce6ff; }
+.tinytable th:hover {background-color:#cce6ff; }
+
+#chart {
+    line-height:30px;
+    background-color:#f5f9fc;
+    height:280px;
+    width:560px;
+    float:left;
+    padding:0px 5px;
+}
+#adLgRect {
+    width:356px;
+    float:left;
+    padding:0px 5px;
+}
+#results {
+    clear:both;
+    padding:0px;
+}
+</style>
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-NV4RCJYE6Q"></script>
+  <script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-NV4RCJYE6Q');
+</script>
+  <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-25031931-1', 'auto');
+  ga('send', 'pageview');
+</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4513325110590560" crossorigin="anonymous"></script>
+ </head>
+ <body onload="initDropDown(-100)">
+  <div id="tablewrapper">
+   <div class="menu" style="position:fixed; width:100%; z-index:100;">
+    <ul>
+     <li><a id="logotext" href="/"><b>OpenInsider</b></a> </li>
+     <li><a href="#">Latest</a>
+      <ul>
+       <li><a href="/latest-cluster-buys">Latest Cluster Buys</a></li>
+       <li><a href="/latest-penny-stock-buys">Latest Penny Stock Buys</a></li>
+       <li><a href="/latest-insider-trading">Latest Insider Trading (all filings)</a></li>
+       <li><a href="/insider-purchases">Latest Insider Purchases</a></li>
+       <li><a href="/latest-insider-purchases-25k">Latest Insider Purchases $25k+</a></li>
+       <li><a href="/latest-officer-purchases-25k">Latest Officer Purchases $25k+</a></li>
+       <li><a href="/latest-ceo-cfo-purchases-25k">Latest CEO/CFO Purchases $25k+</a></li>
+       <li><a href="/insider-sales">Latest Insider Sales</a></li>
+       <li><a href="/latest-insider-sales-100k">Latest Insider Sales $100k+</a></li>
+       <li><a href="/latest-officer-sales-100k">Latest Officer Sales $100k+</a></li>
+       <li><a href="/latest-ceo-cfo-sales-100k">Latest CEO/CFO Sales $100k+</a></li>
+      </ul> </li>
+     <li><a href="#">Top</a>
+      <ul>
+       <li><a href="/top-officer-purchases-of-the-day">Top Officer Purchases Today</a></li>
+       <li><a href="/top-officer-purchases-of-the-week">Top Officer Purchases Past Week</a></li>
+       <li><a href="/top-officer-purchases-of-the-month">Top Officer Purchases Past Month</a></li>
+       <li><a href="/top-insider-purchases-of-the-day">Top Insider Purchases Today</a></li>
+       <li><a href="/top-insider-purchases-of-the-week">Top Insider Purchases Past Week</a></li>
+       <li><a href="/top-insider-purchases-of-the-month">Top Insider Purchases Past Month</a></li>
+       <li><a href="/top-insider-sales-of-the-day">Top Insider Sales Today</a></li>
+       <li><a href="/top-insider-sales-of-the-week">Top Insider Sales Past Week</a></li>
+       <li><a href="/top-insider-sales-of-the-month">Top Insider Sales Past Month</a></li>
+      </ul> </li>
+     <li><a href="/charts">Charts</a> </li>
+     <li>
+      <div id="searchbox" style="margin:6px 3px;">
+       <form action="/search" method="GET">
+        <input type="search" name="q" style="font-size:14px;" placeholder="Tickers" maxlength="20000" size="8">
+        <input type="submit" value="Go">
+       </form>
+      </div> </li>
+    </ul>
+   </div>
+   <br>
+   <br>
+   <br>
+   <div class="h1title" style="clear:both;">
+    <h1>Insider Trading Screener - </h1>
+   </div>
+   <div id="subjectDetails" style="clear:both;"></div>
+   <div id="screener" style="clear:both;">
+    <form action="/screener" method="GET">
+     <table cellpadding="2" cellspacing="2">
+      <tbody>
+       <tr>
+        <td>
+         <fieldset> <legend><strong>General</strong></legend>
+          <table cellpadding="4" cellspacing="4" border="0">
+           <tbody>
+            <tr>
+             <td align="right">Tickers</td>
+             <td><input type="text" name="s" placeholder="Symbols or CIKs" value="" maxlength="20000" size="16"></td>
+            </tr>
+            <tr>
+             <td align="right">Insider</td>
+             <td><input type="text" name="o" placeholder="Insider Name or CIK" value="" maxlength="80" size="16"></td>
+            </tr>
+            <tr>
+             <td align="right">Sh Price $</td>
+             <td> <input type="number" name="pl" placeholder="Min" value="" min="0" max="9999" step="1" maxlength="4" size="3"> <input type="number" name="ph" placeholder="Max" value="" min="0" max="9999" step="1" maxlength="4" size="3"> </td>
+            </tr>
+            <tr>
+             <td align="right">Lqdty M$</td>
+             <td> <input type="number" name="ll" placeholder="Min" value="" min="0" max="999" step="0.1" maxlength="3" size="3"> <input type="number" name="lh" placeholder="Max" value="" min="0" max="999" step="1" maxlength="3" size="3"> </td>
+            </tr>
+           </tbody>
+          </table>
+         </fieldset>
+         <fieldset> <legend><strong>Date</strong></legend>
+          <table cellpadding="4" cellspacing="4" border="0">
+           <tbody>
+            <tr>
+             <td align="right">Filing Date</td>
+             <td> <select name="fd" id="dropdownFD"> <option value="0">All dates</option> <option value="-1">Custom</option> <option value="1">Latest day</option> <option value="3">Last 3 days</option> <option value="7" selected>Last 1 week</option> <option value="14">Last 2 weeks</option> <option value="30">Last 1 month</option> <option value="60">Last 2 months</option> <option value="90">Last 3 months</option> <option value="180">Last 6 months</option> <option value="365">Last 1 year</option> <option value="730">Last 2 years</option> <option value="1461">Last 4 years</option> </select> </td>
+            </tr>
+            <tr>
+             <td colspan="2"> &nbsp;&nbsp; <input type="text" id="textboxFD" name="fdr" placeholder="Filing Date Range" size="27" value=""> </td>
+            </tr>
+            <script type="text/javascript">
+    var textboxFD = document.getElementById('textboxFD');
+    var dropdownFD = document.getElementById('dropdownFD');
+
+    dropdownFD.onchange = function(){
+          if (this.value!=-1) textboxFD.value = '';
+    }
+    textboxFD.onfocus = function(){
+          if (this.value!='') dropdownFD.value = '-1';
+    }
+</script>
+            <tr>
+             <td align="right">Trade Date</td>
+             <td> <select name="td" id="dropdownTD"> <option value="0">All dates</option> <option value="-1">Custom</option> <option value="1">Latest day</option> <option value="3">Last 3 days</option> <option value="7" selected>Last 1 week</option> <option value="14">Last 2 weeks</option> <option value="30">Last 1 month</option> <option value="60">Last 2 months</option> <option value="90">Last 3 months</option> <option value="180">Last 6 months</option> <option value="365">Last 1 year</option> <option value="730">Last 2 years</option> <option value="1461">Last 4 years</option> </select> </td>
+            </tr>
+            <tr>
+             <td colspan="2"> &nbsp;&nbsp;<input type="text" id="textboxTD" name="tdr" placeholder="Trade Date Range" size="27" value=""> </td>
+            </tr>
+            <script type="text/javascript">
+    var textboxTD = document.getElementById('textboxTD');
+    var dropdownTD = document.getElementById('dropdownTD');
+
+    dropdownTD.onchange = function(){
+          if (this.value!=-1) textboxTD.value = '';
+    }
+    textboxTD.onfocus = function(){
+          if (this.value!='') dropdownTD.value = '-1';
+    }
+</script>
+            <tr>
+             <td align="right">Filing Delay</td>
+             <td> <input type="number" name="fdlyl" placeholder="Min" value="" min="0" max="99" step="1" maxlength="1" size="1"> <input type="number" name="fdlyh" placeholder="Max" value="" min="0" max="9999" step="1" maxlength="1" size="1"> </td>
+            </tr>
+            <tr>
+             <td align="right">N Days Ago</td>
+             <td><input type="number" name="daysago" value="" min="0" max="9999" step="1" maxlength="4" size="4"> </td>
+            </tr>
+           </tbody>
+          </table>
+         </fieldset> </td>
+        <td>
+         <table>
+          <tbody>
+           <tr>
+            <td colspan="2">
+             <fieldset> <legend><strong>Transaction Filing</strong></legend>
+              <table>
+               <tbody>
+                <tr>
+                 <td> <input type="checkbox" name="xp" value="1" checked>&nbsp;P&nbsp;-&nbsp;Purchase<br><input type="checkbox" name="xs" value="1" checked>&nbsp;S&nbsp;-&nbsp;Sale<br><input type="checkbox" name="xa" value="1">&nbsp;A&nbsp;-&nbsp;Grant<br><input type="checkbox" name="xd" value="1">&nbsp;D&nbsp;-&nbsp;Sale to Iss<br><input type="checkbox" name="xg" value="1">&nbsp;G&nbsp;-&nbsp;Gift<br></td>
+                 <td><input type="checkbox" name="xf" value="1">&nbsp;F&nbsp;-&nbsp;Tax<br><input type="checkbox" name="xm" value="1">&nbsp;M&nbsp;-&nbsp;Option Ex<br><input type="checkbox" name="xx" value="1">&nbsp;X&nbsp;-&nbsp;Option Ex<br><input type="checkbox" name="xc" value="1">&nbsp;C&nbsp;-&nbsp;Cnv Deriv<br><input type="checkbox" name="xw" value="1">&nbsp;W&nbsp;-&nbsp;Inherited<br></td>
+                </tr>
+                <tr>
+                 <td> <input type="checkbox" name="excludeDerivRelated" value="1" checked> No deriv </td>
+                 <td> <input type="checkbox" name="tmult" value="1"> Multiple Days </td>
+                </tr>
+                <tr>
+                 <td align="right">Traded K$</td>
+                 <td> <input type="number" name="vl" placeholder="Min" value="" min="0" max="2147483" step="5" maxlength="4" size="4"> <input type="number" name="vh" placeholder="Max" value="" min="0" max="2147483" step="5" maxlength="4" size="4"> </td>
+                </tr>
+                <tr>
+                 <td align="right">Own Chg %</td>
+                 <td> <input type="number" name="ocl" placeholder="Min" value="" min="-100" max="999" step="1" maxlength="3" size="3"> <input type="number" name="och" placeholder="Max" value="" min="-100" max="999" step="1" maxlength="3" size="3"> </td>
+                </tr>
+               </tbody>
+              </table>
+             </fieldset> </td>
+           </tr>
+           <tr>
+            <td colspan="2">
+             <fieldset style="width: 220px;"> <legend><strong>Industry</strong></legend>
+              <table>
+               <tbody>
+                <tr>
+                 <td style="text-align: left;"> <select name="sic1" id="sector" onchange="setSubsectors();"> <option value="-1" selected>All Sectors (except Funds)</option> <option value="1">Agriculture, Forestry, Fish</option> <option value="10">Mining</option> <option value="15">Construction</option> <option value="20">Manufacturing</option> <option value="40">Transportation &amp; Utilities</option> <option value="50">Wholesale Trade</option> <option value="52">Retail Trade</option> <option value="60">Financial</option> <option value="70">Services</option> <option value="0">Closed-End Funds</option> </select> </td>
+                </tr>
+                <tr>
+                 <td style="text-align: left;"> <select name="sic2" id="subsector" onchange="setIndustries();"> </select> </td>
+                </tr>
+                <tr>
+                 <td style="text-align: left;"> <select name="sic3" id="industry" onchange="setSicMinMax();"> </select> </td>
+                </tr>
+                <tr>
+                 <td> <input type="hidden" name="sicl" id="sicMin" placeholder="Min" value="" min="0" max="9999" step="1" maxlength="4" size="4"> <input type="hidden" name="sich" id="sicMax" placeholder="Max" value="" min="0" max="9999" step="1" maxlength="4" size="4"> </td>
+                </tr>
+               </tbody>
+              </table>
+             </fieldset> </td>
+           </tr>
+          </tbody>
+         </table> </td>
+        <td>
+         <table cellpadding="4" cellspacing="4" border="0">
+          <tbody>
+           <tr>
+            <td>
+             <fieldset> <legend><strong>Insider&nbsp;Title&nbsp;&nbsp;</strong></legend>
+              <script>
+function isoffCheck() {
+    var o = document.getElementById("isofficer");
+    document.getElementById("iscob").checked = o.checked;
+    document.getElementById("isceo").checked = o.checked;
+    document.getElementById("ispres").checked = o.checked;
+    document.getElementById("iscoo").checked = o.checked;
+    document.getElementById("iscfo").checked = o.checked;
+    document.getElementById("isgc").checked = o.checked;
+    document.getElementById("isvp").checked = o.checked;
+}
+function isoffClear() {
+    document.getElementById("isofficer").checked = false;
+}
+</script> &nbsp;
+              <input type="checkbox" name="isofficer" id="isofficer" value="1" onclick="isoffCheck()" checked> Officer
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="iscob" id="iscob" value="1" onclick="isoffClear()" checked> COB
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="isceo" id="isceo" value="1" onclick="isoffClear()" checked> CEO
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="ispres" id="ispres" value="1" onclick="isoffClear()" checked> Pres
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="iscoo" id="iscoo" value="1" onclick="isoffClear()" checked> COO
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="iscfo" id="iscfo" value="1" onclick="isoffClear()" checked> CFO
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="isgc" id="isgc" value="1" onclick="isoffClear()" checked> GC
+              <br> &nbsp;&nbsp;&nbsp;
+              <input type="checkbox" name="isvp" id="isvp" value="1" onclick="isoffClear()" checked> VP
+              <br> &nbsp;
+              <input type="checkbox" name="isdirector" value="1" checked> Director
+              <br> &nbsp;
+              <input type="checkbox" name="istenpercent" value="1" checked> 10%own
+              <br> &nbsp;
+              <input type="checkbox" name="isother" value="1"> Other
+             </fieldset> </td>
+           </tr>
+          </tbody>
+         </table> </td>
+        <td>
+         <table>
+          <tbody>
+           <tr>
+            <td align="right">Group by</td>
+            <td> <script type="text/javascript">
+function toggleGrp2() {
+	var sel = document.getElementById("grpsel").value;
+	document.getElementById("grp2").disabled = (sel==0) ? true: false;
+	document.getElementById("grp2set").style.visibility = (sel==0) ? 'hidden': 'visible';
+}
+</script> <select id="grpsel" name="grp" onchange="toggleGrp2();"> <option value="0" selected>Filing</option> <option value="2">Company</option> </select> </td>
+           </tr>
+          </tbody>
+         </table>
+         <div id="grp2set" style="visibility:hidden">
+          <fieldset> <legend><strong>Company Totals</strong></legend>
+           <table cellpadding="4" cellspacing="4" border="0">
+            <tbody>
+             <tr>
+              <td align="right">Filings</td>
+              <td> <input type="number" name="nfl" id="grp2" placeholder="Min" value="" min="0" max="99" step="1" maxlength="2" size="2"> <input type="number" name="nfh" id="grp2" placeholder="Max" value="" min="0" max="99" step="1" maxlength="2" size="2"> </td>
+             </tr>
+             <tr>
+              <td align="right">Insiders</td>
+              <td> <input type="number" name="nil" id="grp2" placeholder="Min" value="" min="0" max="9" step="1" maxlength="1" size="1"> <input type="number" name="nih" id="grp2" placeholder="Max" value="" min="0" max="9" step="1" maxlength="1" size="1"> </td>
+             </tr>
+             <tr>
+              <td align="right">Officers</td>
+              <td> <input type="number" name="nol" id="grp2" placeholder="Min" value="" min="0" max="9" step="1" maxlength="1" size="1"> <input type="number" name="noh" id="grp2" placeholder="Max" value="" min="0" max="9" step="1" maxlength="1" size="1"> </td>
+             </tr>
+             <tr>
+              <td align="right">Traded K$</td>
+              <td> <input type="number" name="v2l" id="grp2" placeholder="Min" value="" min="0" max="2147483" step="5" maxlength="4" size="4"> <input type="number" name="v2h" id="grp2" placeholder="Max" value="" min="0" max="2147483" step="5" maxlength="4" size="4"> </td>
+             </tr>
+             <tr>
+              <td align="right">Own Chg %</td>
+              <td> <input type="number" name="oc2l" id="grp2" placeholder="Min" value="" min="-100" max="999" step="1" maxlength="3" size="3"> <input type="number" name="oc2h" id="grp2" placeholder="Max" value="" min="-100" max="999" step="1" maxlength="3" size="3"> </td>
+             </tr>
+            </tbody>
+           </table>
+          </fieldset>
+         </div>
+         <table>
+          <tbody>
+           <tr>
+            <td align="right">Sort by</td>
+            <td> <select name="sortcol"> <option value="0">Filing Date</option> <option value="1">Trade Date</option> <option value="2">Ticker Symbol</option> <option value="8" selected>Trade Value</option> </select> </td>
+           </tr>
+           <tr>
+            <td align="right">Max Results</td>
+            <td><input type="number" name="cnt" value="100" min="100" max="1000" step="100" maxlength="5" size="5"></td>
+           </tr>
+           <tr>
+            <td align="right">Page</td>
+            <td><input type="number" name="page" value="1" min="1" max="99" step="1" maxlength="2" size="2"></td>
+           </tr>
+           <tr>
+            <td> </td>
+            <td><input type="submit" value="Search"> &nbsp;&nbsp;&nbsp;<a href="/screener">clear</a> </td>
+           </tr>
+          </tbody>
+         </table> </td>
+        <td valign="top"> </td>
+       </tr>
+      </tbody>
+     </table>
+    </form>
+   </div>
+   <div id="results">
+    100 results. <a href="https://finviz.com/quote.ashx?a=30565236&amp;t=UNH,MDIA,LLY,ENPH,BX,BECN,OSH,URI,ABT,DPZ,CRVL,HCCI,BEAM,FSLR,OWL,IBKR,MCD,SEDG,MKTW,SNEX,MRNA,ADI,HLGN,WMT,SLP,TCBI,SMRT,ADBE,FBP,CTLT,PTC,VZIO,SQSP,SWAV,PLXS,WNC,NUE,TEVA,NDLS,FISV,HZNP,RKT,SFNC,CBSH,PQEFF,UFPI,FTCI,TRUP,HBAN,ZM,VC,SEMR,PCVX,ACN,GNTY,R,CHMG,CNXN,AR,NBHC,MICS,SGH,ANTX,APPH,GLPI,GOOG,TZOO,NPTN,IRDM,QUIK,ARE,SYNH,NILE,AYI,ZVIA,VOXX,TPTX,CHSCP,PVL,UMPQ,APOG,ALV,ADX,MLI" target="_blank">Finviz</a>
+    <br>
+    <table cellpadding="0" cellspacing="2" border="0">
+     <thead>
+      <tr align="right">
+       <td>TC</td>
+       <td>cnt</td>
+       <td>1d</td>
+       <td>1w</td>
+       <td>1m</td>
+       <td>6m</td>
+      </tr>
+     </thead>
+     <tbody></tbody>
+    </table>
+   </div>
+   <table width="100%" cellpadding="0" cellspacing="0" border="0" class="tinytable">
+    <thead>
+     <tr>
+      <th width="31"><h3>X</h3></th>
+      <th width="108"><h3>Filing&nbsp;Date</h3></th>
+      <th width="64"><h3>Trade&nbsp;Date</h3></th>
+      <th width="45"><h3>Ticker</h3></th>
+      <th width="190"><h3>Company&nbsp;Name</h3></th>
+      <th width="180"><h3>Insider&nbsp;Name</h3></th>
+      <th width="100"><h3>Title</h3></th>
+      <th><h3>Trade&nbsp;Type&nbsp;&nbsp;</h3></th>
+      <th><h3>Price</h3></th>
+      <th><h3>Qty</h3></th>
+      <th><h3>Owned</h3></th>
+      <th><h3>ΔOwn</h3></th>
+      <th><h3>Value</h3></th>
+      <th><h3>1d</h3></th>
+      <th><h3>1w</h3></th>
+      <th><h3>1m</h3></th>
+      <th><h3>6m</h3></th>
+     </tr>
+    </thead>
+    <tbody>
+     <tr style="background:#ffdfdf">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/731766/000120919122043412/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 17:58:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/UNH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UNH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UNH</a></b></td>
+      <td><a href="/UNH">Unitedhealth Group Inc</a></td>
+      <td><a href="/insider/Hemsley-Stephen-J/1180162" title="1,235,962 direct shares
+C/o Unitedhealth Group
+9900 Bren Road East
+Minnetonka, MN 55343">Hemsley Stephen J</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$534.27</td>
+      <td align="right">-99,312</td>
+      <td align="right">1,235,962</td>
+      <td align="right">-7%</td>
+      <td align="right">-$53,059,224</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#dfffdf">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1784254/000156761922014654/xslF345X03/doc1.xml" title="SEC Form 4" target="_blank">2022-07-29 16:00:35</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/MDIA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MDIA&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MDIA</a></b></td>
+      <td><a href="/MDIA">Mediaco Holding Inc.</a></td>
+      <td><a href="/insider/Standard-General-L.P./1409888" title="19,102,596 indirect shares
+767 Fifth Avenue
+12Th Floor
+New York, NY 10153">Standard General L.P.</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$2.32</td>
+      <td align="right">+12,899,480</td>
+      <td align="right">19,102,596</td>
+      <td align="right">+208%</td>
+      <td align="right">+$29,873,906</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffdfdf">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/59478/000120919122043434/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 11:43:31</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/LLY" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=LLY&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">LLY</a></b></td>
+      <td><a href="/LLY">Eli Lilly &amp; Co</a></td>
+      <td><a href="/insider/Lilly-Endowment-Inc/316011" title="103,875,441 direct shares
+2801 North Meridian Street
+Indianapolis, IN 46208-0068">Lilly Endowment Inc</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$332.86</td>
+      <td align="right">-89,458</td>
+      <td align="right">103,875,441</td>
+      <td align="right">0%</td>
+      <td align="right">-$29,776,514</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffdfdf">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1463101/000146310122000095/xslF345X03/wf-form4_165913074633147.xml" title="SEC Form 4" target="_blank">2022-07-29 17:39:36</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ENPH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ENPH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ENPH</a></b></td>
+      <td><a href="/ENPH">Enphase Energy, Inc.</a></td>
+      <td><a href="/insider/Kortlang-Benjamin-John/1543816" title="205,442 direct shares
+C/o Enphase Energy, Inc.
+47281 Bayside Parkway
+Fremont, CA 94538">Kortlang Benjamin John</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$268.59</td>
+      <td align="right">-50,000</td>
+      <td align="right">205,442</td>
+      <td align="right">-20%</td>
+      <td align="right">-$13,429,419</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffdfdf">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1463101/000146310122000096/xslF345X03/wf-form4_165913099701382.xml" title="SEC Form 4" target="_blank">2022-07-29 17:43:39</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ENPH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ENPH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ENPH</a></b></td>
+      <td><a href="/ENPH">Enphase Energy, Inc.</a></td>
+      <td><a href="/insider/Gomo-Steven-J/1224095" title="41,456 direct shares
+C/o Enphase Energy, Inc.
+47281 Bayside Parkway
+Fremont, CA 94538">Gomo Steven J</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$279.21</td>
+      <td align="right">-35,822</td>
+      <td align="right">41,456</td>
+      <td align="right">-46%</td>
+      <td align="right">-$10,001,854</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe0e0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1393818/000120919122043568/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 18:56:02</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/BX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=BX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">BX</a></b></td>
+      <td><a href="/BX">Blackstone Inc.</a></td>
+      <td><a href="/insider/Baratta-Joseph/1574706" title="1,141,965 direct shares
+C/O Blackstone Inc.
+345 Park Ave
+New York, NY 10154">Baratta Joseph</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$93.95</td>
+      <td align="right">-71,223</td>
+      <td align="right">1,141,965</td>
+      <td align="right">-6%</td>
+      <td align="right">-$6,691,057</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#e0ffe0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1124941/000120919122043482/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:06:31</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-29
+       </div></td>
+      <td><b> <a href="/BECN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=BECN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">BECN</a></b></td>
+      <td><a href="/BECN">Beacon Roofing Supply Inc</a></td>
+      <td><a href="/insider/Cd-R-Investment-Associates-Ix--Ltd./1624514" title="14,859,579 indirect shares
+C/O Clayton, Dubilier &amp; Rice, LLC
+375 Park Avenue
+New York, NY 10152">Cd&amp;R Investment Associates Ix, Ltd.</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$57.73</td>
+      <td align="right">+103,931</td>
+      <td align="right">14,859,579</td>
+      <td align="right">+1%</td>
+      <td align="right">+$5,999,999</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe1e1">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1564406/000120919122043567/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 18:55:29</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/OSH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=OSH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">OSH</a></b></td>
+      <td><a href="/OSH">Oak Street Health, Inc.</a></td>
+      <td><a href="/insider/Myers-Griffin/1793352" title="5,054,159 indirect shares
+C/o Oak Street Health, Inc.
+30 W. Monroe St., Suite 1200
+Chicago, IL 60603">Myers Griffin</a></td>
+      <td>Chief Medical Officer</td>
+      <td>S - Sale</td>
+      <td align="right">$28.63</td>
+      <td align="right">-200,000</td>
+      <td align="right">5,054,159</td>
+      <td align="right">-4%</td>
+      <td align="right">-$5,726,650</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe1e1">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1067701/000120919122043531/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:32:20</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/URI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=URI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">URI</a></b></td>
+      <td><a href="/URI">United Rentals, Inc.</a></td>
+      <td><a href="/insider/Flannery-Matthew-John/1486607" title="86,964 direct shares
+C/o United Rentals, Inc.
+100 First Stamford Place, Suite 700
+Stamford, CT 06902">Flannery Matthew John</a></td>
+      <td>Pres, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$300.00</td>
+      <td align="right">-19,076</td>
+      <td align="right">86,964</td>
+      <td align="right">-18%</td>
+      <td align="right">-$5,722,800</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe1e1">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1800/000141588922008020/xslF345X03/form4-07282022_020750.xml" title="SEC Form 4" target="_blank">2022-07-28 17:20:11</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ABT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ABT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ABT</a></b></td>
+      <td><a href="/ABT">Abbott Laboratories</a></td>
+      <td><a href="/insider/Starks-Daniel-J/902132" title="6,923,758 direct shares
+100 Abbott Park Road
+Abbott Park, IL 60064">Starks Daniel J</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$109.14</td>
+      <td align="right">-50,000</td>
+      <td align="right">6,923,758</td>
+      <td align="right">-1%</td>
+      <td align="right">-$5,456,994</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe1e1">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1286681/000120919122043261/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-27 16:21:05</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/DPZ" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=DPZ&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">DPZ</a></b></td>
+      <td><a href="/DPZ">Dominos Pizza Inc</a></td>
+      <td><a href="/insider/Balson-Andrew/1212449" title="65,776 indirect shares
+C/o Domino'S Pizza
+30 Frank Lloyd Wright Drive
+Ann Arbor, MI 48105">Balson Andrew</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$385.64</td>
+      <td align="right">-14,000</td>
+      <td align="right">65,776</td>
+      <td align="right">-18%</td>
+      <td align="right">-$5,398,971</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe1e1">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/874866/000125652022000013/xslF345X03/edgardoc.xml" title="SEC Form 4" target="_blank">2022-07-28 17:47:59</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/CRVL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CRVL&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CRVL</a></b></td>
+      <td><a href="/CRVL">Corvel Corp</a></td>
+      <td><a href="/insider/Corstar-Holdings-Inc/1256520" title="6,423,218 direct shares
+6640 Shady Oak Rd., Ste. 370
+Eden Prairie, MN 55344">Corstar Holdings Inc</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$160.69</td>
+      <td align="right">-29,657</td>
+      <td align="right">6,423,218</td>
+      <td align="right">0%</td>
+      <td align="right">-$4,765,714</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#e2ffe2">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1403431/000140343122000058/xslF345X03/wf-form4_165895976908821.xml" title="SEC Form 4" target="_blank">2022-07-27 18:09:47</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/HCCI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HCCI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HCCI</a></b></td>
+      <td><a href="/HCCI">Heritage-Crystal Clean, Inc.</a></td>
+      <td><a href="/insider/Recatto-Brian/1394882" title="820,505 direct shares
+C/o Heritage-Crystal Clean, Inc.
+2175 Point Boulevard, Suite 375
+Elgin, IL 60123">Recatto Brian</a></td>
+      <td>Pres, CEO</td>
+      <td>P - Purchase</td>
+      <td align="right">$27.00</td>
+      <td align="right">+150,000</td>
+      <td align="right">820,505</td>
+      <td align="right">+22%</td>
+      <td align="right">+$4,050,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe2e2">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1745999/000089924322027077/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:06:01</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/BEAM" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=BEAM&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">BEAM</a></b></td>
+      <td><a href="/BEAM">Beam Therapeutics Inc.</a></td>
+      <td><a href="/insider/Evans-John-M./1786304" title="1,211,520 indirect shares
+C/O Beam Therapeutics Inc.,
+238 Main Street
+Cambridge, MA 02142">Evans John M.</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$65.76</td>
+      <td align="right">-50,000</td>
+      <td align="right">1,211,520</td>
+      <td align="right">-4%</td>
+      <td align="right">-$3,288,081</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe3e3">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1274494/000112760222019914/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:06:13</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/FSLR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=FSLR&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">FSLR</a></b></td>
+      <td><a href="/FSLR">First Solar, Inc.</a></td>
+      <td><a href="/insider/Widmar-Mark-R/1362208" title="81,861 direct shares
+C/o First Solar, Inc.
+350 West Washington Street, Suite 600
+Tempe, AZ 85281-1244">Widmar Mark R</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$89.72</td>
+      <td align="right">-32,239</td>
+      <td align="right">81,861</td>
+      <td align="right">-28%</td>
+      <td align="right">-$2,892,483</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe3e3">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1823945/000089924322027074/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:05:26</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/OWL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=OWL&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">OWL</a></b></td>
+      <td><a href="/OWL">Blue Owl Capital Inc.</a></td>
+      <td><a href="/insider/Blue-Pool-Capital-Ltd/1675772" title="48,626,043 direct shares
+25/F Hysan Place
+500 Hennessy Road, Causeway Bay
+Hong Kong, K3 ">Blue Pool Capital Ltd</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$10.87</td>
+      <td align="right">-247,600</td>
+      <td align="right">48,626,043</td>
+      <td align="right">-1%</td>
+      <td align="right">-$2,691,412</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe4e4">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1381197/000156761922014604/xslF345X03/doc1.xml" title="SEC Form 4" target="_blank">2022-07-28 18:06:19</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/IBKR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=IBKR&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">IBKR</a></b></td>
+      <td><a href="/IBKR">Interactive Brokers Group, Inc.</a></td>
+      <td><a href="/insider/Peterffy-Thomas/1391405" title="1,627,511 direct shares
+Phillips Point East Tower, Suite 1001
+777 S. Flagler Drive
+West Palm Beach, FL 33401">Peterffy Thomas</a></td>
+      <td>COB</td>
+      <td>S - Sale</td>
+      <td align="right">$56.54</td>
+      <td align="right">-40,000</td>
+      <td align="right">1,627,511</td>
+      <td align="right">-2%</td>
+      <td align="right">-$2,261,728</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe4e4">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/63908/000156761922014639/xslF345X03/doc1.xml" title="SEC Form 4" target="_blank">2022-07-29 13:17:08</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/MCD" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MCD&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MCD</a></b></td>
+      <td><a href="/MCD">McDonalds Corp</a></td>
+      <td><a href="/insider/Borden-Ian-Frederick/1647334" title="7,131 direct shares
+McDonald'S Corporation
+110 North Carpenter Street
+Chicago, IL 60607">Borden Ian Frederick</a></td>
+      <td>Pres, International</td>
+      <td>S - Sale</td>
+      <td align="right">$255.80</td>
+      <td align="right">-8,000</td>
+      <td align="right">7,131</td>
+      <td align="right">-53%</td>
+      <td align="right">-$2,046,400</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe4e4">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1419612/000117891322002832/xslF345X03/zk2228214.xml" title="SEC Form 4" target="_blank">2022-07-29 15:00:43</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SEDG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SEDG&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SEDG</a></b></td>
+      <td><a href="/SEDG">Solaredge Technologies, Inc.</a></td>
+      <td><a href="/insider/Adest-Meir/1637230" title="176,057 direct shares
+1 Hamada Street
+Herziliya Pituach, L3 4673335">Adest Meir</a></td>
+      <td>VP, Core Technologies</td>
+      <td>S - Sale</td>
+      <td align="right">$321.08</td>
+      <td align="right">-6,252</td>
+      <td align="right">176,057</td>
+      <td align="right">-3%</td>
+      <td align="right">-$2,007,410</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#e4ffe4">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1805651/000112760222019957/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 18:11:44</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/MKTW" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MKTW&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MKTW</a></b></td>
+      <td><a href="/MKTW">Marketwise, Inc.</a></td>
+      <td><a href="/insider/Stansberry-Frank-Porter/1871335" title="1,131,383 direct shares
+
+1125 N. Charles St.
+Baltimore, MD 21201">Stansberry Frank Porter</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$2.67</td>
+      <td align="right">+706,249</td>
+      <td align="right">1,131,383</td>
+      <td align="right">+166%</td>
+      <td align="right">+$1,882,464</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe5e5">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/913760/000091376022000112/xslF345X03/wf-form4_165904359036651.xml" title="SEC Form 4" target="_blank">2022-07-28 17:27:23</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/SNEX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SNEX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SNEX</a></b></td>
+      <td><a href="/SNEX">Stonex Group Inc.</a></td>
+      <td><a href="/insider/Oconnor-Sean-Michael/1208362" title="1,193,383 direct shares
+230 Park Avenue
+10Th Floor
+New York, NY 10169">Oconnor Sean Michael</a></td>
+      <td>CEO, Pres</td>
+      <td>S - Sale</td>
+      <td align="right">$85.98</td>
+      <td align="right">-19,700</td>
+      <td align="right">1,193,383</td>
+      <td align="right">-2%</td>
+      <td align="right">-$1,693,824</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe5e5">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1682852/000089924322027097/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 19:30:23</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/MRNA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MRNA&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MRNA</a></b></td>
+      <td><a href="/MRNA">Moderna, Inc.</a></td>
+      <td><a href="/insider/Afeyan-Noubar/1222012" title="15,363,952 direct shares
+C/O Flagship Pioneering, Inc.
+55 Cambridge Parkway, Suite 800E
+Cambridge, MA 02142">Afeyan Noubar</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$161.00</td>
+      <td align="right">-10,000</td>
+      <td align="right">15,363,952</td>
+      <td align="right">0%</td>
+      <td align="right">-$1,610,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe5e5">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/6281/000000628122000211/xslF345X03/wf-form4_165912574630524.xml" title="SEC Form 4" target="_blank">2022-07-29 16:16:13</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ADI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ADI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ADI</a></b></td>
+      <td><a href="/ADI">Analog Devices Inc</a></td>
+      <td><a href="/insider/Doluca-Tunc/1183597" title="738,484 indirect shares
+One Analog Way
+Wilmington, MA 01887">Doluca Tunc</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$170.00</td>
+      <td align="right">-9,200</td>
+      <td align="right">738,484</td>
+      <td align="right">-1%</td>
+      <td align="right">-$1,564,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1840292/000110465922084385/xslF345X03/tm2222202-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-29 21:57:57</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/HLGN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HLGN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HLGN</a></b></td>
+      <td><a href="/HLGN">Heliogen, Inc.</a></td>
+      <td><a href="/insider/Neotribe-Partners-I--LLC/1696925" title="878,884 indirect shares
+2744 Sand Hill  Rd. #150
+Menlo Park, CA 94025">Neotribe Partners I, LLC</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$2.37</td>
+      <td align="right">-551,024</td>
+      <td align="right">878,884</td>
+      <td align="right">-39%</td>
+      <td align="right">-$1,308,092</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/104169/000112760222019956/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:31:19</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/WMT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=WMT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">WMT</a></b></td>
+      <td><a href="/WMT">Walmart Inc.</a></td>
+      <td><a href="/insider/McMillon-C-Douglas/1335782" title="1,860,601 direct shares
+702 S.W. 8Th Street
+Bentonville, AR 72716-0215">McMillon C Douglas</a></td>
+      <td>Pres, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$127.05</td>
+      <td align="right">-9,708</td>
+      <td align="right">1,860,601</td>
+      <td align="right">-1%</td>
+      <td align="right">-$1,233,391</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1023459/000102345922000021/xslF345X03/wf-form4_165910939542448.xml" title="SEC Form 4" target="_blank">2022-07-29 11:43:36</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SLP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SLP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SLP</a></b></td>
+      <td><a href="/SLP">Simulations Plus, Inc.</a></td>
+      <td><a href="/insider/Woltosz-Walter-S/1222526" title="4,117,634 direct shares
+42505 10Th St. West
+Lancaster, CA 93534-7059">Woltosz Walter S</a></td>
+      <td>Dir, 10%</td>
+      <td>S - Sale</td>
+      <td align="right">$61.19</td>
+      <td align="right">-20,000</td>
+      <td align="right">4,117,634</td>
+      <td align="right">0%</td>
+      <td align="right">-$1,223,782</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#e6ffe6">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1077428/000107742822000108/xslF345X03/wf-form4_165904380054748.xml" title="SEC Form 4" target="_blank">2022-07-28 17:31:46</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/TCBI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TCBI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TCBI</a></b></td>
+      <td><a href="/TCBI">Texas Capital Bancshares Inc/tx</a></td>
+      <td><a href="/insider/Stallings-Robert-W/900764" title="211,165 indirect shares
+2000 McKinney Avenue
+Suite 700
+Dallas, TX 75201">Stallings Robert W</a></td>
+      <td>Dir</td>
+      <td>P - Purchase</td>
+      <td align="right">$55.09</td>
+      <td align="right">+22,000</td>
+      <td align="right">211,165</td>
+      <td align="right">+12%</td>
+      <td align="right">+$1,212,020</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1564406/000120919122043278/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-27 18:15:41</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/OSH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=OSH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">OSH</a></b></td>
+      <td><a href="/OSH">Oak Street Health, Inc.</a></td>
+      <td><a href="/insider/Price-Geoffrey-M/1793313" title="1,543,270 indirect shares
+C/O Oak Street Health, Inc.
+30 W. Monroe St., Suite 1200
+Chicago, IL 60603">Price Geoffrey M</a></td>
+      <td>Chief Innovation Officer</td>
+      <td>S - Sale</td>
+      <td align="right">$27.97</td>
+      <td align="right">-40,000</td>
+      <td align="right">1,543,270</td>
+      <td align="right">-3%</td>
+      <td align="right">-$1,118,680</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1837014/000089924322027094/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:58:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SMRT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SMRT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SMRT</a></b></td>
+      <td><a href="/SMRT">Smartrent, Inc.</a></td>
+      <td><a href="/insider/Bain-Capital-Venture-Investors--LLC/1309469" title="20,288,048 indirect shares
+200 Clarendon Street
+Boston, MA 02116">Bain Capital Venture Investors, LLC</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$5.26</td>
+      <td align="right">-206,679</td>
+      <td align="right">20,288,048</td>
+      <td align="right">-1%</td>
+      <td align="right">-$1,087,567</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/796343/000079634322000174/xslF345X03/wf-form4_165904527016485.xml" title="SEC Form 4" target="_blank">2022-07-28 17:54:59</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ADBE" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ADBE&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ADBE</a></b></td>
+      <td><a href="/ADBE">Adobe Inc.</a></td>
+      <td><a href="/insider/Belsky-Scott/1674730" title="26,089 direct shares
+Adobe Inc.
+345 Park Avenue
+San Jose, CA 95110">Belsky Scott</a></td>
+      <td>EVP, CPO, Creative Cloud</td>
+      <td>S - Sale</td>
+      <td align="right">$393.58</td>
+      <td align="right">-2,711</td>
+      <td align="right">26,089</td>
+      <td align="right">-9%</td>
+      <td align="right">-$1,066,995</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1057706/000120919122043554/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:43:01</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/FBP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=FBP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">FBP</a></b></td>
+      <td><a href="/FBP">First Bancorp /pr/</a></td>
+      <td><a href="/insider/Aleman-Aurelio/1180593" title="1,107,159 direct shares
+P.O. Box 9146
+San Juan, PR 00908-0146">Aleman Aurelio</a></td>
+      <td>Pres, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$14.99</td>
+      <td align="right">-70,000</td>
+      <td align="right">1,107,159</td>
+      <td align="right">-6%</td>
+      <td align="right">-$1,049,415</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe6e6">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1596783/000159678322000064/xslF345X03/wf-form4_165905168301707.xml" title="SEC Form 4" target="_blank">2022-07-28 19:41:39</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/CTLT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CTLT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CTLT</a></b></td>
+      <td><a href="/CTLT">Catalent, Inc.</a></td>
+      <td><a href="/insider/Chiminski-John-R/1482197" title="169,547 direct shares
+C/O Catalent, Inc.
+14 Schoolhouse Road
+Somerset, NJ 08873">Chiminski John R</a></td>
+      <td>Exec Chair</td>
+      <td>S - Sale</td>
+      <td align="right">$106.90</td>
+      <td align="right">-9,691</td>
+      <td align="right">169,547</td>
+      <td align="right">-5%</td>
+      <td align="right">-$1,035,968</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe7e7">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/857005/000165495422010274/xslF345X03/section16.xml" title="SEC Form 4" target="_blank">2022-07-29 16:11:36</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/PTC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PTC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PTC</a></b></td>
+      <td><a href="/PTC">Ptc Inc.</a></td>
+      <td><a href="/insider/Moret-Blake-D./1515154" title="10,025,058 indirect shares
+C/o Rockwell Automation, Inc.
+1201 South Second Street
+Milwaukee, WI 53204">Moret Blake D.</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$124.68</td>
+      <td align="right">-8,000</td>
+      <td align="right">10,025,058</td>
+      <td align="right">0%</td>
+      <td align="right">-$997,451</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe7e7">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1835591/000110465922083658/xslF345X03/tm2222050-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-28 16:14:00</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/VZIO" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VZIO&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VZIO</a></b></td>
+      <td><a href="/VZIO">Vizio Holding Corp.</a></td>
+      <td><a href="/insider/Amtran-Technology-Co.-Ltd./1853332" title="12,875,877 direct shares
+17F, No. 268, Lian Chen Rd.
+Jhonghe District
+New Taipei City, F5 235">Amtran Technology Co. Ltd.</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$9.17</td>
+      <td align="right">-100,000</td>
+      <td align="right">12,875,877</td>
+      <td align="right">-1%</td>
+      <td align="right">-$917,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe7e7">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1496963/000089924322027081/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:30:47</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SQSP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SQSP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SQSP</a></b></td>
+      <td><a href="/SQSP">Squarespace, Inc.</a></td>
+      <td><a href="/insider/Index-Ventures-Growth-I-Parallel-Entrepreneur-Fund-%28Jersey%29-L.P./1466948" title="15,895,964 indirect shares
+5Th Floor, 44 Esplanade
+St. Helier, Y9 JE1 3FG">Index Ventures Growth I Parallel Entrepreneur Fund (Jersey) L.P.</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$20.02</td>
+      <td align="right">-44,300</td>
+      <td align="right">15,895,964</td>
+      <td align="right">0%</td>
+      <td align="right">-$886,752</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe7e7">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1642545/000120919122043316/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-27 20:03:08</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/SWAV" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SWAV&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SWAV</a></b></td>
+      <td><a href="/SWAV">Shockwave Medical, Inc.</a></td>
+      <td><a href="/insider/Zacharias-Isaac/1768265" title="74,563 direct shares
+C/O Shockwave Medical, Inc.
+5403 Betsy Ross Drive
+Santa Clara, CA 95054">Zacharias Isaac</a></td>
+      <td>Pres, CCO</td>
+      <td>S - Sale</td>
+      <td align="right">$208.28</td>
+      <td align="right">-4,000</td>
+      <td align="right">74,563</td>
+      <td align="right">-5%</td>
+      <td align="right">-$833,119</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe7e7">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/785786/000120919122043564/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 18:44:37</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/PLXS" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PLXS&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PLXS</a></b></td>
+      <td><a href="/PLXS">Plexus Corp</a></td>
+      <td><a href="/insider/Kelsey-Todd-P./1411282" title="140,049 indirect shares
+One Plexus Way
+Neenah, WI 54956">Kelsey Todd P.</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$92.00</td>
+      <td align="right">-9,000</td>
+      <td align="right">140,049</td>
+      <td align="right">-6%</td>
+      <td align="right">-$828,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe8e8">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/879526/000106299322016873/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 11:20:34</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/WNC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=WNC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">WNC</a></b></td>
+      <td><a href="/WNC">Wabash National Corp</a></td>
+      <td><a href="/insider/Yeagy-Brent-L/1578670" title="459,079 direct shares
+3900 McCarty Lane
+Lafayette, IN 47905">Yeagy Brent L</a></td>
+      <td>Pres, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$17.00</td>
+      <td align="right">-39,930</td>
+      <td align="right">459,079</td>
+      <td align="right">-8%</td>
+      <td align="right">-$678,810</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe8e8">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1823945/000089924322026959/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 16:07:16</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/OWL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=OWL&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">OWL</a></b></td>
+      <td><a href="/OWL">Blue Owl Capital Inc.</a></td>
+      <td><a href="/insider/Blue-Pool-Capital-Ltd/1675772" title="48,873,643 direct shares
+25/F Hysan Place
+500 Hennessy Road, Causeway Bay
+Hong Kong, K3 ">Blue Pool Capital Ltd</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$10.66</td>
+      <td align="right">-60,400</td>
+      <td align="right">48,873,643</td>
+      <td align="right">0%</td>
+      <td align="right">-$643,864</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe9e9">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1835591/000110465922083124/xslF345X03/tm2221920-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-27 15:06:37</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/VZIO" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VZIO&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VZIO</a></b></td>
+      <td><a href="/VZIO">Vizio Holding Corp.</a></td>
+      <td><a href="/insider/Amtran-Technology-Co.-Ltd./1853332" title="12,975,877 direct shares
+17F, No. 268, Lian Chen Rd.
+Jhonghe District
+New Taipei City, F5 235">Amtran Technology Co. Ltd.</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$9.12</td>
+      <td align="right">-60,000</td>
+      <td align="right">12,975,877</td>
+      <td align="right">0%</td>
+      <td align="right">-$547,400</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe9e9">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/73309/000112760222019801/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-27 12:50:59</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/NUE" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NUE&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NUE</a></b></td>
+      <td><a href="/NUE">Nucor Corp</a></td>
+      <td><a href="/insider/Behr-Allen-C/1812083" title="59,734 direct shares
+1915 Rexford Road
+Charlotte, NC 28211">Behr Allen C</a></td>
+      <td>EVP</td>
+      <td>S - Sale</td>
+      <td align="right">$122.57</td>
+      <td align="right">-4,353</td>
+      <td align="right">59,734</td>
+      <td align="right">-7%</td>
+      <td align="right">-$533,542</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe9e9">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/59478/000120919122043241/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-27 10:26:58</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/LLY" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=LLY&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">LLY</a></b></td>
+      <td><a href="/LLY">Eli Lilly &amp; Co</a></td>
+      <td><a href="/insider/Lilly-Endowment-Inc/316011" title="103,964,899 direct shares
+2801 North Meridian Street
+Indianapolis, IN 46208-0068">Lilly Endowment Inc</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$332.52</td>
+      <td align="right">-1,601</td>
+      <td align="right">103,964,899</td>
+      <td align="right">0%</td>
+      <td align="right">-$532,371</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe9e9">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/818686/000120919122043422/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 07:02:19</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/TEVA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TEVA&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TEVA</a></b></td>
+      <td><a href="/TEVA">Teva Pharmaceutical Industries Ltd</a></td>
+      <td><a href="/insider/Stark-David-Matthew/1722360" title="2,974 direct shares
+C/O Teva Pharmaceutical Industries Ltd.
+124 Dvora Hanevi'A St.,
+Tel Aviv, L3 6944020">Stark David Matthew</a></td>
+      <td>EVP GC</td>
+      <td>S - Sale</td>
+      <td align="right">$9.04</td>
+      <td align="right">-58,163</td>
+      <td align="right">2,974</td>
+      <td align="right">-95%</td>
+      <td align="right">-$525,590</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#e9ffe9">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1275158/000120919122043391/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 16:55:33</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/NDLS" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NDLS&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NDLS</a></b></td>
+      <td><a href="/NDLS">Noodles &amp; Co</a></td>
+      <td><a href="/insider/Mill-Road-Capital-Iii--L.P./1767199" title="5,305,483 direct shares
+382 Greenwich Avenue
+Suite One
+Greenwich, CT 06830">Mill Road Capital Iii, L.P.</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$4.51</td>
+      <td align="right">+113,371</td>
+      <td align="right">5,305,483</td>
+      <td align="right">+2%</td>
+      <td align="right">+$511,458</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffe9e9">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1835591/000110465922084205/xslF345X03/tm2222146-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-29 15:58:45</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/VZIO" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VZIO&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VZIO</a></b></td>
+      <td><a href="/VZIO">Vizio Holding Corp.</a></td>
+      <td><a href="/insider/Amtran-Technology-Co.-Ltd./1853332" title="12,825,877 direct shares
+17F, No. 268, Lian Chen Rd.
+Jhonghe District
+New Taipei City, F5 235">Amtran Technology Co. Ltd.</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$9.13</td>
+      <td align="right">-50,000</td>
+      <td align="right">12,825,877</td>
+      <td align="right">0%</td>
+      <td align="right">-$456,500</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeaea">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/798354/000120919122043383/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 16:15:47</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/FISV" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=FISV&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">FISV</a></b></td>
+      <td><a href="/FISV">Fiserv Inc</a></td>
+      <td><a href="/insider/Chiarello-Guy/1654667" title="276,363 direct shares
+255 Fiserv Drive
+Brookfield, WI 53045">Chiarello Guy</a></td>
+      <td>COO</td>
+      <td>S - Sale</td>
+      <td align="right">$105.00</td>
+      <td align="right">-4,000</td>
+      <td align="right">276,363</td>
+      <td align="right">-1%</td>
+      <td align="right">-$420,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeaea">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1419612/000117891322002828/xslF345X03/zk2228206.xml" title="SEC Form 4" target="_blank">2022-07-28 15:00:45</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/SEDG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SEDG&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SEDG</a></b></td>
+      <td><a href="/SEDG">Solaredge Technologies, Inc.</a></td>
+      <td><a href="/insider/Adest-Meir/1637230" title="182,309 direct shares
+1 Hamada Street
+Herziliya Pituach, L3 4673335">Adest Meir</a></td>
+      <td>VP, Core Technologies</td>
+      <td>S - Sale</td>
+      <td align="right">$300.68</td>
+      <td align="right">-1,352</td>
+      <td align="right">182,309</td>
+      <td align="right">-1%</td>
+      <td align="right">-$406,519</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeaea">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1492426/000120919122043548/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:21:12</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-29
+       </div></td>
+      <td><b> <a href="/HZNP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HZNP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HZNP</a></b></td>
+      <td><a href="/HZNP">Horizon Therapeutics Public Ltd Co</a></td>
+      <td><a href="/insider/Pasternak-Andy/1792746" title="34,047 direct shares
+C/O Horizon Therapeutics Plc,
+70 St. Stephen?S Green
+Dublin, L2 D02 E2X4">Pasternak Andy</a></td>
+      <td>EVP, Chief Business Officer</td>
+      <td>S - Sale</td>
+      <td align="right">$82.57</td>
+      <td align="right">-4,850</td>
+      <td align="right">34,047</td>
+      <td align="right">-12%</td>
+      <td align="right">-$400,483</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#eaffea">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1805284/000095014222002366/xslF345X03/es220274895_4-farner.xml" title="SEC Form 4" target="_blank">2022-07-29 17:13:39</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/RKT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=RKT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">RKT</a></b></td>
+      <td><a href="/RKT">Rocket Companies, Inc.</a></td>
+      <td><a href="/insider/Farner-Jay/1816502" title="3,611,007 direct shares
+C/o Rocket Companies, Inc.
+1050 Woodward Avenue
+Detroit, MI 48226">Farner Jay</a></td>
+      <td>CEO</td>
+      <td>P - Purchase</td>
+      <td align="right">$9.53</td>
+      <td align="right">+41,800</td>
+      <td align="right">3,611,007</td>
+      <td align="right">+1%</td>
+      <td align="right">+$398,346</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeaea">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/90498/000117184322005166/xslF345X03/ownership.xml" title="SEC Form 4" target="_blank">2022-07-29 13:33:22</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SFNC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SFNC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SFNC</a></b></td>
+      <td><a href="/SFNC">Simmons First National Corp</a></td>
+      <td><a href="/insider/Bass-Dean-O./1738140" title="238,014 direct shares
+5845 Honea Egypt Road
+Montgomery, TX 77316">Bass Dean O.</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$22.99</td>
+      <td align="right">-15,331</td>
+      <td align="right">238,014</td>
+      <td align="right">-6%</td>
+      <td align="right">-$352,488</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#eaffea">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/22356/000112760222019845/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-28 14:12:49</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/CBSH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CBSH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CBSH</a></b></td>
+      <td><a href="/CBSH">Commerce Bancshares Inc /mo/</a></td>
+      <td><a href="/insider/Brauer-Blackford-F/1929906" title="16,027 direct shares
+1000 Walnut St.
+Kansas City, MO 64106">Brauer Blackford F</a></td>
+      <td>Dir</td>
+      <td>P - Purchase</td>
+      <td align="right">$68.87</td>
+      <td align="right">+5,000</td>
+      <td align="right">16,027</td>
+      <td align="right">+45%</td>
+      <td align="right">+$344,372</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ebffeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1561180/000102155022000020/xslF345X03/primary_doc.xml" title="SEC Form 4" target="_blank">2022-07-28 13:17:11</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/PQEFF" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PQEFF&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PQEFF</a></b></td>
+      <td><a href="/PQEFF">Petroteq Energy Inc.</a></td>
+      <td><a href="/insider/Cantone-Anthony-J/1021550" title="124,543,658 direct shares
+
+,  ">Cantone Anthony J</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$0.12</td>
+      <td align="right">+2,666,666</td>
+      <td align="right">124,543,658</td>
+      <td align="right">+2%</td>
+      <td align="right">+$320,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/796343/000079634322000175/xslF345X03/wf-form4_165904529597021.xml" title="SEC Form 4" target="_blank">2022-07-28 17:55:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ADBE" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ADBE&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ADBE</a></b></td>
+      <td><a href="/ADBE">Adobe Inc.</a></td>
+      <td><a href="/insider/Lewnes-Ann/1597445" title="23,988 direct shares
+Adobe Inc.
+345 Park Avenue
+San Jose, CA 95110">Lewnes Ann</a></td>
+      <td>EVP, CMO, Corp Strategy, Dev</td>
+      <td>S - Sale</td>
+      <td align="right">$400.00</td>
+      <td align="right">-794</td>
+      <td align="right">23,988</td>
+      <td align="right">-3%</td>
+      <td align="right">-$317,600</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/912767/000121465922009308/xslF345X03/marketforms-56761.xml" title="SEC Form 4" target="_blank">2022-07-29 11:22:44</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/UFPI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UFPI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UFPI</a></b></td>
+      <td><a href="/UFPI">Ufp Industries Inc</a></td>
+      <td><a href="/insider/Cole-Michael-R/1186276" title="210,564 direct shares
+2801 East Beltline, N.E.
+Grand Rapids, MI 49525">Cole Michael R</a></td>
+      <td>CFO</td>
+      <td>S - Sale</td>
+      <td align="right">$89.00</td>
+      <td align="right">-3,438</td>
+      <td align="right">210,564</td>
+      <td align="right">-2%</td>
+      <td align="right">-$305,982</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1800/000141588922008001/xslF345X03/form4-07272022_020700.xml" title="SEC Form 4" target="_blank">2022-07-27 17:45:10</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ABT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ABT&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ABT</a></b></td>
+      <td><a href="/ABT">Abbott Laboratories</a></td>
+      <td><a href="/insider/Mateus-Fernando/1895703" title="14,503 direct shares
+100 Abbott Park Road
+Abbott Park, IL 60064">Mateus Fernando</a></td>
+      <td>SVP</td>
+      <td>S - Sale</td>
+      <td align="right">$109.05</td>
+      <td align="right">-2,457</td>
+      <td align="right">14,503</td>
+      <td align="right">-14%</td>
+      <td align="right">-$267,943</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1828161/000089924322027082/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:30:58</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/FTCI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=FTCI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">FTCI</a></b></td>
+      <td><a href="/FTCI">Ftc Solar, Inc.</a></td>
+      <td><a href="/insider/Arc-Family-Trust/1857126" title="19,365,357 direct shares
+20 Montchanin Road, Suite 100
+Greenville, DE 19807">Arc Family Trust</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$4.10</td>
+      <td align="right">-64,000</td>
+      <td align="right">19,365,357</td>
+      <td align="right">0%</td>
+      <td align="right">-$262,400</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1371285/000137128522000177/xslF345X03/wf-form4_165904409573104.xml" title="SEC Form 4" target="_blank">2022-07-28 17:35:43</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/TRUP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TRUP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TRUP</a></b></td>
+      <td><a href="/TRUP">Trupanion, Inc.</a></td>
+      <td><a href="/insider/Rawlings-Darryl/1611679" title="857,109 indirect shares
+C/O Trupanion, Inc.
+6100 4Th Avenue South, Suite 400
+Seattle, WA 98108">Rawlings Darryl</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$64.21</td>
+      <td align="right">-4,000</td>
+      <td align="right">857,109</td>
+      <td align="right">0%</td>
+      <td align="right">-$256,836</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ebffeb">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/49196/000122520822009028/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 17:00:30</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/HBAN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HBAN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HBAN</a></b></td>
+      <td><a href="/HBAN">Huntington Bancshares Inc /md/</a></td>
+      <td><a href="/insider/Torgow-Gary/1251487" title="894,415 direct shares
+Huntington Center
+41 S. High Street
+Columbus, OH 43287">Torgow Gary</a></td>
+      <td>Dir</td>
+      <td>P - Purchase</td>
+      <td align="right">$12.90</td>
+      <td align="right">+19,382</td>
+      <td align="right">894,415</td>
+      <td align="right">+2%</td>
+      <td align="right">+$249,975</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffebeb">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1585521/000158552122000168/xslF345X03/wf-form4_165904575289283.xml" title="SEC Form 4" target="_blank">2022-07-28 18:03:10</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ZM" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ZM&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ZM</a></b></td>
+      <td><a href="/ZM">Zoom Video Communications, Inc.</a></td>
+      <td><a href="/insider/Bawa-Aparna/1773301" title="75,339 indirect shares
+C/o Zoom Video Communications, Inc.
+55 Almaden Boulevard, 6Th Floor
+San Jose, CA 95113">Bawa Aparna</a></td>
+      <td>COO</td>
+      <td>S - Sale</td>
+      <td align="right">$101.47</td>
+      <td align="right">-2,404</td>
+      <td align="right">75,339</td>
+      <td align="right">-3%</td>
+      <td align="right">-$243,943</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1111335/000120919122043522/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:26:42</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/VC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VC</a></b></td>
+      <td><a href="/VC">Visteon Corp</a></td>
+      <td><a href="/insider/Rouquet-Jerome/1499776" title="4,943 direct shares
+Visteon Corporation
+One Village Center Drive
+Van Buren Township, MI 48111">Rouquet Jerome</a></td>
+      <td>SVP, CFO</td>
+      <td>S - Sale</td>
+      <td align="right">$135.00</td>
+      <td align="right">-1,750</td>
+      <td align="right">4,943</td>
+      <td align="right">-26%</td>
+      <td align="right">-$236,250</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1831840/000183184022000044/xslF345X03/wf-form4_165912860777392.xml" title="SEC Form 4" target="_blank">2022-07-29 17:03:54</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/SEMR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SEMR&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SEMR</a></b></td>
+      <td><a href="/SEMR">Semrush Holdings, Inc.</a></td>
+      <td><a href="/insider/Shchegolev-Oleg/1849417" title="2,177,589 indirect shares
+C/o Semrush Holdings, Inc.
+800 Boylston Street, Suite 2475
+Boston, MA 02199">Shchegolev Oleg</a></td>
+      <td>CEO, 10%</td>
+      <td>S - Sale</td>
+      <td align="right">$12.09</td>
+      <td align="right">-19,443</td>
+      <td align="right">2,177,589</td>
+      <td align="right">-1%</td>
+      <td align="right">-$235,119</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1649094/000120919122043395/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 17:02:41</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/PCVX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PCVX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PCVX</a></b></td>
+      <td><a href="/PCVX">Vaxcyte, Inc.</a></td>
+      <td><a href="/insider/Pickering-Grant/1258693" title="851,286 indirect shares
+C/O Vaxcyte, Inc.
+825 Industrial Road, Ste. 300
+San Carlos, CA 94070">Pickering Grant</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$23.27</td>
+      <td align="right">-10,000</td>
+      <td align="right">851,286</td>
+      <td align="right">-1%</td>
+      <td align="right">-$232,664</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1467373/000146737322000224/xslF345X03/wf-form4_165912807621962.xml" title="SEC Form 4" target="_blank">2022-07-29 16:54:54</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ACN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ACN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ACN</a></b></td>
+      <td><a href="/ACN">Accenture Plc</a></td>
+      <td><a href="/insider/Shook-Ellyn/1600370" title="21,400 direct shares
+C/O Accenture
+500 W. Madison Street
+Chicago, IL 60661">Shook Ellyn</a></td>
+      <td>Chief Leadership, HR Officer</td>
+      <td>S - Sale</td>
+      <td align="right">$300.00</td>
+      <td align="right">-750</td>
+      <td align="right">21,400</td>
+      <td align="right">-3%</td>
+      <td align="right">-$225,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1058867/000120919122043352/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 13:21:43</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/GNTY" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GNTY&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GNTY</a></b></td>
+      <td><a href="/GNTY">Guaranty Bancshares Inc /tx/</a></td>
+      <td><a href="/insider/Abston-Tyson-T/1269262" title="130,049 indirect shares
+C/o Guaranty Bancshares, Inc.
+201 South Jefferson Ave
+Mount Pleasant, TX 75455">Abston Tyson T</a></td>
+      <td>COB, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$36.58</td>
+      <td align="right">-6,000</td>
+      <td align="right">130,049</td>
+      <td align="right">-4%</td>
+      <td align="right">-$219,480</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/85961/000008596122000155/xslF345X03/wf-form4_165912497306803.xml" title="SEC Form 4" target="_blank">2022-07-29 16:03:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-29
+       </div></td>
+      <td><b> <a href="/R" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=R&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">R</a></b></td>
+      <td><a href="/R">Ryder System Inc</a></td>
+      <td><a href="/insider/Ravindran-Rajeev/1725974" title="12,661 direct shares
+11690 N.W. 105Th Street
+Miami, FL 33178">Ravindran Rajeev</a></td>
+      <td>EVP, CIO</td>
+      <td>S - Sale</td>
+      <td align="right">$77.60</td>
+      <td align="right">-2,750</td>
+      <td align="right">12,661</td>
+      <td align="right">-18%</td>
+      <td align="right">-$213,400</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/763563/000076356322000060/xslF345X03/wf-form4_165895298515024.xml" title="SEC Form 4" target="_blank">2022-07-27 16:16:39</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/CHMG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CHMG&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CHMG</a></b></td>
+      <td><a href="/CHMG">Chemung Financial Corp</a></td>
+      <td><a href="/insider/Bentley-Ronald-M/1337448" title="44,753 direct shares
+One Chemung Canal Plaza
+Po Box 1522
+Elmira, NY 14902-1522">Bentley Ronald M</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$45.09</td>
+      <td align="right">-4,522</td>
+      <td align="right">44,753</td>
+      <td align="right">-9%</td>
+      <td align="right">-$203,887</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1050377/000156218022005762/xslF345X03/primarydocument.xml" title="SEC Form 4" target="_blank">2022-07-28 16:26:04</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/CNXN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CNXN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CNXN</a></b></td>
+      <td><a href="/CNXN">Pc Connection Inc</a></td>
+      <td><a href="/insider/Gallup-Patricia/1186630" title="14,514,497 direct shares
+730 Milford Road
+Merrimack, NH 03054">Gallup Patricia</a></td>
+      <td>COB, Chief Admin Officer, 10%</td>
+      <td>S - Sale</td>
+      <td align="right">$46.97</td>
+      <td align="right">-4,329</td>
+      <td align="right">14,514,497</td>
+      <td align="right">0%</td>
+      <td align="right">-$203,313</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1433270/000110465922083695/xslF345X03/tm2221891-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-28 16:48:48</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/AR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=AR&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">AR</a></b></td>
+      <td><a href="/AR">Antero Resources Corp</a></td>
+      <td><a href="/insider/Clark-Robert-J/20769" title="71,227 direct shares
+1615 Wynkoop Street
+Denver, CO 80202">Clark Robert J</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$40.17</td>
+      <td align="right">-5,000</td>
+      <td align="right">71,227</td>
+      <td align="right">-7%</td>
+      <td align="right">-$200,850</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1475841/000141588922008016/xslF345X03/form4-07282022_020738.xml" title="SEC Form 4" target="_blank">2022-07-28 17:06:55</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/NBHC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NBHC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NBHC</a></b></td>
+      <td><a href="/NBHC">National Bank Holdings Corp</a></td>
+      <td><a href="/insider/Dean-Robert-E/1300695" title="29,056 direct shares
+7800 East Orchard Road
+Suite 300
+Greenwood Village, CO 80111">Dean Robert E</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$41.00</td>
+      <td align="right">-4,826</td>
+      <td align="right">29,056</td>
+      <td align="right">-14%</td>
+      <td align="right">-$197,866</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffecec">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1475841/000141588922008015/xslF345X03/form4-07282022_020747.xml" title="SEC Form 4" target="_blank">2022-07-28 17:06:34</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/NBHC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NBHC&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NBHC</a></b></td>
+      <td><a href="/NBHC">National Bank Holdings Corp</a></td>
+      <td><a href="/insider/Dean-Robert-E/1300695" title="29,056 direct shares
+7800 East Orchard Road
+Suite 300
+Greenwood Village, CO 80111">Dean Robert E</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$41.00</td>
+      <td align="right">-4,826</td>
+      <td align="right">29,056</td>
+      <td align="right">-14%</td>
+      <td align="right">-$197,866</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ecffec">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/923601/000121465922009364/xslF345X03/marketforms-56765.xml" title="SEC Form 4" target="_blank">2022-07-29 16:30:56</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/MICS" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MICS&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MICS</a></b></td>
+      <td><a href="/MICS">Singing Machine Co Inc</a></td>
+      <td><a href="/insider/Bitnile-Holdings--Inc./896493" title="1,675,000 indirect shares
+11411 Southern Highlands Parkway
+Suite 240
+Las Vegas, NV 89141">Bitnile Holdings, Inc.</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$7.57</td>
+      <td align="right">+25,000</td>
+      <td align="right">1,675,000</td>
+      <td align="right">+2%</td>
+      <td align="right">+$189,348</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#edffed">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1616533/000156761922014613/xslF345X03/doc1.xml" title="SEC Form 4" target="_blank">2022-07-28 19:15:43</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/SGH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SGH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SGH</a></b></td>
+      <td><a href="/SGH">Smart Global Holdings, Inc.</a></td>
+      <td><a href="/insider/Adams-Mark/1349123" title="934,895 direct shares
+C/o Smart Global Holdings, Inc.
+39870 Eureka Drive
+Newark, CA 94560">Adams Mark</a></td>
+      <td>Pres, CEO</td>
+      <td>P - Purchase</td>
+      <td align="right">$18.10</td>
+      <td align="right">+10,000</td>
+      <td align="right">934,895</td>
+      <td align="right">+1%</td>
+      <td align="right">+$180,980</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#edffed">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1880438/000110465922083728/xslF345X03/tm2222103-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-28 17:16:50</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ANTX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ANTX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ANTX</a></b></td>
+      <td><a href="/ANTX">An2 Therapeutics, Inc.</a></td>
+      <td><a href="/insider/Ra-Capital-Management--L.P./1346824" title="3,771,608 indirect shares
+200 Berkeley Street, 18Th Floor
+Boston, MA 02116">Ra Capital Management, L.P.</a></td>
+      <td>10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$7.78</td>
+      <td align="right">+23,219</td>
+      <td align="right">3,771,608</td>
+      <td align="right">+1%</td>
+      <td align="right">+$180,675</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeded">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1467373/000146737322000225/xslF345X03/wf-form4_165912809780345.xml" title="SEC Form 4" target="_blank">2022-07-29 16:55:22</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/ACN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ACN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ACN</a></b></td>
+      <td><a href="/ACN">Accenture Plc</a></td>
+      <td><a href="/insider/Unruch-Joel/1783059" title="25,601 direct shares
+C/O Accenture
+500 W. Madison Street
+Chicago, IL 60661">Unruch Joel</a></td>
+      <td>GC, Corp Secretary</td>
+      <td>S - Sale</td>
+      <td align="right">$300.00</td>
+      <td align="right">-555</td>
+      <td align="right">25,601</td>
+      <td align="right">-2%</td>
+      <td align="right">-$166,500</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeded">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1807707/000180770722000082/xslF345X03/wf-form4_165895813665938.xml" title="SEC Form 4" target="_blank">2022-07-27 17:42:30</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/APPH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=APPH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">APPH</a></b></td>
+      <td><a href="/APPH">Appharvest, Inc.</a></td>
+      <td><a href="/insider/Lee-David-J./1605182" title="1,243,399 direct shares
+C/O Appharvest, Inc.
+500 Appalachian Way
+Morehead, KY 40351">Lee David J.</a></td>
+      <td>Pres</td>
+      <td>S - Sale</td>
+      <td align="right">$3.78</td>
+      <td align="right">-43,533</td>
+      <td align="right">1,243,399</td>
+      <td align="right">-3%</td>
+      <td align="right">-$164,555</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeded">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1575965/000159396822001269/xslF345X03/primary_01.xml" title="SEC Form 4" target="_blank">2022-07-28 16:59:23</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/GLPI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GLPI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GLPI</a></b></td>
+      <td><a href="/GLPI">Gaming &amp; Leisure Properties, Inc.</a></td>
+      <td><a href="/insider/Moore-Brandon-John/1596013" title="185,993 direct shares
+845 Berkshire Blvd.
+Suite 200
+Wyomissing, PA 19610">Moore Brandon John</a></td>
+      <td>EVP, GC,amp; Sec</td>
+      <td>S - Sale</td>
+      <td align="right">$52.00</td>
+      <td align="right">-3,000</td>
+      <td align="right">185,993</td>
+      <td align="right">-2%</td>
+      <td align="right">-$156,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeded">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1652044/000120919122043551/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:23:16</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-29
+       </div></td>
+      <td><b> <a href="/GOOG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GOOG&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GOOG</a></b></td>
+      <td><a href="/GOOG">Alphabet Inc.</a></td>
+      <td><a href="/insider/Arnold-Frances/1665419" title="20,950 direct shares
+C/o Alphabet Inc.
+1600 Amphitheatre Pkwy
+Mountain View, CA 94043">Arnold Frances</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$116.44</td>
+      <td align="right">-1,230</td>
+      <td align="right">20,950</td>
+      <td align="right">-6%</td>
+      <td align="right">-$143,219</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#edffed">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1133311/000162828022019855/xslF345X03/wf-form4_165913271821438.xml" title="SEC Form 4" target="_blank">2022-07-29 18:12:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-29
+       </div></td>
+      <td><b> <a href="/TZOO" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TZOO&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TZOO</a></b></td>
+      <td><a href="/TZOO">Travelzoo</a></td>
+      <td><a href="/insider/Bartel-Holger/1249577" title="516,000 direct shares
+800 West El Camino Real, Suite 275
+Mountain View, CA 94040">Bartel Holger</a></td>
+      <td>Global CEO</td>
+      <td>P - Purchase</td>
+      <td align="right">$5.44</td>
+      <td align="right">+25,000</td>
+      <td align="right">516,000</td>
+      <td align="right">+5%</td>
+      <td align="right">+$136,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeeee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1227025/000122702522000129/xslF345X03/edgardoc.xml" title="SEC Form 4" target="_blank">2022-07-27 15:36:08</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/NPTN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NPTN&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NPTN</a></b></td>
+      <td><a href="/NPTN">Neophotonics Corp</a></td>
+      <td><a href="/insider/Jenks-Timothy-Storrs/1488795" title="531,788 direct shares
+3081 Zanker Rd
+San Jose, CA 95134">Jenks Timothy Storrs</a></td>
+      <td>CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$15.78</td>
+      <td align="right">-8,500</td>
+      <td align="right">531,788</td>
+      <td align="right">-2%</td>
+      <td align="right">-$134,130</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeeee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1418819/000120919122043501/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:15:18</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/IRDM" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=IRDM&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">IRDM</a></b></td>
+      <td><a href="/IRDM">Iridium Communications Inc.</a></td>
+      <td><a href="/insider/Morgan-Kathleen-A./1897799" title="49,399 direct shares
+C/O Iridium Communications Inc.
+1750 Tysons Boulevard, Suite 1400
+Mc Lean, VA 22102">Morgan Kathleen A.</a></td>
+      <td>GC</td>
+      <td>S - Sale</td>
+      <td align="right">$44.00</td>
+      <td align="right">-3,000</td>
+      <td align="right">49,399</td>
+      <td align="right">-6%</td>
+      <td align="right">-$132,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeeee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/882508/000141588922007991/xslF345X03/form4-07272022_100742.xml" title="SEC Form 4" target="_blank">2022-07-27 13:02:53</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/QUIK" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=QUIK&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">QUIK</a></b></td>
+      <td><a href="/QUIK">Quicklogic Corp</a></td>
+      <td><a href="/insider/Faith-Brian-C/1518884" title="135,339 direct shares
+2220 Lundy Avenue
+San Jose, CA 95131">Faith Brian C</a></td>
+      <td>Pres, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$7.71</td>
+      <td align="right">-16,395</td>
+      <td align="right">135,339</td>
+      <td align="right">-11%</td>
+      <td align="right">-$126,478</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeeee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1035443/000103544322000231/xslF345X03/wf-form4_165912680249244.xml" title="SEC Form 4" target="_blank">2022-07-29 16:33:44</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/ARE" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ARE&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ARE</a></b></td>
+      <td><a href="/ARE">Alexandria Real Estate Equities, Inc.</a></td>
+      <td><a href="/insider/Clem-Jackie-B./1818090" title="22,824 direct shares
+C/o Alexandria Real Estate Equities, Inc
+26 North Euclid Avenue
+Pasadena, CA 91101">Clem Jackie B.</a></td>
+      <td>GC, Secretary</td>
+      <td>S - Sale</td>
+      <td align="right">$156.60</td>
+      <td align="right">-794</td>
+      <td align="right">22,824</td>
+      <td align="right">-3%</td>
+      <td align="right">-$124,340</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffeeee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1610950/000120919122043546/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:01:13</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/SYNH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SYNH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SYNH</a></b></td>
+      <td><a href="/SYNH">Syneos Health, Inc.</a></td>
+      <td><a href="/insider/Brooks-Michael-Lee/1892101" title="56,894 indirect shares
+C/O Syneos Health, Inc.
+1030 Sync Street
+Morrisville, NC 27560">Brooks Michael Lee</a></td>
+      <td>COO</td>
+      <td>S - Sale</td>
+      <td align="right">$78.00</td>
+      <td align="right">-1,502</td>
+      <td align="right">56,894</td>
+      <td align="right">-3%</td>
+      <td align="right">-$117,156</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#eeffee">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/896493/000121465922009366/xslF345X03/marketforms-56766.xml" title="SEC Form 4" target="_blank">2022-07-29 16:30:35</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/NILE" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=NILE&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">NILE</a></b></td>
+      <td><a href="/NILE">Bitnile Holdings, Inc.</a></td>
+      <td><a href="/insider/Ault-Milton-C-III/1212502" title="33,106,870 indirect shares
+11411 Southern Highlands Parkway
+Suite 240
+Las Vegas, NV 89141">Ault Milton C III</a></td>
+      <td>Exec COB, 10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$0.38</td>
+      <td align="right">+301,000</td>
+      <td align="right">33,106,870</td>
+      <td align="right">+1%</td>
+      <td align="right">+$115,283</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#efffef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1144215/000114421522000078/xslF345X03/wf-form4_165912933228308.xml" title="SEC Form 4" target="_blank">2022-07-29 17:15:53</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/AYI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=AYI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">AYI</a></b></td>
+      <td><a href="/AYI">Acuity Brands Inc</a></td>
+      <td><a href="/insider/O%27Shaughnessy-Laura/1813477" title="1,479 direct shares
+C/o Acuity Brands, Inc.
+1170 Peachtree Street Ne, Ste 2300
+Atlanta, GA 30309">O'Shaughnessy Laura</a></td>
+      <td>Dir</td>
+      <td>P - Purchase</td>
+      <td align="right">$174.54</td>
+      <td align="right">+575</td>
+      <td align="right">1,479</td>
+      <td align="right">+64%</td>
+      <td align="right">+$100,361</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1854139/000120919122043465/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 15:38:12</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/ZVIA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ZVIA&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ZVIA</a></b></td>
+      <td><a href="/ZVIA">Zevia Pbc</a></td>
+      <td><a href="/insider/Spence-Padraic-L./1462709" title="2,430,999 direct shares
+C/O Zevia Pbc
+15821 Ventura Blvd., Suite 145
+Encino, CA 91436">Spence Padraic L.</a></td>
+      <td>Chair, CEO</td>
+      <td>S - Sale</td>
+      <td align="right">$3.09</td>
+      <td align="right">-32,444</td>
+      <td align="right">2,430,999</td>
+      <td align="right">-1%</td>
+      <td align="right">-$100,226</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#efffef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/807707/000121465922009300/xslF345X03/marketforms-56747.xml" title="SEC Form 4" target="_blank">2022-07-29 07:00:19</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/VOXX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VOXX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VOXX</a></b></td>
+      <td><a href="/VOXX">Voxx International Corp</a></td>
+      <td><a href="/insider/Kahli-Beat/1809071" title="5,490,000 indirect shares
+C/O Avalon Park Group
+3801 Avalon Park East Blvd., Suite 400
+Orlando, FL 32828">Kahli Beat</a></td>
+      <td>Dir, 10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$9.51</td>
+      <td align="right">+10,000</td>
+      <td align="right">5,490,000</td>
+      <td align="right">0%</td>
+      <td align="right">+$95,100</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#efffef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/807707/000121465922009236/xslF345X03/marketforms-56741.xml" title="SEC Form 4" target="_blank">2022-07-28 07:00:19</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/VOXX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VOXX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VOXX</a></b></td>
+      <td><a href="/VOXX">Voxx International Corp</a></td>
+      <td><a href="/insider/Kahli-Beat/1809071" title="5,480,000 indirect shares
+C/O Avalon Park Group
+3801 Avalon Park East Blvd., Suite 400
+Orlando, FL 32828">Kahli Beat</a></td>
+      <td>Dir, 10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$8.95</td>
+      <td align="right">+10,000</td>
+      <td align="right">5,480,000</td>
+      <td align="right">0%</td>
+      <td align="right">+$89,500</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#efffef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/807707/000121465922009218/xslF345X03/marketforms-56732.xml" title="SEC Form 4" target="_blank">2022-07-27 07:00:13</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/VOXX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=VOXX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">VOXX</a></b></td>
+      <td><a href="/VOXX">Voxx International Corp</a></td>
+      <td><a href="/insider/Kahli-Beat/1809071" title="5,470,000 indirect shares
+C/O Avalon Park Group
+3801 Avalon Park East Blvd., Suite 400
+Orlando, FL 32828">Kahli Beat</a></td>
+      <td>Dir, 10%</td>
+      <td>P - Purchase</td>
+      <td align="right">$8.88</td>
+      <td align="right">+10,000</td>
+      <td align="right">5,470,000</td>
+      <td align="right">0%</td>
+      <td align="right">+$88,800</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1595893/000120919122043510/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:18:14</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/TPTX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TPTX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TPTX</a></b></td>
+      <td><a href="/TPTX">Turning Point Therapeutics, Inc.</a></td>
+      <td><a href="/insider/Tombesi-Paolo/1707648" title="28,700 direct shares
+10628 Science Center Drive
+San Diego, CA 92121">Tombesi Paolo</a></td>
+      <td>EVP, CFO</td>
+      <td>S - Sale</td>
+      <td align="right">$74.94</td>
+      <td align="right">-1,183</td>
+      <td align="right">28,700</td>
+      <td align="right">-4%</td>
+      <td align="right">-$88,654</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/823277/000082327722000035/xslF345X03/wf-form4_165886754231347.xml" title="SEC Form 4" target="_blank">2022-07-26 16:32:37</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/CHSCP" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=CHSCP&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">CHSCP</a></b></td>
+      <td><a href="/CHSCP">Chs Inc</a></td>
+      <td><a href="/insider/Farrell-Mark-L/1691603" title="3,000 direct shares
+5500 Cenex Drive
+Inver Grove Heights, MN 55077">Farrell Mark L</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$29.51</td>
+      <td align="right">-3,000</td>
+      <td align="right">3,000</td>
+      <td align="right">-50%</td>
+      <td align="right">-$88,530</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right">M</td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1520048/000110465922084223/xslF345X03/tm2222114-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-07-29 16:08:13</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/PVL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PVL&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PVL</a></b></td>
+      <td><a href="/PVL">Permianville Royalty Trust</a></td>
+      <td><a href="/insider/Permianville-Holdings-LLC/1752284" title="8,576,598 direct shares
+20 Horseneck Lane
+Greenwich, CT 06830">Permianville Holdings LLC</a></td>
+      <td>10%</td>
+      <td>S - Sale</td>
+      <td align="right">$3.76</td>
+      <td align="right">-23,402</td>
+      <td align="right">8,576,598</td>
+      <td align="right">0%</td>
+      <td align="right">-$87,941</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1077771/000112760222019907/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 13:32:20</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/UMPQ" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UMPQ&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UMPQ</a></b></td>
+      <td><a href="/UMPQ">Umpqua Holdings Corp</a></td>
+      <td><a href="/insider/Nixon-Torran-B/1689701" title="212,604 indirect shares
+One Sw Columbia Street, Suite 1200
+Portland, OR 97204">Nixon Torran B</a></td>
+      <td>Umpqua Bank Pres</td>
+      <td>S - Sale</td>
+      <td align="right">$17.58</td>
+      <td align="right">-5,000</td>
+      <td align="right">212,604</td>
+      <td align="right">-2%</td>
+      <td align="right">-$87,900</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/6845/000120919122043461/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 14:16:48</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/APOG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=APOG&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">APOG</a></b></td>
+      <td><a href="/APOG">Apogee Enterprises, Inc.</a></td>
+      <td><a href="/insider/Johnson-Gary-Robert/1159191" title="36,600 direct shares
+4400 West 78Th Street
+Suite 520
+Minneapolis, MN 55435">Johnson Gary Robert</a></td>
+      <td>Treasurer, SVP</td>
+      <td>S - Sale</td>
+      <td align="right">$40.00</td>
+      <td align="right">-2,187</td>
+      <td align="right">36,600</td>
+      <td align="right">-6%</td>
+      <td align="right">-$87,480</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#ffefef">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1034670/000089924322026940/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-28 09:18:34</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/ALV" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ALV&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ALV</a></b></td>
+      <td><a href="/ALV">Autoliv Inc</a></td>
+      <td><a href="/insider/Mogefors-Svante/1321564" title="12,739 direct shares
+C/O Autoliv, Inc.
+Klarabergsviadukten 70, Section B7
+Stockholm, V7 SE-111 64">Mogefors Svante</a></td>
+      <td>See Remarks</td>
+      <td>S - Sale</td>
+      <td align="right">$84.00</td>
+      <td align="right">-1,000</td>
+      <td align="right">12,739</td>
+      <td align="right">-7%</td>
+      <td align="right">-$84,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#f0fff0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1616533/000156761922014614/xslF345X03/doc1.xml" title="SEC Form 4" target="_blank">2022-07-28 19:18:37</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/SGH" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=SGH&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">SGH</a></b></td>
+      <td><a href="/SGH">Smart Global Holdings, Inc.</a></td>
+      <td><a href="/insider/Rizvi-Ken/1846472" title="125,348 direct shares
+C/O Smart Global Holdings, Inc.
+39870 Eureka Drive
+Newark, CA 94560">Rizvi Ken</a></td>
+      <td>SVP, CFO</td>
+      <td>P - Purchase</td>
+      <td align="right">$17.85</td>
+      <td align="right">+4,250</td>
+      <td align="right">125,348</td>
+      <td align="right">+4%</td>
+      <td align="right">+$75,863</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#fff0f0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1649094/000120919122043547/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-07-29 17:03:02</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-27
+       </div></td>
+      <td><b> <a href="/PCVX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=PCVX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">PCVX</a></b></td>
+      <td><a href="/PCVX">Vaxcyte, Inc.</a></td>
+      <td><a href="/insider/Sauer-Paul/1813796" title="17,687 direct shares
+C/O Vaxcyte, Inc.
+825 Industrial Road, Ste. 300
+San Carlos, CA 94070">Sauer Paul</a></td>
+      <td>SVP Process Dev, Manufacturing</td>
+      <td>S - Sale</td>
+      <td align="right">$25.00</td>
+      <td align="right">-3,000</td>
+      <td align="right">17,687</td>
+      <td align="right">-15%</td>
+      <td align="right">-$75,000</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#fff0f0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/1274494/000112760222019915/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-07-29 16:07:37</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-28
+       </div></td>
+      <td><b> <a href="/FSLR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=FSLR&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">FSLR</a></b></td>
+      <td><a href="/FSLR">First Solar, Inc.</a></td>
+      <td><a href="/insider/Gloeckler-Markus/1819680" title="1,851 direct shares
+C/o First Solar, Inc.
+350 West Washington Street, Suite 600
+Tempe, AZ 85281-1244">Gloeckler Markus</a></td>
+      <td>CTO</td>
+      <td>S - Sale</td>
+      <td align="right">$90.00</td>
+      <td align="right">-805</td>
+      <td align="right">1,851</td>
+      <td align="right">-30%</td>
+      <td align="right">-$72,450</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#f0fff0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/2230/000000223022000016/xslF345X03/primary_doc.xml" title="SEC Form 4" target="_blank">2022-07-26 13:17:45</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/ADX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ADX&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ADX</a></b></td>
+      <td><a href="/ADX">Adams Diversified Equity Fund, Inc.</a></td>
+      <td><a href="/insider/Escherich-Frederic-A/1353313" title="66,727 direct shares
+Adams Funds
+500 East Pratt Street, Suite 1300
+Baltimore, MD 21202">Escherich Frederic A</a></td>
+      <td>Dir</td>
+      <td>P - Purchase</td>
+      <td align="right">$15.96</td>
+      <td align="right">+4,248</td>
+      <td align="right">66,727</td>
+      <td align="right">+7%</td>
+      <td align="right">+$67,790</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+     <tr style="background:#fff0f0">
+      <td align="right"></td>
+      <td align="right">
+       <div>
+        <a href="http://www.sec.gov/Archives/edgar/data/89439/000008943922000040/xslF345X03/wf-form4_165886625450003.xml" title="SEC Form 4" target="_blank">2022-07-26 16:11:10</a>
+       </div></td>
+      <td align="right">
+       <div>
+        2022-07-26
+       </div></td>
+      <td><b> <a href="/MLI" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=MLI&amp;v=stock-chart&amp;vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">MLI</a></b></td>
+      <td><a href="/MLI">Mueller Industries Inc</a></td>
+      <td><a href="/insider/Hansen-John-B/1464277" title="72,885 direct shares
+6901 Murray Ave, Unit 106
+Cincinnati, OH 45227">Hansen John B</a></td>
+      <td>Dir</td>
+      <td>S - Sale</td>
+      <td align="right">$64.27</td>
+      <td align="right">-1,000</td>
+      <td align="right">72,885</td>
+      <td align="right">-1%</td>
+      <td align="right">-$64,272</td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+      <td align="right"></td>
+     </tr>
+    </tbody>
+   </table>
+   <center>
+    <br>
+    <div>
+     <table cellpadding="4" cellspacing="4" border="0">
+      <tbody>
+       <tr>
+        <td>A</td>
+        <td>Amended filing</td>
+       </tr>
+       <tr>
+        <td>D</td>
+        <td>Derivative transaction in filing (usually option exercise)</td>
+       </tr>
+       <tr>
+        <td>E</td>
+        <td>Error detected in filing</td>
+       </tr>
+       <tr>
+        <td>M</td>
+        <td>Multiple transactions in filing; earliest reported transaction date and weighted average transaction price</td>
+       </tr>
+      </tbody>
+     </table>
+     <table>
+      <tbody>
+       <tr style="background:#ffefef">
+        <td>S - Sale</td>
+        <td>Sale of securities on an exchange or to another person</td>
+       </tr>
+       <tr style="background:#ffffdf">
+        <td>S - Sale+OE</td>
+        <td>Sale of securities on an exchange or to another person (after option exercise)</td>
+       </tr>
+       <tr style="background:#efefff">
+        <td>F - Tax</td>
+        <td>Payment of exercise price or tax liability using portion of securities received from the company</td>
+       </tr>
+       <tr style="background:#efffef">
+        <td>P - Purchase</td>
+        <td>Purchase of securities on an exchange or from another person</td>
+       </tr>
+      </tbody>
+     </table>
+    </div> <a href="#">Return to top</a>
+    <br>
+    <br>
+    <div id="footer">
+     Data provided by sec.gov 6:00-22:00 ET Mon-Fri except federal holidays.
+     <br>Copyright © 2011-2021 openinsider.com. All rights reserved. <a href="/terms.txt">Terms</a> - <a href="/privacy.txt">Privacy</a> - <a href="/contact">Contact</a>
+    </div>
+   </center>
+   <br>
+  </div>
+  <link href="/js/jquery.datepick/jquery.datepick.css" rel="stylesheet">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script src="/js/jquery.datepick/jquery.plugin.js"></script>
+  <script src="/js/jquery.datepick/jquery.datepick.js"></script>
+  <script>
+$(function() {
+	$('#textboxFD').datepick({rangeSelect: true, showTrigger: '#calImg'});
+	$('#textboxTD').datepick({rangeSelect: true, showTrigger: '#calImg'});
+});
+</script>
+  <script type="text/javascript" src="/js/wz_tooltip.js"></script>
+ </body>
+</html>

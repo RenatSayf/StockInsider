@@ -28,7 +28,7 @@ class DataRepositoryImpl @Inject constructor(private val network: INetworkReposi
         return network.getInsiderTrading(insider)
     }
 
-    override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
         withContext(Dispatchers.Main) {
             db.getSearchSets()
         }
