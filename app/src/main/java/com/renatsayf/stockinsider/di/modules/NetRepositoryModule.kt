@@ -16,12 +16,12 @@ import java.util.concurrent.TimeUnit
 
 @InstallIn(SingletonComponent::class)
 @Module
-object SearchRequestModule
+object NetRepositoryModule
 {
     @Provides
-    fun provideSearchRequest(api: IApi): INetworkRepository
+    fun provideSearchRequest(api: IApi): INetRepository
     {
-        return NetworkRepository(api)
+        return NetRepository(api)
     }
 
     @Provides

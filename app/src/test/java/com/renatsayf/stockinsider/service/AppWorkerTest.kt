@@ -7,12 +7,11 @@ import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import androidx.work.impl.utils.SynchronousExecutor
 import androidx.work.testing.TestListenableWorkerBuilder
-import androidx.work.testing.TestWorkerBuilder
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.FakeAppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.FakeNetworkRepository
+import com.renatsayf.stockinsider.network.FakeNetRepository
 import io.reactivex.Observable
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -24,7 +23,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.concurrent.Executors
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -78,7 +76,7 @@ class AppWorkerTest {
     @Test
     fun doWorkTest() {
 
-        val network = FakeNetworkRepository()
+        val network = FakeNetRepository()
         val deal = Deal("18.12.2022").apply {
             ticker = "MSFT"
         }

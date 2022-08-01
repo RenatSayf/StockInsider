@@ -7,7 +7,7 @@ import androidx.work.*
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.INetworkRepository
+import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.util.*
@@ -29,10 +29,10 @@ class AppWorker @Inject constructor(
     lateinit var db: AppDao
 
     @Inject
-    lateinit var networkRepository: INetworkRepository
+    lateinit var networkRepository: INetRepository
     private var function: ((Context, ArrayList<Deal>) -> Unit)? = null
 
-    fun injectDependencies(db: AppDao, networkRepository: INetworkRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
+    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
         this.db = db
         this.networkRepository = networkRepository
         this.function = function

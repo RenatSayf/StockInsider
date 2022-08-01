@@ -5,18 +5,18 @@ import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import com.renatsayf.stockinsider.network.NetworkRepository
+import com.renatsayf.stockinsider.network.NetRepository
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.network.INetworkRepository
+import com.renatsayf.stockinsider.network.INetRepository
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.jvm.Throws
 
-class DataRepositoryImpl @Inject constructor(private val network: INetworkRepository, private val db: AppDao) : IDataRepository
+class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
 {
     override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
@@ -104,7 +104,7 @@ class DataRepositoryImpl @Inject constructor(private val network: INetworkReposi
 
     override fun destructor()
     {
-        if (network is NetworkRepository) {
+        if (network is NetRepository) {
             network.composite.clear()
         }
     }

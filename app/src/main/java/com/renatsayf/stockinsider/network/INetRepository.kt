@@ -5,7 +5,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
 
-interface INetworkRepository {
+interface INetRepository {
     fun getTradingScreen(set: SearchSet) : Observable<ArrayList<Deal>>
 
     fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
