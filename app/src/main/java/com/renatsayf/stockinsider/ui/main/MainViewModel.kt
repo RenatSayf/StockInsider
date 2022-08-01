@@ -52,7 +52,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
     }
     //val searchSets: LiveData<MutableList<RoomSearchSet>> = _searchSetList
 
-    fun getCurrentSearchSet(setName: String): LiveData<RoomSearchSet> {
+    fun getSearchSetByName(setName: String): LiveData<RoomSearchSet> {
         val set = MutableLiveData<RoomSearchSet>()
         viewModelScope.launch {
             val searchSet = repository.getSearchSetFromDbAsync(setName)
@@ -79,7 +79,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
 
     fun saveSearchSet(set: RoomSearchSet): LiveData<Long>
     {
-        val id = MutableLiveData<Long>()
+        val id = MutableLiveData<Long>(-1)
         viewModelScope.launch {
             id.value = repository.saveSearchSetAsync(set)
         }
@@ -97,7 +97,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
     }
 
     private var _companies = MutableLiveData<Array<Companies>>().apply {
-        CoroutineScope(Dispatchers.IO).launch {
+        viewModelScope.launch {
             val c = getCompanies()
             postValue(c)
         }

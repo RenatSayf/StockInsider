@@ -35,7 +35,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
     private lateinit var binding: FragmentHomeBinding
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
-            getCurrentSearchSet(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
+            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
                 this.setState(MainViewModel.State.Initial(it))
             }
         }
@@ -277,7 +277,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
             R.id.action_default_search ->
             {
                 val searchName = getString(R.string.text_default_set_name)
-                mainVM.getCurrentSearchSet(searchName).observe(viewLifecycleOwner) {
+                mainVM.getSearchSetByName(searchName).observe(viewLifecycleOwner) {
                     mainVM.setState(MainViewModel.State.Initial(it))
                 }
             }

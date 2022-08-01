@@ -34,7 +34,7 @@ class SaveSearchDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        binding = SaveSearchLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        binding = SaveSearchLayoutBinding.inflate(requireActivity().layoutInflater)
 
         binding.searchNameView.setText(name)
 

@@ -21,7 +21,6 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ExpandableListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
@@ -200,114 +199,150 @@ class MainActivity : AppCompatActivity()
                     {
                         p2 == 1 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more1_for_3").observe(this@MainActivity, {
-                                    Bundle().apply {
-                                        putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
-                                        putSerializable(ResultFragment.ARG_SEARCH_SET, it)
-                                    }.run { navController.navigate(R.id.nav_result, this) }
-                                })
+                            mainVM.getSearchSetByName("pur_more1_for_3").observe(this@MainActivity) {
+                                Bundle().apply {
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more1_for_3)
+                                    )
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            }
                         }
                         p2 == 1 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more5_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more5_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more5_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 1 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more1_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more1_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more1_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
 
                         }
                         p2 == 1 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more5_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more5_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more5_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("purchases_more_1").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("purchases_more_1").observe(this@MainActivity) {
                                 val bundle = Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_purchases_more_1)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("purchases_more_5").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("purchases_more_5").observe(this@MainActivity) {
                                 val bundle = Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_purchases_more_5)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sales_more_1").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sales_more_1").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sales_more_1)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sales_more_5").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sales_more_5").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sales_more_5)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more1_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more1_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more1_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more5_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more5_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more5_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more1_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more1_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more1_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more5_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more5_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more5_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 6 && p3 == 0 ->
                         {
@@ -336,18 +371,14 @@ class MainActivity : AppCompatActivity()
             })
         }
 
-        appDialogObserver.data.observe(this, { event ->
+        appDialogObserver.data.observe(this) { event ->
             event.getContent()?.let {
-                if (it.first == "show_strategy")
-                {
-                    when (it.second)
-                    {
-                        -1 ->
-                        {
+                if (it.first == "show_strategy") {
+                    when (it.second) {
+                        -1 -> {
                             navController.navigate(R.id.nav_strategy)
                         }
-                        -3 ->
-                        {
+                        -3 -> {
                             getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
                                 putBoolean(KEY_NO_SHOW_AGAIN, true)
                                 apply()
@@ -357,7 +388,7 @@ class MainActivity : AppCompatActivity()
                     }
                 }
             }
-        })
+        }
 
         ad.apply {
             adUnitId = if (BuildConfig.DEBUG)
