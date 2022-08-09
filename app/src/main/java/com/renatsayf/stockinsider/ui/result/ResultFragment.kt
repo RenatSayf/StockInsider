@@ -211,7 +211,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
         binding.btnAddToTracking.setOnClickListener {
             val name = (roomSearchSet.ticker.ifEmpty { "All" })
-                .plus("/period"+roomSearchSet.filingPeriod)
+                //.plus("/period"+roomSearchSet.filingPeriod)
                 .plus(if (roomSearchSet.isPurchase) "/Pur" else "")
                 .plus(if (roomSearchSet.isSale) "/Sale" else "")
                 .plus(if (roomSearchSet.tradedMin.isNotEmpty()) "/min${roomSearchSet.tradedMin}" else "")
@@ -269,7 +269,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     override fun onRecyclerViewItemClick(deal: Deal) {
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
-        (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
     }
 
     override fun saveSearchDialogOnPositiveClick(searchName: String) {
@@ -277,13 +277,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
 
             roomSearchSet.apply {
-                id = 0
                 queryName = searchName
                 isTracked = true
                 target = Target.Tracking
+                filingPeriod = 1
+                tradePeriod = 3
             }
-
-            mainViewModel.saveSearchSet(roomSearchSet).observe(viewLifecycleOwner) {
+            mainViewModel.saveSearchSet(roomSearchSet).collect {
                 if (it > 0) {
                     showSnackBar(getString(R.string.text_search_param_is_saved))
                 }

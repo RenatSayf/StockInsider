@@ -43,8 +43,8 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     private val mainVM: MainViewModel by viewModels()
 
     private val companiesAdapter = CompanyListAdapter()
-    private val setId: Int by lazy {
-        this.arguments?.getInt(ARG_SET_ID) ?: -1
+    private val setId: String by lazy {
+        this.arguments?.getString(ARG_SET_ID) ?: "Unnamed"
     }
     private val tickers: ArrayList<String>? by lazy {
         this.arguments?.getStringArrayList(ARG_TICKERS_LIST)

@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
+    tools:background="@color/colorPrimary"
     >
 
     <TextView
@@ -30,8 +31,7 @@
         tools:ignore="TouchTargetSizeCheck"
         style="@style/appEditTextStyle"
         android:labelFor="@+id/tickerLayout"
-        tools:hint="hint"
-        tools:text="ZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZ"
+        tools:hint="Все компании"
         app:layout_constraintTop_toBottomOf="@+id/blockTitle"
         android:paddingStart="6dp"
         android:paddingTop="12dp"

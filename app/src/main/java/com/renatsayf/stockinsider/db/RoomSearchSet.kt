@@ -7,9 +7,10 @@ import androidx.room.PrimaryKey
 import com.renatsayf.stockinsider.models.SearchSet
 import java.io.Serializable
 
-@Entity(tableName = "search_set", indices = [Index("_id")])
+@Entity(tableName = "search_set", indices = [Index("set_name")])
 data class RoomSearchSet(
 
+        @PrimaryKey
         @ColumnInfo(name = "set_name")
         var queryName: String,
 
@@ -20,10 +21,10 @@ data class RoomSearchSet(
         val ticker: String,
 
         @ColumnInfo(name = "filing_period")
-        val filingPeriod: Int,
+        var filingPeriod: Int,
 
         @ColumnInfo(name = "trade_period")
-        val tradePeriod: Int,
+        var tradePeriod: Int,
 
         @ColumnInfo(name = "is_purchase", defaultValue = "1")
         val isPurchase: Boolean = true,
@@ -50,12 +51,9 @@ data class RoomSearchSet(
         val groupBy: Int,
 
         @ColumnInfo(name = "sort_by")
-        val sortBy: Int,
-
-        @PrimaryKey(autoGenerate = true)
-        @ColumnInfo(name = "_id", defaultValue = "0")
-        var id: Int = 0
+        val sortBy: Int
 ) : Serializable {
+
         @ColumnInfo(name = "target")
         var target : String? = null
 

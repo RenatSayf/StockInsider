@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity()
     lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
-    private lateinit var drawerLayout : DrawerLayout
+    lateinit var drawerLayout : DrawerLayout
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
@@ -133,7 +133,7 @@ class MainActivity : AppCompatActivity()
                         }
                         4 ->
                         {
-                            navController.navigate(R.id.action_nav_home_to_trackingListFragment)
+                            navController.navigate(R.id.trackingListFragment)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         5 ->

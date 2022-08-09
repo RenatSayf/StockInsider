@@ -75,10 +75,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 }
             }
 
-            var setId: Int = 0
+            var setId = "Unnamed"
             arguments?.let { bundle ->
                 val set = bundle.getSerializable(ARG_SET) as RoomSearchSet
-                setId = set.id
+                setId = set.queryName
                 binding.tickersView.setContentText(set.ticker)
 
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
@@ -100,7 +100,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     val bundle = Bundle().apply {
                         putStringArrayList(CompaniesFragment.ARG_TICKERS_LIST, list as ArrayList)
                         putString(CompaniesFragment.ARG_TICKERS_STR, tickersStr)
-                        putInt(CompaniesFragment.ARG_SET_ID, setId)
+                        putString(CompaniesFragment.ARG_SET_ID, setId)
                     }
                     requireActivity().findNavController(R.id.nav_host_fragment)
                         .navigate(R.id.action_trackingFragment_to_companiesFragment, bundle, null, null)

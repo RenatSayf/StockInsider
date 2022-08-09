@@ -40,7 +40,7 @@ interface IDataRepository
     @Throws(Exception::class)
     suspend fun insertCompanies(list : List<Companies>)
 
-    fun updateSearchSetTicker(id: Int, value: String) : Int
+    fun updateSearchSetTicker(setName: String, value: String) : Int
 
     fun destructor()
 }

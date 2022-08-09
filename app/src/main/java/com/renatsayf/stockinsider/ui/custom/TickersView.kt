@@ -94,8 +94,10 @@ class TickersView @JvmOverloads constructor(
             text = btnText
             setTextColor(btnTextColor)
             setOnClickListener {
-                contentTextView?.let {
-                    val list = it.text.toString().split(" ")
+                contentTextView?.let { textView ->
+                    this.isEnabled = textView.text.isEmpty()
+                    val list = if (textView.text.isEmpty()) listOf()
+                    else textView.text.toString().split(" ")
                     listener?.onShowAllClick(list)
                 }
             }
@@ -117,6 +119,9 @@ class TickersView @JvmOverloads constructor(
 
     fun setContentText(text: String) {
         contentTextView?.setText(text)
+        if (text.isEmpty()) {
+            showButtonView?.visibility = View.INVISIBLE
+        }
     }
 
     fun <T>setAdapter(adapter: T) where T : ListAdapter?, T : Filterable? {

@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
-import com.renatsayf.stockinsider.models.Target
 
 @Dao
 interface AppDao
@@ -42,7 +41,7 @@ interface AppDao
     @Query("SELECT DISTINCT * FROM companies WHERE company_name like '%' || :pattern || '%' OR ticker like '%' || :pattern || '%'")
     suspend fun getAllSimilar(pattern: String) : List<Companies>
 
-    @Query("UPDATE search_set SET ticker = :value WHERE _id = :id")
-    fun updateSearchSetTicker(id: Int, value: String) : Int
+    @Query("UPDATE search_set SET ticker = :value WHERE set_name = :setName")
+    fun updateSearchSetTicker(setName: String, value: String) : Int
 
 }

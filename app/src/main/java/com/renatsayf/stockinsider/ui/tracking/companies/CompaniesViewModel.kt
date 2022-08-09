@@ -4,14 +4,12 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.Companies
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 
@@ -55,12 +53,12 @@ class CompaniesViewModel @Inject constructor(
         return companies
     }
 
-    fun addCompanyToSearch(id: Int, value: String): LiveData<Int> {
+    fun addCompanyToSearch(setName: String, value: String): LiveData<Int> {
         val result = MutableLiveData(-1)
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 try {
-                    result.value = repository.updateSearchSetTicker(id, value)
+                    result.value = repository.updateSearchSetTicker(setName, value)
                     _state.value = State.Initial
                 } catch (e: Exception) {
                     result.value = -1

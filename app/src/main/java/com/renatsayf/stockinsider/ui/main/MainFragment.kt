@@ -6,6 +6,7 @@ import android.view.*
 import android.widget.AdapterView
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
@@ -111,7 +112,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    //mainVM.saveSearchSet(set)
                     (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
                     binding.general.tickerET.clearFocus()
                     binding.searchButton.requestFocus()
@@ -239,12 +239,10 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
     override fun onPause()
     {
+        (requireActivity() as MainActivity).drawerLayout.isEnabled = false
         val set = scanScreen()
-        val id = mainVM.searchSet?.value?.id ?: -1
-        if (id > 0) {
-            set.id = id
-            mainVM.saveSearchSet(set)
-        }
+        set.queryName = getString(R.string.text_current_set_name)
+        mainVM.saveSearchSet(set)
         mainVM.setState(MainViewModel.State.Initial(set))
         super.onPause()
     }

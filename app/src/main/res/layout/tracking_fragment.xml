@@ -53,7 +53,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:titleTextColor="@color/colorSectionHeader"
                 app:titleText="@string/text_general"
-                app:hint="Список компаний"
+                app:hint="Все компании"
                 app:hintTextColor="@color/colorGray"
                 tools:contentText="AAPL MSFT"
                 app:contentTextColor="@color/colorWhite"

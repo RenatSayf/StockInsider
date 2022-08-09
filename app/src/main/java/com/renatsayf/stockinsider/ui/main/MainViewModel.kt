@@ -80,11 +80,12 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return sets
     }
 
-    fun saveSearchSet(set: RoomSearchSet): LiveData<Long>
+    fun saveSearchSet(set: RoomSearchSet): StateFlow<Long>
     {
-        val id = MutableLiveData<Long>(-1)
+        val id = MutableStateFlow<Long>(-1)
         viewModelScope.launch {
-            id.value = repository.saveSearchSetAsync(set).await()
+            val res = repository.saveSearchSetAsync(set).await()
+            id.emit(res)
         }
         return id
     }

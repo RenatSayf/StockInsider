@@ -58,7 +58,8 @@
             app:layout_constraintBottom_toBottomOf="@+id/trackingSwitcher"
             app:layout_constraintStart_toEndOf="@+id/trackingSwitcher"
             app:layout_constraintTop_toTopOf="@+id/trackingSwitcher"
-            tools:ignore="SpeakableTextPresentCheck" />
+            tools:ignore="SpeakableTextPresentCheck"
+            android:background="@drawable/bg_ripple_round_transparent"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/btnVisibility"
@@ -69,7 +70,8 @@
             app:layout_constraintStart_toEndOf="@+id/editButton"
             app:layout_constraintTop_toTopOf="@+id/editButton"
             app:layout_constraintBottom_toBottomOf="@+id/editButton"
-            android:src="@drawable/ic_visibility" />
+            android:src="@drawable/ic_visibility"
+            android:background="@drawable/bg_ripple_round_transparent"/>
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/deleteButton"
@@ -80,7 +82,8 @@
             app:layout_constraintStart_toEndOf="@+id/trackerName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck" />
+            tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
+            android:background="@drawable/bg_ripple_round_transparent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
