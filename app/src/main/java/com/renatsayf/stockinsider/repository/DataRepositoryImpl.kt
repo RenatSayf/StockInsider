@@ -53,11 +53,10 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         set.await()
     }
 
-    override suspend fun saveSearchSetAsync(set: RoomSearchSet): Long = coroutineScope {
-        val id = async {
+    override suspend fun saveSearchSetAsync(set: RoomSearchSet): Deferred<Long> = coroutineScope {
+        async {
             db.insertOrUpdateSearchSet(set)
         }
-        id.await()
     }
 
     override suspend fun deleteSearchSetAsync(set: RoomSearchSet): Int = CoroutineScope(Dispatchers.IO).run {
@@ -73,9 +72,9 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         companies.await()
     }
 
-    override suspend fun getSearchSetsByTarget(target: Target): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
         return withContext(Dispatchers.Main) {
-            db.getSearchSetsByTarget(target.name.lowercase(Locale.getDefault()))
+            db.getSearchSetsByTarget(target)
         }
     }
 

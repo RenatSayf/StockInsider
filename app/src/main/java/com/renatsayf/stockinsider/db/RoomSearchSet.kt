@@ -11,53 +11,51 @@ import java.io.Serializable
 data class RoomSearchSet(
 
         @ColumnInfo(name = "set_name")
-        var queryName : String,
+        var queryName: String,
 
         @ColumnInfo(name = "company_name")
-        val companyName : String,
+        val companyName: String,
 
         @ColumnInfo(name = "ticker")
-        val ticker : String,
+        val ticker: String,
 
         @ColumnInfo(name = "filing_period")
-        val filingPeriod : Int,
+        val filingPeriod: Int,
 
         @ColumnInfo(name = "trade_period")
-        val tradePeriod : Int,
+        val tradePeriod: Int,
 
         @ColumnInfo(name = "is_purchase", defaultValue = "1")
-        val isPurchase : Boolean = true,
+        val isPurchase: Boolean = true,
 
         @ColumnInfo(name = "is_sale", defaultValue = "0")
-        val isSale : Boolean = false,
+        val isSale: Boolean = false,
 
         @ColumnInfo(name = "trade_min")
-        val tradedMin : String,
+        val tradedMin: String,
 
         @ColumnInfo(name = "trade_max")
-        val tradedMax : String,
+        val tradedMax: String,
 
         @ColumnInfo(name = "is_officer")
-        val isOfficer : Boolean,
+        val isOfficer: Boolean,
 
         @ColumnInfo(name = "is_director")
-        val isDirector : Boolean,
+        val isDirector: Boolean,
 
         @ColumnInfo(name = "is_ten_percent")
-        val isTenPercent : Boolean,
+        val isTenPercent: Boolean,
 
         @ColumnInfo(name = "group_by")
-        val groupBy : Int,
+        val groupBy: Int,
 
         @ColumnInfo(name = "sort_by")
-        val sortBy : Int,
+        val sortBy: Int,
 
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "_id", defaultValue = "0")
-        val id : Int = 0
-
-                        ): Serializable
-{
+        var id: Int = 0
+) : Serializable {
         @ColumnInfo(name = "target")
         var target : String? = null
 

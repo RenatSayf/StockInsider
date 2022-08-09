@@ -19,6 +19,10 @@ import com.renatsayf.stockinsider.ui.deal.DealFragment
 class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener {
     private lateinit var binding: FragmentResultBinding
 
+    private val dealsAdapter: DealListAdapter by lazy {
+        DealListAdapter(this@InsiderTradingFragment)
+    }
+
     companion object
     {
         val TAG = this::class.java.simpleName.toString()
@@ -55,14 +59,13 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             binding.titleTView.text = title
             binding.insiderNameTView.text = insiderName
 
-            val linearLayoutManager = LinearLayoutManager(requireContext())
-            val dealListAdapter = DealListAdapter(dealList, listener = this).apply {
-                stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
+            dealsAdapter.apply {
+                addItems(dealList)
             }
             binding.tradeListRV.apply {
                 setHasFixedSize(true)
-                layoutManager = linearLayoutManager
-                adapter = dealListAdapter
+                layoutManager = LinearLayoutManager(requireContext())
+                adapter = dealsAdapter
             }
         }
     }

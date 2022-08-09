@@ -7,6 +7,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
 import com.renatsayf.stockinsider.models.Target
+import kotlinx.coroutines.Deferred
 import java.lang.Exception
 import kotlin.jvm.Throws
 
@@ -24,13 +25,13 @@ interface IDataRepository
 
     suspend fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
-    suspend fun saveSearchSetAsync(set: RoomSearchSet) : Long
+    suspend fun saveSearchSetAsync(set: RoomSearchSet) : Deferred<Long>
 
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Int
 
     suspend fun getCompaniesFromDbAsync() : Array<Companies>?
 
-    suspend fun getSearchSetsByTarget(target: Target) : List<RoomSearchSet>
+    suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
     suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
 

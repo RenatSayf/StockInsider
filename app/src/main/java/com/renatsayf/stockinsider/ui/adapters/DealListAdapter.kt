@@ -16,14 +16,25 @@ import kotlin.collections.ArrayList
 
 
 
-class DealListAdapter(private val dealList: ArrayList<Deal>,
-                        private val listener: Listener? = null) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+class DealListAdapter(private val listener: Listener? = null) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
 {
     private lateinit var binding: DealLayoutBinding
-    private var skeletonList = ArrayList<Deal>().apply {
-        repeat(10) {
-            add(Deal(null))
-        }
+    private val dealList: MutableList<Deal> = mutableListOf()
+
+
+    private var skeletonList = MutableList(10, init = {
+        Deal(null)
+    })
+
+    fun showSkeleton() {
+        notifyDataSetChanged()
+    }
+
+    fun addItems(list: List<Deal>) {
+
+        dealList.clear()
+        dealList.addAll(list)
+        notifyDataSetChanged()
     }
 
     override fun getItemViewType(position: Int): Int {

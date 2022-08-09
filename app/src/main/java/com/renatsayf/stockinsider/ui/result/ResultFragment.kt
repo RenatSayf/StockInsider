@@ -7,7 +7,10 @@ import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.core.content.edit
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -17,6 +20,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
@@ -24,7 +28,9 @@ import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
@@ -40,6 +46,10 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     private lateinit var resultVM : ResultViewModel
     private lateinit var mainViewModel : MainViewModel
     private lateinit var roomSearchSet: RoomSearchSet
+
+    private val dealsAdapter: DealListAdapter by lazy {
+        DealListAdapter(this@ResultFragment)
+    }
 
     private val confirmationDialog: ConfirmationDialog by lazy {
         ConfirmationDialog().apply {
@@ -85,9 +95,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         binding = FragmentResultBinding.bind(view)
 
         binding.tradeListRV.apply {
-            layoutManager = LinearLayoutManager(requireContext())
-            setHasFixedSize(true)
-            adapter = DealListAdapter(arrayListOf(), this@ResultFragment)
+            adapter = dealsAdapter.apply {
+                showSkeleton()
+            }
         }
 
         resultVM.state.observe(viewLifecycleOwner) { state ->
@@ -106,9 +116,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                                 binding.btnAddToTracking.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
                                 binding.tradeListRV.apply {
-                                    adapter = DealListAdapter(list, this@ResultFragment).apply {
-                                        stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-                                    }
+                                    dealsAdapter.addItems(list)
+                                    adapter = dealsAdapter
                                 }
                                 return@let
                             }
@@ -264,11 +273,21 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
     }
 
     override fun saveSearchDialogOnPositiveClick(searchName: String) {
-        mainViewModel.saveSearchSet(roomSearchSet.apply {
-            queryName = searchName
-        }).observe(this) {
-            if (it > 0) {
-                Toast.makeText(requireContext(), getString(R.string.text_search_param_is_saved), Toast.LENGTH_LONG).show()
+
+        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
+
+            roomSearchSet.apply {
+                id = 0
+                queryName = searchName
+                isTracked = true
+                target = Target.Tracking
+            }
+
+            mainViewModel.saveSearchSet(roomSearchSet).observe(viewLifecycleOwner) {
+                if (it > 0) {
+                    showSnackBar(getString(R.string.text_search_param_is_saved))
+                }
+                else showSnackBar("Saving error...")
             }
         }
     }

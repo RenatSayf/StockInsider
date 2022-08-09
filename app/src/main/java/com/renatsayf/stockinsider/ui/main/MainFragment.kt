@@ -95,6 +95,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
             when (state) {
                 is MainViewModel.State.Initial -> {
                     val set = state.set
+                    mainVM.setSearchSet(set)
                     with(binding) {
                         general.tickerET.setText("")
                         general.tickerET.setText(set.ticker)
@@ -110,7 +111,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    mainVM.saveSearchSet(set)
+                    //mainVM.saveSearchSet(set)
                     (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
                     binding.general.tickerET.clearFocus()
                     binding.searchButton.requestFocus()
@@ -160,8 +161,8 @@ class MainFragment : Fragment(R.layout.fragment_home)
         }
 
         binding.searchButton.setOnClickListener {
-            val set = scanScreen(binding)
-            mainVM.saveSearchSet(set)
+
+            val set = scanScreen()
 
             (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
 
@@ -238,14 +239,20 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
     override fun onPause()
     {
-        val set = scanScreen(binding)
+        val set = scanScreen()
+        val id = mainVM.searchSet?.value?.id ?: -1
+        if (id > 0) {
+            set.id = id
+            mainVM.saveSearchSet(set)
+        }
         mainVM.setState(MainViewModel.State.Initial(set))
         super.onPause()
     }
 
-    private fun scanScreen(b: FragmentHomeBinding): RoomSearchSet {
-        return with(b) {
-            RoomSearchSet(
+    private fun scanScreen(): RoomSearchSet {
+
+        with(binding) {
+            return RoomSearchSet(
                 searchName,
                 "",
                 general.tickerET.text.toString(),
@@ -297,20 +304,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }
         }
         return super.onOptionsItemSelected(item)
-    }
-
-    override fun onDestroy()
-    {
-        val value = mainVM.state.value
-        value?.let { state ->
-            if (state is MainViewModel.State.Initial)
-            {
-                val set = state.set
-                mainVM.saveSearchSet(set)
-            }
-        }
-
-        super.onDestroy()
     }
 
 

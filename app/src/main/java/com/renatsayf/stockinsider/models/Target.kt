@@ -1,5 +1,5 @@
 package com.renatsayf.stockinsider.models
 
-enum class Target {
-    Tracking;
+object Target {
+    const val Tracking = "tracking"
 }

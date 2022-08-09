@@ -43,9 +43,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     private val trackingAdapter: TrackingAdapter by lazy {
-        TrackingAdapter(scheduler = this.scheduler, listener = this).apply {
-            stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-        }
+        TrackingAdapter(scheduler = this.scheduler, listener = this)
     }
 
     override fun onCreateView(
@@ -68,12 +66,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         binding.trackersRV.apply {
             setHasFixedSize(true)
-            //layoutManager = LinearLayoutManager(requireContext())
             adapter = trackingAdapter
         }
 
         if (savedInstanceState == null) {
-            mainVM.getSearchSetsByTarget(Target.Tracking).observe(viewLifecycleOwner) { list ->
+            val tracking = Target.Tracking
+            mainVM.getSearchSetsByTarget(tracking).observe(viewLifecycleOwner) { list ->
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
             }
         }

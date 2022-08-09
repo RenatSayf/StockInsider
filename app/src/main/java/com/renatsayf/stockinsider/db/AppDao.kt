@@ -33,7 +33,7 @@ interface AppDao
     @Query("SELECT * FROM companies")
     suspend fun getAllCompanies() : List<Companies>?
 
-    @Query("SELECT * FROM search_set WHERE target = :target")
+    @Query("SELECT DISTINCT * FROM search_set WHERE target = :target")
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")

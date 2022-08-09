@@ -11,6 +11,8 @@ import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
@@ -69,10 +71,11 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return list
     }
 
-    fun getSearchSetsByTarget(target: Target): LiveData<List<RoomSearchSet>> {
+    fun getSearchSetsByTarget(target: String): LiveData<List<RoomSearchSet>> {
         val sets = MutableLiveData<List<RoomSearchSet>>()
         viewModelScope.launch {
             sets.value = repository.getSearchSetsByTarget(target)
+
         }
         return sets
     }
@@ -81,7 +84,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
     {
         val id = MutableLiveData<Long>(-1)
         viewModelScope.launch {
-            id.value = repository.saveSearchSetAsync(set)
+            id.value = repository.saveSearchSetAsync(set).await()
         }
         return id
     }
