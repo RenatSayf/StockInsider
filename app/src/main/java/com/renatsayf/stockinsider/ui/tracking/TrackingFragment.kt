@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.tracking
 
 import android.opengl.Visibility
@@ -8,8 +10,10 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CompoundButton
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -65,7 +69,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             includedToolBar.appToolbar.title = title
 
             includedToolBar.appToolbar.setNavigationOnClickListener {
-                requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+                findNavController().popBackStack()
             }
 
             mainVM.companies.observe(viewLifecycleOwner) { companies ->
@@ -78,11 +82,19 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             var setId = "Unnamed"
             arguments?.let { bundle ->
                 val set = bundle.getSerializable(ARG_SET) as RoomSearchSet
+                val newSet = set.copy()
                 setId = set.queryName
                 binding.tickersView.setContentText(set.ticker)
 
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
                 trackingVM.setState(TrackingListViewModel.State.Edit(flag))
+
+                traded.purchaseCheckBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+                    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
+                        newSet.isPurchase = isChecked
+                        enableSaveButton(set, newSet)
+                    }
+                })
             }
 
             trackingVM.state.observe(viewLifecycleOwner) { state ->
@@ -102,8 +114,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         putString(CompaniesFragment.ARG_TICKERS_STR, tickersStr)
                         putString(CompaniesFragment.ARG_SET_ID, setId)
                     }
-                    requireActivity().findNavController(R.id.nav_host_fragment)
-                        .navigate(R.id.action_trackingFragment_to_companiesFragment, bundle, null, null)
+                    findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, bundle, null, null)
                 }
             })
 
@@ -114,6 +125,15 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         }
 
 
+    }
+
+    private fun enableSaveButton(oldSet: RoomSearchSet, newSet: RoomSearchSet) {
+        if (oldSet != newSet) {
+            binding.btnSave.visibility = View.VISIBLE
+        }
+        else {
+            binding.btnSave.visibility = View.INVISIBLE
+        }
     }
 
     override fun onStart() {
@@ -128,34 +148,24 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
     private fun enableEditing(flag: Boolean) {
         with(binding){
-            if (flag) {
-                tickersView.editable = true
-                traded.purchaseCheckBox.isClickable = true
-                traded.saleCheckBox.isClickable = true
-                insider.apply {
-                    directorCheBox.isClickable = true
-                    officerCheBox.isClickable = true
-                    owner10CheBox.isClickable = true
-                }
-            } else {
-                tickersView.editable = false
-                traded.purchaseCheckBox.isClickable = false
-                traded.saleCheckBox.isClickable = false
-                insider.apply {
-                    directorCheBox.isClickable = false
-                    officerCheBox.isClickable = false
-                    owner10CheBox.isClickable = false
-                }
+
+            tickersView.editable = flag
+            traded.purchaseCheckBox.isClickable = flag
+            traded.saleCheckBox.isClickable = flag
+            insider.apply {
+                directorCheBox.isClickable = flag
+                officerCheBox.isClickable = flag
+                owner10CheBox.isClickable = flag
             }
+
             sorting.groupSpinner.apply {
                 setSelection(1)
-                isEnabled = false
+                isEnabled = flag
             }
             sorting.sortSpinner.apply {
                 setSelection(3)
-                isEnabled = false
+                isEnabled = flag
             }
-
         }
     }
 

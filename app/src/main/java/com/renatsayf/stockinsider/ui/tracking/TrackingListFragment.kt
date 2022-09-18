@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
@@ -94,7 +95,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int) {
-
+        findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+            putSerializable(TrackingFragment.ARG_SET, set)
+            putString(TrackingFragment.ARG_TITLE, "Отслеживание. Редактирование")
+            putBoolean(TrackingFragment.ARG_IS_EDIT, true)
+        })
     }
 
     override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int) {
@@ -116,9 +121,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int) {
-        (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+        findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
             putSerializable(TrackingFragment.ARG_SET, set)
-            putString(TrackingFragment.ARG_TITLE, "Отслеживание")
+            putString(TrackingFragment.ARG_TITLE, "Отслеживание. Просмотр")
             putBoolean(TrackingFragment.ARG_IS_EDIT, false)
         })
     }

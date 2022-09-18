@@ -15,10 +15,10 @@ data class RoomSearchSet(
         var queryName: String,
 
         @ColumnInfo(name = "company_name")
-        val companyName: String,
+        var companyName: String,
 
         @ColumnInfo(name = "ticker")
-        val ticker: String,
+        var ticker: String,
 
         @ColumnInfo(name = "filing_period")
         var filingPeriod: Int,
@@ -27,10 +27,10 @@ data class RoomSearchSet(
         var tradePeriod: Int,
 
         @ColumnInfo(name = "is_purchase", defaultValue = "1")
-        val isPurchase: Boolean = true,
+        var isPurchase: Boolean = true,
 
         @ColumnInfo(name = "is_sale", defaultValue = "0")
-        val isSale: Boolean = false,
+        var isSale: Boolean = false,
 
         @ColumnInfo(name = "trade_min")
         val tradedMin: String,
@@ -39,19 +39,19 @@ data class RoomSearchSet(
         val tradedMax: String,
 
         @ColumnInfo(name = "is_officer")
-        val isOfficer: Boolean,
+        var isOfficer: Boolean,
 
         @ColumnInfo(name = "is_director")
-        val isDirector: Boolean,
+        var isDirector: Boolean,
 
         @ColumnInfo(name = "is_ten_percent")
-        val isTenPercent: Boolean,
+        var isTenPercent: Boolean,
 
         @ColumnInfo(name = "group_by")
-        val groupBy: Int,
+        var groupBy: Int,
 
         @ColumnInfo(name = "sort_by")
-        val sortBy: Int
+        var sortBy: Int
 ) : Serializable {
 
         @ColumnInfo(name = "target")
