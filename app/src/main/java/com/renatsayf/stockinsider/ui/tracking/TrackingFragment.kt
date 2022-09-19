@@ -11,6 +11,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.CompoundButton
+import android.widget.TextView
+import androidx.core.widget.doOnTextChanged
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
@@ -66,9 +68,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             traded.tradedMaxET.visibility = View.GONE
             traded.tradedMinET.visibility = View.GONE
 
-            includedToolBar.appToolbar.title = title
+            toolbar.title = title
 
-            includedToolBar.appToolbar.setNavigationOnClickListener {
+            toolbar.setNavigationOnClickListener {
                 findNavController().popBackStack()
             }
 
@@ -83,28 +85,42 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             arguments?.let { bundle ->
                 val set = bundle.getSerializable(ARG_SET) as RoomSearchSet
                 val newSet = set.copy()
+
                 setId = set.queryName
                 binding.tickersView.setContentText(set.ticker)
 
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
                 trackingVM.setState(TrackingListViewModel.State.Edit(flag))
 
+                tickersView.findViewById<TextView>(R.id.contentTextView).doOnTextChanged{text, start, before, count ->
+                    if (!text.isNullOrEmpty()) {
+                        newSet.queryName = text.toString()
+                    }
+                    else newSet.queryName = set.queryName
+                    trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                }
+
                 traded.purchaseCheckBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                     override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
                         newSet.isPurchase = isChecked
-                        enableSaveButton(set, newSet)
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
                     }
                 })
-            }
 
-            trackingVM.state.observe(viewLifecycleOwner) { state ->
-                when(state) {
-                    is TrackingListViewModel.State.Edit -> {
-                        enableEditing(state.flag)
+                trackingVM.state.observe(viewLifecycleOwner) { state ->
+                    when(state) {
+                        is TrackingListViewModel.State.Edit -> {
+                            enableEditing(state.flag)
+                        }
+                        is TrackingListViewModel.State.Initial -> {}
+                        is TrackingListViewModel.State.OnEdit -> {
+                            enableSaveButton(set, state.set)
+                        }
                     }
-                    is TrackingListViewModel.State.Initial -> {}
                 }
             }
+
+
 
             tickersView.setOnShowAllClickListener(object : TickersView.Listener {
                 override fun onShowAllClick(list: List<String>) {

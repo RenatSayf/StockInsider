@@ -18,6 +18,7 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
     sealed class State {
         data class Initial(val list: List<RoomSearchSet>): State()
         data class Edit(val flag: Boolean): State()
+        data class OnEdit(val set: RoomSearchSet): State()
     }
 
     private var _state = MutableLiveData<State>()
