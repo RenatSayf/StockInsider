@@ -9,8 +9,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
 import android.widget.Button
 import android.widget.CompoundButton
+import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.widget.doOnTextChanged
 import androidx.navigation.findNavController
@@ -19,6 +22,7 @@ import androidx.navigation.fragment.findNavController
 import com.google.android.material.transition.MaterialContainerTransform
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
@@ -62,6 +66,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
         val title = arguments?.getString(ARG_TITLE)
 
+        val tickerView = binding.tickersView.findViewById<AutoCompleteTextView>(R.id.contentTextView)
+
         with(binding) {
 
             traded.tradedTitle.visibility = View.GONE
@@ -92,11 +98,30 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
                 trackingVM.setState(TrackingListViewModel.State.Edit(flag))
 
-                tickersView.findViewById<TextView>(R.id.contentTextView).doOnTextChanged{text, start, before, count ->
-                    if (!text.isNullOrEmpty()) {
-                        newSet.queryName = text.toString()
+                var tickerText = ""
+                tickerView.doOnTextChanged{text, start, before, count ->
+                    if (!text.isNullOrEmpty())
+                    {
+                        val c = text[text.length - 1]
+                        if (c.isWhitespace())
+                        {
+                            tickerText = text.toString()
+                        }
                     }
-                    else newSet.queryName = set.queryName
+                    else
+                    {
+                        tickerText = ""
+                    }
+                    enableSaveButton(set, newSet)
+                }
+
+                tickerView.setOnItemClickListener { adapterView, view, i, l ->
+                    val tickerLayout = TickerLayoutBinding.bind(view)
+                    val ticker = tickerLayout.tickerTV.text
+                    val str = (tickerText.plus(ticker)).trim()
+                    tickerView.setText(str)
+                    tickerView.setSelection(str.length)
+                    newSet.ticker = str
                     trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
                 }
 
@@ -118,9 +143,13 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         }
                     }
                 }
+
+                tickersView.findViewById<ImageView>(R.id.clearTextBtn).setOnClickListener {
+                    newSet.ticker = ""
+                    trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                    tickersView.findViewById<TextView>(R.id.contentTextView).text = ""
+                }
             }
-
-
 
             tickersView.setOnShowAllClickListener(object : TickersView.Listener {
                 override fun onShowAllClick(list: List<String>) {
@@ -133,8 +162,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, bundle, null, null)
                 }
             })
-
-
 
 
 
