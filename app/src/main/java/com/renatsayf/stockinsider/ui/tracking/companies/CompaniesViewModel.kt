@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -19,12 +20,12 @@ class CompaniesViewModel @Inject constructor(
 ): ViewModel() {
 
     sealed class State {
-        object Initial: State()
+        data class Initial(val ticker: String): State()
         object OnAdding: State()
         data class Error(val message: String): State()
     }
 
-    private var _state = MutableLiveData<State>(State.Initial)
+    private var _state = MutableLiveData<State>(State.Initial(""))
     val state: LiveData<State> = _state
 
     fun setState(state: State) {
@@ -59,7 +60,7 @@ class CompaniesViewModel @Inject constructor(
             withContext(Dispatchers.Main) {
                 try {
                     result.value = repository.updateSearchSetTicker(setName, value)
-                    _state.value = State.Initial
+                    //_state.value = State.OnAdding
                 } catch (e: Exception) {
                     result.value = -1
                 }

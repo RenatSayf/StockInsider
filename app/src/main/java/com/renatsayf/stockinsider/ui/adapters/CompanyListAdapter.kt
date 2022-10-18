@@ -42,6 +42,11 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
         }
     }
 
+    val items: List<Companies>
+        get() {
+            return this.list
+        }
+
     inner class ViewHolder(private val binding: TickerLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(company: Companies, position: Int) {

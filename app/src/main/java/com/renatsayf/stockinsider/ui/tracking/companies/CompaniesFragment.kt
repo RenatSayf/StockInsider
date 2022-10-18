@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -37,9 +38,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     }
 
     private lateinit var binding: CompaniesFragmentBinding
-    private val companiesVM: CompaniesViewModel by lazy {
-        ViewModelProvider(this)[CompaniesViewModel::class.java]
-    }
+    private val companiesVM: CompaniesViewModel by activityViewModels()
     private val mainVM: MainViewModel by viewModels()
 
     private val companiesAdapter = CompanyListAdapter()
@@ -118,15 +117,20 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
             tickerET.setOnItemClickListener { adapterView, view, i, l ->
                 val tickerLayout = TickerLayoutBinding.bind(view)
                 val ticker = tickerLayout.tickerTV.text.toString()
-                val company = tickerLayout.companyNameTV.text.toString()
-                val companies = listOf(Companies(ticker, company))
-                companiesAdapter.addItems(companies)
+                val isContains = companiesAdapter.items.any {
+                    it.ticker == ticker
+                }
+                if (!isContains) {
 
-                if (tickersStr?.contains(ticker) == false) {
-                    val newTickersStr = tickersStr.plus(" ").plus(ticker)
-                    companiesVM.addCompanyToSearch(setId, newTickersStr).observe(viewLifecycleOwner) {
-                        if (it < 0) companiesVM.setState(CompaniesViewModel.State.Error("Failed to update database"))
-                    }
+                    val company = tickerLayout.companyNameTV.text.toString()
+                    val companies = listOf(Companies(ticker, company))
+                    companiesAdapter.addItems(companies)
+                    tickerET.text.clear()
+
+//                    val newTickersStr = tickersStr.plus(" ").plus(ticker)
+//                    companiesVM.addCompanyToSearch(setId, newTickersStr).observe(viewLifecycleOwner) {
+//                        if (it < 0) companiesVM.setState(CompaniesViewModel.State.Error("Failed to update database"))
+//                    }
                 }
                 else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))
             }
@@ -142,6 +146,15 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
             }
         }
 
+    }
+
+    override fun onPause() {
+
+        val tickerStr = companiesAdapter.items.joinToString(separator = "") {
+            "${it.ticker} "
+        }.trim()
+        companiesVM.setState(CompaniesViewModel.State.Initial(tickerStr))
+        super.onPause()
     }
 
     override fun onStart() {
