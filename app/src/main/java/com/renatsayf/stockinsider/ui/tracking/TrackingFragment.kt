@@ -117,9 +117,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         is TrackingListViewModel.State.Edit -> {
                             enableEditing(state.flag)
                         }
-                        is TrackingListViewModel.State.Initial -> {}
+                        is TrackingListViewModel.State.Initial -> {
+
+                        }
                         is TrackingListViewModel.State.OnEdit -> {
                             enableSaveButton(set, state.set)
+                            trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
                     }
                 }
@@ -169,6 +172,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
     override fun onStop() {
         (activity as MainActivity).supportActionBar?.show()
         super.onStop()
+    }
+
+    override fun onDestroy() {
+
+        companiesVM.setState(CompaniesViewModel.State.Initial(""))
+        super.onDestroy()
     }
 
     private fun enableEditing(flag: Boolean) {

@@ -9,11 +9,11 @@ class FakeAppDao : AppDao {
     }
 
     override suspend fun getSearchSets(): List<RoomSearchSet> {
-        TODO("Not yet implemented")
+        return listOf()
     }
 
     override suspend fun getUserSearchSets(): List<RoomSearchSet> {
-        TODO("Not yet implemented")
+        return listOf()
     }
 
     override suspend fun getSetByName(setName: String): RoomSearchSet {
@@ -21,30 +21,42 @@ class FakeAppDao : AppDao {
     }
 
     override suspend fun deleteAll(): Int {
-        TODO("Not yet implemented")
+        return -1
     }
 
     override suspend fun deleteSet(set: RoomSearchSet): Int {
-        TODO("Not yet implemented")
+        return -1
     }
 
     override suspend fun insertOrUpdateSearchSet(set: RoomSearchSet): Long {
-        TODO("Not yet implemented")
+        return -1L
     }
 
     override suspend fun insertCompanies(list: List<Companies>) {
-        TODO("Not yet implemented")
+
     }
 
     override suspend fun getAllTickers(): List<String> {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override suspend fun getAllCompanies(): List<Companies>? {
-        TODO("Not yet implemented")
+        return emptyList()
     }
 
     override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> {
-        TODO("Not yet implemented")
+        return emptyList()
+    }
+
+    override suspend fun getCompanyByTicker(list: List<String>): List<Companies> {
+        return emptyList()
+    }
+
+    override suspend fun getAllSimilar(pattern: String): List<Companies> {
+        return emptyList()
+    }
+
+    override fun updateSearchSetTicker(setName: String, value: String): Int {
+        return -1
     }
 }

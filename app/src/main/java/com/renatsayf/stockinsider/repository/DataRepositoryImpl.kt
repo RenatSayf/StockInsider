@@ -11,6 +11,8 @@ import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 import com.renatsayf.stockinsider.network.INetRepository
+import com.renatsayf.stockinsider.utils.sortByAnotherList
+import kotlinx.coroutines.channels.ticker
 import kotlin.collections.ArrayList
 import kotlin.jvm.Throws
 
@@ -78,7 +80,9 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
 
     override suspend fun getCompanyByTicker(list: List<String>): List<Companies> = CoroutineScope(Dispatchers.IO).run {
         withContext(Dispatchers.Main) {
-            db.getCompanyByTicker(list)
+            val companyByTicker = db.getCompanyByTicker(list)
+            val sortByAnotherList = sortByAnotherList(companyByTicker, list)
+            sortByAnotherList
         }
     }
 
@@ -106,4 +110,6 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
             network.composite.clear()
         }
     }
+
 }
+

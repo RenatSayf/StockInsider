@@ -121,7 +121,6 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                     it.ticker == ticker
                 }
                 if (!isContains) {
-
                     val company = tickerLayout.companyNameTV.text.toString()
                     val companies = listOf(Companies(ticker, company))
                     companiesAdapter.addItems(companies)

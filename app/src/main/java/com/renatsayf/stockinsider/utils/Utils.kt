@@ -108,8 +108,7 @@ class Utils @Inject constructor()
     fun getFormattedDateTime(mode: Int, date: Date?): String
     {
         val calendar = GregorianCalendar.getInstance()
-        val time: Date?
-        time = date ?: calendar.time
+        val time: Date? = date ?: calendar.time
 
         val patternDateTime = "dd.MM.yyyy  HH:mm"
         val patternDate = "dd.MM.yyyy"

@@ -4,6 +4,8 @@ import android.content.Context
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 
 
 fun Context.getStringFromFile(fileName: String): String {
@@ -27,4 +29,14 @@ fun Fragment.showSnackBar(
     length: Int = Snackbar.LENGTH_SHORT
 ) {
     requireView().showSnackBar(message, length)
+}
+
+fun sortByAnotherList(targetList: List<Companies>, anotherList: List<String>): List<Companies> {
+    val anotherMap = anotherList.withIndex().associate {
+        it.value to it.index
+    }
+    val sortedList = targetList.sortedBy {
+        anotherMap[it.ticker]
+    }
+    return sortedList
 }
