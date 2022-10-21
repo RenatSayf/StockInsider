@@ -32,10 +32,20 @@ fun Fragment.showSnackBar(
 }
 
 fun sortByAnotherList(targetList: List<Companies>, anotherList: List<String>): List<Companies> {
+
+    val targetCompanyList = targetList.toMutableList()
+    val targetTickerList = targetList.toMutableList().map {
+        it.ticker
+    }
+    anotherList.forEach {
+        if (!targetTickerList.contains(it)) {
+            targetCompanyList.add(Companies(it, "Unnamed company"))
+        }
+    }
     val anotherMap = anotherList.withIndex().associate {
         it.value to it.index
     }
-    val sortedList = targetList.sortedBy {
+    val sortedList = targetCompanyList.sortedBy {
         anotherMap[it.ticker]
     }
     return sortedList
