@@ -1,12 +1,11 @@
 package com.renatsayf.stockinsider.repository
 
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
-import com.renatsayf.stockinsider.models.Target
 import kotlinx.coroutines.Deferred
 import java.lang.Exception
 import kotlin.jvm.Throws
@@ -29,16 +28,16 @@ interface IDataRepository
 
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Int
 
-    suspend fun getCompaniesFromDbAsync() : Array<Companies>?
+    suspend fun getCompaniesFromDbAsync() : Array<Company>?
 
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
-    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+    suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 
-    suspend fun getAllSimilar(pattern: String) : List<Companies>
+    suspend fun getAllSimilar(pattern: String) : List<Company>
 
     @Throws(Exception::class)
-    suspend fun insertCompanies(list : List<Companies>)
+    suspend fun insertCompanies(list : List<Company>)
 
     fun updateSearchSetTicker(setName: String, value: String) : Int
 

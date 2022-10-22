@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.tracking.companies
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,10 +17,11 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.CompaniesFragmentBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.tracking.TrackingListViewModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -39,6 +39,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
 
     private lateinit var binding: CompaniesFragmentBinding
     private val companiesVM: CompaniesViewModel by activityViewModels()
+    private val trackingVM: TrackingListViewModel by activityViewModels()
     private val mainVM: MainViewModel by viewModels()
 
     private val companiesAdapter = CompanyListAdapter()
@@ -83,6 +84,19 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 }
             }
         }
+        trackingVM.state.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is TrackingListViewModel.State.Edit -> {
+                    enableEditing(state.flag)
+                }
+                is TrackingListViewModel.State.Initial -> {
+
+                }
+                is TrackingListViewModel.State.OnEdit -> {
+
+                }
+            }
+        }
 
         with(binding) {
 
@@ -122,7 +136,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 }
                 if (!isContains) {
                     val company = tickerLayout.companyNameTV.text.toString()
-                    val companies = listOf(Companies(ticker, company))
+                    val companies = listOf(Company(ticker, company))
                     companiesAdapter.addItems(companies)
                     tickerET.text.clear()
 
@@ -164,6 +178,17 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     override fun onStop() {
         (activity as MainActivity).supportActionBar?.show()
         super.onStop()
+    }
+
+    fun enableEditing(flag: Boolean) {
+        with(binding) {
+
+            if (flag) {
+                btnAdd.visibility = View.VISIBLE
+            } else {
+                btnAdd.visibility = View.GONE
+            }
+        }
     }
 
 

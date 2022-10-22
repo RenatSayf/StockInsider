@@ -33,7 +33,9 @@ class TickersView @JvmOverloads constructor(
     private var listener: Listener? = null
 
     init {
-        init(attrs)
+        if (this.isInEditMode) {
+            init(attrs)
+        }
     }
 
     private fun init(attrs: AttributeSet?) {
@@ -59,6 +61,7 @@ class TickersView @JvmOverloads constructor(
             setTextColor(contentColor)
             setHint(hint)
             setHintTextColor(hintColor)
+            isInEditMode
 
             doOnTextChanged { text, _, _, _ ->
                 if (!text.isNullOrEmpty())

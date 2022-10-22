@@ -8,16 +8,16 @@ import android.widget.TextView
 import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 
 
 
 class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.Adapter<CompanyListAdapter.ViewHolder>() {
 
-    private val list = mutableListOf<Companies>()
+    private val list = mutableListOf<Company>()
 
     interface Listener {
-        fun onItemClick(company: Companies)
+        fun onItemClick(company: Company)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -34,7 +34,7 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
         return list.size
     }
 
-    fun addItems(list: List<Companies>) {
+    fun addItems(list: List<Company>) {
 
         if (!this.list.containsAll(list)) {
             this.list.addAll(list)
@@ -42,14 +42,14 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
         }
     }
 
-    val items: List<Companies>
+    val items: List<Company>
         get() {
             return this.list
         }
 
     inner class ViewHolder(private val binding: TickerLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(company: Companies, position: Int) {
+        fun bind(company: Company, position: Int) {
 
             with(binding) {
 

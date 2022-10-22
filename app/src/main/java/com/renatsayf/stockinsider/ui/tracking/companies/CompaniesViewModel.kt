@@ -4,8 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.renatsayf.stockinsider.db.Companies
-import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -32,8 +31,8 @@ class CompaniesViewModel @Inject constructor(
         _state.value = state
     }
 
-    fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Companies>?> {
-        val companies = MutableLiveData<List<Companies>?>(null)
+    fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Company>?> {
+        val companies = MutableLiveData<List<Company>?>(null)
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 val result = repository.getCompanyByTicker(tickers)
@@ -43,8 +42,8 @@ class CompaniesViewModel @Inject constructor(
         return companies
     }
 
-    fun getAllSimilarCompanies(pattern: String): LiveData<List<Companies>?> {
-        val companies = MutableLiveData<List<Companies>?>(null)
+    fun getAllSimilarCompanies(pattern: String): LiveData<List<Company>?> {
+        val companies = MutableLiveData<List<Company>?>(null)
         viewModelScope.launch(Dispatchers.IO) {
             withContext(Dispatchers.Main) {
                 val result = repository.getAllSimilar(pattern)

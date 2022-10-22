@@ -32,7 +32,7 @@ class FakeAppDao : AppDao {
         return -1L
     }
 
-    override suspend fun insertCompanies(list: List<Companies>) {
+    override suspend fun insertCompanies(list: List<Company>) {
 
     }
 
@@ -40,7 +40,7 @@ class FakeAppDao : AppDao {
         return emptyList()
     }
 
-    override suspend fun getAllCompanies(): List<Companies>? {
+    override suspend fun getAllCompanies(): List<Company>? {
         return emptyList()
     }
 
@@ -48,11 +48,11 @@ class FakeAppDao : AppDao {
         return emptyList()
     }
 
-    override suspend fun getCompanyByTicker(list: List<String>): List<Companies> {
+    override suspend fun getCompanyByTicker(list: List<String>): List<Company> {
         return emptyList()
     }
 
-    override suspend fun getAllSimilar(pattern: String): List<Companies> {
+    override suspend fun getAllSimilar(pattern: String): List<Company> {
         return emptyList()
     }
 

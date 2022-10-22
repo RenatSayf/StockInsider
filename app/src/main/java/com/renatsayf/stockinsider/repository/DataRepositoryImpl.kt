@@ -1,7 +1,7 @@
 package com.renatsayf.stockinsider.repository
 
 import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
@@ -12,7 +12,6 @@ import kotlinx.coroutines.*
 import javax.inject.Inject
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.utils.sortByAnotherList
-import kotlinx.coroutines.channels.ticker
 import kotlin.collections.ArrayList
 import kotlin.jvm.Throws
 
@@ -65,7 +64,7 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         }
     }
 
-    override suspend fun getCompaniesFromDbAsync(): Array<Companies>? = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getCompaniesFromDbAsync(): Array<Company>? = CoroutineScope(Dispatchers.IO).run {
         val companies = async {
             db.getAllCompanies()?.toTypedArray()
         }
@@ -78,7 +77,7 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         }
     }
 
-    override suspend fun getCompanyByTicker(list: List<String>): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getCompanyByTicker(list: List<String>): List<Company> = CoroutineScope(Dispatchers.IO).run {
         withContext(Dispatchers.Main) {
             val companyByTicker = db.getCompanyByTicker(list)
             val sortByAnotherList = sortByAnotherList(companyByTicker, list)
@@ -86,14 +85,14 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         }
     }
 
-    override suspend fun getAllSimilar(pattern: String): List<Companies> = CoroutineScope(Dispatchers.IO).run {
+    override suspend fun getAllSimilar(pattern: String): List<Company> = CoroutineScope(Dispatchers.IO).run {
         withContext(Dispatchers.Main) {
             db.getAllSimilar(pattern)
         }
     }
 
     @Throws(Exception::class)
-    override suspend fun insertCompanies(list: List<Companies>) {
+    override suspend fun insertCompanies(list: List<Company>) {
         CoroutineScope(Dispatchers.IO).launch {
             db.insertCompanies(list)
         }

@@ -8,7 +8,7 @@ import androidx.room.RoomDatabase
 
 private const val DB_VERSION = 18
 
-@Database(entities = [RoomSearchSet::class, Companies::class],
+@Database(entities = [RoomSearchSet::class, Company::class],
     version = DB_VERSION,
     exportSchema = true,
     autoMigrations = [AutoMigration(from = DB_VERSION - 1, to = DB_VERSION)])

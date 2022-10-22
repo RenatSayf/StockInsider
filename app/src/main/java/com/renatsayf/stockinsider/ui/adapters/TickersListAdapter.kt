@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import android.os.Build
 import android.view.LayoutInflater
@@ -10,18 +9,18 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.annotation.RequiresApi
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import java.util.*
 import kotlin.collections.ArrayList
 
 class TickersListAdapter(
-        context : Context, items : Array<Companies> = arrayOf()
+        context : Context, items : Array<Company> = arrayOf()
                         ) : ArrayAdapter<Any>(context, R.layout.ticker_layout), Filterable
 {
     //private var _context : Context? = null
 
-    internal var tempItems : MutableList<Companies> = mutableListOf()
-    internal var suggestions : MutableList<Companies> = mutableListOf()
+    internal var tempItems : MutableList<Company> = mutableListOf()
+    internal var suggestions : MutableList<Company> = mutableListOf()
 
     init
     {
@@ -71,7 +70,7 @@ class TickersListAdapter(
         {
             val values = results.values
             values?.let {
-                suggestions = results.values as MutableList<Companies>
+                suggestions = results.values as MutableList<Company>
                 notifyDataSetChanged()
             }
         }
@@ -97,7 +96,7 @@ class TickersListAdapter(
         return suggestions.size
     }
 
-    fun addItems(list: List<Companies>) {
+    fun addItems(list: List<Company>) {
         tempItems = list.toMutableList()
         notifyDataSetChanged()
     }

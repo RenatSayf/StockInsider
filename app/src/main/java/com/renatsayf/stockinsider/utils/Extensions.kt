@@ -4,8 +4,7 @@ import android.content.Context
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
-import com.renatsayf.stockinsider.db.Companies
-import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import com.renatsayf.stockinsider.db.Company
 
 
 fun Context.getStringFromFile(fileName: String): String {
@@ -31,7 +30,7 @@ fun Fragment.showSnackBar(
     requireView().showSnackBar(message, length)
 }
 
-fun sortByAnotherList(targetList: List<Companies>, anotherList: List<String>): List<Companies> {
+fun sortByAnotherList(targetList: List<Company>, anotherList: List<String>): List<Company> {
 
     val targetCompanyList = targetList.toMutableList()
     val targetTickerList = targetList.toMutableList().map {
@@ -39,7 +38,7 @@ fun sortByAnotherList(targetList: List<Companies>, anotherList: List<String>): L
     }
     anotherList.forEach {
         if (!targetTickerList.contains(it)) {
-            targetCompanyList.add(Companies(it, "Unnamed company"))
+            targetCompanyList.add(Company(it, "Unnamed company"))
         }
     }
     val anotherMap = anotherList.withIndex().associate {

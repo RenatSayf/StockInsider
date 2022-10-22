@@ -4,17 +4,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 
@@ -100,15 +96,15 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         }
     }
 
-    private var _companies = MutableLiveData<Array<Companies>>().apply {
+    private var _companies = MutableLiveData<Array<Company>>().apply {
         viewModelScope.launch {
             val c = getCompanies()
             postValue(c)
         }
     }
-    var companies : LiveData<Array<Companies>> = _companies
+    var companies : LiveData<Array<Company>> = _companies
 
-    private suspend fun getCompanies() : Array<Companies>? = run {
+    private suspend fun getCompanies() : Array<Company>? = run {
         repository.getCompaniesFromDbAsync()
     }
 

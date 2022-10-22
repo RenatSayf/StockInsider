@@ -1,6 +1,6 @@
 package com.renatsayf.stockinsider.utils
 
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import org.junit.Assert
 import org.junit.Test
 
@@ -10,10 +10,10 @@ class ExtensionsKtTest {
     @Test
     fun sortByAnotherList_Test() {
         val targetList = listOf(
-            Companies("AA", "Alcoa Corp"),
-            Companies("AAPL", "Apple Inc."),
-            Companies("BAC", "Bank of America Corp"),
-            Companies("MSFT", "Microsoft Corp")
+            Company("AA", "Alcoa Corp"),
+            Company("AAPL", "Apple Inc."),
+            Company("BAC", "Bank of America Corp"),
+            Company("MSFT", "Microsoft Corp")
         )
 
         val anotherList = listOf(
@@ -32,10 +32,10 @@ class ExtensionsKtTest {
     @Test
     fun sortByAnotherList_Not_Equals_Size() {
         val targetList = listOf(
-            Companies("AA", "Alcoa Corp"),
-            Companies("AAPL", "Apple Inc."),
-            Companies("BAC", "Bank of America Corp"),
-            Companies("MSFT", "Microsoft Corp")
+            Company("AA", "Alcoa Corp"),
+            Company("AAPL", "Apple Inc."),
+            Company("BAC", "Bank of America Corp"),
+            Company("MSFT", "Microsoft Corp")
         )
         val anotherList = listOf(
             "BAC",
@@ -54,10 +54,10 @@ class ExtensionsKtTest {
     @Test
     fun sortByAnotherList_Empty_anotherList() {
         val targetList = listOf(
-            Companies("AA", "Alcoa Corp"),
-            Companies("AAPL", "Apple Inc."),
-            Companies("BAC", "Bank of America Corp"),
-            Companies("MSFT", "Microsoft Corp")
+            Company("AA", "Alcoa Corp"),
+            Company("AAPL", "Apple Inc."),
+            Company("BAC", "Bank of America Corp"),
+            Company("MSFT", "Microsoft Corp")
         )
         val anotherList = emptyList<String>()
         val actualList = sortByAnotherList(targetList, anotherList)

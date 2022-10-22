@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "companies")
-data class Companies(
+data class Company(
 
         @PrimaryKey
         @ColumnInfo(name = "ticker")

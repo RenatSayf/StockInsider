@@ -23,23 +23,23 @@ interface AppDao
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Companies::class)
-    suspend fun insertCompanies(list : List<Companies>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Company::class)
+    suspend fun insertCompanies(list : List<Company>)
 
     @Query("SELECT ticker FROM companies")
     suspend fun getAllTickers() : List<String>
 
     @Query("SELECT * FROM companies")
-    suspend fun getAllCompanies() : List<Companies>?
+    suspend fun getAllCompanies() : List<Company>?
 
     @Query("SELECT DISTINCT * FROM search_set WHERE target = :target")
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")
-    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+    suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 
     @Query("SELECT DISTINCT * FROM companies WHERE company_name like '%' || :pattern || '%' OR ticker like '%' || :pattern || '%'")
-    suspend fun getAllSimilar(pattern: String) : List<Companies>
+    suspend fun getAllSimilar(pattern: String) : List<Company>
 
     @Query("UPDATE search_set SET ticker = :value WHERE set_name = :setName")
     fun updateSearchSetTicker(setName: String, value: String) : Int
