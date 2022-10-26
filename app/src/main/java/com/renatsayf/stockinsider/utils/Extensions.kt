@@ -49,3 +49,15 @@ fun sortByAnotherList(targetList: List<Company>, anotherList: List<String>): Lis
     }
     return sortedList
 }
+
+fun View.setVisible(flag: Boolean, invisibleMode: Int = -1) {
+    when {
+        !flag && invisibleMode < 0 -> {
+            this.visibility = View.GONE
+        }
+        !flag && invisibleMode > 0 -> {
+            this.visibility = View.INVISIBLE
+        }
+        flag -> this.visibility = View.VISIBLE
+    }
+}

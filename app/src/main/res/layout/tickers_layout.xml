@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<merge
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     tools:parentTag="androidx.constraintlayout.widget.ConstraintLayout"
-    tools:background="@color/colorPrimary"
+    tools:background="@color/colorTransparent"
     >
 
     <TextView
@@ -21,6 +21,7 @@
         android:text="@string/text_general"
         android:textAlignment="textEnd"
         android:textSize="18sp"
+        android:textColor="@color/colorSectionHeader"
         />
 
     <AutoCompleteTextView
@@ -61,8 +62,9 @@
         app:layout_constraintTop_toBottomOf="@+id/contentTextView"
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="12dp"
-        android:background="@drawable/transparent_background"
-        tools:text="Показать"
-        android:textSize="16sp"/>
+        style="@style/AppRectangularDarkButton"
+        android:text="Показать"
+        android:textSize="16sp"
+        android:textColor="@color/colorWhite"/>
 
-</merge>
+</androidx.constraintlayout.widget.ConstraintLayout>

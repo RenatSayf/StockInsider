@@ -8,11 +8,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.AdapterView.OnItemClickListener
 import android.widget.CompoundButton
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
@@ -20,6 +24,7 @@ import com.renatsayf.stockinsider.ui.custom.TickersView
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
+import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.ArrayList
 
@@ -72,7 +77,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             mainVM.companies.observe(viewLifecycleOwner) { companies ->
                 companies?.let {
                     val tickersListAdapter = TickersListAdapter(requireActivity(), it)
-                    tickersView.setAdapter(tickersListAdapter)
+                    includeTickersView.contentTextView.setAdapter(tickersListAdapter)
                 }
             }
 
@@ -82,6 +87,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 val newSet = set.copy()
 
                 setId = set.queryName
+                fillLayoutData(set)
 
                 companiesVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
@@ -90,10 +96,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         }
                         is CompaniesViewModel.State.Initial -> {
                             if (state.ticker.isNotEmpty()) {
-                                binding.tickersView.setContentText(state.ticker)
+                                includeTickersView.contentTextView.setText(state.ticker)
                             }
                             else {
-                                binding.tickersView.setContentText(set.ticker)
+                                includeTickersView.contentTextView.setText(set.ticker)
                             }
                         }
                         CompaniesViewModel.State.OnAdding -> {
@@ -127,27 +133,49 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     }
                 }
 
-                tickersView.setListeners(object : TickersView.Listener {
-                    override fun onShowAllClick(list: List<String>) {
-                        val tickersStr = binding.tickersView.contentText
-                        val newBundle = Bundle().apply {
-                            putStringArrayList(CompaniesFragment.ARG_TICKERS_LIST, list.toMutableList() as ArrayList<String>)
-                            putString(CompaniesFragment.ARG_TICKERS_STR, tickersStr)
-                            putString(CompaniesFragment.ARG_SET_ID, setId)
+                var tickerText = ""
+                includeTickersView.contentTextView.apply {
+                    doOnTextChanged { text, start, before, count ->
+                        if (!text.isNullOrEmpty()) {
+                            val c = text[text.length - 1]
+                            if (c.isWhitespace()) {
+                                tickerText = text.toString()
+                            }
+                        } else {
+                            tickerText = ""
                         }
-                        findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, newBundle, null, null)
-                    }
-
-                    override fun onContentChanged(text: String) {
-                        newSet.ticker = text
+                        newSet.ticker = text.toString()
                         trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
                     }
+                    onItemClickListener = object : OnItemClickListener {
+                        override fun onItemClick(p0: AdapterView<*>?, v: View?, p2: Int, p3: Long) {
+                            v?.let {
+                                val tickerLayout = TickerLayoutBinding.bind(v)
+                                val ticker = tickerLayout.tickerTV.text
+                                val str = (tickerText.plus(ticker)).trim()
+                                this@apply.setText(str)
+                                this@apply.setSelection(str.length)
+                                includeTickersView.btnShow.visibility = View.VISIBLE
+                            }
+                        }
 
-                    override fun onContentCleared() {
-                        newSet.ticker = ""
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
                     }
-                })
+                }
+                includeTickersView.btnShow.setOnClickListener {
+                    val list = if (includeTickersView.contentTextView.text.isEmpty()) listOf()
+                    else includeTickersView.contentTextView.text.toString().split(" ")
+                    val tickersStr = binding.includeTickersView.contentTextView.text.toString()
+                    val newBundle = Bundle().apply {
+                        putStringArrayList(CompaniesFragment.ARG_TICKERS_LIST, list.toMutableList() as ArrayList<String>)
+                        putString(CompaniesFragment.ARG_TICKERS_STR, tickersStr)
+                        putString(CompaniesFragment.ARG_SET_ID, setId)
+                    }
+                    findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, newBundle, null, null)
+                }
+                includeTickersView.clearTextBtn.setOnClickListener {
+                    newSet.ticker = ""
+                    trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                }
             }
 
 
@@ -183,7 +211,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
     private fun enableEditing(flag: Boolean) {
         with(binding){
 
-            tickersView.editable = flag
+            includeSetName.etSetName.isEnabled = flag
+            includeTickersView.contentTextView.apply {
+                isEnabled = flag
+            }
+            includeTickersView.clearTextBtn.setVisible(flag)
             traded.purchaseCheckBox.isClickable = flag
             traded.saleCheckBox.isClickable = flag
             insider.apply {
@@ -200,6 +232,13 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 setSelection(3)
                 isEnabled = flag
             }
+        }
+    }
+
+    private fun fillLayoutData(set: RoomSearchSet) {
+        with(binding) {
+
+            includeSetName.etSetName.setText(set.queryName)
         }
     }
 
