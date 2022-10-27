@@ -210,15 +210,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         }
 
         binding.btnAddToTracking.setOnClickListener {
-            val name = (roomSearchSet.ticker.ifEmpty { "All" })
-                //.plus("/period"+roomSearchSet.filingPeriod)
-                .plus(if (roomSearchSet.isPurchase) "/Pur" else "")
-                .plus(if (roomSearchSet.isSale) "/Sale" else "")
-                .plus(if (roomSearchSet.tradedMin.isNotEmpty()) "/min${roomSearchSet.tradedMin}" else "")
-                .plus(if (roomSearchSet.tradedMax.isNotEmpty()) "/max${roomSearchSet.tradedMax}" else "")
-                .plus(if (roomSearchSet.isOfficer) "/Officer" else "")
-                .plus(if (roomSearchSet.isDirector) "/Dir" else "")
-                .plus(if (roomSearchSet.isTenPercent) "/10%Owner" else "")
+            val name = roomSearchSet.generateQueryName()
             SaveSearchDialog.getInstance(name, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
         }
 

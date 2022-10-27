@@ -25,7 +25,12 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
     val state: LiveData<State> = _state
     fun setState(state: State) {
         _state.value = state
+        if (_state.value is State.OnEdit) {
+            newSet = (_state.value as State.OnEdit).set
+        }
     }
+
+    var newSet: RoomSearchSet? = null
 
 
 }

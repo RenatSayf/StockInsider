@@ -10,7 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
+import android.widget.AdapterView.OnItemSelectedListener
+import android.widget.CheckBox
 import android.widget.CompoundButton
+import android.widget.Spinner
+import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -20,7 +24,6 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
-import com.renatsayf.stockinsider.ui.custom.TickersView
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
@@ -84,7 +87,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             var setId = "Unnamed"
             arguments?.let { bundle ->
                 val set = bundle.getSerializable(ARG_SET) as RoomSearchSet
-                val newSet = set.copy()
+                trackingVM.newSet = set.copy()
 
                 setId = set.queryName
                 fillLayoutData(set)
@@ -111,12 +114,70 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
                 trackingVM.setState(TrackingListViewModel.State.Edit(flag))
 
-                traded.purchaseCheckBox.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-                    override fun onCheckedChanged(buttonView: CompoundButton?, isChecked: Boolean) {
-                        newSet.isPurchase = isChecked
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                traded.root.forEach {
+                    if (it is CheckBox) {
+                        it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+                            override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
+                                trackingVM.newSet?.let { set ->
+                                    when(p0?.id) {
+                                        R.id.purchaseCheckBox -> {
+                                            set.isPurchase = isChecked
+                                        }
+                                        R.id.saleCheckBox -> {
+                                            set.isSale = isChecked
+                                        }
+                                    }
+                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                }
+                            }
+                        })
                     }
-                })
+                }
+                insider.root.forEach {
+                    if (it is CheckBox) {
+                        it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
+                            override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
+                                trackingVM.newSet?.let { set ->
+                                    when(p0?.id) {
+                                        R.id.officer_CheBox -> {
+                                            set.isOfficer = isChecked
+                                        }
+                                        R.id.director_CheBox -> {
+                                            set.isDirector = isChecked
+                                        }
+                                        R.id.owner10_CheBox -> {
+                                            set.isTenPercent = isChecked
+                                        }
+                                    }
+                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                }
+                            }
+                        })
+                    }
+                }
+
+                sorting.root.forEach {
+                    if (it is Spinner) {
+                        it.onItemSelectedListener = object : OnItemSelectedListener {
+                            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                                trackingVM.newSet?.let { set ->
+                                    when(p0?.id) {
+                                        R.id.group_spinner -> {
+                                            set.groupBy = p2
+                                        }
+                                        R.id.sort_spinner -> {
+                                            set.sortBy = p2
+                                        }
+                                    }
+                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                }
+                            }
+
+                            override fun onNothingSelected(p0: AdapterView<*>?) {}
+
+                        }
+                    }
+                }
 
                 trackingVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
@@ -127,6 +188,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                         }
                         is TrackingListViewModel.State.OnEdit -> {
+                            updateSearchSetName(state.set)
                             enableSaveButton(set, state.set)
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
@@ -144,8 +206,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         } else {
                             tickerText = ""
                         }
-                        newSet.ticker = text.toString()
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                        trackingVM.newSet?.let { set ->
+                            set.ticker = text.toString()
+                            trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                        }
+
                     }
                     onItemClickListener = object : OnItemClickListener {
                         override fun onItemClick(p0: AdapterView<*>?, v: View?, p2: Int, p3: Long) {
@@ -173,12 +238,18 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, newBundle, null, null)
                 }
                 includeTickersView.clearTextBtn.setOnClickListener {
-                    newSet.ticker = ""
-                    trackingVM.setState(TrackingListViewModel.State.OnEdit(newSet))
+                    trackingVM.newSet?.let { set ->
+                        set.ticker = ""
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                    }
+
                 }
             }
 
-
+            btnSave.setOnClickListener {
+                val newSet = trackingVM.newSet
+                newSet
+            }
 
         }
     }
@@ -225,11 +296,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             }
 
             sorting.groupSpinner.apply {
-                setSelection(1)
                 isEnabled = flag
             }
             sorting.sortSpinner.apply {
-                setSelection(3)
                 isEnabled = flag
             }
         }
@@ -239,6 +308,21 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         with(binding) {
 
             includeSetName.etSetName.setText(set.queryName)
+            sorting.groupSpinner.apply {
+                setSelection(trackingVM.newSet?.groupBy ?: 0)
+            }
+            sorting.sortSpinner.apply {
+                setSelection(trackingVM.newSet?.sortBy ?: 0)
+            }
+        }
+    }
+
+    private fun updateSearchSetName(set: RoomSearchSet) {
+
+        with(binding) {
+            val newName = set.generateQueryName()
+            includeSetName.etSetName.setText(newName)
+            includeTickersView.contentTextView.setText(set.ticker)
         }
     }
 

@@ -80,6 +80,23 @@ data class RoomSearchSet(
                         sortBy = getSortingValue(this@RoomSearchSet.sortBy)
                 }
         }
+        fun generateQueryName(): String {
+
+                val nameLength = 26
+                val tickers = if (this.ticker.length > nameLength) {
+                        this.ticker.substring(0, nameLength).plus("...")
+                } else this.ticker
+
+                return (tickers.ifEmpty { "All" })
+                        //.plus("/period"+roomSearchSet.filingPeriod)
+                        .plus(if (isPurchase) "/Pur" else "")
+                        .plus(if (isSale) "/Sale" else "")
+                        .plus(if (tradedMin.isNotEmpty()) "/min$tradedMin" else "")
+                        .plus(if (tradedMax.isNotEmpty()) "/max$tradedMax" else "")
+                        .plus(if (isOfficer) "/Officer" else "")
+                        .plus(if (isDirector) "/Dir" else "")
+                        .plus(if (isTenPercent) "/10%Owner" else "")
+        }
 
         private fun formatTicker(string: String) : String
         {
