@@ -42,7 +42,7 @@ internal class DataRepositoryImplTest {
     }
 
     @Test
-    fun saveSearchSetAsync() {
+    fun saveSearchSetAsync_Insert_one_record() {
 
         val set = RoomSearchSet(
             queryName = "XXX",
@@ -70,6 +70,58 @@ internal class DataRepositoryImplTest {
 
             Assert.assertEquals(setByName.id, actualId)
             Assert.assertTrue(setByName.isTracked)
+        }
+    }
+
+    @Test
+    fun saveSearchSetAsync_Update_record() {
+
+        val set1 = RoomSearchSet(
+            id = 1,
+            queryName = "XXX",
+            companyName = "",
+            ticker = "BAC MSFT AA AAPL TSLA NVDA GOOG FB NFLX",
+            filingPeriod = 3,
+            tradePeriod = 3,
+            isPurchase = true,
+            isSale = false,
+            tradedMin = "",
+            tradedMax = "",
+            isOfficer = true,
+            isDirector = true,
+            isTenPercent = true,
+            groupBy = 1,
+            sortBy = 3
+        ).apply {
+            isTracked = true
+        }
+
+        val set2 = RoomSearchSet(
+            id = 1,
+            queryName = "YYY",
+            companyName = "",
+            ticker = "TSLA NVDA GOOG FB NFLX",
+            filingPeriod = 3,
+            tradePeriod = 3,
+            isPurchase = false,
+            isSale = true,
+            tradedMin = "",
+            tradedMax = "",
+            isOfficer = true,
+            isDirector = true,
+            isTenPercent = true,
+            groupBy = 1,
+            sortBy = 3
+        ).apply {
+            isTracked = true
+        }
+
+        runBlocking {
+
+            val id1 = repository.saveSearchSetAsync(set1).await()
+            val id2 = repository.saveSearchSetAsync(set2).await()
+
+            Assert.assertTrue(id1 == id2)
         }
     }
 }
