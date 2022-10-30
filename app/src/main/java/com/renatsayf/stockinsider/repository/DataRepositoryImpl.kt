@@ -102,7 +102,6 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         return db.updateSearchSetTicker(setName, value)
     }
 
-
     override fun destructor()
     {
         if (network is NetRepository) {

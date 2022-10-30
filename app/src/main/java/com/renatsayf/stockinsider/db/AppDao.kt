@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
+import kotlinx.coroutines.Deferred
 
 @Dao
 interface AppDao
@@ -43,5 +44,6 @@ interface AppDao
 
     @Query("UPDATE search_set SET ticker = :value WHERE set_name = :setName")
     fun updateSearchSetTicker(setName: String, value: String) : Int
+
 
 }

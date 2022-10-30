@@ -10,7 +10,6 @@ import java.io.Serializable
 @Entity(tableName = "search_set", indices = [Index("set_name")])
 data class RoomSearchSet(
 
-        @PrimaryKey
         @ColumnInfo(name = "set_name")
         var queryName: String,
 
@@ -51,7 +50,11 @@ data class RoomSearchSet(
         var groupBy: Int,
 
         @ColumnInfo(name = "sort_by")
-        var sortBy: Int
+        var sortBy: Int,
+
+        @PrimaryKey(autoGenerate = true)
+        @ColumnInfo(name = "id", defaultValue = "0")
+        val id: Long = 0
 ) : Serializable {
 
         @ColumnInfo(name = "target")
