@@ -19,7 +19,7 @@ import org.robolectric.annotation.Config
 
 
 @RunWith(RobolectricTestRunner::class)
-@Config(maxSdk = 30)
+@Config(maxSdk = 31)
 internal class DataRepositoryImplTest {
 
     private lateinit var dao: AppDao
