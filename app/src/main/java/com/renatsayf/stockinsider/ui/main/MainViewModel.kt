@@ -80,8 +80,13 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
     {
         val id = MutableStateFlow<Long>(-1)
         viewModelScope.launch {
-            val res = repository.saveSearchSetAsync(set).await()
-            id.emit(res)
+            try {
+                val res = repository.saveSearchSetAsync(set).await()
+                id.emit(res)
+            } catch (e: Exception) {
+                e.printStackTrace()
+                id.emit(0)
+            }
         }
         return id
     }

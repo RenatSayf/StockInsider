@@ -58,22 +58,24 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
 
                 trackerName.text = set.queryName
                 val dealType = if (set.isPurchase && !set.isSale) {
-                    root.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.buy1000000))
                     context.getString(R.string.text_purchase)
                 }
                 else if (set.isSale && !set.isPurchase) {
-                    root.setBackgroundColor(context.getColor(R.color.sale1000000))
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.sale1000000))
                     context.getString(R.string.text_sale)
                 }
-                else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
+                else {
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.colorWhite))
+                    "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
+                }
 
                 binding.dealType.text = dealType
 
                 if (set.isDefault) editButton.visibility = View.GONE
                 if (set.isDefault) deleteButton.visibility = View.GONE
 
-                val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
-                trackingSwitcher.isChecked = (pendingIntent != null)
+                trackingSwitcher.isChecked = set.isTracked
 
                 editButton.setOnClickListener {
                     listener?.onTrackingAdapterEditButtonClick(set, position)

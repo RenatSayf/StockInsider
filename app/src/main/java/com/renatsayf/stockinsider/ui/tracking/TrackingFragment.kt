@@ -17,18 +17,22 @@ import android.widget.Spinner
 import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.models.Target.Tracking
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import java.util.ArrayList
 
 
@@ -172,9 +176,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                     trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
                                 }
                             }
-
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
-
                         }
                     }
                 }
@@ -190,6 +192,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         is TrackingListViewModel.State.OnEdit -> {
                             updateSearchSetName(state.set)
                             enableSaveButton(set, state.set)
+                            trackingVM.setState(TrackingListViewModel.State.Edit(flag))
+                        }
+                        is TrackingListViewModel.State.OnSaving -> {
+                            updateSearchSetName(state.set)
+                            enableSaveButton(state.set, state.set)
+                            showSnackBar("Изменения сохранены")
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
                     }
@@ -248,7 +256,33 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
             btnSave.setOnClickListener {
                 val newSet = trackingVM.newSet
-                newSet
+                newSet?.let {
+                    it.queryName = includeSetName.etSetName.text.toString()
+                    it.target = Tracking
+                    it.isTracked = true
+                }
+                newSet?.let { set ->
+                    lifecycleScope.launchWhenResumed {
+                        mainVM.saveSearchSet(set).collect { id ->
+                            when {
+                                id > 0L -> {
+                                    mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
+                                        val setById = list.firstOrNull {
+                                            it.id == trackingVM.newSet?.id
+                                        }
+                                        setById?.let {
+                                            trackingVM.setState(TrackingListViewModel.State.OnSaving(it))
+                                        }
+                                    }
+                                }
+                                id == 0L -> {
+                                    showSnackBar("Не удалось сохранить изменения")
+                                }
+
+                            }
+                        }
+                    }
+                }
             }
 
         }
@@ -308,6 +342,18 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         with(binding) {
 
             includeSetName.etSetName.setText(set.queryName)
+
+            traded.apply {
+                purchaseCheckBox.isChecked = set.isPurchase
+                saleCheckBox.isChecked = set.isSale
+            }
+
+            insider.apply {
+                officerCheBox.isChecked = set.isOfficer
+                directorCheBox.isChecked = set.isDirector
+                owner10CheBox.isChecked = set.isTenPercent
+            }
+
             sorting.groupSpinner.apply {
                 setSelection(trackingVM.newSet?.groupBy ?: 0)
             }

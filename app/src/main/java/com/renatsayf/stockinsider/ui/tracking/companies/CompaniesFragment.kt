@@ -95,6 +95,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 is TrackingListViewModel.State.OnEdit -> {
 
                 }
+                is TrackingListViewModel.State.OnSaving -> {}
             }
         }
 

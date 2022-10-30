@@ -88,6 +88,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 is TrackingListViewModel.State.OnEdit -> {
 
                 }
+                is TrackingListViewModel.State.OnSaving -> {
+
+                }
             }
         }
 

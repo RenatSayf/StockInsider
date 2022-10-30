@@ -120,8 +120,16 @@ internal class DataRepositoryImplTest {
 
             val id1 = repository.saveSearchSetAsync(set1).await()
             val id2 = repository.saveSearchSetAsync(set2).await()
-
             Assert.assertTrue(id1 == id2)
+
+            val list = repository.getUserSearchSetsFromDbAsync()
+            val actualSet = list.first {
+                it.id == id2
+            }
+
+            Assert.assertEquals(set2.queryName, actualSet.queryName)
+            Assert.assertEquals(set2.ticker, actualSet.ticker)
+            Assert.assertEquals(set2.isTracked, actualSet.isTracked)
         }
     }
 }

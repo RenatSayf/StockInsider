@@ -78,7 +78,7 @@ class TickersListAdapter(
 
     override fun getItem(position : Int) : String
     {
-        return suggestions[position].toString()
+        return if (position < suggestions.size) suggestions[position].toString() else ""
     }
 
     override fun getItemId(position : Int) : Long
