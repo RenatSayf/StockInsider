@@ -25,7 +25,11 @@ class CompanyListAdapter(private val listener: Listener? = null) : ListAdapter<C
 
 }) {
 
-    //private val list = mutableListOf<Company>()
+    private var isDeletable = false
+
+    fun setEnable(flag: Boolean) {
+        isDeletable = flag
+    }
 
     interface Listener {
         fun onItemClick(company: Company)
@@ -46,18 +50,12 @@ class CompanyListAdapter(private val listener: Listener? = null) : ListAdapter<C
         return currentList.size
     }
 
-//    fun addItems(list: List<Company>) {
-//
-//        if (!this.list.containsAll(list)) {
-//            this.list.addAll(list)
-//            notifyDataSetChanged()
-//        }
-//    }
-
     val items: List<Company>
         get() {
             return this.currentList
         }
+
+
 
     inner class ViewHolder(private val binding: TickerLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
@@ -82,7 +80,7 @@ class CompanyListAdapter(private val listener: Listener? = null) : ListAdapter<C
                 }
 
                 btnDelete.apply {
-                    setVisible(true)
+                    setVisible(isDeletable)
                     setOnClickListener {
                         listener?.onItemRemoved(company)
                     }

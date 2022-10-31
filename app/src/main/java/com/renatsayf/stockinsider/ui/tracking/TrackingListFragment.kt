@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
@@ -19,7 +20,9 @@ import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.START_TIME
 import com.renatsayf.stockinsider.utils.TIME_INTERVAL
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
@@ -111,16 +114,17 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
-        val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
-        if (checked && pendingIntent == null) {
-            scheduler.scheduleRepeat(
-                name = set.queryName,
-                overTime = START_TIME,
-                interval = TIME_INTERVAL
-            )
-        }
-        else if (!checked && pendingIntent != null) {
-            scheduler.cancel(pendingIntent)
+
+        lifecycleScope.launchWhenResumed {
+            set.isTracked = checked
+            mainVM.saveSearchSet(set).collect { id ->
+                if (id > 0) {
+                    when(checked) {
+                        true -> showSnackBar("Отслеживание включено")
+                        else -> showSnackBar("Отслеживание выключено")
+                    }
+                }
+            }
         }
     }
 

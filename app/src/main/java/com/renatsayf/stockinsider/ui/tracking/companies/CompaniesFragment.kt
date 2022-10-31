@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.core.view.children
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -22,6 +23,7 @@ import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.TrackingListViewModel
+import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -182,11 +184,8 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
     private fun enableEditing(flag: Boolean) {
         with(binding) {
 
-            if (flag) {
-                btnAdd.visibility = View.VISIBLE
-            } else {
-                btnAdd.visibility = View.GONE
-            }
+            btnAdd.setVisible(flag)
+            companiesAdapter.setEnable(flag)
         }
     }
 
