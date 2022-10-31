@@ -30,7 +30,7 @@
             <View
                 android:id="@+id/general_date_divider"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@color/colorSectionDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/general" />
@@ -46,7 +46,7 @@
             <View
                 android:id="@+id/barier_bottom_date"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@color/colorSectionDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/date"/>
@@ -62,7 +62,7 @@
             <View
                 android:id="@+id/barier_bottom_traded"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@color/colorSectionDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/traded"/>
@@ -78,7 +78,7 @@
             <View
                 android:id="@+id/barier_bottom_insider"
                 android:layout_width="match_parent"
-                android:layout_height="5dp"
+                android:layout_height="1dp"
                 android:background="@color/colorSectionDivider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/insider"/>

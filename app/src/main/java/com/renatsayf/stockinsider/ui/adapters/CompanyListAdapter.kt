@@ -9,7 +9,7 @@ import androidx.core.view.children
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.Company
-
+import com.renatsayf.stockinsider.utils.setVisible
 
 
 class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.Adapter<CompanyListAdapter.ViewHolder>() {
@@ -18,6 +18,7 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
 
     interface Listener {
         fun onItemClick(company: Company)
+        fun onItemRemoved(company: Company)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -54,9 +55,11 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
             with(binding) {
 
                 tickerLayout.children.forEach { view: View ->
-                    (view as TextView).apply {
-                        textSize = 16.0f
-                        setTextColor(Color.WHITE)
+                    if (view is TextView) {
+                        view.apply {
+                            textSize = 16.0f
+                            setTextColor(Color.WHITE)
+                        }
                     }
                 }
 
@@ -65,6 +68,14 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
 
                 tickerLayout.setOnClickListener {
                     listener?.onItemClick(company)
+                }
+
+                btnDelete.apply {
+                    setVisible(true)
+                    setOnClickListener {
+                        list.remove(company)
+                        notifyDataSetChanged()
+                    }
                 }
             }
         }

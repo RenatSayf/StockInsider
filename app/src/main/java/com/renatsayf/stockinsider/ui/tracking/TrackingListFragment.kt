@@ -8,8 +8,6 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
@@ -88,7 +86,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 is TrackingListViewModel.State.OnEdit -> {
 
                 }
-                is TrackingListViewModel.State.OnSaving -> {
+                is TrackingListViewModel.State.OnSave -> {
 
                 }
             }

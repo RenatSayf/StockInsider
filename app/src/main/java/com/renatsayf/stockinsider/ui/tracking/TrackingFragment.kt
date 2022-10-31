@@ -32,7 +32,6 @@ import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import java.util.ArrayList
 
 
@@ -194,7 +193,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                             enableSaveButton(set, state.set)
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
-                        is TrackingListViewModel.State.OnSaving -> {
+                        is TrackingListViewModel.State.OnSave -> {
                             updateSearchSetName(state.set)
                             enableSaveButton(state.set, state.set)
                             showSnackBar("Изменения сохранены")
@@ -206,17 +205,20 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 var tickerText = ""
                 includeTickersView.contentTextView.apply {
                     doOnTextChanged { text, start, before, count ->
-                        if (!text.isNullOrEmpty()) {
-                            val c = text[text.length - 1]
-                            if (c.isWhitespace()) {
-                                tickerText = text.toString()
+                        if (text != null) {
+                            if (text.isNotEmpty()) {
+                                val c = text[text.length - 1]
+                                if (c.isWhitespace()) {
+                                    tickerText = text.toString()
+                                }
+                            } else {
+                                tickerText = ""
                             }
-                        } else {
-                            tickerText = ""
-                        }
-                        trackingVM.newSet?.let { set ->
-                            set.ticker = text.toString()
-                            trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                            this.setSelection((count))
+                            trackingVM.newSet?.let { set ->
+                                set.ticker = text.toString()
+                                trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                            }
                         }
 
                     }
@@ -271,14 +273,13 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                             it.id == trackingVM.newSet?.id
                                         }
                                         setById?.let {
-                                            trackingVM.setState(TrackingListViewModel.State.OnSaving(it))
+                                            trackingVM.setState(TrackingListViewModel.State.OnSave(it))
                                         }
                                     }
                                 }
                                 id == 0L -> {
                                     showSnackBar("Не удалось сохранить изменения")
                                 }
-
                             }
                         }
                     }
