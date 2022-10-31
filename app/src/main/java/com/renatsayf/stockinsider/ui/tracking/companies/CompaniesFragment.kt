@@ -26,7 +26,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class CompaniesFragment : Fragment(R.layout.companies_fragment) {
+class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdapter.Listener {
 
     companion object {
 
@@ -42,7 +42,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
     private val trackingVM: TrackingListViewModel by activityViewModels()
     private val mainVM: MainViewModel by viewModels()
 
-    private val companiesAdapter = CompanyListAdapter()
+    private val companiesAdapter = CompanyListAdapter(this)
     private val setId: String by lazy {
         this.arguments?.getString(ARG_SET_ID) ?: "Unnamed"
     }
@@ -137,14 +137,12 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 }
                 if (!isContains) {
                     val company = tickerLayout.companyNameTV.text.toString()
-                    val companies = listOf(Company(ticker, company))
-                    companiesAdapter.addItems(companies)
+                    val companies = companiesAdapter.items.ifEmpty {
+                        listOf()
+                    }.toMutableList()
+                    companies.add(Company(ticker, company))
+                    companiesAdapter.submitList(companies)
                     tickerET.text.clear()
-
-//                    val newTickersStr = tickersStr.plus(" ").plus(ticker)
-//                    companiesVM.addCompanyToSearch(setId, newTickersStr).observe(viewLifecycleOwner) {
-//                        if (it < 0) companiesVM.setState(CompaniesViewModel.State.Error("Failed to update database"))
-//                    }
                 }
                 else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))
             }
@@ -154,7 +152,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
             tickers?.let { tList ->
                 companiesVM.getCompaniesByTicker(tList).observe(viewLifecycleOwner) { list ->
                     list?.let { companies ->
-                        companiesAdapter.addItems(companies)
+                        companiesAdapter.submitList(companies)
                     }
                 }
             }
@@ -181,7 +179,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
         super.onStop()
     }
 
-    fun enableEditing(flag: Boolean) {
+    private fun enableEditing(flag: Boolean) {
         with(binding) {
 
             if (flag) {
@@ -190,6 +188,14 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment) {
                 btnAdd.visibility = View.GONE
             }
         }
+    }
+
+    override fun onItemClick(company: Company) {}
+
+    override fun onItemRemoved(company: Company) {
+        val companyList = companiesAdapter.items.toMutableList()
+        companyList.remove(company)
+        companiesAdapter.submitList(companyList)
     }
 
 

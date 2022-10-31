@@ -6,15 +6,26 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.core.view.children
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.utils.setVisible
 
 
-class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.Adapter<CompanyListAdapter.ViewHolder>() {
+class CompanyListAdapter(private val listener: Listener? = null) : ListAdapter<Company, CompanyListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Company>() {
+    override fun areItemsTheSame(oldItem: Company, newItem: Company): Boolean {
+        return oldItem == newItem
+    }
 
-    private val list = mutableListOf<Company>()
+    override fun areContentsTheSame(oldItem: Company, newItem: Company): Boolean {
+        return oldItem.ticker == newItem.ticker && oldItem.company == newItem.company
+    }
+
+}) {
+
+    //private val list = mutableListOf<Company>()
 
     interface Listener {
         fun onItemClick(company: Company)
@@ -27,30 +38,30 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val company = list[position]
-        holder.bind(company, position)
+        val company = currentList[position]
+        holder.bind(company)
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return currentList.size
     }
 
-    fun addItems(list: List<Company>) {
-
-        if (!this.list.containsAll(list)) {
-            this.list.addAll(list)
-            notifyDataSetChanged()
-        }
-    }
+//    fun addItems(list: List<Company>) {
+//
+//        if (!this.list.containsAll(list)) {
+//            this.list.addAll(list)
+//            notifyDataSetChanged()
+//        }
+//    }
 
     val items: List<Company>
         get() {
-            return this.list
+            return this.currentList
         }
 
     inner class ViewHolder(private val binding: TickerLayoutBinding): RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(company: Company, position: Int) {
+        fun bind(company: Company) {
 
             with(binding) {
 
@@ -73,8 +84,7 @@ class CompanyListAdapter(private val listener: Listener? = null) : RecyclerView.
                 btnDelete.apply {
                     setVisible(true)
                     setOnClickListener {
-                        list.remove(company)
-                        notifyDataSetChanged()
+                        listener?.onItemRemoved(company)
                     }
                 }
             }

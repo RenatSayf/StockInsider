@@ -130,6 +130,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                             set.isSale = isChecked
                                         }
                                     }
+                                    if (!set.isPurchase && !set.isSale) {
+                                        set.apply {
+                                            isPurchase = true
+                                            isSale = true
+                                        }
+                                    }
                                     trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
                                 }
                             }
