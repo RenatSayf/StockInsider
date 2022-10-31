@@ -7,16 +7,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.schedule.IScheduler
 
 
-class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
-                      private val scheduler: IScheduler,
-                        private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
+class TrackingAdapter(
+    //private var list: MutableList<RoomSearchSet> = mutableListOf(),
+    private val listener: Listener? = null
+): ListAdapter<RoomSearchSet, TrackingAdapter.ViewHolder>(object : DiffUtil.ItemCallback<RoomSearchSet>() {
+    override fun areItemsTheSame(oldItem: RoomSearchSet, newItem: RoomSearchSet): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: RoomSearchSet, newItem: RoomSearchSet): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+}) {
 
     interface Listener {
         fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int)
@@ -31,23 +42,23 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val set = list[position]
+        val set = currentList[position]
         holder.bind(set, position)
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return currentList.size
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun setItems(list: MutableList<RoomSearchSet>) {
-        this.list = list
-        notifyDataSetChanged()
-    }
-
-    fun modifyItem(set: RoomSearchSet, position: Int) {
-        list[position] = set
-    }
+//    @SuppressLint("NotifyDataSetChanged")
+//    fun setItems(list: MutableList<RoomSearchSet>) {
+//        this.list = list
+//        notifyDataSetChanged()
+//    }
+//
+//    fun modifyItem(set: RoomSearchSet, position: Int) {
+//        list[position] = set
+//    }
 
     inner class ViewHolder(private val binding: TrackingItemBinding) : RecyclerView.ViewHolder(binding.root) {
 

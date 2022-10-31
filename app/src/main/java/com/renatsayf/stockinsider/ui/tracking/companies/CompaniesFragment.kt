@@ -84,6 +84,9 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                     binding.tickerET.visibility = View.GONE
                     binding.btnAdd.visibility = View.VISIBLE
                 }
+                is CompaniesViewModel.State.OnUpdate -> {
+                    companiesAdapter.submitList(state.companies)
+                }
             }
         }
         trackingVM.state.observe(viewLifecycleOwner) { state ->
@@ -154,7 +157,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
             tickers?.let { tList ->
                 companiesVM.getCompaniesByTicker(tList).observe(viewLifecycleOwner) { list ->
                     list?.let { companies ->
-                        companiesAdapter.submitList(companies)
+                        companiesVM.setState(CompaniesViewModel.State.OnUpdate(companies))
                     }
                 }
             }
@@ -194,7 +197,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
     override fun onItemRemoved(company: Company) {
         val companyList = companiesAdapter.items.toMutableList()
         companyList.remove(company)
-        companiesAdapter.submitList(companyList)
+        companiesVM.setState(CompaniesViewModel.State.OnUpdate(companyList))
     }
 
 

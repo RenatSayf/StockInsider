@@ -14,7 +14,9 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.utils.setVisible
 
 
-class CompanyListAdapter(private val listener: Listener? = null) : ListAdapter<Company, CompanyListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Company>() {
+class CompanyListAdapter(
+    private val listener: Listener? = null
+) : ListAdapter<Company, CompanyListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Company>() {
     override fun areItemsTheSame(oldItem: Company, newItem: Company): Boolean {
         return oldItem == newItem
     }

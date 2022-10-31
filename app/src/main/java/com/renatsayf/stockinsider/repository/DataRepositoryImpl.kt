@@ -58,8 +58,8 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
         }
     }
 
-    override suspend fun deleteSearchSetAsync(set: RoomSearchSet): Int = CoroutineScope(Dispatchers.IO).run {
-        return withContext(Dispatchers.Main){
+    override suspend fun deleteSearchSetAsync(set: RoomSearchSet): Deferred<Int> = coroutineScope {
+        async {
             db.deleteSet(set)
         }
     }

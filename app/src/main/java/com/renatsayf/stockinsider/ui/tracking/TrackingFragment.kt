@@ -108,9 +108,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 includeTickersView.contentTextView.setText(set.ticker)
                             }
                         }
-                        CompaniesViewModel.State.OnAdding -> {
-
-                        }
+                        CompaniesViewModel.State.OnAdding -> {}
+                        is CompaniesViewModel.State.OnUpdate -> {}
                     }
                 }
 

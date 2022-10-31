@@ -16,10 +16,9 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
+import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AppCalendar
-import com.renatsayf.stockinsider.utils.START_TIME
-import com.renatsayf.stockinsider.utils.TIME_INTERVAL
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
@@ -45,7 +44,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     private val trackingAdapter: TrackingAdapter by lazy {
-        TrackingAdapter(scheduler = this.scheduler, listener = this)
+        TrackingAdapter(listener = this)
     }
 
     override fun onCreateView(
@@ -78,10 +77,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             }
         }
 
+        mainVM.state.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is MainViewModel.State.Initial -> TODO()
+            }
+        }
+
         trackingVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is TrackingListViewModel.State.Initial -> {
-                    trackingAdapter.setItems(state.list as MutableList<RoomSearchSet>)
+                    trackingAdapter.submitList(state.list as MutableList<RoomSearchSet>)
                 }
                 is TrackingListViewModel.State.Edit -> {
 
@@ -111,6 +116,25 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int) {
 
+        ConfirmationDialog(
+            message = "Подтвердите удаление",
+            btnOkText = "Удалить",
+        ).apply {
+            setOnClickListener(object : ConfirmationDialog.Listener {
+
+                override fun onPositiveClick(flag: String) {
+                    lifecycleScope.launchWhenResumed {
+                        mainVM.deleteSearchSet(set).collect { res ->
+                            if (res > 0) {
+                                mainVM.getSearchSetsByTarget(Target.Tracking).observe(this@TrackingListFragment.viewLifecycleOwner) { list ->
+                                    trackingVM.setState(TrackingListViewModel.State.Initial(list))
+                                }
+                            }
+                        }
+                    }
+                }
+            })
+        }.show(requireActivity().supportFragmentManager, ConfirmationDialog.TAG)
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
