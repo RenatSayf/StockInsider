@@ -195,6 +195,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                         }
                         is TrackingListViewModel.State.OnEdit -> {
+                            fillLayoutData(state.set)
                             enableSaveButton(set, state.set)
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
@@ -358,6 +359,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         with(binding) {
 
             includeSetName.etSetName.setText(set.queryName)
+
+            includeTickersView.contentTextView.setText(set.ticker)
 
             traded.apply {
                 purchaseCheckBox.isChecked = set.isPurchase
