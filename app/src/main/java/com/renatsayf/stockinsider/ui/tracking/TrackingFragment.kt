@@ -26,6 +26,7 @@ import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target.Tracking
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
+import com.renatsayf.stockinsider.ui.dialogs.SetNameDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
@@ -87,7 +88,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 }
             }
 
-            var setId = "Unnamed"
+            var setId: String
             arguments?.let { bundle ->
                 val set = bundle.getSerializable(ARG_SET) as RoomSearchSet
                 trackingVM.newSet = set.copy()
@@ -194,12 +195,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                         }
                         is TrackingListViewModel.State.OnEdit -> {
-                            updateSearchSetName(state.set)
                             enableSaveButton(set, state.set)
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
                         is TrackingListViewModel.State.OnSave -> {
-                            updateSearchSetName(state.set)
                             enableSaveButton(state.set, state.set)
                             showSnackBar("Изменения сохранены")
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
@@ -215,11 +214,12 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 val c = text[text.length - 1]
                                 if (c.isWhitespace()) {
                                     tickerText = text.toString()
+                                    this.setSelection((count))
                                 }
                             } else {
                                 tickerText = ""
                             }
-                            this.setSelection((count))
+
                             trackingVM.newSet?.let { set ->
                                 set.ticker = text.toString()
                                 trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
@@ -269,25 +269,35 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     it.isTracked = true
                 }
                 newSet?.let { set ->
-                    lifecycleScope.launchWhenResumed {
-                        mainVM.saveSearchSet(set).collect { id ->
-                            when {
-                                id > 0L -> {
-                                    mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
-                                        val setById = list.firstOrNull {
-                                            it.id == trackingVM.newSet?.id
+
+                    SetNameDialog(set, listener = object : SetNameDialog.Listener {
+                        override fun onSetNameDialogPositiveClick(name: String) {
+                            newSet.queryName = name
+                            lifecycleScope.launchWhenResumed {
+                                mainVM.saveSearchSet(newSet).collect { id ->
+                                    when {
+                                        id > 0L -> {
+                                            mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
+                                                val setById = list.firstOrNull {
+                                                    it.id == trackingVM.newSet?.id
+                                                }
+                                                setById?.let {
+                                                    trackingVM.setState(TrackingListViewModel.State.OnSave(it))
+                                                }
+                                                findNavController().popBackStack()
+                                            }
                                         }
-                                        setById?.let {
-                                            trackingVM.setState(TrackingListViewModel.State.OnSave(it))
+                                        id == 0L -> {
+                                            showSnackBar("Не удалось сохранить изменения")
                                         }
                                     }
                                 }
-                                id == 0L -> {
-                                    showSnackBar("Не удалось сохранить изменения")
-                                }
                             }
                         }
-                    }
+                    }).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
+
+
+
                 }
             }
 
@@ -366,15 +376,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             sorting.sortSpinner.apply {
                 setSelection(trackingVM.newSet?.sortBy ?: 0)
             }
-        }
-    }
-
-    private fun updateSearchSetName(set: RoomSearchSet) {
-
-        with(binding) {
-            val newName = set.generateQueryName()
-            includeSetName.etSetName.setText(newName)
-            includeTickersView.contentTextView.setText(set.ticker)
         }
     }
 

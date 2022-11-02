@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:paddingTop="12dp"
         android:paddingBottom="12dp"
-        android:text="Название запроса"
+        android:text="@string/title_request_name"
         android:textAlignment="textEnd"
         android:textSize="18sp"
         android:textColor="@color/colorSectionHeader"
@@ -22,7 +22,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         style="@style/appEditTextStyle"
-        android:hint="Введите название запроса"
+        android:hint="@string/hint_request_name"
         android:autofillHints="name"
         android:inputType="text" />
 

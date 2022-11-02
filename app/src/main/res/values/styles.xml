@@ -49,8 +49,10 @@
         <item name="android:paddingBottom">10dp</item>
     </style>
 
-    <style name="AppButtonOutlined">
+    <style name="AppDialogStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
 
     </style>
+
 
 </resources>

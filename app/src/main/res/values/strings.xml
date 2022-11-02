@@ -202,5 +202,8 @@
     <string name="text_tracking_params">Параметры отслеживания</string>
     <string name="text_company_list">Список компаний</string>
     <string name="text_ticker_already_exists">Такой тикер уже есть в списке</string>
+    <string name="hint_request_name">Введите название запроса</string>
+    <string name="title_request_name">Название запроса</string>
+    <string name="text_generate">Сгенерировать</string>
 
 </resources>
