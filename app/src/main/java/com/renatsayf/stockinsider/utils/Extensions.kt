@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
+import android.content.res.Resources
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
@@ -61,3 +62,36 @@ fun View.setVisible(flag: Boolean, invisibleMode: Int = -1) {
         flag -> this.visibility = View.VISIBLE
     }
 }
+
+val Int.dp: Int
+    get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+
+val Int.px: Int
+    get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -42,6 +42,8 @@ class SetNameDialog(
 
         with(binding) {
 
+            etSetName.setText(set.queryName)
+
             btnSave.setOnClickListener {
                 val name = etSetName.text.toString()
                 listener.onSetNameDialogPositiveClick(name)

@@ -2,12 +2,11 @@
 
 package com.renatsayf.stockinsider.ui.tracking
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.AdapterView
 import android.widget.AdapterView.OnItemClickListener
 import android.widget.AdapterView.OnItemSelectedListener
@@ -16,7 +15,9 @@ import android.widget.CompoundButton
 import android.widget.Spinner
 import androidx.core.view.forEach
 import androidx.core.widget.doOnTextChanged
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
@@ -30,10 +31,10 @@ import com.renatsayf.stockinsider.ui.dialogs.SetNameDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
+import com.renatsayf.stockinsider.utils.px
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.ArrayList
 
 
 @AndroidEntryPoint
@@ -65,15 +66,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
         binding = TrackingFragmentBinding.bind(view)
 
-        (activity as MainActivity).supportActionBar?.hide()
-
         val title = arguments?.getString(ARG_TITLE)
 
         with(binding) {
-
-            traded.tradedTitle.visibility = View.GONE
-            traded.tradedMaxET.visibility = View.GONE
-            traded.tradedMinET.visibility = View.GONE
 
             toolbar.title = title
 
@@ -195,7 +190,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                         }
                         is TrackingListViewModel.State.OnEdit -> {
-                            fillLayoutData(state.set)
                             enableSaveButton(set, state.set)
                             trackingVM.setState(TrackingListViewModel.State.Edit(flag))
                         }
@@ -207,9 +201,16 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                     }
                 }
 
+                includeSetName.etSetName.doOnTextChanged { text, _, _, _ ->
+                    trackingVM.newSet?.let { set ->
+                        set.queryName = text.toString()
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                    }
+                }
+
                 var tickerText = ""
                 includeTickersView.contentTextView.apply {
-                    doOnTextChanged { text, start, before, count ->
+                    doOnTextChanged { text, _, _, count ->
                         if (text != null) {
                             if (text.isNotEmpty()) {
                                 val c = text[text.length - 1]
@@ -242,6 +243,20 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                     }
                 }
+
+                traded.tradedMinET.doOnTextChanged { text, _, _, _ ->
+                    trackingVM.newSet?.let { set ->
+                        set.tradedMin = text.toString()
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                    }
+                }
+                traded.tradedMaxET.doOnTextChanged { text, _, _, _ ->
+                    trackingVM.newSet?.let { set ->
+                        set.tradedMax = text.toString()
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                    }
+                }
+
                 includeTickersView.btnShow.setOnClickListener {
                     val list = if (includeTickersView.contentTextView.text.isEmpty()) listOf()
                     else includeTickersView.contentTextView.text.toString().split(" ")
@@ -296,13 +311,20 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                             }
                         }
                     }).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
-
-
-
                 }
             }
-
         }
+
+        binding.root.viewTreeObserver.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                val heightDiff: Int = binding.root.rootView.height - binding.root.height
+                val threshold: Int = 200.px
+                val result = heightDiff > threshold
+                if (!result && binding.btnSave.visibility == View.VISIBLE) {
+                    binding.scrollView.smoothScrollTo(0, binding.btnSave.bottom)
+                }
+            }
+        })
     }
 
     private fun enableSaveButton(oldSet: RoomSearchSet, newSet: RoomSearchSet) {
@@ -338,8 +360,14 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 isEnabled = flag
             }
             includeTickersView.clearTextBtn.setVisible(flag)
-            traded.purchaseCheckBox.isClickable = flag
-            traded.saleCheckBox.isClickable = flag
+
+            traded.apply {
+                traded.purchaseCheckBox.isClickable = flag
+                traded.saleCheckBox.isClickable = flag
+                tradedMinET.isEnabled = flag
+                tradedMaxET.isEnabled = flag
+            }
+
             insider.apply {
                 directorCheBox.isClickable = flag
                 officerCheBox.isClickable = flag
@@ -358,13 +386,21 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
     private fun fillLayoutData(set: RoomSearchSet) {
         with(binding) {
 
-            includeSetName.etSetName.setText(set.queryName)
+            includeSetName.etSetName.apply {
+                setText(set.queryName)
+            }
 
             includeTickersView.contentTextView.setText(set.ticker)
 
             traded.apply {
                 purchaseCheckBox.isChecked = set.isPurchase
                 saleCheckBox.isChecked = set.isSale
+                tradedMinET.apply {
+                    setText(set.tradedMin)
+                }
+                tradedMaxET.apply {
+                    setText(set.tradedMax)
+                }
             }
 
             insider.apply {
@@ -381,5 +417,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             }
         }
     }
+
 
 }

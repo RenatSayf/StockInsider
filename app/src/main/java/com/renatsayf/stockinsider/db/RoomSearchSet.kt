@@ -32,10 +32,10 @@ data class RoomSearchSet(
         var isSale: Boolean = false,
 
         @ColumnInfo(name = "trade_min")
-        val tradedMin: String,
+        var tradedMin: String,
 
         @ColumnInfo(name = "trade_max")
-        val tradedMax: String,
+        var tradedMax: String,
 
         @ColumnInfo(name = "is_officer")
         var isOfficer: Boolean,
