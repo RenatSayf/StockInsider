@@ -19,9 +19,9 @@ import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 import javax.inject.Inject
 
 
@@ -58,9 +58,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.includedToolBar.apply {
-            appToolbar.title = getString(R.string.text_tracking_list)
-            appToolbar.setNavigationOnClickListener {
+        binding.includedToolBar.appToolbar.apply {
+            title = getString(R.string.text_tracking_list)
+            setNavigationOnClickListener {
                 requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
             }
         }
@@ -71,6 +71,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         if (savedInstanceState == null) {
+            binding.includeProgress.loadProgressBar.setVisible(true)
             val tracking = Target.Tracking
             mainVM.getSearchSetsByTarget(tracking).observe(viewLifecycleOwner) { list ->
                 trackingVM.setState(TrackingListViewModel.State.Initial(list))
@@ -87,16 +88,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             when (state) {
                 is TrackingListViewModel.State.Initial -> {
                     trackingAdapter.submitList(state.list as MutableList<RoomSearchSet>)
+                    binding.includeProgress.loadProgressBar.setVisible(false)
                 }
-                is TrackingListViewModel.State.Edit -> {
-
-                }
-                is TrackingListViewModel.State.OnEdit -> {
-
-                }
-                is TrackingListViewModel.State.OnSave -> {
-
-                }
+                else -> binding.includeProgress.loadProgressBar.setVisible(false)
             }
         }
 

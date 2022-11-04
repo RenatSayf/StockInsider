@@ -45,33 +45,44 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
 
         binding = CompaniesFragmentBinding.bind(view)
 
+        if (savedInstanceState == null) {
+            val state = companiesVM.state.value
+            if (state is CompaniesViewModel.State.Initial) {
+                if (state.ticker.isNotEmpty()) {
+                    val tickers = state.ticker.split(" ")
+                    companiesVM.getCompaniesByTicker(tickers).observe(viewLifecycleOwner) { list ->
+                        list?.let { companies ->
+                            companiesVM.setState(CompaniesViewModel.State.Current(companies))
+                        }
+                    }
+                } else binding.includeProgress.loadProgressBar.setVisible(false)
+            }
+        }
+
         companiesVM.state.observe(viewLifecycleOwner) { state ->
             when(state) {
                 is CompaniesViewModel.State.Initial -> {
-                    if (state.ticker.isNotEmpty()) {
-                        val tickers = state.ticker.split(" ")
-                        companiesVM.getCompaniesByTicker(tickers).observe(viewLifecycleOwner) { list ->
-                            list?.let { companies ->
-                                companiesVM.setState(CompaniesViewModel.State.OnUpdate(companies))
-                            }
-                        }
-                    }
                     binding.tickerET.text.clear()
-                    binding.tickerET.visibility = View.GONE
-                    binding.btnAdd.visibility = View.VISIBLE
+                    binding.tickerET.setVisible(false)
+                    binding.btnAdd.setVisible(true)
                 }
                 is CompaniesViewModel.State.OnAdding -> {
-                    binding.tickerET.visibility = View.VISIBLE
-                    binding.btnAdd.visibility = View.GONE
+                    binding.tickerET.setVisible(true)
+                    binding.btnAdd.setVisible(false)
                 }
                 is CompaniesViewModel.State.Error -> {
                     Toast.makeText(requireContext(), state.message, Toast.LENGTH_LONG).show()
                     binding.tickerET.text.clear()
-                    binding.tickerET.visibility = View.GONE
-                    binding.btnAdd.visibility = View.VISIBLE
+                    binding.tickerET.setVisible(false)
+                    binding.btnAdd.setVisible(true)
+                    binding.includeProgress.loadProgressBar.setVisible(false)
                 }
                 is CompaniesViewModel.State.OnUpdate -> {
                     companiesAdapter.submitList(state.companies)
+                }
+                is CompaniesViewModel.State.Current -> {
+                    companiesAdapter.submitList(state.companies)
+                    binding.includeProgress.loadProgressBar.setVisible(false)
                 }
             }
         }
@@ -139,15 +150,6 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
             }
         }
 
-    }
-
-    override fun onPause() {
-
-        val tickerStr = companiesAdapter.items.joinToString(separator = " ") {
-            it.ticker
-        }.trim()
-        companiesVM.setState(CompaniesViewModel.State.Initial(tickerStr))
-        super.onPause()
     }
 
     override fun onStart() {

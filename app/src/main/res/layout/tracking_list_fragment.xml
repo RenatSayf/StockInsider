@@ -47,6 +47,12 @@
             android:src="@drawable/ic_add"
             android:contentDescription="@string/app_name" />
 
+        <include
+            android:id="@+id/include_progress"
+            layout="@layout/load_progress_layout"
+            android:visibility="gone"
+            tools:visibility="visible"/>
+
     </FrameLayout>
 
 

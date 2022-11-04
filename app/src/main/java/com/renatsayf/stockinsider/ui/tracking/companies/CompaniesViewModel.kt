@@ -20,6 +20,7 @@ class CompaniesViewModel @Inject constructor(
 
     sealed class State {
         data class Initial(val ticker: String): State()
+        data class Current(val companies: List<Company>): State()
         data class OnUpdate(val companies: List<Company>): State()
         object OnAdding: State()
         data class Error(val message: String): State()

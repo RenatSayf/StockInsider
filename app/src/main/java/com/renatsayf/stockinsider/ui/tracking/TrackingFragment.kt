@@ -87,6 +87,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 val set = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
                 trackingVM.newSet = set?.copy()
 
+                companiesVM.setState(CompaniesViewModel.State.Initial(set?.ticker ?: ""))
                 set?.let { fillLayoutData(it) }
 
                 companiesVM.state.observe(viewLifecycleOwner) { state ->
@@ -104,6 +105,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         }
                         CompaniesViewModel.State.OnAdding -> {}
                         is CompaniesViewModel.State.OnUpdate -> {}
+                        is CompaniesViewModel.State.Current -> {}
                     }
                 }
 
@@ -340,12 +342,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
     override fun onStop() {
         (activity as MainActivity).supportActionBar?.show()
         super.onStop()
-    }
-
-    override fun onDestroy() {
-
-        companiesVM.setState(CompaniesViewModel.State.Initial(""))
-        super.onDestroy()
     }
 
     private fun enableEditing(flag: Boolean) {

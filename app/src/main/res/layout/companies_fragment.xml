@@ -78,4 +78,20 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <FrameLayout
+        android:id="@+id/frame_progress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <include
+            android:id="@+id/include_progress"
+            layout="@layout/load_progress_layout"
+            android:visibility="visible"
+            tools:visibility="visible" />
+    </FrameLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
