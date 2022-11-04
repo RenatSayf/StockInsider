@@ -2,10 +2,13 @@ package com.renatsayf.stockinsider.utils
 
 import android.content.Context
 import android.content.res.Resources
+import android.os.Build
+import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.db.Company
+import java.io.Serializable
 
 
 fun Context.getStringFromFile(fileName: String): String {
@@ -68,6 +71,13 @@ val Int.dp: Int
 
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
+
+@Suppress("UNCHECKED_CAST")
+fun <T : Serializable?> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T? {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        getSerializable(key, clazz)
+    } else (getSerializable(key) as? T)
+}
 
 
 
