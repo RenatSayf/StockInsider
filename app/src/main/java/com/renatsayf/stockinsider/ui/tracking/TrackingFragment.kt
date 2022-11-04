@@ -105,7 +105,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                         }
                         CompaniesViewModel.State.OnAdding -> {}
                         is CompaniesViewModel.State.OnUpdate -> {}
-                        is CompaniesViewModel.State.Current -> {}
+                        is CompaniesViewModel.State.Current -> {
+
+                        }
                     }
                 }
 

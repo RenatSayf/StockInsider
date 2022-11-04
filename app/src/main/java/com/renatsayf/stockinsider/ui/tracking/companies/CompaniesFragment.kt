@@ -143,7 +143,12 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                         listOf()
                     }.toMutableList()
                     companies.add(Company(ticker, company))
-                    companiesAdapter.submitList(companies)
+                    companiesVM.setState(CompaniesViewModel.State.Current(companies))
+                    trackingVM.newSet?.let{
+                        //TODO обновить newSet
+                        trackingVM.setState(TrackingListViewModel.State.OnEdit(it))
+                    }
+                    //companiesAdapter.submitList(companies)
                     tickerET.text.clear()
                 }
                 else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))

@@ -95,7 +95,25 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         binding.addButton.setOnClickListener {
-
+            val set = RoomSearchSet(
+                queryName = "",
+                companyName = "",
+                ticker = "",
+                filingPeriod = 3,
+                tradePeriod = 1,
+                tradedMin = "",
+                tradedMax = "",
+                isOfficer = true,
+                isDirector = true,
+                isTenPercent = true,
+                groupBy = 1,
+                sortBy = 3
+            )
+            findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+                putSerializable(TrackingFragment.ARG_SET, set)
+                putString(TrackingFragment.ARG_TITLE, "Отслеживание. Новый поиск")
+                putBoolean(TrackingFragment.ARG_IS_EDIT, true)
+            })
         }
 
     }
