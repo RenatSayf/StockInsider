@@ -1,6 +1,6 @@
 @file:Suppress("ObjectLiteralToLambda")
 
-package com.renatsayf.stockinsider.ui.tracking
+package com.renatsayf.stockinsider.ui.tracking.item
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -51,7 +51,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    private val trackingVM: TrackingListViewModel by activityViewModels()
+    private val trackingVM: TrackingViewModel by activityViewModels()
     private val companiesVM: CompaniesViewModel by activityViewModels()
 
     override fun onCreateView(
@@ -84,11 +84,13 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             }
 
             arguments?.let { bundle ->
-                val set = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
-                trackingVM.newSet = set?.copy()
+                val currentSet = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
+                if (savedInstanceState == null && trackingVM.newSet == null) {
+                    trackingVM.newSet = currentSet?.copy()
+                }
 
-                companiesVM.setState(CompaniesViewModel.State.Initial(set?.ticker ?: ""))
-                set?.let { fillLayoutData(it) }
+                companiesVM.setState(CompaniesViewModel.State.Initial(trackingVM.newSet?.ticker ?: ""))
+                trackingVM.newSet?.let { fillLayoutData(it) }
 
                 companiesVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
@@ -100,7 +102,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 includeTickersView.contentTextView.setText(state.ticker)
                             }
                             else {
-                                includeTickersView.contentTextView.setText(set?.ticker)
+                                includeTickersView.contentTextView.setText(currentSet?.ticker)
                             }
                         }
                         CompaniesViewModel.State.OnAdding -> {}
@@ -112,7 +114,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 }
 
                 val flag = bundle.getBoolean(ARG_IS_EDIT)
-                trackingVM.setState(TrackingListViewModel.State.Edit(flag))
+                trackingVM.setState(TrackingViewModel.State.Edit(flag))
 
                 traded.root.forEach {
                     if (it is CheckBox) {
@@ -133,7 +135,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                             isSale = true
                                         }
                                     }
-                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                    trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                                     binding.scrollView.smoothScrollTo(0, binding.btnSave.bottom)
                                 }
                             }
@@ -156,7 +158,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                             set.isTenPercent = isChecked
                                         }
                                     }
-                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                    trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                                     binding.scrollView.smoothScrollTo(0, binding.btnSave.bottom)
                                 }
                             }
@@ -177,7 +179,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                             set.sortBy = p2
                                         }
                                     }
-                                    trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                                    trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                                 }
                             }
                             override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -187,36 +189,40 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
                 trackingVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
-                        is TrackingListViewModel.State.Edit -> {
+                        is TrackingViewModel.State.Edit -> {
                             enableEditing(state.flag)
                         }
-                        is TrackingListViewModel.State.Initial -> {
-
-                        }
-                        is TrackingListViewModel.State.OnEdit -> {
-                            set?.let {
-                                enableSaveButton(it, state.set)
+                        is TrackingViewModel.State.OnEdit -> {
+                            val newSet = trackingVM.newSet
+                            newSet?.let { set ->
+                                fillLayoutData(set)
+                                currentSet?.let {
+                                    enableSaveButton(it, set)
+                                }
                             }
-                            trackingVM.setState(TrackingListViewModel.State.Edit(flag))
+                            trackingVM.setState(TrackingViewModel.State.Edit(flag))
                         }
-                        is TrackingListViewModel.State.OnSave -> {
+                        is TrackingViewModel.State.OnSave -> {
                             enableSaveButton(state.set, state.set)
                             showSnackBar("Изменения сохранены")
-                            trackingVM.setState(TrackingListViewModel.State.Edit(flag))
+                            trackingVM.setState(TrackingViewModel.State.Edit(flag))
+                            trackingVM.newSet = null
                         }
                     }
                 }
 
-                includeSetName.etSetName.doOnTextChanged { text, _, _, _ ->
-                    trackingVM.newSet?.let { set ->
-                        set.queryName = text.toString()
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                includeSetName.etSetName.doOnTextChanged { text, _, before, count ->
+                    if (before != count) {
+                        trackingVM.newSet?.let { set ->
+                            set.queryName = text.toString()
+                            trackingVM.setState(TrackingViewModel.State.OnEdit(set))
+                        }
                     }
                 }
 
                 var tickerText = ""
                 includeTickersView.contentTextView.apply {
-                    doOnTextChanged { text, _, _, count ->
+                    doOnTextChanged { text, _, before, count ->
                         if (text != null) {
                             if (text.isNotEmpty()) {
                                 val c = text[text.length - 1]
@@ -228,12 +234,13 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 tickerText = ""
                             }
 
-                            trackingVM.newSet?.let { set ->
-                                set.ticker = text.toString()
-                                trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                            if (before != count) {
+                                trackingVM.newSet?.let { set ->
+                                    set.ticker = text.toString()
+                                    trackingVM.setState(TrackingViewModel.State.OnEdit(set))
+                                }
                             }
                         }
-
                     }
                     onItemClickListener = object : OnItemClickListener {
                         override fun onItemClick(p0: AdapterView<*>?, v: View?, p2: Int, p3: Long) {
@@ -246,20 +253,23 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 includeTickersView.btnShow.visibility = View.VISIBLE
                             }
                         }
-
                     }
                 }
 
-                traded.tradedMinET.doOnTextChanged { text, _, _, _ ->
-                    trackingVM.newSet?.let { set ->
-                        set.tradedMin = text.toString()
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                traded.tradedMinET.doOnTextChanged { text, _, before, count ->
+                    if (before != count) {
+                        trackingVM.newSet?.let { set ->
+                            set.tradedMin = text.toString()
+                            trackingVM.setState(TrackingViewModel.State.OnEdit(set))
+                        }
                     }
                 }
-                traded.tradedMaxET.doOnTextChanged { text, _, _, _ ->
-                    trackingVM.newSet?.let { set ->
-                        set.tradedMax = text.toString()
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                traded.tradedMaxET.doOnTextChanged { text, _, before, count ->
+                    if (before != count) {
+                        trackingVM.newSet?.let { set ->
+                            set.tradedMax = text.toString()
+                            trackingVM.setState(TrackingViewModel.State.OnEdit(set))
+                        }
                     }
                 }
 
@@ -271,7 +281,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 includeTickersView.clearTextBtn.setOnClickListener {
                     trackingVM.newSet?.let { set ->
                         set.ticker = ""
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(set))
+                        trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                     }
 
                 }
@@ -298,7 +308,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                                     it.id == trackingVM.newSet?.id
                                                 }
                                                 setById?.let {
-                                                    trackingVM.setState(TrackingListViewModel.State.OnSave(it))
+                                                    trackingVM.setState(TrackingViewModel.State.OnSave(it))
                                                 }
                                                 findNavController().popBackStack()
                                             }
@@ -391,9 +401,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 saleCheckBox.isChecked = set.isSale
                 tradedMinET.apply {
                     setText(set.tradedMin)
+                    setSelection(this.text.length)
                 }
                 tradedMaxET.apply {
                     setText(set.tradedMax)
+                    setSelection(this.text.length)
                 }
             }
 
@@ -412,5 +424,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         }
     }
 
+    override fun onDestroy() {
 
+        trackingVM.newSet = null
+        super.onDestroy()
+    }
 }

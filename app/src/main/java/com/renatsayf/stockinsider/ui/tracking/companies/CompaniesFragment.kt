@@ -9,7 +9,7 @@ import android.widget.Toast
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.renatsayf.stockinsider.MainActivity
@@ -19,7 +19,7 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
-import com.renatsayf.stockinsider.ui.tracking.TrackingListViewModel
+import com.renatsayf.stockinsider.ui.tracking.item.TrackingViewModel
 import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +29,7 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
 
     private lateinit var binding: CompaniesFragmentBinding
     private val companiesVM: CompaniesViewModel by activityViewModels()
-    private val trackingVM: TrackingListViewModel by activityViewModels()
+    private val trackingVM: TrackingViewModel by activityViewModels()
 
     private val companiesAdapter = CompanyListAdapter(this)
 
@@ -88,23 +88,17 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
         }
         trackingVM.state.observe(viewLifecycleOwner) { state ->
             when(state) {
-                is TrackingListViewModel.State.Edit -> {
+                is TrackingViewModel.State.Edit -> {
                     enableEditing(state.flag)
                 }
-                is TrackingListViewModel.State.Initial -> {
-
-                }
-                is TrackingListViewModel.State.OnEdit -> {
-
-                }
-                is TrackingListViewModel.State.OnSave -> {}
+                else -> {}
             }
         }
 
         with(binding) {
 
             appToolbar.setNavigationOnClickListener {
-                requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
+                findNavController().popBackStack()
             }
 
             companyRV.apply {
@@ -145,10 +139,13 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                     companies.add(Company(ticker, company))
                     companiesVM.setState(CompaniesViewModel.State.Current(companies))
                     trackingVM.newSet?.let{
-                        //TODO обновить newSet
-                        trackingVM.setState(TrackingListViewModel.State.OnEdit(it))
+                        val set = it.copy()
+                        set.apply {
+                            this.ticker += " $ticker"
+                            this.ticker = this.ticker.trim()
+                        }
+                        trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                     }
-                    //companiesAdapter.submitList(companies)
                     tickerET.text.clear()
                 }
                 else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))

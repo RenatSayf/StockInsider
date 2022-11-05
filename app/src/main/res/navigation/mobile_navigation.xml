@@ -70,7 +70,7 @@
         tools:layout="@layout/about_app_fragment" />
     <fragment
         android:id="@+id/trackingListFragment"
-        android:name="com.renatsayf.stockinsider.ui.tracking.TrackingListFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment"
         android:label="@string/text_tracking_list"
         tools:layout="@layout/tracking_list_fragment" >
         <action
@@ -79,7 +79,7 @@
     </fragment>
     <fragment
         android:id="@+id/trackingFragment"
-        android:name="com.renatsayf.stockinsider.ui.tracking.TrackingFragment"
+        android:name="com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment"
         android:label="@string/text_tracking_params" >
         <action
             android:id="@+id/action_trackingFragment_to_companiesFragment"

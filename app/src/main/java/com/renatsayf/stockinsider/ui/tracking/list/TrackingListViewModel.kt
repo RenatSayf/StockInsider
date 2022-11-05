@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.ui.tracking
+package com.renatsayf.stockinsider.ui.tracking.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -14,21 +14,12 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
 
     sealed class State {
         data class Initial(val list: List<RoomSearchSet>): State()
-        data class Edit(val flag: Boolean): State()
-        data class OnEdit(val set: RoomSearchSet): State()
-        data class OnSave(val set: RoomSearchSet): State()
     }
 
     private var _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
     fun setState(state: State) {
         _state.value = state
-        if (_state.value is State.OnEdit) {
-            newSet = (_state.value as State.OnEdit).set
-        }
     }
-
-    var newSet: RoomSearchSet? = null
-
 
 }

@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.ui.tracking
+package com.renatsayf.stockinsider.ui.tracking.list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -18,6 +18,7 @@ import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
@@ -78,11 +79,13 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             }
         }
 
-        mainVM.state.observe(viewLifecycleOwner) { state ->
-            when(state) {
-                is MainViewModel.State.Initial -> TODO()
-            }
-        }
+//        mainVM.state.observe(viewLifecycleOwner) { state ->
+//            when(state) {
+//                is MainViewModel.State.Initial -> {
+//
+//                }
+//            }
+//        }
 
         trackingVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
