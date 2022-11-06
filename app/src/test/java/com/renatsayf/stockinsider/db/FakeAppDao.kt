@@ -20,6 +20,10 @@ class FakeAppDao : AppDao {
         return result as RoomSearchSet
     }
 
+    override suspend fun getSetById(id: Long): RoomSearchSet {
+        return result as RoomSearchSet
+    }
+
     override suspend fun deleteAll(): Int {
         return -1
     }

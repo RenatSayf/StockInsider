@@ -15,7 +15,7 @@ import com.renatsayf.stockinsider.utils.sortByAnotherList
 import kotlin.collections.ArrayList
 import kotlin.jvm.Throws
 
-class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
+open class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
 {
     override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
     {
@@ -50,6 +50,14 @@ class DataRepositoryImpl @Inject constructor(private val network: INetRepository
             db.getSetByName(setName)
         }
         set.await()
+    }
+
+    override suspend fun getSearchSetByIdAsync(id: Long): Deferred<RoomSearchSet?> {
+        return coroutineScope {
+            async {
+                db.getSetById(id)
+            }
+        }
     }
 
     override suspend fun saveSearchSetAsync(set: RoomSearchSet): Deferred<Long> = coroutineScope {

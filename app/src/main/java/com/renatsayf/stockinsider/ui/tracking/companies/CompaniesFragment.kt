@@ -79,6 +79,11 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                 }
                 is CompaniesViewModel.State.OnUpdate -> {
                     companiesAdapter.submitList(state.companies)
+                    trackingVM.newSet?.let {
+                        it.ticker = state.companies.joinToString(separator = " ") { company ->
+                            company.ticker
+                        }
+                    }
                 }
                 is CompaniesViewModel.State.Current -> {
                     companiesAdapter.submitList(state.companies)

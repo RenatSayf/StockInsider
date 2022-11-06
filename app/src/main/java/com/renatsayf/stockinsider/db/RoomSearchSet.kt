@@ -144,4 +144,52 @@ data class RoomSearchSet(
                 val sortingValues = listOf(0, 1, 2, 8)
                 return sortingValues[position].toString()
         }
+
+        override fun equals(other: Any?): Boolean {
+                return try {
+                        val otherSet = other as? RoomSearchSet
+                        otherSet?.ticker == this.ticker &&
+                                otherSet.companyName == this.companyName &&
+                                otherSet.queryName == this.queryName &&
+                                otherSet.filingPeriod == this.filingPeriod &&
+                                otherSet.tradePeriod == this.tradePeriod &&
+                                otherSet.isPurchase == this.isPurchase &&
+                                otherSet.isSale == this.isSale &&
+                                otherSet.tradedMin == this.tradedMin &&
+                                otherSet.tradedMax == this.tradedMax &&
+                                otherSet.isOfficer == this.isOfficer &&
+                                otherSet.isDirector == this.isDirector &&
+                                otherSet.isTenPercent == this.isTenPercent &&
+                                otherSet.groupBy == this.groupBy &&
+                                otherSet.sortBy == this.sortBy &&
+                                otherSet.target == this.target &&
+                                otherSet.isTracked == this.isTracked &&
+                                otherSet.isDefault == this.isDefault
+
+                } catch (e: ClassCastException) {
+                        false
+                }
+        }
+
+        override fun hashCode(): Int {
+                var result = queryName.hashCode()
+                result = 31 * result + companyName.hashCode()
+                result = 31 * result + ticker.hashCode()
+                result = 31 * result + filingPeriod
+                result = 31 * result + tradePeriod
+                result = 31 * result + isPurchase.hashCode()
+                result = 31 * result + isSale.hashCode()
+                result = 31 * result + tradedMin.hashCode()
+                result = 31 * result + tradedMax.hashCode()
+                result = 31 * result + isOfficer.hashCode()
+                result = 31 * result + isDirector.hashCode()
+                result = 31 * result + isTenPercent.hashCode()
+                result = 31 * result + groupBy
+                result = 31 * result + sortBy
+                result = 31 * result + id.hashCode()
+                result = 31 * result + (target?.hashCode() ?: 0)
+                result = 31 * result + isTracked.hashCode()
+                result = 31 * result + isDefault.hashCode()
+                return result
+        }
 }

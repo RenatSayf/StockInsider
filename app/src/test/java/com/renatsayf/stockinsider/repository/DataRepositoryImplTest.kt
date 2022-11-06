@@ -132,4 +132,49 @@ internal class DataRepositoryImplTest {
             Assert.assertEquals(set2.isTracked, actualSet.isTracked)
         }
     }
+
+    @Test
+    fun getSearchSetByIdAsync_actual_id() {
+
+        val expectedSet = RoomSearchSet(
+            id = 0,
+            queryName = "XXX",
+            companyName = "",
+            ticker = "BAC MSFT AA AAPL TSLA NVDA GOOG FB NFLX",
+            filingPeriod = 3,
+            tradePeriod = 3,
+            isPurchase = true,
+            isSale = false,
+            tradedMin = "",
+            tradedMax = "",
+            isOfficer = true,
+            isDirector = true,
+            isTenPercent = true,
+            groupBy = 1,
+            sortBy = 3
+        ).apply {
+            isTracked = true
+        }
+
+        runBlocking {
+
+            val actualId = repository.saveSearchSetAsync(expectedSet).await()
+            Assert.assertTrue(actualId > 0)
+
+            val actualSet = repository.getSearchSetByIdAsync(actualId).await()
+            val isEquals = expectedSet == actualSet
+            Assert.assertTrue(isEquals)
+        }
+    }
+
+    @Test
+    fun getSearchSetByIdAsync_not_exist_id() {
+
+        runBlocking {
+
+            val notExistId = 999L
+            val actualSet = repository.getSearchSetByIdAsync(notExistId).await()
+            Assert.assertTrue(actualSet == null)
+        }
+    }
 }

@@ -303,14 +303,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                 mainVM.saveSearchSet(newSet).collect { id ->
                                     when {
                                         id > 0L -> {
-                                            mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
-                                                val setById = list.firstOrNull {
-                                                    it.id == trackingVM.newSet?.id
+                                            trackingVM.getSearchSetById(id).collect { set ->
+                                                if (set != null) {
+                                                    trackingVM.setState(TrackingViewModel.State.OnSave(set))
+                                                    findNavController().popBackStack()
                                                 }
-                                                setById?.let {
-                                                    trackingVM.setState(TrackingViewModel.State.OnSave(it))
-                                                }
-                                                findNavController().popBackStack()
                                             }
                                         }
                                         id == 0L -> {
