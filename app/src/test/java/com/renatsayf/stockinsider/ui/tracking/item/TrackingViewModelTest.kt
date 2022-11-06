@@ -6,24 +6,21 @@ import com.renatsayf.stockinsider.network.FakeNetRepository
 import com.renatsayf.stockinsider.repository.FakeDataRepositoryImpl
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.test.TestCoroutineDispatcher
-import kotlinx.coroutines.test.resetMain
-import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
+import kotlinx.coroutines.test.*
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class TrackingViewModelTest {
 
     private lateinit var trackingVM: TrackingViewModel
     private lateinit var repository: FakeDataRepositoryImpl
     private lateinit var dao: FakeAppDao
-    private var dispatcher = TestCoroutineDispatcher()
+    private var dispatcher = UnconfinedTestDispatcher()
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Before
     fun setUp() {
 
@@ -36,14 +33,12 @@ class TrackingViewModelTest {
         trackingVM = TrackingViewModel(repository)
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @After
     fun tearDown() {
 
         Dispatchers.resetMain()
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
     @Test
     fun getSearchSetById() = runTest {
 
@@ -69,9 +64,7 @@ class TrackingViewModelTest {
 
         dao.setExpectedResult("", inputSet)
 
-
         val actualSet = trackingVM.getSearchSetById(1).value
         Assert.assertTrue(actualSet is RoomSearchSet)
-
     }
 }

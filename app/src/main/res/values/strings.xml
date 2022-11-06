@@ -205,5 +205,7 @@
     <string name="hint_request_name">Введите название запроса</string>
     <string name="title_request_name">Название запроса</string>
     <string name="text_generate">Сгенерировать</string>
+    <string name="text_failed_to_save">Не удалось сохранить изменения</string>
+    <string name="text_show">Показать</string>
 
 </resources>

@@ -86,7 +86,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
             arguments?.let { bundle ->
                 val currentSet = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
                 if (savedInstanceState == null && trackingVM.newSet == null) {
-                    trackingVM.newSet = currentSet?.copy()
+                    trackingVM.newSet = currentSet?.getFullCopy()
                 }
 
                 companiesVM.setState(CompaniesViewModel.State.Initial(trackingVM.newSet?.ticker ?: ""))
@@ -254,6 +254,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                             }
                         }
                     }
+                    setOnClickListener {
+                        includeTickersView.contentTextView.showDropDown()
+                    }
                 }
 
                 traded.tradedMinET.doOnTextChanged { text, _, before, count ->
@@ -308,10 +311,11 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                                                     trackingVM.setState(TrackingViewModel.State.OnSave(set))
                                                     findNavController().popBackStack()
                                                 }
+                                                else showSnackBar(getString(R.string.text_failed_to_save))
                                             }
                                         }
                                         id == 0L -> {
-                                            showSnackBar("Не удалось сохранить изменения")
+                                            showSnackBar(getString(R.string.text_failed_to_save))
                                         }
                                     }
                                 }
@@ -336,10 +340,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
 
     private fun enableSaveButton(oldSet: RoomSearchSet, newSet: RoomSearchSet) {
         if (oldSet != newSet) {
-            binding.btnSave.visibility = View.VISIBLE
+            binding.btnSave.setVisible(true)
         }
         else {
-            binding.btnSave.visibility = View.INVISIBLE
+            binding.btnSave.setVisible(false)
         }
     }
 

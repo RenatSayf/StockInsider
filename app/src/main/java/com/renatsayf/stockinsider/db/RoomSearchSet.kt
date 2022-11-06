@@ -145,6 +145,15 @@ data class RoomSearchSet(
                 return sortingValues[position].toString()
         }
 
+        fun getFullCopy(): RoomSearchSet {
+                val copy = this.copy()
+                return copy.apply {
+                        target = this@RoomSearchSet.target
+                        isTracked = this@RoomSearchSet.isTracked
+                        isDefault = this@RoomSearchSet.isDefault
+                }
+        }
+
         override fun equals(other: Any?): Boolean {
                 return try {
                         val otherSet = other as? RoomSearchSet

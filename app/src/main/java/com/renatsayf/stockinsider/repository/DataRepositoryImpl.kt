@@ -95,7 +95,7 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
 
     override suspend fun getAllSimilar(pattern: String): List<Company> = CoroutineScope(Dispatchers.IO).run {
         withContext(Dispatchers.Main) {
-            db.getAllSimilar(pattern)
+            db.getAllSimilar("%$pattern%")
         }
     }
 

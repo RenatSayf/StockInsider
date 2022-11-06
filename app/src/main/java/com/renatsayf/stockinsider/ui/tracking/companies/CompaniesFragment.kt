@@ -120,8 +120,8 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
             val tickerListAdapter = TickersListAdapter(requireContext(), emptyArray())
             tickerET.setAdapter(tickerListAdapter)
 
-            tickerET.doOnTextChanged { text, _, _, _ ->
-                if (!text.isNullOrEmpty()) {
+            tickerET.doOnTextChanged { text, _, before, count ->
+                if (count > 0) {
                     companiesVM.getAllSimilarCompanies(text.toString()).observe(viewLifecycleOwner) { list ->
                         if (list != null) {
                             tickerListAdapter.addItems(list)

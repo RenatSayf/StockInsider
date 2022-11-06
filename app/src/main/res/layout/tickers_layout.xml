@@ -32,8 +32,7 @@
         tools:ignore="TouchTargetSizeCheck"
         style="@style/appEditTextStyle"
         android:labelFor="@+id/tickerLayout"
-        tools:hint="Все компании"
-        android:hint="Все компании"
+        android:hint="@string/text_all_tickers"
         android:completionThreshold="1"
         app:layout_constraintTop_toBottomOf="@+id/blockTitle"
         app:layout_constraintStart_toStartOf="parent"
@@ -64,7 +63,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:padding="12dp"
         style="@style/AppRectangularDarkButton"
-        android:text="Показать"
+        android:text="@string/text_show"
         android:textSize="16sp"
         android:textColor="@color/colorWhite"/>
 
