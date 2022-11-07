@@ -70,6 +70,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
+    override suspend fun deleteSetByIdAsync(id: Long): Deferred<Int> {
+        return coroutineScope {
+            async {
+                db.deleteSetById(id)
+            }
+        }
+    }
+
     override suspend fun getCompaniesFromDbAsync(): Array<Company>? = CoroutineScope(Dispatchers.IO).run {
         val companies = async {
             db.getAllCompanies()?.toTypedArray()

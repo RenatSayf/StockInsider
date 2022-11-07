@@ -79,14 +79,6 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             }
         }
 
-//        mainVM.state.observe(viewLifecycleOwner) { state ->
-//            when(state) {
-//                is MainViewModel.State.Initial -> {
-//
-//                }
-//            }
-//        }
-
         trackingVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is TrackingListViewModel.State.Initial -> {
@@ -139,10 +131,15 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
                 override fun onPositiveClick(flag: String) {
                     lifecycleScope.launchWhenResumed {
-                        mainVM.deleteSearchSet(set).collect { res ->
-                            if (res > 0) {
-                                mainVM.getSearchSetsByTarget(Target.Tracking).observe(this@TrackingListFragment.viewLifecycleOwner) { list ->
-                                    trackingVM.setState(TrackingListViewModel.State.Initial(list))
+                        mainVM.deleteSearchSetById(set.id).collect { res ->
+                            when {
+                                res > 0 -> {
+                                    mainVM.getSearchSetsByTarget(Target.Tracking).observe(this@TrackingListFragment.viewLifecycleOwner) { list ->
+                                        trackingVM.setState(TrackingListViewModel.State.Initial(list))
+                                    }
+                                }
+                                res == 0 -> {
+                                    showSnackBar(getString(R.string.text_deletion_error))
                                 }
                             }
                         }

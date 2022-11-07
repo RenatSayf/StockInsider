@@ -29,7 +29,11 @@ class FakeAppDao : AppDao {
     }
 
     override suspend fun deleteSet(set: RoomSearchSet): Int {
-        return -1
+        return result as Int
+    }
+
+    override suspend fun deleteSetById(id: Long): Int {
+        return result as Int
     }
 
     override suspend fun insertOrUpdateSearchSet(set: RoomSearchSet): Long {

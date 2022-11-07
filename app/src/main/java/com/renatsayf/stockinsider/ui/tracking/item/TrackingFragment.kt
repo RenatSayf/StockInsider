@@ -254,9 +254,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                             }
                         }
                     }
-                    setOnClickListener {
-                        includeTickersView.contentTextView.showDropDown()
-                    }
                 }
 
                 traded.tradedMinET.doOnTextChanged { text, _, before, count ->
@@ -395,7 +392,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 setText(set.queryName)
             }
 
-            includeTickersView.contentTextView.setText(set.ticker)
+            includeTickersView.contentTextView.apply {
+                setText(set.ticker)
+                setSelection(this.text.length)
+            }
 
             traded.apply {
                 purchaseCheckBox.isChecked = set.isPurchase

@@ -30,6 +30,8 @@ interface IDataRepository
 
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Deferred<Int>
 
+    suspend fun deleteSetByIdAsync(id: Long) : Deferred<Int>
+
     suspend fun getCompaniesFromDbAsync() : Array<Company>?
 
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>

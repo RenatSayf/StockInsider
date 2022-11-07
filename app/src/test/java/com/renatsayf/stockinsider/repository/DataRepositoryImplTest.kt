@@ -20,7 +20,6 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 
-@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(maxSdk = 31)
 internal class DataRepositoryImplTest {
@@ -56,10 +55,10 @@ internal class DataRepositoryImplTest {
             isPurchase = true,
             isSale = false,
             tradedMin = "",
-            tradedMax = "",
-            isOfficer = true,
             isDirector = true,
             isTenPercent = true,
+            tradedMax = "",
+            isOfficer = true,
             groupBy = 1,
             sortBy = 3
         ).apply {
@@ -214,4 +213,64 @@ internal class DataRepositoryImplTest {
 
         }
     }
+
+    @Test
+    fun deleteSetById_actual_id(){
+        val expectedSet = RoomSearchSet(
+            id = 0,
+            queryName = "XXX",
+            companyName = "",
+            ticker = "YYYY",
+            filingPeriod = 3,
+            tradePeriod = 3,
+            isPurchase = true,
+            isSale = false,
+            tradedMin = "",
+            tradedMax = "",
+            isOfficer = true,
+            isDirector = true,
+            isTenPercent = true,
+            groupBy = 1,
+            sortBy = 3
+        ).apply {
+            isTracked = true
+        }
+
+        runBlocking {
+
+            val actualId = repository.saveSearchSetAsync(expectedSet).await()
+            Assert.assertTrue(actualId > 0)
+
+            val actualSet = repository.getSearchSetByIdAsync(actualId).await()
+            Assert.assertTrue(actualSet?.id == actualId)
+
+            val notExistId = 999L
+            var actualResult = repository.deleteSetByIdAsync(notExistId).await()
+            Assert.assertTrue(actualResult == 0)
+
+            actualResult = repository.deleteSetByIdAsync(actualId).await()
+            Assert.assertTrue(actualResult > 0)
+        }
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

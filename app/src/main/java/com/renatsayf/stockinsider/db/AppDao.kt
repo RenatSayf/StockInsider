@@ -24,6 +24,9 @@ interface AppDao
     @Delete(entity = RoomSearchSet::class)
     suspend fun deleteSet(set : RoomSearchSet) : Int
 
+    @Query("DELETE FROM search_set WHERE id = :id")
+    suspend fun deleteSetById(id: Long) : Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 

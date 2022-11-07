@@ -100,6 +100,15 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return res
     }
 
+    fun deleteSearchSetById(id: Long): StateFlow<Int>  {
+
+        val res = MutableStateFlow(-1)
+        viewModelScope.launch {
+            res.value = repository.deleteSetByIdAsync(id).await()
+        }
+        return res
+    }
+
     private var _companies = MutableLiveData<Array<Company>>().apply {
         viewModelScope.launch {
             val c = getCompanies()

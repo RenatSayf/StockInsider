@@ -46,11 +46,9 @@ class CompaniesViewModel @Inject constructor(
 
     fun getAllSimilarCompanies(pattern: String): LiveData<List<Company>?> {
         val companies = MutableLiveData<List<Company>?>(null)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                val result = repository.getAllSimilar(pattern)
-                companies.value = result
-            }
+        viewModelScope.launch {
+            val result = repository.getAllSimilar(pattern)
+            companies.value = result
         }
         return companies
     }
