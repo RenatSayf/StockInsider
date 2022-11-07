@@ -60,7 +60,7 @@ class FakeAppDao : AppDao {
         return emptyList()
     }
 
-    override fun updateSearchSetTicker(setName: String, value: String): Int {
+    override suspend fun updateSearchSetTicker(setName: String, value: String): Int {
         return -1
     }
 }

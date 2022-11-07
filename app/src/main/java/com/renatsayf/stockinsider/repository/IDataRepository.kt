@@ -41,7 +41,7 @@ interface IDataRepository
     @Throws(Exception::class)
     suspend fun insertCompanies(list : List<Company>)
 
-    fun updateSearchSetTicker(setName: String, value: String) : Int
+    suspend fun updateSearchSetTickerAsync(setName: String, value: String) : Deferred<Int>
 
     fun destructor()
 }

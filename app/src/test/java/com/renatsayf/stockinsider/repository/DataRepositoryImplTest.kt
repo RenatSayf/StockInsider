@@ -5,9 +5,11 @@ import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.AppDataBase
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.network.MockApi
 import com.renatsayf.stockinsider.network.NetRepository
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert
@@ -18,6 +20,7 @@ import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
 
+@OptIn(ExperimentalCoroutinesApi::class)
 @RunWith(RobolectricTestRunner::class)
 @Config(maxSdk = 31)
 internal class DataRepositoryImplTest {
@@ -175,6 +178,40 @@ internal class DataRepositoryImplTest {
             val notExistId = 999L
             val actualSet = repository.getSearchSetByIdAsync(notExistId).await()
             Assert.assertTrue(actualSet == null)
+        }
+    }
+
+    @Test
+    fun getAllSimilar() {
+
+        val pattern1 = "tes"
+        val pattern2 = "mi"
+        val pattern3 = "app"
+
+        val companies = listOf(
+            Company("MSFT", "Microsoft Corp."),
+            Company("TSLA", "Tesla, Inc."),
+            Company("AAPL", "Apple Inc.")
+        )
+
+        runBlocking {
+            repository.insertCompanies(companies)
+
+            val actualList = repository.getCompaniesFromDbAsync()
+            Assert.assertTrue(actualList?.size == 3)
+
+            var actualSimilar = repository.getAllSimilar(pattern1)
+            val actualTicker1 = actualSimilar[0].ticker
+            Assert.assertTrue(actualTicker1 == "TSLA")
+
+            actualSimilar = repository.getAllSimilar(pattern2)
+            val actualTicker2 = actualSimilar[0].ticker
+            Assert.assertTrue(actualTicker2 == "MSFT")
+
+            actualSimilar = repository.getAllSimilar(pattern3)
+            val actualTicker3 = actualSimilar[0].ticker
+            Assert.assertTrue(actualTicker3 == "AAPL")
+
         }
     }
 }

@@ -5,15 +5,13 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
+import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.network.NetRepository
+import com.renatsayf.stockinsider.utils.sortByAnotherList
 import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
-import com.renatsayf.stockinsider.network.INetRepository
-import com.renatsayf.stockinsider.utils.sortByAnotherList
-import kotlin.collections.ArrayList
-import kotlin.jvm.Throws
 
 open class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
 {
@@ -79,25 +77,25 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         companies.await()
     }
 
-    override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
-        return withContext(Dispatchers.Main) {
+    override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> = coroutineScope {
+        withContext(Dispatchers.Default) {
             db.getSearchSetsByTarget(target)
         }
     }
 
-    override suspend fun getCompanyByTicker(list: List<String>): List<Company> = CoroutineScope(Dispatchers.IO).run {
-        withContext(Dispatchers.Main) {
+    override suspend fun getCompanyByTicker(list: List<String>): List<Company> = coroutineScope {
+        withContext(Dispatchers.Default) {
             val companyByTicker = db.getCompanyByTicker(list)
             val sortByAnotherList = sortByAnotherList(companyByTicker, list)
             sortByAnotherList
         }
     }
 
-    override suspend fun getAllSimilar(pattern: String): List<Company> = CoroutineScope(Dispatchers.IO).run {
-        withContext(Dispatchers.Main) {
+    override suspend fun getAllSimilar(pattern: String): List<Company> = coroutineScope {
+        async {
             db.getAllSimilar("%$pattern%")
         }
-    }
+    }.await()
 
     @Throws(Exception::class)
     override suspend fun insertCompanies(list: List<Company>) {
@@ -106,8 +104,12 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
-    override fun updateSearchSetTicker(setName: String, value: String): Int {
-        return db.updateSearchSetTicker(setName, value)
+    override suspend fun updateSearchSetTickerAsync(setName: String, value: String): Deferred<Int> {
+        return coroutineScope {
+            async {
+                db.updateSearchSetTicker(setName, value)
+            }
+        }
     }
 
     override fun destructor()

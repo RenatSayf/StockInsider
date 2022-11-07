@@ -46,7 +46,7 @@ interface AppDao
     suspend fun getAllSimilar(pattern: String) : List<Company>
 
     @Query("UPDATE search_set SET ticker = :value WHERE set_name = :setName")
-    fun updateSearchSetTicker(setName: String, value: String) : Int
+    suspend fun updateSearchSetTicker(setName: String, value: String) : Int
 
 
 }

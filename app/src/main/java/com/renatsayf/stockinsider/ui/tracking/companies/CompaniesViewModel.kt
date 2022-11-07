@@ -57,14 +57,12 @@ class CompaniesViewModel @Inject constructor(
 
     fun addCompanyToSearch(setName: String, value: String): LiveData<Int> {
         val result = MutableLiveData(-1)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                try {
-                    result.value = repository.updateSearchSetTicker(setName, value)
-                    //_state.value = State.OnAdding
-                } catch (e: Exception) {
-                    result.value = -1
-                }
+        viewModelScope.launch {
+            try {
+                result.value = repository.updateSearchSetTickerAsync(setName, value).await()
+                //_state.value = State.OnAdding
+            } catch (e: Exception) {
+                result.value = -1
             }
         }
         return result
