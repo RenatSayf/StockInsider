@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
@@ -23,6 +24,8 @@ import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 
@@ -71,12 +74,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             adapter = trackingAdapter
         }
 
-        if (savedInstanceState == null) {
-            binding.includeProgress.loadProgressBar.setVisible(true)
-            val tracking = Target.Tracking
-            mainVM.getSearchSetsByTarget(tracking).observe(viewLifecycleOwner) { list ->
-                trackingVM.setState(TrackingListViewModel.State.Initial(list))
-            }
+        binding.includeProgress.loadProgressBar.setVisible(true)
+        val tracking = Target.Tracking
+        mainVM.getSearchSetsByTarget(tracking).observe(viewLifecycleOwner) { list ->
+            trackingVM.setState(TrackingListViewModel.State.Initial(list))
         }
 
         trackingVM.state.observe(viewLifecycleOwner) { state ->
@@ -123,18 +124,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int) {
 
-        ConfirmationDialog(
+        ConfirmationDialog.newInstance(
             message = "Подтвердите удаление",
-            btnOkText = "Удалить",
-        ).apply {
-            setOnClickListener(object : ConfirmationDialog.Listener {
-
-                override fun onPositiveClick(flag: String) {
-                    lifecycleScope.launchWhenResumed {
-                        mainVM.deleteSearchSetById(set.id).collect { res ->
+            positiveButtonText = "Удалить",
+            listener = object : ConfirmationDialog.Listener {
+                override fun onPositiveClick() {
+                    lifecycleScope.launch {
+                        mainVM.deleteSearchSetById(set.id).collectLatest { res ->
                             when {
                                 res > 0 -> {
-                                    mainVM.getSearchSetsByTarget(Target.Tracking).observe(this@TrackingListFragment.viewLifecycleOwner) { list ->
+                                    mainVM.getSearchSetsByTarget(Target.Tracking).asFlow().collectLatest { list ->
                                         trackingVM.setState(TrackingListViewModel.State.Initial(list))
                                     }
                                 }
@@ -145,15 +144,15 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         }
                     }
                 }
-            })
-        }.show(requireActivity().supportFragmentManager, ConfirmationDialog.TAG)
+            }
+        ).show(requireActivity().supportFragmentManager, ConfirmationDialog.TAG)
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
 
         lifecycleScope.launchWhenResumed {
             set.isTracked = checked
-            mainVM.saveSearchSet(set).collect { id ->
+            mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
                 if (id > 0) {
                     when(checked) {
                         true -> showSnackBar("Отслеживание включено")

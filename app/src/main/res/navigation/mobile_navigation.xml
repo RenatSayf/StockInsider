@@ -75,7 +75,8 @@
         tools:layout="@layout/tracking_list_fragment" >
         <action
             android:id="@+id/action_trackingListFragment_to_trackingFragment"
-            app:destination="@id/trackingFragment" />
+            app:destination="@id/trackingFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/trackingFragment"
@@ -83,7 +84,8 @@
         android:label="@string/text_tracking_params" >
         <action
             android:id="@+id/action_trackingFragment_to_companiesFragment"
-            app:destination="@id/companiesFragment" />
+            app:destination="@id/companiesFragment"
+            />
     </fragment>
     <fragment
         android:id="@+id/companiesFragment"

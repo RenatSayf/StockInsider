@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.dialogs
 
+import android.app.AlertDialog
 import android.app.Dialog
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,21 +10,34 @@ import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DialogQueryNameBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import dagger.hilt.android.AndroidEntryPoint
 
-class SetNameDialog(
-    private val set: RoomSearchSet,
-    private val listener: Listener
-) : DialogFragment() {
+
+@AndroidEntryPoint
+class SetNameDialog : DialogFragment() {
 
     companion object {
         val TAG = "${this.hashCode()}.TAG"
+        private var set: RoomSearchSet? = null
+        private var listener: Listener? = null
+
+        fun newInstance(set: RoomSearchSet, listener: Listener): SetNameDialog {
+
+            this.set = set
+            this.listener = listener
+            return SetNameDialog()
+        }
     }
 
     private lateinit var binding: DialogQueryNameBinding
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
-        return super.onCreateDialog(savedInstanceState).apply {
+        binding = DialogQueryNameBinding.inflate(layoutInflater)
+
+        return AlertDialog.Builder(requireContext()).apply {
+            setView(binding.root)
+        }.create().apply {
             window?.setBackgroundDrawableResource(R.drawable.bg_dialog_default)
         }
     }
@@ -33,7 +47,6 @@ class SetNameDialog(
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = DialogQueryNameBinding.inflate(inflater, container, false)
         return binding.root
     }
 
@@ -42,18 +55,18 @@ class SetNameDialog(
 
         with(binding) {
 
-            etSetName.setText(set.queryName)
+            etSetName.setText(set?.queryName)
 
             btnSave.setOnClickListener {
                 val name = etSetName.text.toString()
-                listener.onSetNameDialogPositiveClick(name)
+                listener?.onSetNameDialogPositiveClick(name)
                 dismiss()
             }
             btnCancel.setOnClickListener {
                 dismiss()
             }
             btnGenerate.setOnClickListener {
-                val queryName = set.generateQueryName()
+                val queryName = set?.generateQueryName()
                 etSetName.setText(queryName)
             }
             btnClear.setOnClickListener {

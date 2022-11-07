@@ -36,18 +36,16 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         return network.getTradingByTicker(ticker)
     }
 
-    override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = CoroutineScope(Dispatchers.IO).run {
-        val res = async {
+    override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
+        withContext(Dispatchers.Default) {
             db.getUserSearchSets()
         }
-        res.await()
     }
 
-    override suspend fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = CoroutineScope(Dispatchers.IO).run {
-        val set = async {
+    override suspend fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = coroutineScope {
+        withContext(Dispatchers.Default) {
             db.getSetByName(setName)
         }
-        set.await()
     }
 
     override suspend fun getSearchSetByIdAsync(id: Long): Deferred<RoomSearchSet?> {
@@ -78,11 +76,10 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
-    override suspend fun getCompaniesFromDbAsync(): Array<Company>? = CoroutineScope(Dispatchers.IO).run {
-        val companies = async {
+    override suspend fun getCompaniesFromDbAsync(): Array<Company>? = coroutineScope {
+        withContext(Dispatchers.Default) {
             db.getAllCompanies()?.toTypedArray()
         }
-        companies.await()
     }
 
     override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> = coroutineScope {

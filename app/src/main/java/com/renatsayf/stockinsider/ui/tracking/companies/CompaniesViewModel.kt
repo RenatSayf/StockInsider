@@ -35,11 +35,8 @@ class CompaniesViewModel @Inject constructor(
 
     fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Company>?> {
         val companies = MutableLiveData<List<Company>?>(null)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                val result = repository.getCompanyByTicker(tickers)
-                companies.value = result
-            }
+        viewModelScope.launch {
+            companies.value = repository.getCompanyByTicker(tickers)
         }
         return companies
     }

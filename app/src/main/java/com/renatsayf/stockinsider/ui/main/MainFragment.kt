@@ -173,24 +173,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
             binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
         }
 
-        binding.alarmOffButton.setOnClickListener {
-            val message = getString(R.string.text_cancel_search)
-            ConfirmationDialog(message, "Ok", ConfirmationDialog.FLAG_CANCEL).apply {
-                setOnClickListener(object : ConfirmationDialog.Listener {
-                    override fun onPositiveClick(flag: String)
-                    {
-                        if (flag == ConfirmationDialog.FLAG_CANCEL)
-                        {
-                            requireActivity().let{ a ->
-                                (a as MainActivity).setAlarmSetting(false)
-                                AlarmPendingIntent.cancel(a)
-                            }
-                        }
-                    }
-                })
-            }.show(parentFragmentManager, ConfirmationDialog.TAG)
-        }
-
         StockInsiderService.serviceEvent.observe(viewLifecycleOwner) {
             if (!it.hasBeenHandled) {
                 if (it.getContent() == StockInsiderService.STOP_KEY) {

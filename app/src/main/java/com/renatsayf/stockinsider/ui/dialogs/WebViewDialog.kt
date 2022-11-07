@@ -7,7 +7,6 @@ import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -24,11 +23,10 @@ class WebViewDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        binding = WebViewDialogBinding.inflate(LayoutInflater.from(requireContext()))
+        binding = WebViewDialogBinding.inflate(layoutInflater)
 
-        binding.root.apply {
-            binding.dialogWebView.loadUrl("file:///android_asset/user-agreement/index.html")
-        }
+        binding.dialogWebView.loadUrl("file:///android_asset/user-agreement/index.html")
+
         val builder = AlertDialog.Builder(requireContext()).apply {
             setView(binding.root)
             setTitle(getString(R.string.text_user_agreement))
@@ -48,12 +46,15 @@ class WebViewDialog : DialogFragment()
                     dismiss()
                 }
             })
-            setOnCancelListener {
-                requireActivity().finish()
-                dismiss()
-            }
         }
         return builder.create()
+    }
+
+    override fun onCancel(dialog: DialogInterface) {
+
+        requireActivity().finish()
+        dismiss()
+        super.onCancel(dialog)
     }
 
     override fun onDestroy()

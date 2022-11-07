@@ -34,7 +34,7 @@ import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Listener, DealListAdapter.Listener, SaveSearchDialog.Listener {
+class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
     companion object
     {
         val TAG = this::class.java.simpleName.toString().plus("_tag")
@@ -49,12 +49,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this@ResultFragment)
-    }
-
-    private val confirmationDialog: ConfirmationDialog by lazy {
-        ConfirmationDialog().apply {
-            setOnClickListener(this@ResultFragment)
-        }
     }
 
     override fun onCreate(savedInstanceState: Bundle?)
@@ -175,20 +169,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         val title = arguments?.getString(ARG_TITLE) ?: ""
         resultVM.setToolBarTitle(title)
 
-        binding.alertLayout.addAlarmImgView.setOnClickListener {
-            confirmationDialog.apply {
-                message = this@ResultFragment.getString(R.string.text_confirm_search)
-                flag = ""
-            }.show(parentFragmentManager, ConfirmationDialog.TAG)
-        }
-
-        binding.alertLayout.alarmOnImgView.setOnClickListener {
-            confirmationDialog.apply {
-                message = this@ResultFragment.getString(R.string.text_cancel_search)
-                flag = ConfirmationDialog.FLAG_CANCEL
-            }.show(parentFragmentManager, ConfirmationDialog.TAG)
-        }
-
         binding.noResult.backButton.setOnClickListener {
             activity?.onBackPressed()
         }
@@ -222,36 +202,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
         binding.includedProgress.visibility = View.GONE
     }
 
-    override fun onPositiveClick(flag: String)
-    {
-        when (flag)
-        {
-            ConfirmationDialog.FLAG_CANCEL ->
-            {
-                activity?.let{ a ->
-                    (a as MainActivity).setAlarmSetting(false)
-                    a.getString(R.string.text_search_is_disabled).let { msg ->
-                        resultVM.setAddAlarmVisibility(View.VISIBLE)
-                        resultVM.setAlarmOnVisibility(View.GONE)
-                        Snackbar.make(binding.tradeListRV, msg, Snackbar.LENGTH_LONG).show()
-                    }
-                }
-            }
-            else ->
-            {
-                context?.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)?.edit {
-                    putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, true)
-                    apply()
-                }
-                resultVM.setAddAlarmVisibility(View.GONE)
-                resultVM.setAlarmOnVisibility(View.VISIBLE)
-                context?.getString(R.string.text_searching_is_created)?.let { msg ->
-                    Snackbar.make(binding.alertLayout.alarmOnImgView, msg, Snackbar.LENGTH_LONG).show()
-                }
-            }
-        }
-    }
-
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
     {
         inflater.inflate(R.menu.main, menu)
@@ -275,7 +225,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), ConfirmationDialog.Li
                 filingPeriod = 1
                 tradePeriod = 3
             }
-            mainViewModel.saveSearchSet(roomSearchSet).collect {
+            mainViewModel.saveSearchSet(roomSearchSet).observe(viewLifecycleOwner) {
                 if (it > 0) {
                     showSnackBar(getString(R.string.text_search_param_is_saved))
                 }

@@ -7,8 +7,6 @@ import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,17 +33,14 @@ class TrackingViewModel @Inject constructor(
 
     var newSet: RoomSearchSet? = null
 
-    fun getSearchSetById(id: Long) : StateFlow<RoomSearchSet?> {
-        val result = MutableStateFlow<RoomSearchSet?>(null)
+    fun getSearchSetById(id: Long) : LiveData<RoomSearchSet?> {
+
+        val result = MutableLiveData<RoomSearchSet?>(null)
         viewModelScope.launch {
             result.value = repository.getSearchSetByIdAsync(id).await()
         }
         return result
     }
 
-    override fun onCleared() {
 
-        newSet = null
-        super.onCleared()
-    }
 }

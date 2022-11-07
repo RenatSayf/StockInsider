@@ -18,6 +18,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
@@ -35,10 +36,12 @@ import com.renatsayf.stockinsider.utils.px
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
-class TrackingFragment : Fragment(R.layout.tracking_fragment) {
+class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Listener {
 
     companion object {
         val ARG_IS_EDIT = "${this::class.java.simpleName}.isEdit"
@@ -207,6 +210,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                             showSnackBar("Изменения сохранены")
                             trackingVM.setState(TrackingViewModel.State.Edit(flag))
                             trackingVM.newSet = null
+                            findNavController().popBackStack()
                         }
                     }
                 }
@@ -296,29 +300,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
                 }
                 newSet?.let { set ->
 
-                    SetNameDialog(set, listener = object : SetNameDialog.Listener {
-                        override fun onSetNameDialogPositiveClick(name: String) {
-                            newSet.queryName = name
-                            lifecycleScope.launchWhenResumed {
-                                mainVM.saveSearchSet(newSet).collect { id ->
-                                    when {
-                                        id > 0L -> {
-                                            trackingVM.getSearchSetById(id).collect { set ->
-                                                if (set != null) {
-                                                    trackingVM.setState(TrackingViewModel.State.OnSave(set))
-                                                    findNavController().popBackStack()
-                                                }
-                                                else showSnackBar(getString(R.string.text_failed_to_save))
-                                            }
-                                        }
-                                        id == 0L -> {
-                                            showSnackBar(getString(R.string.text_failed_to_save))
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
+                    SetNameDialog.newInstance(set, listener = this@TrackingFragment).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
                 }
             }
         }
@@ -425,9 +407,28 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment) {
         }
     }
 
-    override fun onDestroy() {
+    override fun onSetNameDialogPositiveClick(name: String) {
+        val newSet = trackingVM.newSet
+        newSet?.let {
+            it.queryName = name
 
-        trackingVM.newSet = null
-        super.onDestroy()
+            lifecycleScope.launch {
+                mainVM.saveSearchSet(it).asFlow().collectLatest { id ->
+                    when {
+                        id > 0L -> {
+                            trackingVM.setState(TrackingViewModel.State.OnSave(newSet))
+                        }
+                        id == 0L -> {
+                            showSnackBar(getString(R.string.text_failed_to_save))
+                        }
+                    }
+                }
+            }
+        }
     }
+
+
+
+
+
 }
