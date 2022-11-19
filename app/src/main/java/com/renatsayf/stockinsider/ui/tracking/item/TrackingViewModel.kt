@@ -17,7 +17,8 @@ class TrackingViewModel @Inject constructor(
 ) : ViewModel() {
 
     sealed class State {
-        data class Edit(val flag: Boolean): State()
+        data class Initial(val set: RoomSearchSet, val editFlag: Boolean): State()
+        //data class Edit(val flag: Boolean): State()
         data class OnEdit(val set: RoomSearchSet): State()
         data class OnSave(val set: RoomSearchSet): State()
     }

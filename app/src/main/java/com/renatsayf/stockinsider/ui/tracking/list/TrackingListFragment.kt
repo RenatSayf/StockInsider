@@ -102,7 +102,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 isOfficer = true,
                 isDirector = true,
                 isTenPercent = true,
-                groupBy = 1,
+                groupBy = 0,
                 sortBy = 3
             )
             findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {

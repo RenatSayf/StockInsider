@@ -6,10 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DialogQueryNameBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -56,6 +58,9 @@ class SetNameDialog : DialogFragment() {
         with(binding) {
 
             etSetName.setText(set?.queryName)
+            etSetName.doOnTextChanged { text, start, before, count ->
+                btnSave.setVisible(count > 0)
+            }
 
             btnSave.setOnClickListener {
                 val name = etSetName.text.toString()

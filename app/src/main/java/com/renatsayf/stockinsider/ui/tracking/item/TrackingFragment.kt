@@ -86,44 +86,47 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 }
             }
 
+            var copySet: RoomSearchSet? = null
             arguments?.let { bundle ->
                 val currentSet = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
-                if (savedInstanceState == null && trackingVM.newSet == null) {
-                    trackingVM.newSet = currentSet?.getFullCopy()
+                if (savedInstanceState == null) {
+                    copySet = currentSet?.getFullCopy()
+                    val flag = bundle.getBoolean(ARG_IS_EDIT)
+                    trackingVM.setState(TrackingViewModel.State.Initial(copySet!!, flag))
                 }
 
-                companiesVM.setState(CompaniesViewModel.State.Initial(trackingVM.newSet?.ticker ?: ""))
-                trackingVM.newSet?.let { fillLayoutData(it) }
+                //companiesVM.setState(CompaniesViewModel.State.Initial(trackingVM.newSet?.ticker ?: ""))
 
-                companiesVM.state.observe(viewLifecycleOwner) { state ->
-                    when(state) {
-                        is CompaniesViewModel.State.Error -> {
-                            showSnackBar(state.message)
-                        }
-                        is CompaniesViewModel.State.Initial -> {
-                            if (state.ticker.isNotEmpty()) {
-                                includeTickersView.contentTextView.setText(state.ticker)
-                            }
-                            else {
-                                includeTickersView.contentTextView.setText(currentSet?.ticker)
-                            }
-                        }
-                        CompaniesViewModel.State.OnAdding -> {}
-                        is CompaniesViewModel.State.OnUpdate -> {}
-                        is CompaniesViewModel.State.Current -> {
+                //trackingVM.newSet?.let { fillLayoutData(it) }
 
-                        }
-                    }
-                }
+//                companiesVM.state.observe(viewLifecycleOwner) { state ->
+//                    when(state) {
+//                        is CompaniesViewModel.State.Error -> {
+//                            showSnackBar(state.message)
+//                        }
+//                        is CompaniesViewModel.State.Initial -> {
+//                            if (state.ticker.isNotEmpty()) {
+//                                includeTickersView.contentTextView.setText(state.ticker)
+//                            }
+//                            else {
+//                                includeTickersView.contentTextView.setText(currentSet?.ticker)
+//                            }
+//                        }
+//                        CompaniesViewModel.State.OnAdding -> {}
+//                        is CompaniesViewModel.State.OnUpdate -> {}
+//                        is CompaniesViewModel.State.Current -> {
+//
+//                        }
+//                    }
+//                }
 
-                val flag = bundle.getBoolean(ARG_IS_EDIT)
-                trackingVM.setState(TrackingViewModel.State.Edit(flag))
+
 
                 traded.root.forEach {
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                             override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
-                                trackingVM.newSet?.let { set ->
+                                copySet?.let { set ->
                                     when(p0?.id) {
                                         R.id.purchaseCheckBox -> {
                                             set.isPurchase = isChecked
@@ -149,7 +152,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                             override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
-                                trackingVM.newSet?.let { set ->
+
+                                copySet?.let { set ->
                                     when(p0?.id) {
                                         R.id.officer_CheBox -> {
                                             set.isOfficer = isChecked
@@ -173,7 +177,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     if (it is Spinner) {
                         it.onItemSelectedListener = object : OnItemSelectedListener {
                             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                                trackingVM.newSet?.let { set ->
+                                copySet?.let { set ->
                                     when(p0?.id) {
                                         R.id.group_spinner -> {
                                             set.groupBy = p2
@@ -192,25 +196,26 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
 
                 trackingVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
-                        is TrackingViewModel.State.Edit -> {
-                            enableEditing(state.flag)
-                        }
                         is TrackingViewModel.State.OnEdit -> {
-                            val newSet = trackingVM.newSet
-                            newSet?.let { set ->
+                            val newSet = state.set
+                            newSet.let { set ->
                                 fillLayoutData(set)
                                 currentSet?.let {
                                     enableSaveButton(it, set)
                                 }
                             }
-                            trackingVM.setState(TrackingViewModel.State.Edit(flag))
                         }
                         is TrackingViewModel.State.OnSave -> {
                             enableSaveButton(state.set, state.set)
                             showSnackBar("Изменения сохранены")
-                            trackingVM.setState(TrackingViewModel.State.Edit(flag))
                             trackingVM.newSet = null
                             findNavController().popBackStack()
+                        }
+                        is TrackingViewModel.State.Initial -> {
+                            val set = state.set
+                            val editFlag = state.editFlag
+                            fillLayoutData(set)
+                            enableEditing(editFlag)
                         }
                     }
                 }
@@ -399,10 +404,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
             }
 
             sorting.groupSpinner.apply {
-                setSelection(trackingVM.newSet?.groupBy ?: 0)
+                setSelection(set.groupBy)
             }
             sorting.sortSpinner.apply {
-                setSelection(trackingVM.newSet?.sortBy ?: 0)
+                setSelection(set.sortBy)
             }
         }
     }

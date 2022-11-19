@@ -91,14 +91,14 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                 }
             }
         }
-        trackingVM.state.observe(viewLifecycleOwner) { state ->
-            when(state) {
-                is TrackingViewModel.State.Edit -> {
-                    enableEditing(state.flag)
-                }
-                else -> {}
-            }
-        }
+//        trackingVM.state.observe(viewLifecycleOwner) { state ->
+//            when(state) {
+//                is TrackingViewModel.State.Edit -> {
+//                    enableEditing(state.flag)
+//                }
+//                else -> {}
+//            }
+//        }
 
         with(binding) {
 
