@@ -15,30 +15,21 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     private lateinit var binding: TrackingListFragmentBinding
-
-    @Inject
-    lateinit var scheduler: IScheduler
-
-    @Inject
-    lateinit var calendar: AppCalendar
 
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]

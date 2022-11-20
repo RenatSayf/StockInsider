@@ -10,6 +10,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.db.Company
 import java.io.Serializable
 
+const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
+
 
 fun Context.getStringFromFile(fileName: String): String {
     val inputStream = this.assets.open(fileName)

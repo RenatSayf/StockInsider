@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -19,7 +21,8 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.ui.adapters.CompanyListAdapter
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
-import com.renatsayf.stockinsider.ui.tracking.item.TrackingViewModel
+import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
+import com.renatsayf.stockinsider.utils.KEY_FRAGMENT_RESULT
 import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -27,9 +30,12 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdapter.Listener {
 
+    companion object {
+        const val ARG_TICKERS = "ARG_TICKERS"
+    }
+
     private lateinit var binding: CompaniesFragmentBinding
     private val companiesVM: CompaniesViewModel by activityViewModels()
-    private val trackingVM: TrackingViewModel by activityViewModels()
 
     private val companiesAdapter = CompanyListAdapter(this)
 
@@ -79,30 +85,21 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                 }
                 is CompaniesViewModel.State.OnUpdate -> {
                     companiesAdapter.submitList(state.companies)
-                    trackingVM.newSet?.let {
-                        it.ticker = state.companies.joinToString(separator = " ") { company ->
-                            company.ticker
-                        }
-                    }
                 }
                 is CompaniesViewModel.State.Current -> {
                     companiesAdapter.submitList(state.companies)
                     binding.includeProgress.loadProgressBar.setVisible(false)
+                    val editingFlag = arguments?.getBoolean(TrackingFragment.ARG_IS_EDIT, false)
+                    enableEditing(editingFlag)
                 }
             }
         }
-//        trackingVM.state.observe(viewLifecycleOwner) { state ->
-//            when(state) {
-//                is TrackingViewModel.State.Edit -> {
-//                    enableEditing(state.flag)
-//                }
-//                else -> {}
-//            }
-//        }
 
         with(binding) {
 
             appToolbar.setNavigationOnClickListener {
+                val companyList = companiesAdapter.items
+                passDataBack(companyList)
                 findNavController().popBackStack()
             }
 
@@ -143,20 +140,34 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
                     }.toMutableList()
                     companies.add(Company(ticker, company))
                     companiesVM.setState(CompaniesViewModel.State.Current(companies))
-                    trackingVM.newSet?.let{
-                        val set = it.copy()
-                        set.apply {
-                            this.ticker += " $ticker"
-                            this.ticker = this.ticker.trim()
-                        }
-                        trackingVM.setState(TrackingViewModel.State.OnEdit(set))
-                    }
-                    tickerET.text.clear()
                 }
                 else companiesVM.setState(CompaniesViewModel.State.Error(getString(R.string.text_ticker_already_exists)))
+                tickerET.text.clear()
             }
         }
 
+    }
+
+    private fun passDataBack(companies: List<Company>) {
+        val tickersString = companies.joinToString(separator = " ") { company ->
+            company.ticker
+        }
+        setFragmentResult(KEY_FRAGMENT_RESULT, Bundle().apply {
+            putString(ARG_TICKERS, tickersString)
+        })
+    }
+
+    override fun onResume() {
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                val companyList = companiesAdapter.items
+                passDataBack(companyList)
+                findNavController().popBackStack()
+            }
+        })
+
+        super.onResume()
     }
 
     override fun onStart() {
@@ -169,11 +180,12 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
         super.onStop()
     }
 
-    private fun enableEditing(flag: Boolean) {
+    private fun enableEditing(flag: Boolean?) {
         with(binding) {
 
-            btnAdd.setVisible(flag)
-            companiesAdapter.setEnable(flag)
+            val editingFlag = flag ?: false
+            btnAdd.setVisible(editingFlag)
+            companiesAdapter.setEnable(editingFlag)
         }
     }
 

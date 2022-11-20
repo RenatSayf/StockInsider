@@ -7,9 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 
@@ -55,7 +53,6 @@ class CompaniesViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 result.value = repository.updateSearchSetTickerAsync(setName, value).await()
-                //_state.value = State.OnAdding
             } catch (e: Exception) {
                 result.value = -1
             }

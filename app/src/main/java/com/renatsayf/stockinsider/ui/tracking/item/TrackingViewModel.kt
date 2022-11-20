@@ -18,7 +18,6 @@ class TrackingViewModel @Inject constructor(
 
     sealed class State {
         data class Initial(val set: RoomSearchSet, val editFlag: Boolean): State()
-        //data class Edit(val flag: Boolean): State()
         data class OnEdit(val set: RoomSearchSet): State()
         data class OnSave(val set: RoomSearchSet): State()
     }
@@ -27,12 +26,22 @@ class TrackingViewModel @Inject constructor(
     val state: LiveData<State> = _state
     fun setState(state: State) {
         _state.value = state
-        if (_state.value is State.OnEdit) {
-            newSet = (_state.value as State.OnEdit).set
+        when (_state.value) {
+            is State.OnEdit -> {
+                _newSet = (_state.value as State.OnEdit).set
+            }
+            is State.Initial -> {
+                _newSet = (_state.value as State.Initial).set
+            }
+            else -> {}
         }
     }
 
-    var newSet: RoomSearchSet? = null
+    private var _newSet: RoomSearchSet? = null
+    val newSet: RoomSearchSet?
+        get() {
+            return _newSet
+        }
 
     fun getSearchSetById(id: Long) : LiveData<RoomSearchSet?> {
 

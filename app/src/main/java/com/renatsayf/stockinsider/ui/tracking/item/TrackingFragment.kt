@@ -30,11 +30,9 @@ import com.renatsayf.stockinsider.models.Target.Tracking
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SetNameDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment
 import com.renatsayf.stockinsider.ui.tracking.companies.CompaniesViewModel
-import com.renatsayf.stockinsider.utils.getSerializableCompat
-import com.renatsayf.stockinsider.utils.px
-import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -86,7 +84,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 }
             }
 
-            var copySet: RoomSearchSet? = null
+            var copySet: RoomSearchSet?
             arguments?.let { bundle ->
                 val currentSet = bundle.getSerializableCompat(ARG_SET, RoomSearchSet::class.java)
                 if (savedInstanceState == null) {
@@ -95,38 +93,23 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     trackingVM.setState(TrackingViewModel.State.Initial(copySet!!, flag))
                 }
 
-                //companiesVM.setState(CompaniesViewModel.State.Initial(trackingVM.newSet?.ticker ?: ""))
-
-                //trackingVM.newSet?.let { fillLayoutData(it) }
-
-//                companiesVM.state.observe(viewLifecycleOwner) { state ->
-//                    when(state) {
-//                        is CompaniesViewModel.State.Error -> {
-//                            showSnackBar(state.message)
-//                        }
-//                        is CompaniesViewModel.State.Initial -> {
-//                            if (state.ticker.isNotEmpty()) {
-//                                includeTickersView.contentTextView.setText(state.ticker)
-//                            }
-//                            else {
-//                                includeTickersView.contentTextView.setText(currentSet?.ticker)
-//                            }
-//                        }
-//                        CompaniesViewModel.State.OnAdding -> {}
-//                        is CompaniesViewModel.State.OnUpdate -> {}
-//                        is CompaniesViewModel.State.Current -> {
-//
-//                        }
-//                    }
-//                }
-
-
+                parentFragmentManager.setFragmentResultListener(KEY_FRAGMENT_RESULT, viewLifecycleOwner) { key, bundle1 ->
+                    if (key == KEY_FRAGMENT_RESULT) {
+                        val tickersString = bundle1.getString(CompaniesFragment.ARG_TICKERS, "")
+                        val newSet = trackingVM.newSet
+                        newSet?.let {
+                            it.ticker = tickersString
+                            trackingVM.setState(TrackingViewModel.State.OnEdit(it))
+                        }
+                    }
+                }
 
                 traded.root.forEach {
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                             override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
-                                copySet?.let { set ->
+                                val newSet = trackingVM.newSet
+                                newSet?.let { set ->
                                     when(p0?.id) {
                                         R.id.purchaseCheckBox -> {
                                             set.isPurchase = isChecked
@@ -152,8 +135,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
                             override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
-
-                                copySet?.let { set ->
+                                val newSet = trackingVM.newSet
+                                newSet?.let { set ->
                                     when(p0?.id) {
                                         R.id.officer_CheBox -> {
                                             set.isOfficer = isChecked
@@ -177,7 +160,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     if (it is Spinner) {
                         it.onItemSelectedListener = object : OnItemSelectedListener {
                             override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                                copySet?.let { set ->
+                                val newSet = trackingVM.newSet
+                                newSet?.let { set ->
                                     when(p0?.id) {
                                         R.id.group_spinner -> {
                                             set.groupBy = p2
@@ -197,18 +181,15 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 trackingVM.state.observe(viewLifecycleOwner) { state ->
                     when(state) {
                         is TrackingViewModel.State.OnEdit -> {
-                            val newSet = state.set
-                            newSet.let { set ->
+                            val newSet = trackingVM.newSet
+                            newSet?.let { set ->
                                 fillLayoutData(set)
-                                currentSet?.let {
-                                    enableSaveButton(it, set)
-                                }
+                                enableSaveButton(currentSet, set)
                             }
                         }
                         is TrackingViewModel.State.OnSave -> {
                             enableSaveButton(state.set, state.set)
                             showSnackBar("Изменения сохранены")
-                            trackingVM.newSet = null
                             findNavController().popBackStack()
                         }
                         is TrackingViewModel.State.Initial -> {
@@ -222,7 +203,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
 
                 includeSetName.etSetName.doOnTextChanged { text, _, before, count ->
                     if (before != count) {
-                        trackingVM.newSet?.let { set ->
+                        val newSet = trackingVM.newSet
+                        newSet?.let { set ->
                             set.queryName = text.toString()
                             trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                         }
@@ -244,7 +226,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                             }
 
                             if (before != count) {
-                                trackingVM.newSet?.let { set ->
+                                val newSet = trackingVM.newSet
+                                newSet?.let { set ->
                                     set.ticker = text.toString()
                                     trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                                 }
@@ -267,7 +250,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
 
                 traded.tradedMinET.doOnTextChanged { text, _, before, count ->
                     if (before != count) {
-                        trackingVM.newSet?.let { set ->
+                        val newSet = trackingVM.newSet
+                        newSet?.let { set ->
                             set.tradedMin = text.toString()
                             trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                         }
@@ -275,7 +259,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 }
                 traded.tradedMaxET.doOnTextChanged { text, _, before, count ->
                     if (before != count) {
-                        trackingVM.newSet?.let { set ->
+                        val newSet = trackingVM.newSet
+                        newSet?.let { set ->
                             set.tradedMax = text.toString()
                             trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                         }
@@ -285,10 +270,14 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 includeTickersView.btnShow.setOnClickListener {
                     val tickersStr = binding.includeTickersView.contentTextView.text.toString()
                     companiesVM.setState(CompaniesViewModel.State.Initial(tickersStr))
-                    findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment)
+                    findNavController().navigate(R.id.action_trackingFragment_to_companiesFragment, Bundle().apply {
+                        val editingFlag = bundle.getBoolean(ARG_IS_EDIT)
+                        putBoolean(ARG_IS_EDIT, editingFlag)
+                    })
                 }
                 includeTickersView.clearTextBtn.setOnClickListener {
-                    trackingVM.newSet?.let { set ->
+                    val newSet = trackingVM.newSet
+                    newSet?.let { set ->
                         set.ticker = ""
                         trackingVM.setState(TrackingViewModel.State.OnEdit(set))
                     }
@@ -302,10 +291,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                     it.queryName = includeSetName.etSetName.text.toString()
                     it.target = Tracking
                     it.isTracked = true
-                }
-                newSet?.let { set ->
-
-                    SetNameDialog.newInstance(set, listener = this@TrackingFragment).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
+                    SetNameDialog.newInstance(it, listener = this@TrackingFragment).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
                 }
             }
         }
@@ -322,7 +308,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
         })
     }
 
-    private fun enableSaveButton(oldSet: RoomSearchSet, newSet: RoomSearchSet) {
+    private fun enableSaveButton(oldSet: RoomSearchSet?, newSet: RoomSearchSet?) {
         if (oldSet != newSet) {
             binding.btnSave.setVisible(true)
         }
