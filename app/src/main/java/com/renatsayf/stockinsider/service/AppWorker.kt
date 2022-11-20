@@ -13,9 +13,10 @@ import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.util.*
+import javax.inject.Inject
 
 
-class AppWorker(
+class AppWorker @Inject constructor(
     private val context: Context,
     parameters: WorkerParameters): CoroutineWorker(context, parameters) {
 
@@ -26,9 +27,13 @@ class AppWorker(
 
     private val composite = CompositeDisposable()
 
-    private var db: AppDao? = null
-    private var networkRepository: INetRepository? = null
-    private var function: ((Context, ArrayList<Deal>) -> Unit)? = null
+    @Inject
+    lateinit var db: AppDao
+
+    @Inject
+    lateinit var networkRepository: INetRepository
+
+    private var function: ((Context, ArrayList<Deal>) -> Unit)? = ServiceNotification.notify
 
     fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
         this.db = db
@@ -46,7 +51,7 @@ class AppWorker(
                 val params = it.toSearchSet()
                 performPayload(params)
             }
-            val results = resultList?.map { res ->
+            resultList?.forEach { res ->
                 when (res) {
                     is WorkerResult.Error -> {
                         composite.dispose()
@@ -77,7 +82,7 @@ class AppWorker(
 
     private suspend fun getTrackingSetsAsync() : Deferred<List<RoomSearchSet>?> = coroutineScope {
         async {
-            db?.getSearchSetsByTarget(Target.Tracking)
+            db.getSearchSetsByTarget(Target.Tracking)
         }
     }
 
@@ -85,7 +90,7 @@ class AppWorker(
     {
         var result: WorkerResult = WorkerResult.Error(Throwable("Unknown error"))
 
-        val subscribe = networkRepository?.getTradingScreen(set)?.subscribe({ list: ArrayList<Deal>? ->
+        val subscribe = networkRepository.getTradingScreen(set).subscribe({ list: ArrayList<Deal>? ->
             if (!list.isNullOrEmpty()) {
                 result = WorkerResult.Success(list)
             }
@@ -101,5 +106,7 @@ class AppWorker(
         data class Success(val deals: ArrayList<Deal>): WorkerResult()
         data class Error(val throwable: Throwable): WorkerResult()
     }
+
+
 }
 

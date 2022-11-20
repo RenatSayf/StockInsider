@@ -10,7 +10,6 @@ import androidx.work.impl.utils.SynchronousExecutor
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.AppDataBase
-import com.renatsayf.stockinsider.db.FakeAppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.network.FakeNetRepository
@@ -29,7 +28,6 @@ import org.robolectric.annotation.Config
 
 @RunWith(RobolectricTestRunner::class)
 @Config(maxSdk = 30, manifest = Config.NONE)
-//@RunWith(AndroidJUnit4::class)
 class AppWorkerTest {
 
     @get:Rule
@@ -65,7 +63,7 @@ class AppWorkerTest {
     @Test
     fun workManagerEnqueueTest() {
 
-        WorkTask.createPeriodicTask("Microsoft")
+        WorkTask.createPeriodicTask(context, "Microsoft")
 
         val actualWorkRequests = WorkTask.getTaskList()
         assertTrue(actualWorkRequests.isNotEmpty())
@@ -106,10 +104,7 @@ class AppWorkerTest {
             target = com.renatsayf.stockinsider.models.Target.Tracking
         }
 
-        val worker = TestListenableWorkerBuilder<AppWorker>(
-            context,
-            inputData = Data(workDataOf(AppWorker.SEARCH_SET_KEY to "Microsoft"))
-        ).build()
+        val worker = TestListenableWorkerBuilder<AppWorker>(context).build()
 
         worker.injectDependencies(dao, network, FakeServiceNotification.notify)
 
@@ -118,7 +113,9 @@ class AppWorkerTest {
             dao.insertOrUpdateSearchSet(roomSearchSet)
 
             val result = worker.doWork()
+            val result2 = worker.doWork()
             assertTrue(result is ListenableWorker.Result.Success)
+            assertTrue(result2 is ListenableWorker.Result.Success)
         }
     }
 }
