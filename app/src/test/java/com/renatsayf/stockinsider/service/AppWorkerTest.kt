@@ -3,11 +3,13 @@ package com.renatsayf.stockinsider.service
 import android.content.Context
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import androidx.work.impl.utils.SynchronousExecutor
 import androidx.work.testing.TestListenableWorkerBuilder
 import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.FakeAppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
@@ -36,14 +38,18 @@ class AppWorkerTest {
     private lateinit var context: Context
     private lateinit var config: Configuration
 
-    private lateinit var db: AppDao
+    private lateinit var dao: AppDao
+    private lateinit var db: AppDataBase
 
     @Before
     fun setUp() {
 
         context = ApplicationProvider.getApplicationContext()
 
-        db = FakeAppDao()
+        db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        dao = db.searchSetDao()
 
         config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
@@ -53,7 +59,7 @@ class AppWorkerTest {
 
     @After
     fun tearDown() {
-
+        db.close()
     }
 
     @Test
@@ -96,18 +102,21 @@ class AppWorkerTest {
             isTenPercent = true,
             groupBy = 0,
             sortBy = 0
-        )
-
-        (db as FakeAppDao).setExpectedResult("Microsoft", roomSearchSet)
+        ).apply {
+            target = com.renatsayf.stockinsider.models.Target.Tracking
+        }
 
         val worker = TestListenableWorkerBuilder<AppWorker>(
             context,
             inputData = Data(workDataOf(AppWorker.SEARCH_SET_KEY to "Microsoft"))
         ).build()
 
-        worker.injectDependencies(db, network, FakeServiceNotification.notify)
+        worker.injectDependencies(dao, network, FakeServiceNotification.notify)
 
         runBlocking{
+
+            dao.insertOrUpdateSearchSet(roomSearchSet)
+
             val result = worker.doWork()
             assertTrue(result is ListenableWorker.Result.Success)
         }

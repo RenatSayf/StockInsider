@@ -90,7 +90,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 if (savedInstanceState == null) {
                     copySet = currentSet?.getFullCopy()
                     val flag = bundle.getBoolean(ARG_IS_EDIT)
-                    trackingVM.setState(TrackingViewModel.State.Initial(copySet!!, flag))
+                    copySet?.let {
+                        trackingVM.setState(TrackingViewModel.State.Initial(it, flag))
+                    }
                 }
 
                 parentFragmentManager.setFragmentResultListener(KEY_FRAGMENT_RESULT, viewLifecycleOwner) { key, bundle1 ->
