@@ -5,7 +5,6 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
-import androidx.work.WorkerParameters
 import com.renatsayf.stockinsider.BuildConfig
 import java.util.concurrent.TimeUnit
 

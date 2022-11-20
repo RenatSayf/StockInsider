@@ -102,6 +102,7 @@ class AppWorkerTest {
             sortBy = 0
         ).apply {
             target = com.renatsayf.stockinsider.models.Target.Tracking
+            isTracked = true
         }
 
         val worker = TestListenableWorkerBuilder<AppWorker>(context).build()

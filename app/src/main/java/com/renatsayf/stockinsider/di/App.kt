@@ -7,9 +7,8 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import com.renatsayf.stockinsider.service.WorkTask
 import dagger.hilt.android.HiltAndroidApp
-import java.util.concurrent.Executors
 
-//TODO Hilt step 4
+
 @HiltAndroidApp
 class App : Application(), Configuration.Provider {
 

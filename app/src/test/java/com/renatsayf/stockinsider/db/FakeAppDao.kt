@@ -56,6 +56,10 @@ class FakeAppDao : AppDao {
         return emptyList()
     }
 
+    override suspend fun getTrackedSets(target: String, isTracked: Int): List<RoomSearchSet> {
+        return emptyList()
+    }
+
     override suspend fun getCompanyByTicker(list: List<String>): List<Company> {
         return emptyList()
     }

@@ -71,7 +71,6 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         val sets = MutableLiveData<List<RoomSearchSet>>()
         viewModelScope.launch {
             sets.value = repository.getSearchSetsByTarget(target)
-
         }
         return sets
     }

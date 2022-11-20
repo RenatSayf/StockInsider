@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.di.modules
 
 import android.content.Context
+import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.network.*
 import dagger.Module
@@ -33,7 +34,11 @@ object NetRepositoryModule
             .addInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS).build()
+            .writeTimeout(60, TimeUnit.SECONDS).apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(OkHttpProfilerInterceptor())
+                }
+            }.build()
 
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

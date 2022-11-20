@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
-import kotlinx.coroutines.Deferred
 
 @Dao
 interface AppDao
@@ -41,6 +40,9 @@ interface AppDao
 
     @Query("SELECT DISTINCT * FROM search_set WHERE target = :target")
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
+
+    @Query("SELECT DISTINCT * FROM search_set WHERE target = :target AND is_tracked = :isTracked")
+    suspend fun getTrackedSets(target: String, isTracked: Int) : List<RoomSearchSet>
 
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")
     suspend fun getCompanyByTicker(list: List<String>) : List<Company>

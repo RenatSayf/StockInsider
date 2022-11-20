@@ -4,8 +4,11 @@ package com.renatsayf.stockinsider.service
 
 import android.content.Context
 import androidx.work.*
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
+import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.models.Target
@@ -13,10 +16,9 @@ import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.util.*
-import javax.inject.Inject
 
 
-class AppWorker @Inject constructor(
+class AppWorker (
     private val context: Context,
     parameters: WorkerParameters): CoroutineWorker(context, parameters) {
 
@@ -27,17 +29,19 @@ class AppWorker @Inject constructor(
 
     private val composite = CompositeDisposable()
 
-    @Inject
-    lateinit var db: AppDao
-
-    @Inject
-    lateinit var networkRepository: INetRepository
+    private var db: AppDao
+    private var net: INetRepository
 
     private var function: ((Context, ArrayList<Deal>) -> Unit)? = ServiceNotification.notify
 
+    init {
+        db = RoomDataBaseModule.provideRoomDataBase(context)
+        net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
+    }
+
     fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
         this.db = db
-        this.networkRepository = networkRepository
+        this.net = networkRepository
         this.function = function
     }
 
@@ -45,6 +49,7 @@ class AppWorker @Inject constructor(
     {
         return try
         {
+            if (BuildConfig.DEBUG) println("******************** Start background work ********************")
             val searchSets = getTrackingSetsAsync().await()
 
             val resultList = searchSets?.map {
@@ -57,12 +62,14 @@ class AppWorker @Inject constructor(
                         composite.dispose()
                         composite.clear()
                         Result.failure()
+                        if (BuildConfig.DEBUG) println("********************** Background work failed *****************************")
                     }
                     is WorkerResult.Success -> {
                         function?.invoke(context, res.deals)
                         composite.dispose()
                         composite.clear()
                         Result.success()
+                        if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
                     }
                 }
             }
@@ -70,19 +77,21 @@ class AppWorker @Inject constructor(
         }
         catch (e: Exception)
         {
+            if (BuildConfig.DEBUG) e.printStackTrace()
             composite.dispose()
             composite.clear()
             val message = e.message ?: "********** Unknown error **********"
             val data = Data.Builder().apply {
                 putString("error", "*********** $message *************")
             }.build()
+            if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
             Result.failure(data)
         }
     }
 
     private suspend fun getTrackingSetsAsync() : Deferred<List<RoomSearchSet>?> = coroutineScope {
         async {
-            db.getSearchSetsByTarget(Target.Tracking)
+            db.getTrackedSets(target = Target.Tracking, isTracked = 1)
         }
     }
 
@@ -90,7 +99,7 @@ class AppWorker @Inject constructor(
     {
         var result: WorkerResult = WorkerResult.Error(Throwable("Unknown error"))
 
-        val subscribe = networkRepository.getTradingScreen(set).subscribe({ list: ArrayList<Deal>? ->
+        val subscribe = net.getTradingScreen(set).subscribe({ list: ArrayList<Deal>? ->
             if (!list.isNullOrEmpty()) {
                 result = WorkerResult.Success(list)
             }
