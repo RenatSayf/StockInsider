@@ -60,6 +60,10 @@ class FakeAppDao : AppDao {
         return emptyList()
     }
 
+    override suspend fun getTrackedCount(): Int {
+        return 0
+    }
+
     override suspend fun getCompanyByTicker(list: List<String>): List<Company> {
         return emptyList()
     }

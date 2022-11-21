@@ -88,6 +88,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
+    override suspend fun getTrackedCountAsync(): Deferred<Int> {
+        return coroutineScope {
+            async {
+                db.getTrackedCount()
+            }
+        }
+    }
+
     override suspend fun getCompanyByTicker(list: List<String>): List<Company> = coroutineScope {
         withContext(Dispatchers.Default) {
             val companyByTicker = db.getCompanyByTicker(list)

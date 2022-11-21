@@ -28,6 +28,25 @@ internal class DataRepositoryImplTest {
     private lateinit var db: AppDataBase
     private lateinit var repository: DataRepositoryImpl
 
+    private val testSet = RoomSearchSet(
+        queryName = "XXX",
+        companyName = "",
+        ticker = "BAC MSFT AA AAPL TSLA NVDA GOOG FB NFLX",
+        filingPeriod = 3,
+        tradePeriod = 3,
+        isPurchase = true,
+        isSale = false,
+        tradedMin = "",
+        isDirector = true,
+        isTenPercent = true,
+        tradedMax = "",
+        isOfficer = true,
+        groupBy = 1,
+        sortBy = 3
+    ).apply {
+        isTracked = true
+    }
+
     @Before
     fun setUp() {
         val context = ApplicationProvider.getApplicationContext<Context>()
@@ -251,6 +270,27 @@ internal class DataRepositoryImplTest {
             actualResult = repository.deleteSetByIdAsync(actualId).await()
             Assert.assertTrue(actualResult > 0)
         }
+    }
+
+    @Test
+    fun getTrackedCount() {
+
+        val set1 = testSet.copy(queryName = "query 1", ticker = "SSS").apply {
+            target = com.renatsayf.stockinsider.models.Target.Tracking
+            isTracked = true
+        }
+
+        runBlocking {
+            val id = repository.saveSearchSetAsync(set1).await()
+            var actualCount = repository.getTrackedCountAsync().await()
+            Assert.assertTrue(actualCount == 1)
+
+            repository.deleteSetByIdAsync(id).await()
+
+            actualCount = repository.getTrackedCountAsync().await()
+            Assert.assertTrue(actualCount == 0)
+        }
+
     }
 }
 

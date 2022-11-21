@@ -10,11 +10,14 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkManager
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -28,6 +31,11 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
+
+    companion object {
+        val TASK_NAME = "${this::class.java.name}.TASK"
+        val WORK_NAME = "${this::class.java.name}.WORK"
+    }
 
     private lateinit var binding: TrackingListFragmentBinding
 
@@ -52,6 +60,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        if (savedInstanceState == null) {
+            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                if (count > 0) enableBackgroundWork(true)
+            }
+        }
 
         binding.includedToolBar.appToolbar.apply {
             title = getString(R.string.text_tracking_list)
@@ -141,7 +155,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
 
-        lifecycleScope.launchWhenResumed {
+        lifecycleScope.launch {
             set.isTracked = checked
             mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
                 if (id > 0) {
@@ -149,7 +163,31 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         true -> showSnackBar("Отслеживание включено")
                         else -> showSnackBar("Отслеживание выключено")
                     }
+                    trackingVM.getTrackedCount().observe(viewLifecycleOwner) { count ->
+                        if (count > 0) {
+                            enableBackgroundWork(true)
+                        }
+                        else {
+                            enableBackgroundWork(false)
+                        }
+                    }
                 }
+            }
+        }
+    }
+
+    private fun enableBackgroundWork(flag: Boolean) {
+        when(flag) {
+            true -> {
+                val workRequest = WorkTask.createPeriodicTask(requireContext(), TASK_NAME)
+                WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
+                    WORK_NAME,
+                    ExistingPeriodicWorkPolicy.KEEP,
+                    workRequest
+                )
+            }
+            else -> {
+                WorkManager.getInstance(requireContext()).cancelAllWork()
             }
         }
     }

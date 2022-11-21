@@ -36,6 +36,8 @@ interface IDataRepository
 
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
+    suspend fun getTrackedCountAsync() : Deferred<Int>
+
     suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 
     suspend fun getAllSimilar(pattern: String) : List<Company>
