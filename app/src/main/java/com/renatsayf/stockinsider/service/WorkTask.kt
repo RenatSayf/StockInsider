@@ -9,7 +9,10 @@ import com.renatsayf.stockinsider.BuildConfig
 import java.util.concurrent.TimeUnit
 
 
+
 object WorkTask: IWorkTask {
+
+    const val TAG = "TAG555555555"
 
     private val timePeriod = if(BuildConfig.DEBUG) 15L else 480L
 
@@ -25,7 +28,7 @@ object WorkTask: IWorkTask {
             val data = Data.Builder().putString(AppWorker.SEARCH_SET_KEY, name).build()
             setInputData(data)
             setConstraints(constraints)
-
+            addTag(TAG)
         }.build()
         taskList.add(request)
         return request

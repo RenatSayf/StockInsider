@@ -1,13 +1,18 @@
 package com.renatsayf.stockinsider.utils
 
+import android.app.Activity
 import android.content.Context
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.service.WorkTask
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
 
 const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
@@ -79,6 +84,27 @@ fun <T : Serializable?> Bundle.getSerializableCompat(key: String, clazz: Class<T
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getSerializable(key, clazz)
     } else (getSerializable(key) as? T)
+}
+
+fun Activity.startBackgroundWork() {
+    val workRequest = WorkTask.createPeriodicTask(this, TrackingListFragment.TASK_NAME)
+    WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+        TrackingListFragment.WORK_NAME,
+        ExistingPeriodicWorkPolicy.KEEP,
+        workRequest
+    )
+}
+
+fun Activity.cancelBackgroundWork() {
+    WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
+}
+
+fun Fragment.startBackgroundWork() {
+    requireActivity().startBackgroundWork()
+}
+
+fun Fragment.cancelBackgroundWork() {
+    requireActivity().cancelBackgroundWork()
 }
 
 

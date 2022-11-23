@@ -10,20 +10,19 @@ import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.WorkManager
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
+import com.renatsayf.stockinsider.utils.cancelBackgroundWork
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.startBackgroundWork
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -63,7 +62,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         if (savedInstanceState == null) {
             trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                if (count > 0) enableBackgroundWork(true)
+                if (count > 0) startBackgroundWork()
             }
         }
 
@@ -163,31 +162,15 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         true -> showSnackBar("Отслеживание включено")
                         else -> showSnackBar("Отслеживание выключено")
                     }
-                    trackingVM.getTrackedCount().observe(viewLifecycleOwner) { count ->
+                    trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
                         if (count > 0) {
-                            enableBackgroundWork(true)
+                            startBackgroundWork()
                         }
                         else {
-                            enableBackgroundWork(false)
+                            cancelBackgroundWork()
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private fun enableBackgroundWork(flag: Boolean) {
-        when(flag) {
-            true -> {
-                val workRequest = WorkTask.createPeriodicTask(requireContext(), TASK_NAME)
-                WorkManager.getInstance(requireContext()).enqueueUniquePeriodicWork(
-                    WORK_NAME,
-                    ExistingPeriodicWorkPolicy.KEEP,
-                    workRequest
-                )
-            }
-            else -> {
-                WorkManager.getInstance(requireContext()).cancelAllWork()
             }
         }
     }

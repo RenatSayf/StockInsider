@@ -26,17 +26,11 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
 
     var trackedCount: MutableLiveData<Int> = MutableLiveData(-1)
     private set
-
-    fun getTrackedCount(): LiveData<Int> {
-        val count = MutableLiveData(-1)
+    get() {
         viewModelScope.launch {
-            count.value = repository.getTrackedCountAsync().await()
-            trackedCount.value = count.value ?: -1
+            field.value = repository.getTrackedCountAsync().await()
         }
-        return count
+        return field
     }
 
-    init {
-        getTrackedCount()
-    }
 }
