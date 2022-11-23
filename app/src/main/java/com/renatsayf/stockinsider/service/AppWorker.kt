@@ -10,7 +10,6 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -52,26 +51,24 @@ class AppWorker (
             if (BuildConfig.DEBUG) println("******************** Start background work ********************")
             val searchSets = getTrackingSetsAsync().await()
 
-            val resultList = searchSets?.map {
+            searchSets?.forEach {
                 val params = it.toSearchSet()
-                performPayload(params)
-            }
-            resultList?.forEach { res ->
-                when (res) {
-                    is WorkerResult.Error -> {
-                        composite.dispose()
-                        composite.clear()
-                        Result.failure()
-                        if (BuildConfig.DEBUG) println("********************** Background work failed *****************************")
-                    }
-                    is WorkerResult.Success -> {
-                        function?.invoke(context, res.deals)
+                val subscribe = net.getTradingScreen(params).subscribe({ list ->
+                    if (list.isNotEmpty()) {
+                        function?.invoke(context, list)
                         composite.dispose()
                         composite.clear()
                         Result.success()
                         if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
                     }
-                }
+                }, { t ->
+                    if (BuildConfig.DEBUG) t.printStackTrace()
+                    composite.dispose()
+                    composite.clear()
+                    Result.failure()
+                    if (BuildConfig.DEBUG) println("********************** Background work failed *****************************")
+                })
+                subscribe?.let { sub -> composite.add(sub) }
             }
             Result.success()
         }
@@ -94,28 +91,6 @@ class AppWorker (
             db.getTrackedSets(target = Target.Tracking, isTracked = 1)
         }
     }
-
-    private fun performPayload(set: SearchSet) : WorkerResult
-    {
-        var result: WorkerResult = WorkerResult.Error(Throwable("Unknown error"))
-
-        val subscribe = net.getTradingScreen(set).subscribe({ list: ArrayList<Deal>? ->
-            if (!list.isNullOrEmpty()) {
-                result = WorkerResult.Success(list)
-            }
-        }, { e ->
-            result = WorkerResult.Error(e)
-        })
-        subscribe?.let { composite.add(it) }
-
-        return result
-    }
-
-    sealed class WorkerResult {
-        data class Success(val deals: ArrayList<Deal>): WorkerResult()
-        data class Error(val throwable: Throwable): WorkerResult()
-    }
-
 
 }
 
