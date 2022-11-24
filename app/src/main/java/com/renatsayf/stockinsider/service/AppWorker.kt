@@ -9,7 +9,6 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
@@ -31,14 +30,14 @@ class AppWorker (
     private var db: AppDao
     private var net: INetRepository
 
-    private var function: ((Context, ArrayList<Deal>) -> Unit)? = ServiceNotification.notify
+    private var function: ((Context, Int, RoomSearchSet) -> Unit)? = ServiceNotification.notify
 
     init {
         db = RoomDataBaseModule.provideRoomDataBase(context)
         net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
-    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
+    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, Int, RoomSearchSet) -> Unit)? = null) {
         this.db = db
         this.net = networkRepository
         this.function = function
@@ -51,20 +50,24 @@ class AppWorker (
             if (BuildConfig.DEBUG) println("******************** Start background work ********************")
             val searchSets = getTrackingSetsAsync().await()
 
-            searchSets?.forEach {
-                val params = it.toSearchSet()
+            searchSets?.forEachIndexed { index, set ->
+                val params = set.toSearchSet()
                 val subscribe = net.getTradingScreen(params).subscribe({ list ->
                     if (list.isNotEmpty()) {
-                        function?.invoke(context, list)
-                        composite.dispose()
-                        composite.clear()
+                        function?.invoke(context, list.size, set)
+                        if (index == searchSets.size - 1) {
+                            composite.dispose()
+                            composite.clear()
+                        }
                         Result.success()
                         if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
                     }
                 }, { t ->
                     if (BuildConfig.DEBUG) t.printStackTrace()
-                    composite.dispose()
-                    composite.clear()
+                    if (index == searchSets.size - 1) {
+                        composite.dispose()
+                        composite.clear()
+                    }
                     Result.failure()
                     if (BuildConfig.DEBUG) println("********************** Background work failed *****************************")
                 })

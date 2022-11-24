@@ -1,19 +1,13 @@
 package com.renatsayf.stockinsider.ui.result
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.activity.addCallback
-import androidx.core.content.edit
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -21,31 +15,30 @@ import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
-import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.utils.getSerializableCompat
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
 
 
 @AndroidEntryPoint
 class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
     companion object
     {
-        val TAG = this::class.java.simpleName.toString().plus("_tag")
-        val ARG_SEARCH_SET = this::class.java.simpleName.plus(".search_set_tag")
-        val ARG_TITLE = this::class.java.simpleName.toString().plus("_arg_title")
+        val TAG = "${this::class.java.simpleName}.TAG"
+        val ARG_SEARCH_SET = "${this::class.java.simpleName}.ARG_SEARCH_SET"
+        val ARG_TITLE = "${this::class.java.simpleName}.ARG_TITLE"
     }
 
     private lateinit var binding: FragmentResultBinding
-    private lateinit var resultVM : ResultViewModel
-    private lateinit var mainViewModel : MainViewModel
-    private lateinit var roomSearchSet: RoomSearchSet
+    private val resultVM : ResultViewModel by viewModels()
+    private val mainViewModel : MainViewModel by viewModels()
+    private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this@ResultFragment)
@@ -55,24 +48,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(false)
-
-        mainViewModel = ViewModelProvider(this)[MainViewModel::class.java]
-        resultVM = ViewModelProvider(this)[ResultViewModel::class.java]
-
-        if (savedInstanceState == null)
-        {
-            val title = arguments?.getString(ARG_TITLE)
-            (activity as MainActivity).supportActionBar?.title = title
-            roomSearchSet = arguments?.getSerializable(ARG_SEARCH_SET) as RoomSearchSet
-
-            roomSearchSet.let {
-                resultVM.getDealList(it.toSearchSet())
-            }
-        }
-
-        requireActivity().onBackPressedDispatcher.addCallback(this){
-            (activity as MainActivity).navController.popBackStack()
-        }
     }
 
     override fun onCreateView(inflater: LayoutInflater,
@@ -87,6 +62,21 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentResultBinding.bind(view)
+
+        if (savedInstanceState == null)
+        {
+            val title = arguments?.getString(ARG_TITLE)
+            (requireActivity() as MainActivity).supportActionBar?.title = title
+
+            val notificationId = arguments?.getInt(ServiceNotification.ARG_ID)
+            notificationId?.let { id ->
+                ServiceNotification.cancelNotifications(requireContext(), id)
+            }
+            roomSearchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
+            roomSearchSet?.let {
+                resultVM.getDealList(it.toSearchSet())
+            }
+        }
 
         binding.tradeListRV.apply {
             adapter = dealsAdapter.apply {
@@ -170,7 +160,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         resultVM.setToolBarTitle(title)
 
         binding.noResult.backButton.setOnClickListener {
-            activity?.onBackPressed()
+            findNavController().popBackStack()
         }
 
 
@@ -190,10 +180,20 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         }
 
         binding.btnAddToTracking.setOnClickListener {
-            val name = roomSearchSet.generateQueryName()
-            SaveSearchDialog.getInstance(name, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+            val name = roomSearchSet?.generateQueryName()
+            name?.let { n ->
+                SaveSearchDialog.getInstance(n, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+            }
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+            findNavController().popBackStack()
+        }
     }
 
     override fun onDestroy()
@@ -218,19 +218,22 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         viewLifecycleOwner.lifecycleScope.launchWhenResumed {
 
-            roomSearchSet.apply {
+            roomSearchSet?.apply {
                 queryName = searchName
                 isTracked = true
                 target = Target.Tracking
                 filingPeriod = 1
                 tradePeriod = 3
             }
-            mainViewModel.saveSearchSet(roomSearchSet).observe(viewLifecycleOwner) {
-                if (it > 0) {
-                    showSnackBar(getString(R.string.text_search_param_is_saved))
+            roomSearchSet?.let {
+                mainViewModel.saveSearchSet(it).observe(viewLifecycleOwner) {
+                    if (it > 0) {
+                        showSnackBar(getString(R.string.text_search_param_is_saved))
+                    }
+                    else showSnackBar("Saving error...")
                 }
-                else showSnackBar("Saving error...")
             }
+
         }
     }
 
