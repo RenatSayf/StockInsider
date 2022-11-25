@@ -67,7 +67,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                     includedProgress.setVisible(false)
                     if (list.isNotEmpty()) {
                         noResult.root.setVisible(false)
-                        btnAddToTracking.setVisible(true)
+                        btnAddToTracking.setVisible(false)
                         resultTV.text = list.size.toString()
                         titleTView.text = title
                         insiderNameTView.text = list[0].insiderName

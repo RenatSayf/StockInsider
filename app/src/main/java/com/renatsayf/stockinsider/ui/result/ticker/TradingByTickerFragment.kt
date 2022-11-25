@@ -71,7 +71,7 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
                     if (list.isNotEmpty()) {
                         noResult.noResultLayout.setVisible(false)
                         includedProgress.setVisible(false)
-                        btnAddToTracking.setVisible(true)
+                        btnAddToTracking.setVisible(false)
                         resultTV.text = list.size.toString()
                         titleTView.text = title
                         insiderNameTView.text = companyName
