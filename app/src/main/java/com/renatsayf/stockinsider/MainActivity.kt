@@ -2,8 +2,6 @@
 
 package com.renatsayf.stockinsider
 
-import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
@@ -40,13 +38,11 @@ import com.google.android.gms.ads.MobileAds
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
-import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -447,44 +443,13 @@ class MainActivity : AppCompatActivity()
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
     }
 
-    fun setAlarmSetting(alarm: Boolean)
-    {
-        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-            putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, alarm)
-            apply()
-        }.also {
-            if (!alarm)
-            {
-                val serviceIntent = Intent(this, StockInsiderService::class.java)
-                stopService(serviceIntent)
-            }
-        }
-    }
-
     fun hideKeyBoard(view: View)
     {
         val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun isServiceRunning() : Boolean
-    {
-        val activityManager = this.getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
-        @Suppress("DEPRECATION")
-        val services = activityManager.getRunningServices(Int.MAX_VALUE)
-        services.forEach {
-            when(it.service.packageName)
-            {
-                this.packageName ->
-                {
-                    return true
-                }
-            }
-        }
-        return false
-    }
-
-    //TODO INTERNET connection checking function
+    //Hint INTERNET connection checking function
     fun isNetworkConnectivity(): Boolean
     {
         val cm: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
@@ -510,21 +475,6 @@ class MainActivity : AppCompatActivity()
             sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
             startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
     }
-
-    override fun finish()
-    {
-        super.finish()
-        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(
-            AlarmPendingIntent.IS_ALARM_SETUP_KEY,
-            false)
-        if (isServiceEnabled && !isServiceRunning())
-        {
-            val serviceIntent = Intent(this, StockInsiderService::class.java)
-            startService(serviceIntent)
-        }
-    }
-
-
 
 
 }

@@ -6,27 +6,22 @@ import android.view.*
 import android.widget.AdapterView
 import androidx.activity.addCallback
 import androidx.core.widget.doOnTextChanged
-import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
-import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -85,12 +80,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
         val isAgree = requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
-
-        when ((requireActivity() as MainActivity).isServiceRunning())
-        {
-            true -> binding.alarmOffButton.visibility = View.VISIBLE
-            else -> binding.alarmOffButton.visibility = View.GONE
-        }
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -171,17 +160,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
             }
             binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
-        }
-
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner) {
-            if (!it.hasBeenHandled) {
-                if (it.getContent() == StockInsiderService.STOP_KEY) {
-                    context?.getString(R.string.text_search_is_disabled)?.let { msg ->
-                        binding.alarmOffButton.visibility = View.GONE
-                        Snackbar.make(binding.searchButton, msg, Snackbar.LENGTH_LONG).show()
-                    }
-                }
-            }
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener

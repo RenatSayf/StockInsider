@@ -3,13 +3,11 @@ package com.renatsayf.stockinsider.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.schedule.IScheduler
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -35,29 +33,7 @@ class AlarmReceiver @Inject constructor() : BroadcastReceiver()
         {
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION)
             {
-                val setName = intent.getStringExtra(Scheduler.SET_NAME)
-                when(true)
-                {
-                    true ->
-                    {
-                        CoroutineScope(Dispatchers.IO).launch {
-                            println("***************** START $setName ********************")
-                            delay(20000)
-                            withContext(Dispatchers.Main) {
-                                ServiceNotification().createNotification(
-                                    context,
-                                    null,
-                                    text = context.getString(R.string.base_notification_text)
-                                ).show()
-                            }
-                            println("******************* END $setName ********************")
-                        }
-                    }
-                    else ->
-                    {
 
-                    }
-                }
             }
         }
     }
