@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -142,7 +143,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                         putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
                         putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
                     }
-                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_trading_by_ticker, bundle)
+                    findNavController().navigate(R.id.nav_trading_by_ticker, bundle)
                 }
             }
         }
@@ -152,19 +153,12 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
         val insiderNameRefer = deal.insiderNameRefer
 
-        insiderNameRefer?.let { name ->
-            viewModel.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
-                binding.includedProgress.loadProgressBar.visibility = View.GONE
-                if (list.isNotEmpty()) {
-                    val bundle = Bundle().apply {
-                        putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
-                        putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
-                        putParcelableArrayList(InsiderTradingFragment.ARG_INSIDER_DEALS, list)
-                    }
-                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
-                }
-            }
-        }
+        findNavController().navigate(R.id.nav_insider_trading, Bundle().apply {
+            putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
+            putString(InsiderTradingFragment.ARG_INSIDER_NAME, insiderNameRefer)
+        })
+
+
     }
 
 }
