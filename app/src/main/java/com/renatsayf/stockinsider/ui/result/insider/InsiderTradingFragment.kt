@@ -7,7 +7,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
@@ -28,18 +27,16 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
         DealListAdapter(this@InsiderTradingFragment)
     }
 
-    companion object
-    {
+    companion object {
         val TAG = this::class.java.simpleName.toString()
         val ARG_TITLE = this::class.java.simpleName.toString().plus("title")
         val ARG_INSIDER_NAME = this::class.java.simpleName.toString().plus("insider_name")
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View?
-    {
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_result, container, false)
     }
 
@@ -54,7 +51,13 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             val title = arguments?.getString(ARG_TITLE)
             val insiderName = arguments?.getString(ARG_INSIDER_NAME)
 
-            alertLayout.root.setVisible(false)
+            tradeListRV.apply {
+                setHasFixedSize(true)
+                adapter = dealsAdapter.apply {
+                    showSkeleton()
+                }
+            }
+
             insiderNameLayout.setVisible(true)
             includedProgress.setVisible(true)
             noResult.root.setVisible(false)
@@ -64,6 +67,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                     includedProgress.setVisible(false)
                     if (list.isNotEmpty()) {
                         noResult.root.setVisible(false)
+                        btnAddToTracking.setVisible(true)
                         resultTV.text = list.size.toString()
                         titleTView.text = title
                         insiderNameTView.text = list[0].insiderName
@@ -71,18 +75,19 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                         dealsAdapter.apply {
                             addItems(list)
                         }
-                        binding.tradeListRV.apply {
-                            setHasFixedSize(true)
-                            layoutManager = LinearLayoutManager(requireContext())
-                            adapter = dealsAdapter
-                        }
+                    }
+                    else {
+                        insiderNameLayout.setVisible(false)
+                        includedProgress.setVisible(false)
+                        noResult.root.setVisible(true)
+                        btnAddToTracking.setVisible(false)
                     }
                 }
             } ?: run {
-                alertLayout.root.setVisible(true)
                 insiderNameLayout.setVisible(false)
                 includedProgress.setVisible(false)
                 noResult.root.setVisible(true)
+                btnAddToTracking.setVisible(false)
             }
 
             btnAddToTracking.setOnClickListener {

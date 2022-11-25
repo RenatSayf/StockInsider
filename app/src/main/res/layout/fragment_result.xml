@@ -36,12 +36,12 @@
             android:textSize="18sp"
             android:textColor="@color/colorWhite"/>
 
-        <include android:id="@+id/alertLayout"
-            layout="@layout/set_alert_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="end"
-            />
+<!--        <include android:id="@+id/alertLayout"-->
+<!--            layout="@layout/set_alert_layout"-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:layout_gravity="end"-->
+<!--            />-->
 
     </LinearLayout>
 

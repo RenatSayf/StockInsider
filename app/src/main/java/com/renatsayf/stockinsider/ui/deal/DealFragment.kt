@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
@@ -22,6 +21,7 @@ import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
+import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -133,24 +133,19 @@ class DealFragment : Fragment(R.layout.fragment_deal)
     }
 
     private fun companyNameOnClick(deal: Deal) {
-        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
-        deal.ticker?.let {t ->
-            viewModel.getTradingByTicker(t).observe(viewLifecycleOwner) { list ->
-                binding.includedProgress.loadProgressBar.visibility = View.GONE
-                if (list.isNotEmpty()) {
-                    val bundle = Bundle().apply {
-                        putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
-                        putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
-                        putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
-                    }
-                    findNavController().navigate(R.id.nav_trading_by_ticker, bundle)
-                }
-            }
+        binding.includedProgress.loadProgressBar.setVisible(true)
+        deal.ticker?.let { t ->
+
+            findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
+                putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
+                putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
+                putString(TradingByTickerFragment.ARG_TICKER, t)
+            })
         }
     }
 
     private fun transitionToInsiderDeals(deal: Deal) {
-        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
+        binding.includedProgress.loadProgressBar.setVisible(true)
         val insiderNameRefer = deal.insiderNameRefer
 
         findNavController().navigate(R.id.nav_insider_trading, Bundle().apply {

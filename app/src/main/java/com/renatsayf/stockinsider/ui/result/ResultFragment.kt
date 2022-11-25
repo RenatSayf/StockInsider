@@ -1,11 +1,12 @@
 package com.renatsayf.stockinsider.ui.result
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
@@ -16,7 +17,6 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
-import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
@@ -144,39 +144,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             }
         }
 
-
-
-        resultVM.addAlarmVisibility.observe(viewLifecycleOwner) {
-            it?.let { binding.alertLayout.addAlarmImgView.visibility = it }
-        }
-
-        resultVM.alarmOnVisibility.observe(viewLifecycleOwner) {
-            it?.let {
-                binding.alertLayout.alarmOnImgView.visibility = it
-            }
-        }
-
         val title = arguments?.getString(ARG_TITLE) ?: ""
         resultVM.setToolBarTitle(title)
 
         binding.noResult.backButton.setOnClickListener {
             findNavController().popBackStack()
-        }
-
-
-
-        StockInsiderService.serviceEvent.observe(viewLifecycleOwner) { event ->
-            if (!event.hasBeenHandled) {
-                when (event.getContent()) {
-                    StockInsiderService.STOP_KEY -> {
-                        context?.getString(R.string.text_search_is_disabled)?.let { msg ->
-                            resultVM.setAddAlarmVisibility(View.VISIBLE)
-                            resultVM.setAlarmOnVisibility(View.GONE)
-                            Snackbar.make(binding.tradeListRV, msg, Snackbar.LENGTH_LONG).show()
-                        }
-                    }
-                }
-            }
         }
 
         binding.btnAddToTracking.setOnClickListener {
@@ -202,12 +174,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding.includedProgress.visibility = View.GONE
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
-    {
-        inflater.inflate(R.menu.main, menu)
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
     override fun onRecyclerViewItemClick(deal: Deal) {
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
@@ -216,24 +182,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun saveSearchDialogOnPositiveClick(searchName: String) {
 
-        viewLifecycleOwner.lifecycleScope.launchWhenResumed {
-
-            roomSearchSet?.apply {
-                queryName = searchName
-                isTracked = true
-                target = Target.Tracking
-                filingPeriod = 1
-                tradePeriod = 3
-            }
-            roomSearchSet?.let {
-                mainViewModel.saveSearchSet(it).observe(viewLifecycleOwner) {
-                    if (it > 0) {
-                        showSnackBar(getString(R.string.text_search_param_is_saved))
-                    }
-                    else showSnackBar("Saving error...")
+        roomSearchSet?.apply {
+            queryName = searchName
+            isTracked = true
+            target = Target.Tracking
+            filingPeriod = 1
+            tradePeriod = 3
+            mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
+                if (id > 0) {
+                    showSnackBar(getString(R.string.text_search_param_is_saved))
                 }
+                else showSnackBar("Saving error...")
             }
-
         }
     }
 
