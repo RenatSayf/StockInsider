@@ -31,10 +31,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
@@ -43,6 +42,8 @@ import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
+import com.renatsayf.stockinsider.utils.doShare
+import com.renatsayf.stockinsider.utils.getInterstitialAdId
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -54,6 +55,8 @@ class MainActivity : AppCompatActivity()
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
+
+        var ad: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -61,11 +64,10 @@ class MainActivity : AppCompatActivity()
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     lateinit var drawerLayout : DrawerLayout
+
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
-
-    private lateinit var ad: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -74,9 +76,6 @@ class MainActivity : AppCompatActivity()
         setTheme(R.style.AppTheme_NoActionBar)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        MobileAds.initialize(this)
-        ad = InterstitialAd(this)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -91,8 +90,7 @@ class MainActivity : AppCompatActivity()
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_exit)
-            {
+            if (item.itemId == R.id.nav_exit) {
                 finish()
             }
             true
@@ -105,6 +103,20 @@ class MainActivity : AppCompatActivity()
 //            apply()
 //        }
         //endregion
+
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        val adUnitId = this.getInterstitialAdId()
+        InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdLoaded(p0: InterstitialAd) {
+                ad = p0
+            }
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                if (BuildConfig.DEBUG) {
+                    Exception(p0.message).printStackTrace()
+                }
+            }
+        })
 
         binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
 
@@ -162,22 +174,26 @@ class MainActivity : AppCompatActivity()
                         }
                         8 ->
                         {
-                            doShare()
+                            this@MainActivity.doShare()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         9 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            if (isNetworkConnectivity())
-                            {
-                                if (ad.isLoaded) ad.show() else finish()
-                                ad.adListener = object : AdListener(){
-                                    override fun onAdClosed() {
+                            ad?.let {
+                                it.show(this@MainActivity)
+                                it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                                    override fun onAdDismissedFullScreenContent() {
+                                        finish()
+                                    }
+                                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                        if (BuildConfig.DEBUG) {
+                                            Exception(p0.message).printStackTrace()
+                                        }
                                         finish()
                                     }
                                 }
-                            }
-                            else finish()
+                            } ?: run { finish() }
                         }
                     }
                     return false
@@ -349,20 +365,21 @@ class MainActivity : AppCompatActivity()
                         }
                         p2 == 6 && p3 == 1 ->
                         {
-                            if (isNetworkConnectivity())
-                            {
-                                if (ad.isLoaded) ad.show() else ad.loadAd(AdRequest.Builder().build())
-                                ad.adListener = object : AdListener()
-                                {
-                                    override fun onAdClosed() {
-                                        ad.loadAd(AdRequest.Builder().build())
+                            ad?.let {
+                                it.show(this@MainActivity)
+                                it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                                    override fun onAdDismissedFullScreenContent() {}
+                                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                        if (BuildConfig.DEBUG) {
+                                            Exception(p0.message).printStackTrace()
+                                        }
                                     }
                                 }
                             }
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
-                    return false
+                    return true
                 }
             })
         }
@@ -386,17 +403,6 @@ class MainActivity : AppCompatActivity()
             }
         }
 
-        ad.apply {
-            adUnitId = if (BuildConfig.DEBUG)
-            {
-                getString(R.string.test_interstitial_ads_id)
-            }
-            else
-            {
-                getString(R.string.interstitial_ad_1)
-            }
-            loadAd(AdRequest.Builder().build())
-        }
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -467,14 +473,14 @@ class MainActivity : AppCompatActivity()
         return false
     }
 
-    fun doShare()
-    {
-        val sharingIntent = Intent(Intent.ACTION_SEND)
-            sharingIntent.type = "text/plain"
-            val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
-            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
-            startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
-    }
+//    fun doShare()
+//    {
+//        val sharingIntent = Intent(Intent.ACTION_SEND)
+//            sharingIntent.type = "text/plain"
+//            val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
+//            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
+//            startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
+//    }
 
 
 }

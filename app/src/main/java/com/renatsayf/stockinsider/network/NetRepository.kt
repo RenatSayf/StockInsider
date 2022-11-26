@@ -48,11 +48,18 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.newThread())
                 .subscribe({
-                    emitter.onNext(dealList)
+                    if (!emitter.isDisposed) {
+                        emitter.onNext(dealList)
+                    }
                 }, { error: Throwable ->
-                    emitter.onError(error)
+
+                    if (!emitter.isDisposed) {
+                        emitter.onError(error)
+                    }
                 }, {
-                    emitter.onComplete()
+                    if (!emitter.isDisposed) {
+                        emitter.onComplete()
+                    }
                 })
             composite.add(subscriber)
         }
@@ -127,9 +134,13 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                    emitter.onSuccess(dealList)
+                    if (!emitter.isDisposed) {
+                        emitter.onSuccess(dealList)
+                    }
                 }, {
-                    emitter.onError(it)
+                    if (!emitter.isDisposed) {
+                        emitter.onError(it)
+                    }
                 })
             composite.add(subscribe)
         }
@@ -167,8 +178,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
-    {
+    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = api.getTradingByTicker(ticker)
@@ -178,10 +188,14 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({
-                               emitter.onSuccess(dealList)
-                           }, {
-                               emitter.onError(it)
-                           })
+                    if (!emitter.isDisposed) {
+                        emitter.onSuccess(dealList)
+                    }
+                }, {
+                    if (!emitter.isDisposed) {
+                        emitter.onError(it)
+                    }
+                })
             composite.add(subscribe)
         }
     }

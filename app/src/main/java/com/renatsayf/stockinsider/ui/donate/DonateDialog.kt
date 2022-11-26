@@ -116,7 +116,8 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
             dismiss()
         }
 
-//TODO Требуется дороботка https://developer.android.com/google/play/billing/migrate-gpblv5#initializing-billing:~:text=%2C%20billingFlowParams)-,After,-Kotlin
+//TODO Требуется дороботка, после устранения ошибки Play Console
+// https://developer.android.com/google/play/billing/migrate-gpblv5#initializing-billing:~:text=%2C%20billingFlowParams)-,After,-Kotlin
 //        binding.btnDoDonate.setOnClickListener {
 //            val selectedPrice = binding.sumSpinnerView.selectedItem.toString()
 //            if(!products.isNullOrEmpty())

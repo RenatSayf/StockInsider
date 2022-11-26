@@ -9,9 +9,8 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -37,29 +36,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
         }
     }
     private lateinit var searchName : String
-
-    private lateinit var ad: InterstitialAd
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-
-        ad = InterstitialAd(requireContext())
-
-        if (savedInstanceState == null) {
-            ad.apply {
-                adUnitId = if (BuildConfig.DEBUG)
-                {
-                    requireContext().getString(R.string.test_interstitial_ads_id)
-                }
-                else
-                {
-                    requireContext().getString(R.string.interstitial_ad_2)
-                }
-                loadAd(AdRequest.Builder().build())
-            }
-        }
-    }
 
     override fun onCreateView(
             inflater : LayoutInflater,
@@ -185,14 +161,22 @@ class MainFragment : Fragment(R.layout.fragment_home)
         requireActivity().onBackPressedDispatcher.addCallback(this){
             if ((requireActivity() as MainActivity).isNetworkConnectivity())
             {
-                if (ad.isLoaded) ad.show() else (activity as MainActivity).finish()
-                ad.adListener = object : AdListener(){
-                    override fun onAdClosed() {
-                        (activity as MainActivity).finish()
+                MainActivity.ad?.let {
+                    it.show(requireActivity())
+                    it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                        override fun onAdDismissedFullScreenContent() {
+                            requireActivity().finish()
+                        }
+                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                            if (BuildConfig.DEBUG) {
+                                Exception(p0.message).printStackTrace()
+                            }
+                            requireActivity().finish()
+                        }
                     }
-                }
+                } ?: run { requireActivity().finish() }
             }
-            else (activity as MainActivity).finish()
+            else requireActivity().finish()
         }
 
     }

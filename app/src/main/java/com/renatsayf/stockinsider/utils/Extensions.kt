@@ -12,6 +12,8 @@ import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
@@ -117,6 +119,28 @@ fun Fragment.startBackgroundWork() {
 
 fun Fragment.cancelBackgroundWork() {
     requireActivity().cancelBackgroundWork()
+}
+
+fun Activity.getInterstitialAdId(): String {
+    return if (BuildConfig.DEBUG) {
+        this.getString(R.string.test_interstitial_ads_id)
+    } else {
+        val array = this.resources.getStringArray(R.array.interstitial_ads)
+        array.random()
+    }
+}
+
+fun Fragment.getInterstitialAdId(): String {
+    return requireActivity().getInterstitialAdId()
+}
+
+fun Activity.doShare()
+{
+    val sharingIntent = Intent(Intent.ACTION_SEND)
+    sharingIntent.type = "text/plain"
+    val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
+    sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
+    startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
 }
 
 

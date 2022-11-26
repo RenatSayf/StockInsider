@@ -9,7 +9,14 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.ads.AdError
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.snackbar.Snackbar
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -21,6 +28,7 @@ import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.utils.getInterstitialAdId
 import com.renatsayf.stockinsider.utils.getSerializableCompat
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,16 +52,32 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         DealListAdapter(this@ResultFragment)
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    private var ad:InterstitialAd? = null
+    private val isAdEnabled = true
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(false)
+
+        val adRequest = AdRequest.Builder().build()
+        val adUnitId = this.getInterstitialAdId()
+        InterstitialAd.load(requireContext(), adUnitId, adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdLoaded(p0: InterstitialAd) {
+                ad = p0
+            }
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                if (BuildConfig.DEBUG) {
+                    Exception(p0.message).printStackTrace()
+                }
+            }
+        })
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
+    override fun onCreateView(
+        inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View?
-    {
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_result, container, false)
     }
 
@@ -164,7 +188,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         super.onResume()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            findNavController().popBackStack()
+            showAdOnBackPressed(isAdEnabled)
         }
     }
 
@@ -195,6 +219,26 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 else showSnackBar("Saving error...")
             }
         }
+    }
+
+    private fun showAdOnBackPressed(flag: Boolean) {
+        if (flag) {
+            ad?.let {
+                it.show(requireActivity())
+                it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                    override fun onAdDismissedFullScreenContent() {
+                        findNavController().popBackStack()
+                    }
+                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                        if (BuildConfig.DEBUG) {
+                            Exception(p0.message).printStackTrace()
+                        }
+                        findNavController().popBackStack()
+                    }
+                }
+            } ?: run { findNavController().popBackStack() }
+        }
+        else findNavController().popBackStack()
     }
 
 
