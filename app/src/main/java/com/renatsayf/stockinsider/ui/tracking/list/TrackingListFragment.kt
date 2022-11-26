@@ -154,18 +154,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
 
-        lifecycleScope.launch {
-            set.isTracked = checked
-            mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
-                if (id > 0) {
-                    when(checked) {
-                        true -> showSnackBar("Отслеживание включено")
-                        else -> {
-                            showSnackBar("Отслеживание выключено")
-                            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                                if (count == 0) {
-                                    cancelBackgroundWork()
-                                }
+        set.isTracked = checked
+        mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
+            if (id > 0) {
+                when (checked) {
+                    true -> showSnackBar("Отслеживание включено")
+                    else -> {
+                        showSnackBar("Отслеживание выключено")
+                        trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                            if (count == 0) {
+                                cancelBackgroundWork()
                             }
                         }
                     }
