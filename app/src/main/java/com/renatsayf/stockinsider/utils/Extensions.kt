@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.utils
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
@@ -13,6 +14,7 @@ import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.service.WorkTask
@@ -142,6 +144,16 @@ fun Activity.doShare()
     sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
     startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
 }
+
+val Context.appPref: SharedPreferences
+    get() {
+        return this.getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE)
+    }
+
+val Fragment.appPref: SharedPreferences
+    get() {
+        return requireContext().appPref
+    }
 
 
 

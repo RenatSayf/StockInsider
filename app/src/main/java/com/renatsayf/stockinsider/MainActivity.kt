@@ -43,9 +43,7 @@ import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.doShare
-import com.renatsayf.stockinsider.utils.getInterstitialAdId
-import com.renatsayf.stockinsider.utils.startBackgroundWork
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -99,11 +97,11 @@ class MainActivity : AppCompatActivity()
         }
 
         //region TODO перед релизом удалить или закомментировать
-//        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-//            putBoolean(KEY_NO_SHOW_AGAIN, false)
-//            //putBoolean(KEY_IS_AGREE, false)
-//            apply()
-//        }
+        appPref.edit {
+            putBoolean(KEY_NO_SHOW_AGAIN, false)
+            putBoolean(KEY_IS_AGREE, false)
+            apply()
+        }
         //endregion
 
         MobileAds.initialize(this)
@@ -148,8 +146,7 @@ class MainActivity : AppCompatActivity()
                         }
                         5 ->
                         {
-                            when (getSharedPreferences(APP_SETTINGS,
-                                Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
+                            when (appPref.getBoolean(KEY_NO_SHOW_AGAIN, false))
                             {
                                 true ->
                                 {
@@ -394,7 +391,7 @@ class MainActivity : AppCompatActivity()
                             navController.navigate(R.id.nav_strategy)
                         }
                         -3 -> {
-                            getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+                            appPref.edit {
                                 putBoolean(KEY_NO_SHOW_AGAIN, true)
                                 apply()
                             }
@@ -469,9 +466,7 @@ class MainActivity : AppCompatActivity()
                     NetworkCapabilities.TRANSPORT_WIFI))
             }
         }
-        Snackbar.make(binding.expandMenu,
-            getString(R.string.text_inet_not_connection),
-            Snackbar.LENGTH_LONG).show()
+        binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
         return false
     }
 
