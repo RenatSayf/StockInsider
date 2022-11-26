@@ -58,25 +58,26 @@ class ServiceNotification @Inject constructor() : Notification()
         }
     }
 
-    var notification: Notification? = null
+    private var notification: Notification? = null
 
     private var context: Context? = null
 
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
                            text : String,
-                           iconResource: Int = R.drawable.ic_notification_logo
+                           smallIconRes: Int = R.drawable.ic_stock_hause_cold,
+                           largeIconRes: Int = R.drawable.ic_notification_logo
                            ) : ServiceNotification
     {
         this.context = context
 
-        val bitmap = BitmapFactory.decodeResource(context.resources, iconResource)
+        val bitmap = BitmapFactory.decodeResource(context.resources, largeIconRes)
 
         notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setPriority(NotificationManager.IMPORTANCE_NONE)
             .setCategory(CATEGORY_RECOMMENDATION)
             .setLargeIcon(bitmap)
-            .setSmallIcon(iconResource)
+            .setSmallIcon(smallIconRes)
             .setColor(context.getColor(R.color.colorPrimary))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
