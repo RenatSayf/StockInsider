@@ -160,14 +160,13 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 if (id > 0) {
                     when(checked) {
                         true -> showSnackBar("Отслеживание включено")
-                        else -> showSnackBar("Отслеживание выключено")
-                    }
-                    trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                        if (count > 0) {
-                            startBackgroundWork()
-                        }
-                        else {
-                            cancelBackgroundWork()
+                        else -> {
+                            showSnackBar("Отслеживание выключено")
+                            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                                if (count == 0) {
+                                    cancelBackgroundWork()
+                                }
+                            }
                         }
                     }
                 }

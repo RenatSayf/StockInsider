@@ -42,8 +42,10 @@ import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.doShare
 import com.renatsayf.stockinsider.utils.getInterstitialAdId
+import com.renatsayf.stockinsider.utils.startBackgroundWork
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -473,14 +475,16 @@ class MainActivity : AppCompatActivity()
         return false
     }
 
-//    fun doShare()
-//    {
-//        val sharingIntent = Intent(Intent.ACTION_SEND)
-//            sharingIntent.type = "text/plain"
-//            val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
-//            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
-//            startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
-//    }
+    private val trackedVM: TrackingListViewModel by lazy {
+        ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+    override fun onDestroy() {
 
+        val count = trackedVM.trackedCount.value
+        if (count != null && count > 0) {
+            startBackgroundWork()
+        }
+        super.onDestroy()
+    }
 
 }
