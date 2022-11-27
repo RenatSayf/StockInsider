@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import androidx.activity.addCallback
+import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -21,6 +22,7 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -50,7 +52,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-        setHasOptionsMenu(true)
+        //setHasOptionsMenu(true)
 
         binding = FragmentHomeBinding.bind(view)
 
@@ -158,8 +160,8 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this){
-            if ((requireActivity() as MainActivity).isNetworkConnectivity())
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+            if (this@MainFragment.isNetworkAvailable())
             {
                 MainActivity.ad?.let {
                     it.show(requireActivity())
@@ -178,6 +180,41 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }
             else requireActivity().finish()
         }
+
+        requireActivity().addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(R.menu.main, menu)
+            }
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when(menuItem.itemId)
+                {
+                    R.id.action_default_search ->
+                    {
+                        val searchName = getString(R.string.text_default_set_name)
+                        mainVM.getSearchSetByName(searchName).observe(viewLifecycleOwner) {
+                            mainVM.setState(MainViewModel.State.Initial(it))
+                        }
+                    }
+                    R.id.action_my_search ->
+                    {
+                        mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
+                            SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
+                                override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet) {
+                                    mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
+                                }
+
+                                override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
+                                    mainVM.deleteSearchSet(roomSearchSet)
+                                }
+                            }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
+                        }
+                    }
+                }
+                return true
+            }
+
+        }, viewLifecycleOwner)
 
     }
 
@@ -213,40 +250,40 @@ class MainFragment : Fragment(R.layout.fragment_home)
         }
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
-    {
-        super.onCreateOptionsMenu(menu, inflater)
-        inflater.inflate(R.menu.main, menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean
-    {
-        when(item.itemId)
-        {
-            R.id.action_default_search ->
-            {
-                val searchName = getString(R.string.text_default_set_name)
-                mainVM.getSearchSetByName(searchName).observe(viewLifecycleOwner) {
-                    mainVM.setState(MainViewModel.State.Initial(it))
-                }
-            }
-            R.id.action_my_search ->
-            {
-                mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
-                    SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
-                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet) {
-                            mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
-                        }
-
-                        override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
-                            mainVM.deleteSearchSet(roomSearchSet)
-                        }
-                    }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
-                }
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
+//    {
+//        super.onCreateOptionsMenu(menu, inflater)
+//        inflater.inflate(R.menu.main, menu)
+//    }
+//
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean
+//    {
+//        when(item.itemId)
+//        {
+//            R.id.action_default_search ->
+//            {
+//                val searchName = getString(R.string.text_default_set_name)
+//                mainVM.getSearchSetByName(searchName).observe(viewLifecycleOwner) {
+//                    mainVM.setState(MainViewModel.State.Initial(it))
+//                }
+//            }
+//            R.id.action_my_search ->
+//            {
+//                mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
+//                    SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
+//                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet) {
+//                            mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
+//                        }
+//
+//                        override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
+//                            mainVM.deleteSearchSet(roomSearchSet)
+//                        }
+//                    }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
+//                }
+//            }
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
 
 }

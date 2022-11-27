@@ -30,6 +30,7 @@ import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.getInterstitialAdId
 import com.renatsayf.stockinsider.utils.getSerializableCompat
+import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -152,13 +153,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                 }
                             }
                             else -> {
-                                if ((activity as MainActivity).isNetworkConnectivity()) {
+                                if (this.isNetworkAvailable()) {
                                     Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
                                 } else {
                                     with(binding) {
                                         resultTV.text = 0.toString()
                                         noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
                                         noResult.noResultLayout.visibility = View.VISIBLE
+                                        showSnackBar(getString(R.string.text_inet_not_connection))
                                     }
                                 }
                             }

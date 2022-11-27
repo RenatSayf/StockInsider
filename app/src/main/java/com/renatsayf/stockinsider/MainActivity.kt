@@ -5,8 +5,6 @@ package com.renatsayf.stockinsider
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -35,7 +33,6 @@ import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -97,11 +94,11 @@ class MainActivity : AppCompatActivity()
         }
 
         //region TODO перед релизом удалить или закомментировать
-        appPref.edit {
-            putBoolean(KEY_NO_SHOW_AGAIN, false)
-            putBoolean(KEY_IS_AGREE, false)
-            apply()
-        }
+//        appPref.edit {
+//            putBoolean(KEY_NO_SHOW_AGAIN, false)
+//            putBoolean(KEY_IS_AGREE, false)
+//            apply()
+//        }
         //endregion
 
         MobileAds.initialize(this)
@@ -357,10 +354,11 @@ class MainActivity : AppCompatActivity()
                         }
                         p2 == 6 && p3 == 0 ->
                         {
-                            if (isNetworkConnectivity())
+                            if (this@MainActivity.isNetworkAvailable())
                             {
                                 DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             }
+                            else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         p2 == 6 && p3 == 1 ->
                         {
@@ -452,22 +450,6 @@ class MainActivity : AppCompatActivity()
     {
         val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow(view.windowToken, 0)
-    }
-
-    //Hint INTERNET connection checking function
-    fun isNetworkConnectivity(): Boolean
-    {
-        val cm: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = cm.activeNetwork
-        activeNetwork?.let { network ->
-            val nc = cm.getNetworkCapabilities(network)
-            nc?.let {
-                return(it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || it.hasTransport(
-                    NetworkCapabilities.TRANSPORT_WIFI))
-            }
-        }
-        binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
-        return false
     }
 
     private val trackedVM: TrackingListViewModel by lazy {

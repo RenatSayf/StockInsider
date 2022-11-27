@@ -35,7 +35,7 @@ class ServiceNotification @Inject constructor() : Notification()
             val message = "According to the ${set.queryName} search query, $count results were found \n" +
                     if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
 
-            val notificationId = System.currentTimeMillis().toInt()
+            val notificationId = 555555 + set.id.toInt()
             val pendingIntent = NavDeepLinkBuilder(context)
                 .setComponentName(MainActivity::class.java)
                 .setGraph(R.navigation.mobile_navigation)

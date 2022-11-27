@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
 import android.content.res.Resources
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -154,6 +156,40 @@ val Fragment.appPref: SharedPreferences
     get() {
         return requireContext().appPref
     }
+
+//region Hint Checking_internet_connection
+fun Context.isNetworkAvailable(): Boolean {
+    val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+    return when {
+        Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q -> {
+            val capabilities = manager.getNetworkCapabilities(manager.activeNetwork)
+            when {
+                capabilities != null -> {
+                    when {
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                        capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                        else -> capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)
+                    }
+                }
+                else -> false
+            }
+        }
+        else -> {
+            try {
+                val activeNetworkInfo = manager.activeNetworkInfo
+                activeNetworkInfo != null && activeNetworkInfo.isConnected
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                false
+            }
+        }
+    }
+}
+
+fun Fragment.isNetworkAvailable(): Boolean {
+    return requireContext().isNetworkAvailable()
+}
+//endregion Checking_internet_connection
 
 
 
