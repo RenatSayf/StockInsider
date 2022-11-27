@@ -21,6 +21,7 @@ import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
+import com.renatsayf.stockinsider.utils.getParcelableCompat
 import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -60,7 +61,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
         binding = FragmentDealBinding.bind(view)
 
-        val deal = arguments?.get(ARG_DEAL) as Deal
+        val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
 
         if (savedInstanceState == null)
         {
@@ -69,18 +70,18 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 (activity as MainActivity).supportActionBar?.title = title
             }
 
-            viewModel.setDeal(deal)
+            deal?.let { viewModel.setDeal(it) }
         }
 
         binding.chartImagView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal?.tickerRefer))
             activity?.startActivity(intent)
         }
 
-        viewModel.deal.observe(viewLifecycleOwner) { d ->
+        viewModel.deal.observe(viewLifecycleOwner) { value ->
             with(binding) {
 
-                val uri = Uri.parse(deal.tickerRefer)
+                val uri = Uri.parse(value?.tickerRefer)
                 Glide.with(this@DealFragment).load(uri)
                     .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
@@ -95,34 +96,34 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                         }
                     }).into(binding.chartImagView)
 
-                mainDealLayout.setBackgroundColor(deal.color)
+                value?.let { mainDealLayout.setBackgroundColor(it.color) }
 
-                companyNameTV.text = d.company
+                companyNameTV.text = value.company
                 companyNameTV.setOnClickListener {
-                    companyNameOnClick(deal)
+                    value?.let { d -> companyNameOnClick(d) }
                 }
-                tickerTV.text = d.ticker
+                tickerTV.text = value.ticker
                 tickerTV.setOnClickListener {
-                    companyNameOnClick(deal)
+                    value?.let { d -> companyNameOnClick(d) }
                 }
-                filingDateTV.text = d.filingDate
+                filingDateTV.text = value.filingDate
                 filingDateTV.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(value?.filingDateRefer))
                     activity?.startActivity(intent)
                 }
-                tradeDateTV.text = d.tradeDate
-                insiderNameTV.text = d.insiderName
+                tradeDateTV.text = value.tradeDate
+                insiderNameTV.text = value.insiderName
                 insiderNameTV.setOnClickListener {
-                    transitionToInsiderDeals(d)
+                    transitionToInsiderDeals(value)
                 }
 
-                insiderTitleTV.text = d.insiderTitle
-                tradeTypeTV.text = d.tradeType
-                priceTV.text = d.price
-                qtyTV.text = d.qty.toString()
-                ownedTV.text = d.owned
-                deltaOwnTV.text = d.deltaOwn
-                valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
+                insiderTitleTV.text = value.insiderTitle
+                tradeTypeTV.text = value.tradeType
+                priceTV.text = value.price
+                qtyTV.text = value.qty.toString()
+                ownedTV.text = value.owned
+                deltaOwnTV.text = value.deltaOwn
+                valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(value.volume)
             }
         }
 

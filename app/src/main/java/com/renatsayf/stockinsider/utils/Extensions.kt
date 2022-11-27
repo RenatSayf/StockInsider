@@ -104,6 +104,13 @@ inline fun <reified T : Parcelable> Intent.getParcelableArrayListCompat(key: Str
     else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
 }
 
+inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? = when {
+    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
+    else -> {
+        getParcelable(key)
+    }
+}
+
 fun Activity.startBackgroundWork() {
     val workRequest = WorkTask.createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(

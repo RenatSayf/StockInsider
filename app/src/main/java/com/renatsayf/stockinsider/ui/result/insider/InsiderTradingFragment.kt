@@ -62,32 +62,43 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             includedProgress.setVisible(true)
             noResult.root.setVisible(false)
 
-            insiderName?.let { name ->
-                dealVM.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
-                    includedProgress.setVisible(false)
-                    if (list.isNotEmpty()) {
-                        noResult.root.setVisible(false)
-                        btnAddToTracking.setVisible(false)
-                        resultTV.text = list.size.toString()
-                        titleTView.text = title
-                        insiderNameTView.text = list[0].insiderName
+            if (savedInstanceState == null && insiderName != null) {
+                dealVM.getInsiderDeals(insiderName)
+            }
 
-                        dealsAdapter.apply {
-                            addItems(list)
+            dealVM.state.observe(viewLifecycleOwner) { state ->
+                when(state) {
+                    is DealViewModel.State.OnData -> {
+                        includedProgress.setVisible(false)
+                        val list = state.data
+                        if (list.isNotEmpty()) {
+                            noResult.root.setVisible(false)
+                            btnAddToTracking.setVisible(false)
+                            resultTV.text = list.size.toString()
+                            titleTView.text = title
+                            insiderNameTView.text = list[0].insiderName
+
+                            dealsAdapter.apply {
+                                addItems(list)
+                            }
+                        }
+                        else {
+                            insiderNameLayout.setVisible(false)
+                            includedProgress.setVisible(false)
+                            noResult.root.setVisible(true)
+                            btnAddToTracking.setVisible(false)
                         }
                     }
-                    else {
+                    is DealViewModel.State.OnError -> {
                         insiderNameLayout.setVisible(false)
                         includedProgress.setVisible(false)
                         noResult.root.setVisible(true)
                         btnAddToTracking.setVisible(false)
                     }
+                    DealViewModel.State.OnLoad -> {
+                        includedProgress.setVisible(true)
+                    }
                 }
-            } ?: run {
-                insiderNameLayout.setVisible(false)
-                includedProgress.setVisible(false)
-                noResult.root.setVisible(true)
-                btnAddToTracking.setVisible(false)
             }
 
             btnAddToTracking.setOnClickListener {

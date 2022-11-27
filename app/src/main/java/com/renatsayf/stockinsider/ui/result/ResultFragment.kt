@@ -194,12 +194,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         }
     }
 
-    override fun onDestroy()
-    {
-        super.onDestroy()
-        binding.includedProgress.visibility = View.GONE
-    }
-
     override fun onRecyclerViewItemClick(deal: Deal) {
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
