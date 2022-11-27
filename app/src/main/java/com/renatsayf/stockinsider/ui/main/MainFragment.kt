@@ -211,7 +211,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         }
                     }
                 }
-                return true
+                return false
             }
 
         }, viewLifecycleOwner)
