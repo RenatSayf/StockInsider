@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity()
     }
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var navController: NavController
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     lateinit var drawerLayout : DrawerLayout
@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity()
 
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
-        val adUnitId = this.getInterstitialAdId()
+        val adUnitId = this.getInterstitialAdId(index = 0)
         InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(p0: InterstitialAd) {
                 ad = p0
@@ -452,6 +452,7 @@ class MainActivity : AppCompatActivity()
     private val trackedVM: TrackingListViewModel by lazy {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
+
     override fun onDestroy() {
 
         val count = trackedVM.trackedCount.value

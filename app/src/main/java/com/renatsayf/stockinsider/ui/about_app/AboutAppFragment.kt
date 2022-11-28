@@ -8,11 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import com.renatsayf.stockinsider.MainActivity
+import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.AboutAppFragmentBinding
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class AboutAppFragment : Fragment(R.layout.about_app_fragment)
 {
     private lateinit var binding: AboutAppFragmentBinding
@@ -57,8 +59,8 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment)
             startActivity(intent)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(this){
-            (activity as MainActivity).navController.navigate(R.id.nav_home)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+            findNavController().popBackStack()
         }
     }
 

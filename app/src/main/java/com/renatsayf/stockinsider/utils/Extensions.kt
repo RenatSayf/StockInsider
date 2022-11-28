@@ -132,17 +132,22 @@ fun Fragment.cancelBackgroundWork() {
     requireActivity().cancelBackgroundWork()
 }
 
-fun Activity.getInterstitialAdId(): String {
+fun Activity.getInterstitialAdId(index: Int = 0): String {
     return if (BuildConfig.DEBUG) {
         this.getString(R.string.test_interstitial_ads_id)
     } else {
         val array = this.resources.getStringArray(R.array.interstitial_ads)
-        array.random()
+        try {
+            array[index]
+        } catch (e: IndexOutOfBoundsException) {
+            if (BuildConfig.DEBUG) e.printStackTrace()
+            ""
+        }
     }
 }
 
-fun Fragment.getInterstitialAdId(): String {
-    return requireActivity().getInterstitialAdId()
+fun Fragment.getInterstitialAdId(index: Int = 0): String {
+    return requireActivity().getInterstitialAdId(index)
 }
 
 fun Activity.doShare()

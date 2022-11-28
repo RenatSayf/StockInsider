@@ -35,6 +35,7 @@ import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
+
 @AndroidEntryPoint
 class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
     companion object
@@ -58,10 +59,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setHasOptionsMenu(false)
 
         val adRequest = AdRequest.Builder().build()
-        val adUnitId = this.getInterstitialAdId()
+        val adUnitId = this.getInterstitialAdId(index = 1)
         InterstitialAd.load(requireContext(), adUnitId, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(p0: InterstitialAd) {
                 ad = p0
@@ -85,6 +85,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
+
+        (requireActivity() as MainActivity).supportActionBar?.hide()
 
         binding = FragmentResultBinding.bind(view)
 
@@ -192,6 +194,17 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             showAdOnBackPressed(isAdEnabled)
         }
+
+        binding.toolBar.setNavigationOnClickListener {
+            showAdOnBackPressed(isAdEnabled)
+        }
+
+    }
+
+    override fun onDestroyView() {
+
+        (requireActivity() as MainActivity).supportActionBar?.show()
+        super.onDestroyView()
     }
 
     override fun onRecyclerViewItemClick(deal: Deal) {
