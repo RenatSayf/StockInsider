@@ -1,6 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-<!--    don't translate-->
+    <!--    don't translate-->
     <string name="app_name">Stock Insider</string>
     <string name="locale_en_US">en-US</string>
     <string name="app_time_zone">America/Chicago</string>
@@ -18,28 +19,28 @@
     <string name="text_current_set_name">current_set</string>
 
 
-<!--    translation to other languages-->
-    <string name="action_settings">Settings</string>
+    <!--    translation to other languages-->
+    <string name="action_settings">Настройки</string>
     <string name="app_link">https://play.google.com/store/apps/details?id=</string>
-    <string name="menu_strategy">Trading Strategy</string>
-    <string name="menu_exit">Exit</string>
-    <string name="text_general">Company</string>
-    <string name="text_ticker">Ticker</string>
-    <string name="text_filing_date">Filling date</string>
-    <string name="text_date">Date</string>
-    <string name="text_transaction_filing">Transaction type</string>
-    <string name="text_purchase">Purchase</string>
-    <string name="text_sale">Sale</string>
-    <string name="text_traded_k">Transaction volume K$</string>
+    <string name="menu_strategy">Торговая стратегия</string>
+    <string name="menu_exit">Выход</string>
+    <string name="text_general">Компания</string>
+    <string name="text_ticker">Тикер</string>
+    <string name="text_filing_date">Дата регистрации</string>
+    <string name="text_date">Дата</string>
+    <string name="text_transaction_filing">Тип сделки</string>
+    <string name="text_purchase">Покупка</string>
+    <string name="text_sale">Продажа</string>
+    <string name="text_traded_k">Объем сделки K$</string>
     <string name="text_min">Min</string>
     <string name="text_max">Max</string>
-    <string name="text_officer">Officer</string>
-    <string name="text_director">Director</string>
-    <string name="text_10_owner">10% Owner</string>
-    <string name="text_insider_title">Insider Title</string>
-    <string name="text_group_by">Group by</string>
-    <string name="text_group_and_sort">Grouping and sorting</string>
-    <string name="text_sort_by">Sort by</string>
+    <string name="text_officer">Сотрудник</string>
+    <string name="text_director">Директор</string>
+    <string name="text_10_owner">10% Владелец</string>
+    <string name="text_insider_title">Должность инсайдера</string>
+    <string name="text_group_by">Группировка по</string>
+    <string name="text_group_and_sort">Группировка и сортировка</string>
+    <string name="text_sort_by">Сортировка по</string>
     <string name="text_trade_date">Дата сделки</string>
     <string name="text_trading_screen">Торговый экран</string>
     <string name="text_deal_value">Объем сделки $</string>
@@ -90,7 +91,7 @@
         <item>BAC</item>
         <item>CAT</item>
     </string-array>
-    
+
     <string-array name="list_for_filing_date">
         <item>За все время</item>
         <item>За последний день</item>

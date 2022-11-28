@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.strategy
 
 import android.app.AlertDialog
@@ -11,6 +13,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.renatsayf.stockinsider.MainActivity
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.AppDialogLayoutBinding
 import com.renatsayf.stockinsider.utils.Event
 
@@ -53,7 +56,7 @@ class AppDialog : DialogFragment()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
-        binding = AppDialogLayoutBinding.inflate(LayoutInflater.from(requireContext()))
+        binding = AppDialogLayoutBinding.inflate(layoutInflater)
         binding.dialogTextView.text = message
         val builder = AlertDialog.Builder(requireContext()).apply {
             setView(binding.root)
@@ -85,7 +88,9 @@ class AppDialog : DialogFragment()
                 }
             })
         }
-        return builder.create()
+        return builder.create().apply {
+            window?.setBackgroundDrawableResource(R.drawable.bg_dialog_white)
+        }
     }
 
 
