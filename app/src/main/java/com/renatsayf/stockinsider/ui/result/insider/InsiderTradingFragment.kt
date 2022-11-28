@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
@@ -29,8 +30,9 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
-        val ARG_TITLE = this::class.java.simpleName.toString().plus("title")
-        val ARG_INSIDER_NAME = this::class.java.simpleName.toString().plus("insider_name")
+        val ARG_TOOL_BAR_TITLE = "${this::class.java.simpleName}.ARG_TOOL_BAR_TITLE"
+        val ARG_TITLE = this::class.java.simpleName.toString().plus("ARG_TITLE")
+        val ARG_INSIDER_NAME = this::class.java.simpleName.toString().plus("ARG_INSIDER_NAME")
     }
 
     override fun onCreateView(
@@ -48,6 +50,12 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
 
         with(binding) {
 
+            toolBar.apply {
+                title = arguments?.getString(ARG_TOOL_BAR_TITLE)
+                setNavigationOnClickListener {
+                    findNavController().popBackStack()
+                }
+            }
             val title = arguments?.getString(ARG_TITLE)
             val insiderName = arguments?.getString(ARG_INSIDER_NAME)
 
@@ -114,6 +122,17 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             putString(DealFragment.ARG_TITLE, deal.company)
         }
         findNavController().navigate(R.id.nav_deal, bundle)
+    }
+
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+
+        (requireActivity() as MainActivity).supportActionBar?.show()
+        super.onStop()
     }
 
 }

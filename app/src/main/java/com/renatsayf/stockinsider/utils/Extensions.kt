@@ -7,10 +7,12 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
@@ -202,6 +204,23 @@ fun Fragment.isNetworkAvailable(): Boolean {
     return requireContext().isNetworkAvailable()
 }
 //endregion Checking_internet_connection
+
+fun View.setPopUpMenu(menuResource: Int): PopupMenu {
+    return PopupMenu(this.context, this).apply {
+        inflate(menuResource)
+    }
+}
+
+fun Activity.startBrowserSearch(url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    this.startActivity(intent)
+}
+
+fun Fragment.startBrowserSearch(url: String) {
+    requireActivity().startBrowserSearch(url)
+}
 
 
 

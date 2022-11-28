@@ -214,5 +214,6 @@
     <string name="text_failed_to_save">Не удалось сохранить изменения</string>
     <string name="text_show">Показать</string>
     <string name="text_deletion_error">Ошибка удаления</string>
+    <string name="text_insider_info">Сведения об инсайдере</string>
 
 </resources>

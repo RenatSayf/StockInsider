@@ -22,7 +22,9 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.utils.getParcelableCompat
+import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.startBrowserSearch
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -114,7 +116,27 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 tradeDateTV.text = value.tradeDate
                 insiderNameTV.text = value.insiderName
                 insiderNameTV.setOnClickListener {
-                    transitionToInsiderDeals(value)
+
+                    it.setPopUpMenu(R.menu.insider_deals_menu).apply {
+                        setOnMenuItemClickListener { item ->
+                            when(item.itemId) {
+                                R.id.show_deals -> {
+                                    transitionToInsiderDeals(value)
+                                    dismiss()
+                                }
+                                R.id.search_info -> {
+
+                                    @Suppress("RegExpRedundantNestedCharacterClass", "RegExpDuplicateCharacterInClass")
+                                    val name = value.insiderName?.replace(Regex("[[:punct:]]"), "")
+                                    val url = "https://www.google.com/search?q=$name"
+                                    startBrowserSearch(url)
+                                    dismiss()
+                                }
+                            }
+                            true
+                        }
+                    }.show()
+
                 }
 
                 insiderTitleTV.text = value.insiderTitle
@@ -150,11 +172,10 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         val insiderNameRefer = deal.insiderNameRefer
 
         findNavController().navigate(R.id.nav_insider_trading, Bundle().apply {
+            putString(InsiderTradingFragment.ARG_TOOL_BAR_TITLE, getString(R.string.text_insider_deals))
             putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
             putString(InsiderTradingFragment.ARG_INSIDER_NAME, insiderNameRefer)
         })
-
-
     }
 
 }
