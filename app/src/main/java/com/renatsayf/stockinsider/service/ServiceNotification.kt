@@ -5,14 +5,18 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
-import android.content.Intent
+import android.graphics.BitmapFactory
 import android.icu.util.Calendar
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
+import android.os.Bundle
 import androidx.core.app.NotificationCompat
+import androidx.navigation.NavDeepLinkBuilder
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.Utils
 import javax.inject.Inject
 
@@ -23,38 +27,57 @@ class ServiceNotification @Inject constructor() : Notification()
     {
         private val CHANNEL_ID : String = "${this::class.java.simpleName}.service_notification"
         const val NOTIFICATION_ID : Int = 15917
+        val ARG_ID = "${this::class.java.simpleName}.ARG_ID"
 
-        val notify: (Context, ArrayList<Deal>) -> Unit = { context: Context, list: ArrayList<Deal> ->
+        val notify: (Context, Int, RoomSearchSet) -> Unit = { context: Context, count: Int, set ->
 
             val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
-            val message = "The request has been performed at \n" +
-                    "$time (в.мест) \n" +
-                    "${list.size} results found"
-            val intent = Intent(context, MainActivity::class.java).apply {
-                putParcelableArrayListExtra(Deal.KEY_DEAL_LIST, list)
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            }
-            val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-            ServiceNotification().createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
+            val message = "According to the ${set.queryName} search query, $count results were found \n" +
+                    if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
+
+            val notificationId = 555555 + set.id.toInt()
+            val pendingIntent = NavDeepLinkBuilder(context)
+                .setComponentName(MainActivity::class.java)
+                .setGraph(R.navigation.mobile_navigation)
+                .setDestination(R.id.nav_result)
+                .setArguments(Bundle().apply {
+                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
+                    putInt(ARG_ID, notificationId)
+                })
+                .createPendingIntent()
+
+            ServiceNotification()
+                .createNotification(context = context, pendingIntent = pendingIntent, text = message)
+                .show(notificationId)
+        }
+
+        fun cancelNotifications(context : Context, id: Int)
+        {
+            val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.cancel(id)
         }
     }
 
-    var notification: Notification? = null
+    private var notification: Notification? = null
 
     private var context: Context? = null
 
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
                            text : String,
-                           iconResource: Int = R.drawable.ic_notification_logo
+                           smallIconRes: Int = R.drawable.ic_stock_hause_cold,
+                           largeIconRes: Int = R.drawable.ic_notification_logo
                            ) : ServiceNotification
     {
         this.context = context
 
+        val bitmap = BitmapFactory.decodeResource(context.resources, largeIconRes)
+
         notification = NotificationCompat.Builder(context, CHANNEL_ID)
             .setPriority(NotificationManager.IMPORTANCE_NONE)
             .setCategory(CATEGORY_RECOMMENDATION)
-            .setSmallIcon(iconResource)
+            .setLargeIcon(bitmap)
+            .setSmallIcon(smallIconRes)
             .setColor(context.getColor(R.color.colorPrimary))
             .setContentText(text)
             .setStyle(NotificationCompat.BigTextStyle().bigText(text))
@@ -90,12 +113,6 @@ class ServiceNotification @Inject constructor() : Notification()
                 throw Throwable(message)
             }
         }
-    }
-
-    fun cancelNotifications(context : Context)
-    {
-        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.cancelAll()
     }
 
 }

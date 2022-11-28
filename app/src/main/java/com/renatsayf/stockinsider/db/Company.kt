@@ -5,12 +5,12 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Entity(tableName = "companies")
-data class Companies(
+data class Company(
 
         @PrimaryKey
         @ColumnInfo(name = "ticker")
-        val ticker : String,
+        val ticker: String,
 
         @ColumnInfo(name = "company_name")
-        val company : String
-                    )
+        val company: String
+)

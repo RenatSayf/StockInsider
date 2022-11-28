@@ -4,19 +4,21 @@ package com.renatsayf.stockinsider.service
 
 import android.content.Context
 import androidx.work.*
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.INetworkRepository
+import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
+import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
+import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.*
 import java.util.*
-import javax.inject.Inject
 
 
-class AppWorker @Inject constructor(
+class AppWorker (
     private val context: Context,
-    parameters: WorkerParameters): Worker(context, parameters) {
+    parameters: WorkerParameters): CoroutineWorker(context, parameters) {
 
     companion object {
         val TAG = this::class.java.simpleName.plus(".Tag")
@@ -25,113 +27,73 @@ class AppWorker @Inject constructor(
 
     private val composite = CompositeDisposable()
 
-    private var db: AppDao? = null
-    private var networkRepository: INetworkRepository? = null
-    private var function: ((Context, ArrayList<Deal>) -> Unit)? = null
+    private var db: AppDao
+    private var net: INetRepository
 
-    fun injectDependencies(db: AppDao, networkRepository: INetworkRepository, function: ((Context, ArrayList<Deal>) -> Unit)? = null) {
+    private var function: ((Context, Int, RoomSearchSet) -> Unit)? = ServiceNotification.notify
+
+    init {
+        db = RoomDataBaseModule.provideRoomDataBase(context)
+        net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
+    }
+
+    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, Int, RoomSearchSet) -> Unit)? = null) {
         this.db = db
-        this.networkRepository = networkRepository
+        this.net = networkRepository
         this.function = function
     }
 
-    override fun doWork(): Result
+    override suspend fun doWork(): Result
     {
         return try
         {
-            val setName = inputData.getString(SEARCH_SET_KEY)
-            setName?.let { name ->
-                val result = performPayload(name)
-                when(result) {
-                    is WorkerResult.Success -> {
-                        function?.invoke(context, result.deals)
-                        composite.dispose()
-                        composite.clear()
+            if (BuildConfig.DEBUG) println("******************** Start background work ********************")
+            val searchSets = getTrackingSetsAsync().await()
+
+            searchSets?.forEachIndexed { index, set ->
+                val params = set.toSearchSet()
+                val subscribe = net.getTradingScreen(params).subscribe({ list ->
+                    if (list.isNotEmpty()) {
+                        function?.invoke(context, list.size, set)
+                        if (index == searchSets.size - 1) {
+                            composite.dispose()
+                            composite.clear()
+                        }
                         Result.success()
+                        if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
                     }
-                    is WorkerResult.Error -> {
+                }, { t ->
+                    if (BuildConfig.DEBUG) t.printStackTrace()
+                    if (index == searchSets.size - 1) {
                         composite.dispose()
                         composite.clear()
-                        Result.failure()
                     }
-                }
-            } ?: run {
-                composite.dispose()
-                composite.clear()
-                Result.failure()
+                    Result.failure()
+                    if (BuildConfig.DEBUG) println("********************** Background work failed *****************************")
+                })
+                subscribe?.let { sub -> composite.add(sub) }
             }
+            Result.success()
         }
         catch (e: Exception)
         {
+            if (BuildConfig.DEBUG) e.printStackTrace()
             composite.dispose()
             composite.clear()
             val message = e.message ?: "********** Unknown error **********"
             val data = Data.Builder().apply {
                 putString("error", "*********** $message *************")
             }.build()
+            if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
             Result.failure(data)
         }
     }
 
-    private fun getSearchSet(setName: String) : RoomSearchSet? = runBlocking {
-        return@runBlocking withContext(Dispatchers.Default) {
-            db?.getSetByName(setName)
+    private suspend fun getTrackingSetsAsync() : Deferred<List<RoomSearchSet>?> = coroutineScope {
+        async {
+            db.getTrackedSets(target = Target.Tracking, isTracked = 1)
         }
     }
 
-    private fun performPayload(setName: String) : WorkerResult
-    {
-        var result: WorkerResult = WorkerResult.Error(Throwable("Unknown error"))
-
-        val roomSearchSet = getSearchSet(setName)
-        val requestParams = roomSearchSet?.toSearchSet()
-
-        if (roomSearchSet != null && requestParams != null) {
-
-            val subscribe = networkRepository?.getTradingScreen(requestParams)?.subscribe({ list: ArrayList<Deal>? ->
-                if (!list.isNullOrEmpty()) {
-                    result = WorkerResult.Success(list)
-                }
-            }, { e ->
-                result = WorkerResult.Error(e)
-            })
-            subscribe?.let { composite.add(it) }
-        }
-
-        return result
-    }
-
-//    private fun onDocumentError(context: Context, throwable: Throwable)
-//    {
-//        composite.apply {
-//            dispose()
-//            clear()
-//        }
-//        throwable.printStackTrace()
-//        val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
-//        val message = "$time (в.мест) \n" +
-//                "An error occurred while executing the request:\n" +
-//                "${throwable.message}"
-//        ServiceNotification().createNotification(context = context, pendingIntent = null, text = message).show()
-//    }
-
-//    private fun onDealListReady(context: Context, dealList: ArrayList<Deal>)
-//    {
-//        val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
-//        val message = "The request has been performed at \n" +
-//                "$time (в.мест) \n" +
-//                "${dealList.size} results found"
-//        val intent = Intent(context, MainActivity::class.java).apply {
-//            putParcelableArrayListExtra(Deal.KEY_DEAL_LIST, dealList)
-//            flags = Intent.FLAG_ACTIVITY_NEW_TASK //or Intent.FLAG_ACTIVITY_CLEAR_TASK
-//        }
-//        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
-//        ServiceNotification().createNotification(context = context, pendingIntent = pendingIntent, text = message).show()
-//    }
-
-    sealed class WorkerResult {
-        data class Success(val deals: ArrayList<Deal>): WorkerResult()
-        data class Error(val throwable: Throwable): WorkerResult()
-    }
 }
 

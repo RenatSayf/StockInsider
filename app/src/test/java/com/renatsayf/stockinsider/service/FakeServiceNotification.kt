@@ -1,14 +1,14 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
-import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.db.RoomSearchSet
 
 object FakeServiceNotification {
-    val notify: (Context, ArrayList<Deal>) -> Unit = { context: Context, list: ArrayList<Deal> ->
+    val notify: (Context, Int, RoomSearchSet) -> Unit = { context: Context, count, set ->
 
         println(context.packageName)
-        if (list.isNotEmpty()) {
-            println(list[0].toString())
+        if (count > 0) {
+            println(set.toString())
         } else {
             println("********** No data *************")
         }

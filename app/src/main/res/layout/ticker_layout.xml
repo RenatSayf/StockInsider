@@ -12,6 +12,7 @@
         android:id="@+id/tickerTV"
         android:layout_width="60dp"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         tools:text="MSFT"
         />
 
@@ -19,6 +20,7 @@
         android:id="@+id/dividerTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
         android:text="-"
         android:paddingStart="10dp"
         android:paddingEnd="20dp"
@@ -26,8 +28,21 @@
 
     <TextView
         android:id="@+id/companyNameTV"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        tools:text="Microsoft Corp"/>
+
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btn_delete"
+        style="@style/Widget.AppCompat.ButtonBar.AlertDialog"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        tools:text="Microsoft Corp"/>
+        android:src="@drawable/ic_delete"
+        tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
+        android:background="@drawable/bg_ripple_round_transparent"
+        android:visibility="gone"
+        tools:visibility="visible"/>
 
 </LinearLayout>

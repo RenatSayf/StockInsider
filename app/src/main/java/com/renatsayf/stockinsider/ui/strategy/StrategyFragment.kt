@@ -9,15 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
-import com.renatsayf.stockinsider.MainActivity
+import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentStrategyBinding
-import com.renatsayf.stockinsider.models.DataTransferModel
 import dagger.hilt.android.AndroidEntryPoint
 
 
-
+@AndroidEntryPoint
 class StrategyFragment : Fragment(R.layout.fragment_strategy)
 {
     companion object
@@ -27,19 +25,6 @@ class StrategyFragment : Fragment(R.layout.fragment_strategy)
     }
 
     private lateinit var binding: FragmentStrategyBinding
-    private lateinit var strategyViewModel: StrategyViewModel
-    private lateinit var dataTransferModel: DataTransferModel
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        dataTransferModel = ViewModelProvider(activity as MainActivity)[DataTransferModel::class.java]
-        requireActivity().onBackPressedDispatcher.addCallback(this){
-            (activity as MainActivity).navController.navigate(R.id.nav_home)
-        }
-
-        strategyViewModel = ViewModelProvider(this)[StrategyViewModel::class.java]
-    }
 
     override fun onCreateView(inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,6 +50,10 @@ class StrategyFragment : Fragment(R.layout.fragment_strategy)
                 return false
             }
         })
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+            findNavController().popBackStack()
+        }
     }
 
 }

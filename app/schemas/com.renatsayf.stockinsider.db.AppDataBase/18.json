@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 18,
-    "identityHash": "c781bffebb72b13671ac33c7a4655ad5",
+    "identityHash": "4b13556d2b278e0c69c2f5d31a49951a",
     "entities": [
       {
         "tableName": "search_set",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`set_name` TEXT NOT NULL, `company_name` TEXT NOT NULL, `ticker` TEXT NOT NULL, `filing_period` INTEGER NOT NULL, `trade_period` INTEGER NOT NULL, `is_purchase` INTEGER NOT NULL DEFAULT 1, `is_sale` INTEGER NOT NULL DEFAULT 0, `trade_min` TEXT NOT NULL, `trade_max` TEXT NOT NULL, `is_officer` INTEGER NOT NULL, `is_director` INTEGER NOT NULL, `is_ten_percent` INTEGER NOT NULL, `group_by` INTEGER NOT NULL, `sort_by` INTEGER NOT NULL, `_id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL DEFAULT 0, `target` TEXT, `is_tracked` INTEGER NOT NULL DEFAULT 0, `is_default` INTEGER NOT NULL DEFAULT 0)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`set_name` TEXT NOT NULL, `company_name` TEXT NOT NULL, `ticker` TEXT NOT NULL, `filing_period` INTEGER NOT NULL, `trade_period` INTEGER NOT NULL, `is_purchase` INTEGER NOT NULL DEFAULT 1, `is_sale` INTEGER NOT NULL DEFAULT 0, `trade_min` TEXT NOT NULL, `trade_max` TEXT NOT NULL, `is_officer` INTEGER NOT NULL, `is_director` INTEGER NOT NULL, `is_ten_percent` INTEGER NOT NULL, `group_by` INTEGER NOT NULL, `sort_by` INTEGER NOT NULL, `id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL DEFAULT 0, `target` TEXT, `is_tracked` INTEGER NOT NULL DEFAULT 0, `is_default` INTEGER NOT NULL DEFAULT 0)",
         "fields": [
           {
             "fieldPath": "queryName",
@@ -96,7 +96,7 @@
           },
           {
             "fieldPath": "id",
-            "columnName": "_id",
+            "columnName": "id",
             "affinity": "INTEGER",
             "notNull": true,
             "defaultValue": "0"
@@ -123,20 +123,20 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": true,
           "columnNames": [
-            "_id"
-          ],
-          "autoGenerate": true
+            "id"
+          ]
         },
         "indices": [
           {
-            "name": "index_search_set__id",
+            "name": "index_search_set_set_name",
             "unique": false,
             "columnNames": [
-              "_id"
+              "set_name"
             ],
             "orders": [],
-            "createSql": "CREATE INDEX IF NOT EXISTS `index_search_set__id` ON `${TABLE_NAME}` (`_id`)"
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_search_set_set_name` ON `${TABLE_NAME}` (`set_name`)"
           }
         ],
         "foreignKeys": []
@@ -159,10 +159,10 @@
           }
         ],
         "primaryKey": {
+          "autoGenerate": false,
           "columnNames": [
             "ticker"
-          ],
-          "autoGenerate": false
+          ]
         },
         "indices": [],
         "foreignKeys": []
@@ -171,7 +171,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'c781bffebb72b13671ac33c7a4655ad5')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4b13556d2b278e0c69c2f5d31a49951a')"
     ]
   }
 }

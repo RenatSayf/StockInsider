@@ -1,12 +1,13 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.network.DocumAdapter
-import com.renatsayf.stockinsider.network.IApi
-import com.renatsayf.stockinsider.network.INetworkRepository
-import com.renatsayf.stockinsider.network.NetworkRepository
+import android.content.Context
+import com.localebro.okhttpprofiler.OkHttpProfilerInterceptor
+import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.network.*
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -16,16 +17,16 @@ import java.util.concurrent.TimeUnit
 
 @InstallIn(SingletonComponent::class)
 @Module
-object SearchRequestModule
+object NetRepositoryModule
 {
     @Provides
-    fun provideSearchRequest(api: IApi): INetworkRepository
+    fun provideSearchRequest(api: IApi): INetRepository
     {
-        return NetworkRepository(api)
+        return NetRepository(api)
     }
 
     @Provides
-    fun api(): IApi {
+    fun api(@ApplicationContext context: Context): IApi {
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BASIC
 
@@ -33,7 +34,11 @@ object SearchRequestModule
             .addInterceptor(interceptor)
             .connectTimeout(60, TimeUnit.SECONDS)
             .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS).build()
+            .writeTimeout(60, TimeUnit.SECONDS).apply {
+                if (BuildConfig.DEBUG) {
+                    addInterceptor(OkHttpProfilerInterceptor())
+                }
+            }.build()
 
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
@@ -41,6 +46,9 @@ object SearchRequestModule
             .baseUrl("http://openinsider.com/")
             .client(okHttpClient).build()
 
-        return retrofit.create(IApi::class.java)
+        return when(BuildConfig.DATA_SOURCE) {
+            "NETWORK" -> retrofit.create(IApi::class.java)
+            else -> MockApi(context)
+        }
     }
 }

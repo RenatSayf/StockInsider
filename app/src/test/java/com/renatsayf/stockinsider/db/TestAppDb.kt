@@ -7,7 +7,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteOpenHelper
 
-open class TestAppDb: AppDataBase() {
+abstract class TestAppDb: AppDataBase() {
 
     companion object {
 
@@ -35,13 +35,13 @@ open class TestAppDb: AppDataBase() {
         TODO("XXXXX")
     }
 
-    override fun createOpenHelper(config: DatabaseConfiguration?): SupportSQLiteOpenHelper {
-        return super.getOpenHelper()
-    }
+//    override fun createOpenHelper(config: DatabaseConfiguration?): SupportSQLiteOpenHelper {
+//        return super.getOpenHelper()
+//    }
 
-    override fun createInvalidationTracker(): InvalidationTracker {
-        return super.getInvalidationTracker()
-    }
+//    override fun createInvalidationTracker(): InvalidationTracker {
+//        return super.getInvalidationTracker()
+//    }
 
     override fun clearAllTables() {
 

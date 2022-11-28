@@ -2,13 +2,9 @@
 
 package com.renatsayf.stockinsider
 
-import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.net.ConnectivityManager
-import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
@@ -21,7 +17,6 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import android.widget.ExpandableListView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
@@ -30,24 +25,19 @@ import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.AppBarConfiguration
-import androidx.navigation.ui.navigateUp
-import androidx.navigation.ui.setupActionBarWithNavController
-import androidx.navigation.ui.setupWithNavController
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
+import androidx.navigation.ui.*
+import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
-import com.renatsayf.stockinsider.service.StockInsiderService
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
-import com.renatsayf.stockinsider.utils.AlarmPendingIntent
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -59,18 +49,19 @@ class MainActivity : AppCompatActivity()
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
+
+        var ad: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var navController: NavController
+    private lateinit var navController: NavController
     private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
-    private lateinit var drawerLayout : DrawerLayout
+    lateinit var drawerLayout : DrawerLayout
+
     private val mainVM: MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
-
-    private lateinit var ad: InterstitialAd
 
     override fun onCreate(savedInstanceState: Bundle?)
     {
@@ -79,9 +70,6 @@ class MainActivity : AppCompatActivity()
         setTheme(R.style.AppTheme_NoActionBar)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        MobileAds.initialize(this)
-        ad = InterstitialAd(this)
 
         val toolbar : Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
@@ -96,20 +84,33 @@ class MainActivity : AppCompatActivity()
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_exit)
-            {
+            if (item.itemId == R.id.nav_exit) {
                 finish()
             }
             true
         }
 
         //region TODO перед релизом удалить или закомментировать
-//        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+//        appPref.edit {
 //            putBoolean(KEY_NO_SHOW_AGAIN, false)
-//            //putBoolean(KEY_IS_AGREE, false)
+//            putBoolean(KEY_IS_AGREE, false)
 //            apply()
 //        }
         //endregion
+
+        MobileAds.initialize(this)
+        val adRequest = AdRequest.Builder().build()
+        val adUnitId = this.getInterstitialAdId(index = 0)
+        InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
+            override fun onAdLoaded(p0: InterstitialAd) {
+                ad = p0
+            }
+            override fun onAdFailedToLoad(p0: LoadAdError) {
+                if (BuildConfig.DEBUG) {
+                    Exception(p0.message).printStackTrace()
+                }
+            }
+        })
 
         binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
 
@@ -134,13 +135,12 @@ class MainActivity : AppCompatActivity()
                         }
                         4 ->
                         {
-                            navController.navigate(R.id.action_nav_home_to_trackingListFragment)
+                            navController.navigate(R.id.trackingListFragment)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         5 ->
                         {
-                            when (getSharedPreferences(APP_SETTINGS,
-                                Context.MODE_PRIVATE).getBoolean(KEY_NO_SHOW_AGAIN, false))
+                            when (appPref.getBoolean(KEY_NO_SHOW_AGAIN, false))
                             {
                                 true ->
                                 {
@@ -167,22 +167,26 @@ class MainActivity : AppCompatActivity()
                         }
                         8 ->
                         {
-                            doShare()
+                            this@MainActivity.doShare()
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         9 ->
                         {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            if (isNetworkConnectivity())
-                            {
-                                if (ad.isLoaded) ad.show() else finish()
-                                ad.adListener = object : AdListener(){
-                                    override fun onAdClosed() {
+                            ad?.let {
+                                it.show(this@MainActivity)
+                                it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                                    override fun onAdDismissedFullScreenContent() {
+                                        finish()
+                                    }
+                                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                        if (BuildConfig.DEBUG) {
+                                            Exception(p0.message).printStackTrace()
+                                        }
                                         finish()
                                     }
                                 }
-                            }
-                            else finish()
+                            } ?: run { finish() }
                         }
                     }
                     return false
@@ -200,131 +204,169 @@ class MainActivity : AppCompatActivity()
                     {
                         p2 == 1 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more1_for_3").observe(this@MainActivity, {
-                                    Bundle().apply {
-                                        putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_3))
-                                        putSerializable(ResultFragment.ARG_SEARCH_SET, it)
-                                    }.run { navController.navigate(R.id.nav_result, this) }
-                                })
+                            mainVM.getSearchSetByName("pur_more1_for_3").observe(this@MainActivity) {
+                                Bundle().apply {
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more1_for_3)
+                                    )
+                                    putSerializable(ResultFragment.ARG_SEARCH_SET, it)
+                                }.run { navController.navigate(R.id.nav_result, this) }
+                            }
                         }
                         p2 == 1 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more5_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more5_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more5_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 1 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more1_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more1_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more1_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
 
                         }
                         p2 == 1 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more5_for_3").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more5_for_3").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_3))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more5_for_3)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("purchases_more_1").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("purchases_more_1").observe(this@MainActivity) {
                                 val bundle = Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_1))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_purchases_more_1)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("purchases_more_5").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("purchases_more_5").observe(this@MainActivity) {
                                 val bundle = Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_purchases_more_5))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_purchases_more_5)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }
                                 navController.navigate(R.id.nav_result, bundle)
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sales_more_1").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sales_more_1").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_1))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sales_more_1)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 2 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sales_more_5").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sales_more_5").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sales_more_5))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sales_more_5)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 0 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more1_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more1_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more1_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more1_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 1 ->
                         {
-                            mainVM.getCurrentSearchSet("pur_more5_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("pur_more5_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_pur_more5_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_pur_more5_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 2 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more1_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more1_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more1_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more1_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 3 && p3 == 3 ->
                         {
-                            mainVM.getCurrentSearchSet("sale_more5_for_14").observe(this@MainActivity, {
+                            mainVM.getSearchSetByName("sale_more5_for_14").observe(this@MainActivity) {
                                 Bundle().apply {
-                                    putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_sale_more5_for_14))
+                                    putString(
+                                        ResultFragment.ARG_TITLE,
+                                        context.getString(R.string.text_sale_more5_for_14)
+                                    )
                                     putSerializable(ResultFragment.ARG_SEARCH_SET, it)
                                 }.run { navController.navigate(R.id.nav_result, this) }
-                            })
+                            }
                         }
                         p2 == 6 && p3 == 0 ->
                         {
-                            if (isNetworkConnectivity())
+                            if (this@MainActivity.isNetworkAvailable())
                             {
                                 DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             }
+                            else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         p2 == 6 && p3 == 1 ->
                         {
-                            if (isNetworkConnectivity())
-                            {
-                                if (ad.isLoaded) ad.show() else ad.loadAd(AdRequest.Builder().build())
-                                ad.adListener = object : AdListener()
-                                {
-                                    override fun onAdClosed() {
-                                        ad.loadAd(AdRequest.Builder().build())
+                            ad?.let {
+                                it.show(this@MainActivity)
+                                it.fullScreenContentCallback = object : FullScreenContentCallback() {
+                                    override fun onAdDismissedFullScreenContent() {}
+                                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                        if (BuildConfig.DEBUG) {
+                                            Exception(p0.message).printStackTrace()
+                                        }
                                     }
                                 }
                             }
@@ -336,19 +378,15 @@ class MainActivity : AppCompatActivity()
             })
         }
 
-        appDialogObserver.data.observe(this, { event ->
+        appDialogObserver.data.observe(this) { event ->
             event.getContent()?.let {
-                if (it.first == "show_strategy")
-                {
-                    when (it.second)
-                    {
-                        -1 ->
-                        {
+                if (it.first == "show_strategy") {
+                    when (it.second) {
+                        -1 -> {
                             navController.navigate(R.id.nav_strategy)
                         }
-                        -3 ->
-                        {
-                            getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
+                        -3 -> {
+                            appPref.edit {
                                 putBoolean(KEY_NO_SHOW_AGAIN, true)
                                 apply()
                             }
@@ -357,19 +395,8 @@ class MainActivity : AppCompatActivity()
                     }
                 }
             }
-        })
-
-        ad.apply {
-            adUnitId = if (BuildConfig.DEBUG)
-            {
-                getString(R.string.test_interstitial_ads_id)
-            }
-            else
-            {
-                getString(R.string.interstitial_ad_1)
-            }
-            loadAd(AdRequest.Builder().build())
         }
+
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -413,21 +440,7 @@ class MainActivity : AppCompatActivity()
     override fun onSupportNavigateUp() : Boolean
     {
         val navController = findNavController(R.id.nav_host_fragment)
-        return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()
-    }
-
-    fun setAlarmSetting(alarm: Boolean)
-    {
-        getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).edit {
-            putBoolean(AlarmPendingIntent.IS_ALARM_SETUP_KEY, alarm)
-            apply()
-        }.also {
-            if (!alarm)
-            {
-                val serviceIntent = Intent(this, StockInsiderService::class.java)
-                stopService(serviceIntent)
-            }
-        }
+        return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
     fun hideKeyBoard(view: View)
@@ -436,64 +449,17 @@ class MainActivity : AppCompatActivity()
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    fun isServiceRunning() : Boolean
-    {
-        val activityManager = this.getSystemService(Activity.ACTIVITY_SERVICE) as ActivityManager
-        @Suppress("DEPRECATION")
-        val services = activityManager.getRunningServices(Int.MAX_VALUE)
-        services.forEach {
-            when(it.service.packageName)
-            {
-                this.packageName ->
-                {
-                    return true
-                }
-            }
+    private val trackedVM: TrackingListViewModel by lazy {
+        ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+
+    override fun onDestroy() {
+
+        val count = trackedVM.trackedCount.value
+        if (count != null && count > 0) {
+            startBackgroundWork()
         }
-        return false
+        super.onDestroy()
     }
-
-    //TODO INTERNET connection checking function
-    fun isNetworkConnectivity(): Boolean
-    {
-        val cm: ConnectivityManager = getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
-        val activeNetwork = cm.activeNetwork
-        activeNetwork?.let { network ->
-            val nc = cm.getNetworkCapabilities(network)
-            nc?.let {
-                return(it.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) || it.hasTransport(
-                    NetworkCapabilities.TRANSPORT_WIFI))
-            }
-        }
-        Snackbar.make(binding.expandMenu,
-            getString(R.string.text_inet_not_connection),
-            Snackbar.LENGTH_LONG).show()
-        return false
-    }
-
-    fun doShare()
-    {
-        val sharingIntent = Intent(Intent.ACTION_SEND)
-            sharingIntent.type = "text/plain"
-            val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
-            sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
-            startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
-    }
-
-    override fun finish()
-    {
-        super.finish()
-        val isServiceEnabled = getSharedPreferences(APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(
-            AlarmPendingIntent.IS_ALARM_SETUP_KEY,
-            false)
-        if (isServiceEnabled && !isServiceRunning())
-        {
-            val serviceIntent = Intent(this, StockInsiderService::class.java)
-            startService(serviceIntent)
-        }
-    }
-
-
-
 
 }

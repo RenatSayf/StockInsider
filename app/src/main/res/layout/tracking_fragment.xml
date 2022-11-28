@@ -11,56 +11,79 @@
         android:id="@+id/imgBackground"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/stock_chart"
-        android:scaleType="fitXY"
         android:adjustViewBounds="true"
-        android:contentDescription="@string/app_name" />
-
-    <FrameLayout
-        android:id="@+id/toolBarView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:contentDescription="@string/app_name"
+        android:scaleType="fitXY"
+        android:src="@drawable/stock_chart"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="ImageContrastCheck" />
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
         android:background="@color/colorTransparent70"
-        >
-        <include
-            android:id="@+id/includedToolBar"
-            app:layout_constraintTop_toTopOf="parent"
-            layout="@layout/app_tool_bar_layout" />
-    </FrameLayout>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back_white"
+        app:titleTextColor="@color/colorWhite" />
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/toolBarView"
-        app:layout_constraintBottom_toBottomOf="parent"
         android:fillViewport="true"
-        tools:context=".ui.tracking.TrackingFragment"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:context=".ui.tracking.item.TrackingFragment"
         tools:ignore="SpeakableTextPresentCheck">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="0dp"
-            android:background="@color/colorTransparent70">
+            android:background="@color/colorTransparent70"
+            android:paddingBottom="16dp">
 
-            <com.renatsayf.stockinsider.ui.custom.TickersView
-                android:id="@+id/tickersView"
+            <FrameLayout
+                android:id="@+id/frame_name_view"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                app:layout_constraintTop_toTopOf="parent"
-                app:titleTextColor="@color/colorSectionHeader"
-                app:titleText="@string/text_general"
-                app:hint="Список компаний"
-                app:hintTextColor="@color/colorGray"
-                tools:contentText="AAPL MSFT"
-                app:contentTextColor="@color/colorWhite"
-                app:buttonText="Показать все"
-                app:buttonTextColor="@color/colorWhite"
+                app:layout_constraintTop_toTopOf="parent">
 
-                />
+                <include
+                    android:id="@+id/include_set_name"
+                    layout="@layout/layout_set_name" />
+
+            </FrameLayout>
+
+            <View
+                android:id="@+id/name_divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/colorSectionDivider"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/frame_name_view" />
+
+            <FrameLayout
+                android:id="@+id/frame_tickers_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/name_divider"
+                >
+                <include
+                    android:id="@+id/include_tickers_view"
+                    layout="@layout/tickers_layout"
+                    />
+            </FrameLayout>
 
             <View
                 android:id="@+id/general_date_divider"
@@ -68,15 +91,15 @@
                 android:layout_height="1dp"
                 android:background="@color/colorSectionDivider"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tickersView" />
+                app:layout_constraintTop_toBottomOf="@+id/frame_tickers_view" />
 
             <include
                 android:id="@+id/traded"
                 layout="@layout/traded_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/general_date_divider"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/general_date_divider" />
 
             <View
                 android:id="@+id/barier_bottom_traded"
@@ -91,8 +114,8 @@
                 layout="@layout/insider_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@+id/barier_bottom_traded"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/barier_bottom_traded" />
 
             <View
                 android:id="@+id/barier_bottom_insider"
@@ -113,8 +136,25 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="72dp"
-                app:layout_constraintTop_toBottomOf="@+id/sorting"
-                app:layout_constraintStart_toStartOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sorting" />
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/AppRectangularDarkButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableStart="@drawable/ic_save_white"
+                android:drawablePadding="8dp"
+                android:maxWidth="200dp"
+                android:padding="12dp"
+                android:text="@string/text_save"
+                android:textSize="16sp"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -123,7 +163,9 @@
     <FrameLayout
         android:id="@+id/fragmentContainer"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
 

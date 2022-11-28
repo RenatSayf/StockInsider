@@ -5,7 +5,8 @@
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:padding="10dp"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    tools:background="@color/colorPrimaryDark">
 
     <TextView
         android:id="@+id/section_transaction"
@@ -30,27 +31,29 @@
 
     <CheckBox
         android:id="@+id/purchaseCheckBox"
+        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:buttonTint="@color/colorWhite"
         android:checked="true"
         android:text="@string/text_purchase"
         android:textColor="@color/colorWhite"
-        android:buttonTint="@color/colorWhite"
-        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barier" />
+        app:layout_constraintTop_toBottomOf="@id/barier"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <CheckBox
         android:id="@+id/saleCheckBox"
+        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:buttonTint="@color/colorWhite"
         android:text="@string/text_sale"
         android:textColor="@color/colorWhite"
-        android:buttonTint="@color/colorWhite"
-        style="@android:style/Widget.Holo.Light.CompoundButton.CheckBox"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/barier" />
+        app:layout_constraintTop_toBottomOf="@id/barier"
+        tools:ignore="TouchTargetSizeCheck" />
 
     <TextView
         android:id="@+id/traded_title"
@@ -72,25 +75,23 @@
 
     <EditText
         android:id="@+id/traded_min_ET"
+        style="@style/appEditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="10dp"
         android:hint="@string/text_min"
-        android:autofillHints="XXXXX"
-        tools:ignore="UnusedAttribute"
         android:inputType="number"
-        style="@style/appEditTextStyle"
-        app:layout_constraintTop_toBottomOf="@+id/barier1"
-        app:layout_constraintStart_toStartOf="parent"
+        android:padding="10dp"
         app:layout_constraintEnd_toStartOf="@+id/traded_max_ET"
-        app:layout_constraintHorizontal_weight="1"/>
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/barier1"
+        tools:ignore="Autofill,TouchTargetSizeCheck,UnusedAttribute" />
 
     <EditText
         android:id="@+id/traded_max_ET"
         style="@style/appEditTextStyle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:autofillHints="XXXXX"
         android:hint="@string/text_max"
         android:inputType="number"
         android:padding="10dp"
@@ -98,6 +99,6 @@
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@id/traded_min_ET"
         app:layout_constraintTop_toBottomOf="@id/barier1"
-        tools:ignore="UnusedAttribute" />
+        tools:ignore="Autofill,TouchTargetSizeCheck,UnusedAttribute" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,7 +1,7 @@
 package com.renatsayf.stockinsider.di.modules
 
 import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.network.NetworkRepository
+import com.renatsayf.stockinsider.network.NetRepository
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.Module
 import dagger.Provides
@@ -13,8 +13,8 @@ import dagger.hilt.components.SingletonComponent
 object DataRepositoryModule
 {
     @Provides
-    fun provideDataRepository(networkRepository: NetworkRepository, db: AppDao) : DataRepositoryImpl
+    fun provideDataRepository(netRepository: NetRepository, db: AppDao) : DataRepositoryImpl
     {
-        return DataRepositoryImpl(networkRepository, db)
+        return DataRepositoryImpl(netRepository, db)
     }
 }

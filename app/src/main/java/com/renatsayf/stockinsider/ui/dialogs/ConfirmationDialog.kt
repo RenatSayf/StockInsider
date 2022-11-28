@@ -7,45 +7,40 @@ import android.os.Bundle
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
-class ConfirmationDialog constructor(var message : String = "",
-                                     private var btnOkText: String = "Ok",
-                                     var flag : String = "") : DialogFragment()
+@AndroidEntryPoint
+class ConfirmationDialog : DialogFragment()
 {
     companion object{
         val TAG = this::class.java.simpleName.plus("_confirmation_dialog")
-        val FLAG_CANCEL = this::class.java.simpleName.plus("flag_cancel")
-    }
+        private var listener: Listener? = null
+        private var title: String = ""
+        private var message: String = ""
+        private var positiveButtonText = "Ok"
 
-    private var listener: Listener? = null
-
-    fun setOnClickListener(listener: Listener)
-    {
-        this.listener = listener
-    }
-
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
-        super.onCreate(savedInstanceState)
-        if (btnOkText.isEmpty()) btnOkText = getString(R.string.text_ok)
+        fun newInstance(
+            title: String = "",
+            message: String = "",
+            positiveButtonText: String = "Ok",
+            listener: Listener
+        ): ConfirmationDialog {
+            this.title = title
+            this.message = message
+            this.positiveButtonText = positiveButtonText
+            this.listener = listener
+            return ConfirmationDialog()
+        }
     }
 
     override fun onCreateDialog(savedInstanceState : Bundle?) : Dialog
     {
         val builder = AlertDialog.Builder(activity)
-        builder.setMessage(message)
-            .setPositiveButton(btnOkText) { _: DialogInterface?, _: Int ->
-                if (flag != FLAG_CANCEL)
-                {
-                    listener?.onPositiveClick("")
-                }
-                else
-                {
-                    listener?.onPositiveClick(FLAG_CANCEL)
-                }
-
+        builder
+            .setTitle(title)
+            .setMessage(message)
+            .setPositiveButton(positiveButtonText) { _: DialogInterface?, _: Int ->
+                listener?.onPositiveClick()
             }
             .setNegativeButton(getString(R.string.text_cancel)){ _, _ ->
                 dismiss()
@@ -56,6 +51,6 @@ class ConfirmationDialog constructor(var message : String = "",
 
     interface Listener
     {
-        fun onPositiveClick(flag: String)
+        fun onPositiveClick()
     }
 }

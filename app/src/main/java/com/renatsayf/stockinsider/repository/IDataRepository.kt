@@ -1,12 +1,12 @@
 package com.renatsayf.stockinsider.repository
 
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
-import com.renatsayf.stockinsider.models.Target
+import kotlinx.coroutines.Deferred
 import java.lang.Exception
 import kotlin.jvm.Throws
 
@@ -24,22 +24,28 @@ interface IDataRepository
 
     suspend fun getSearchSetFromDbAsync(setName: String) : RoomSearchSet
 
-    suspend fun saveSearchSetAsync(set: RoomSearchSet) : Long
+    suspend fun getSearchSetByIdAsync(id: Long) : Deferred<RoomSearchSet?>
 
-    suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Int
+    suspend fun saveSearchSetAsync(set: RoomSearchSet) : Deferred<Long>
 
-    suspend fun getCompaniesFromDbAsync() : Array<Companies>?
+    suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Deferred<Int>
 
-    suspend fun getSearchSetsByTarget(target: Target) : List<RoomSearchSet>
+    suspend fun deleteSetByIdAsync(id: Long) : Deferred<Int>
 
-    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+    suspend fun getCompaniesFromDbAsync() : Array<Company>?
 
-    suspend fun getAllSimilar(pattern: String) : List<Companies>
+    suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
+
+    suspend fun getTrackedCountAsync() : Deferred<Int>
+
+    suspend fun getCompanyByTicker(list: List<String>) : List<Company>
+
+    suspend fun getAllSimilar(pattern: String) : List<Company>
 
     @Throws(Exception::class)
-    suspend fun insertCompanies(list : List<Companies>)
+    suspend fun insertCompanies(list : List<Company>)
 
-    fun updateSearchSetTicker(id: Int, value: String) : Int
+    suspend fun updateSearchSetTickerAsync(setName: String, value: String) : Deferred<Int>
 
     fun destructor()
 }

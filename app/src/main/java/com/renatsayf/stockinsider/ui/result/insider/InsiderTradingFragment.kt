@@ -5,33 +5,38 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.navigation.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.renatsayf.stockinsider.MainActivity
+import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
+import com.renatsayf.stockinsider.ui.deal.DealViewModel
+import com.renatsayf.stockinsider.utils.setVisible
+import dagger.hilt.android.AndroidEntryPoint
 
 
+@AndroidEntryPoint
 class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener {
     private lateinit var binding: FragmentResultBinding
 
-    companion object
-    {
+    private val dealVM: DealViewModel by viewModels()
+
+    private val dealsAdapter: DealListAdapter by lazy {
+        DealListAdapter(this@InsiderTradingFragment)
+    }
+
+    companion object {
         val TAG = this::class.java.simpleName.toString()
-        val ARG_INSIDER_DEALS = this::class.java.simpleName.toString().plus("deals_list")
         val ARG_TITLE = this::class.java.simpleName.toString().plus("title")
         val ARG_INSIDER_NAME = this::class.java.simpleName.toString().plus("insider_name")
     }
 
     override fun onCreateView(
-            inflater: LayoutInflater, container: ViewGroup?,
-            savedInstanceState: Bundle?
-    ): View?
-    {
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_result, container, false)
     }
 
@@ -41,30 +46,66 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
 
         binding = FragmentResultBinding.bind(view)
 
-        val dealList = arguments?.getParcelableArrayList<Deal>(ARG_INSIDER_DEALS)
-        val title = arguments?.getString(ARG_TITLE)
-        val insiderName = arguments?.getString(ARG_INSIDER_NAME)
+        with(binding) {
 
-        binding.alertLayout.root.visibility = View.GONE
-        binding.insiderNameLayout.visibility = View.VISIBLE
+            val title = arguments?.getString(ARG_TITLE)
+            val insiderName = arguments?.getString(ARG_INSIDER_NAME)
 
-        if (!dealList.isNullOrEmpty())
-        {
-            binding.noResult.root.visibility = View.GONE
-            binding.resultTV.text = dealList.size.toString()
-            binding.titleTView.text = title
-            binding.insiderNameTView.text = insiderName
-
-            val linearLayoutManager = LinearLayoutManager(activity)
-            val dealListAdapter = DealListAdapter(dealList, listener = this).apply {
-                stateRestorationPolicy = RecyclerView.Adapter.StateRestorationPolicy.PREVENT_WHEN_EMPTY
-            }
-            binding.tradeListRV.apply {
+            tradeListRV.apply {
                 setHasFixedSize(true)
-                layoutManager = linearLayoutManager
-                adapter = dealListAdapter
+                adapter = dealsAdapter.apply {
+                    showSkeleton()
+                }
+            }
+
+            insiderNameLayout.setVisible(true)
+            includedProgress.setVisible(true)
+            noResult.root.setVisible(false)
+
+            if (savedInstanceState == null && insiderName != null) {
+                dealVM.getInsiderDeals(insiderName)
+            }
+
+            dealVM.state.observe(viewLifecycleOwner) { state ->
+                when(state) {
+                    is DealViewModel.State.OnData -> {
+                        includedProgress.setVisible(false)
+                        val list = state.data
+                        if (list.isNotEmpty()) {
+                            noResult.root.setVisible(false)
+                            btnAddToTracking.setVisible(false)
+                            resultTV.text = list.size.toString()
+                            titleTView.text = title
+                            insiderNameTView.text = list[0].insiderName
+
+                            dealsAdapter.apply {
+                                addItems(list)
+                            }
+                        }
+                        else {
+                            insiderNameLayout.setVisible(false)
+                            includedProgress.setVisible(false)
+                            noResult.root.setVisible(true)
+                            btnAddToTracking.setVisible(false)
+                        }
+                    }
+                    is DealViewModel.State.OnError -> {
+                        insiderNameLayout.setVisible(false)
+                        includedProgress.setVisible(false)
+                        noResult.root.setVisible(true)
+                        btnAddToTracking.setVisible(false)
+                    }
+                    DealViewModel.State.OnLoad -> {
+                        includedProgress.setVisible(true)
+                    }
+                }
+            }
+
+            btnAddToTracking.setOnClickListener {
+
             }
         }
+
     }
 
     override fun onRecyclerViewItemClick(deal: Deal) {
@@ -72,7 +113,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             putParcelable(DealFragment.ARG_DEAL, deal)
             putString(DealFragment.ARG_TITLE, deal.company)
         }
-        (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+        findNavController().navigate(R.id.nav_deal, bundle)
     }
 
 }

@@ -26,12 +26,16 @@ class TickersView @JvmOverloads constructor(
 
     interface Listener {
         fun onShowAllClick(list: List<String>)
+        fun onContentChanged(text: String)
+        fun onContentCleared()
     }
 
     private var listener: Listener? = null
 
     init {
-        init(attrs)
+        if (this.isInEditMode) {
+            init(attrs)
+        }
     }
 
     private fun init(attrs: AttributeSet?) {
@@ -57,23 +61,22 @@ class TickersView @JvmOverloads constructor(
             setTextColor(contentColor)
             setHint(hint)
             setHintTextColor(hintColor)
+            isInEditMode
 
             doOnTextChanged { text, _, _, _ ->
-                if (text != null)
+                if (!text.isNullOrEmpty())
                 {
-                    if (text.isNotEmpty())
+                    val c = text[text.length - 1]
+                    if (c.isWhitespace())
                     {
-                        val c = text[text.length - 1]
-                        if (c.isWhitespace())
-                        {
-                            tickerText = text.toString()
-                        }
-                    }
-                    else
-                    {
-                        tickerText = ""
+                        tickerText = text.toString()
                     }
                 }
+                else
+                {
+                    tickerText = ""
+                }
+                listener?.onContentChanged(text.toString())
             }
             onItemClickListener = object : AdapterView.OnItemClickListener {
                 override fun onItemClick(p0: AdapterView<*>?, v: View?, p2: Int, p3: Long) {
@@ -83,9 +86,11 @@ class TickersView @JvmOverloads constructor(
                         val str = (tickerText.plus(ticker)).trim()
                         this@apply.setText(str)
                         this@apply.setSelection(str.length)
+                        showButtonView?.visibility = View.VISIBLE
                     }
                 }
             }
+            if (contentText != null && contentText.isNotEmpty()) showButtonView?.visibility = View.VISIBLE
         }
 
         val btnText = attrsArray.getString(R.styleable.TickersView_buttonText)
@@ -94,8 +99,10 @@ class TickersView @JvmOverloads constructor(
             text = btnText
             setTextColor(btnTextColor)
             setOnClickListener {
-                contentTextView?.let {
-                    val list = it.text.toString().split(" ")
+                contentTextView?.let { textView ->
+                    this.isEnabled = textView.text.isEmpty()
+                    val list = if (textView.text.isEmpty()) listOf()
+                    else textView.text.toString().split(" ")
                     listener?.onShowAllClick(list)
                 }
             }
@@ -105,18 +112,22 @@ class TickersView @JvmOverloads constructor(
             setOnClickListener {
                 contentTextView?.text?.clear()
                 tickerText = ""
+                listener?.onContentCleared()
             }
         }
 
         attrsArray.recycle()
     }
 
-    fun setOnShowAllClickListener(listener: Listener) {
+    fun setListeners(listener: Listener) {
         this.listener = listener
     }
 
     fun setContentText(text: String) {
         contentTextView?.setText(text)
+        if (text.isEmpty()) {
+            showButtonView?.visibility = View.INVISIBLE
+        }
     }
 
     fun <T>setAdapter(adapter: T) where T : ListAdapter?, T : Filterable? {

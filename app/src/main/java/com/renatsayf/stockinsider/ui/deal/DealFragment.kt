@@ -9,7 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
@@ -21,6 +21,8 @@ import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
+import com.renatsayf.stockinsider.utils.getParcelableCompat
+import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -59,7 +61,7 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
         binding = FragmentDealBinding.bind(view)
 
-        val deal = arguments?.get(ARG_DEAL) as Deal
+        val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
 
         if (savedInstanceState == null)
         {
@@ -68,18 +70,18 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 (activity as MainActivity).supportActionBar?.title = title
             }
 
-            viewModel.setDeal(deal)
+            deal?.let { viewModel.setDeal(it) }
         }
 
         binding.chartImagView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.tickerRefer))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal?.tickerRefer))
             activity?.startActivity(intent)
         }
 
-        viewModel.deal.observe(viewLifecycleOwner) { d ->
+        viewModel.deal.observe(viewLifecycleOwner) { value ->
             with(binding) {
 
-                val uri = Uri.parse(deal.tickerRefer)
+                val uri = Uri.parse(value?.tickerRefer)
                 Glide.with(this@DealFragment).load(uri)
                     .listener(object : RequestListener<Drawable> {
                         override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
@@ -94,34 +96,34 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                         }
                     }).into(binding.chartImagView)
 
-                mainDealLayout.setBackgroundColor(deal.color)
+                value?.let { mainDealLayout.setBackgroundColor(it.color) }
 
-                companyNameTV.text = d.company
+                companyNameTV.text = value.company
                 companyNameTV.setOnClickListener {
-                    companyNameOnClick(deal)
+                    value?.let { d -> companyNameOnClick(d) }
                 }
-                tickerTV.text = d.ticker
+                tickerTV.text = value.ticker
                 tickerTV.setOnClickListener {
-                    companyNameOnClick(deal)
+                    value?.let { d -> companyNameOnClick(d) }
                 }
-                filingDateTV.text = d.filingDate
+                filingDateTV.text = value.filingDate
                 filingDateTV.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal.filingDateRefer))
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(value?.filingDateRefer))
                     activity?.startActivity(intent)
                 }
-                tradeDateTV.text = d.tradeDate
-                insiderNameTV.text = d.insiderName
+                tradeDateTV.text = value.tradeDate
+                insiderNameTV.text = value.insiderName
                 insiderNameTV.setOnClickListener {
-                    transitionToInsiderDeals(d)
+                    transitionToInsiderDeals(value)
                 }
 
-                insiderTitleTV.text = d.insiderTitle
-                tradeTypeTV.text = d.tradeType
-                priceTV.text = d.price
-                qtyTV.text = d.qty.toString()
-                ownedTV.text = d.owned
-                deltaOwnTV.text = d.deltaOwn
-                valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(d.volume)
+                insiderTitleTV.text = value.insiderTitle
+                tradeTypeTV.text = value.tradeType
+                priceTV.text = value.price
+                qtyTV.text = value.qty.toString()
+                ownedTV.text = value.owned
+                deltaOwnTV.text = value.deltaOwn
+                valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(value.volume)
             }
         }
 
@@ -132,39 +134,27 @@ class DealFragment : Fragment(R.layout.fragment_deal)
     }
 
     private fun companyNameOnClick(deal: Deal) {
-        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
-        deal.ticker?.let {t ->
-            viewModel.getTradingByTicker(t).observe(viewLifecycleOwner) { list ->
-                binding.includedProgress.loadProgressBar.visibility = View.GONE
-                if (list.isNotEmpty()) {
-                    val bundle = Bundle().apply {
-                        putParcelableArrayList(TradingByTickerFragment.ARG_TICKER_DEALS, list)
-                        putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
-                        putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
-                    }
-                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_trading_by_ticker, bundle)
-                }
-            }
+        binding.includedProgress.loadProgressBar.setVisible(true)
+        deal.ticker?.let { t ->
+
+            findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
+                putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
+                putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
+                putString(TradingByTickerFragment.ARG_TICKER, t)
+            })
         }
     }
 
     private fun transitionToInsiderDeals(deal: Deal) {
-        binding.includedProgress.loadProgressBar.visibility = View.VISIBLE
+        binding.includedProgress.loadProgressBar.setVisible(true)
         val insiderNameRefer = deal.insiderNameRefer
 
-        insiderNameRefer?.let { name ->
-            viewModel.getInsiderDeals(name).observe(viewLifecycleOwner) { list ->
-                binding.includedProgress.loadProgressBar.visibility = View.GONE
-                if (list.isNotEmpty()) {
-                    val bundle = Bundle().apply {
-                        putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
-                        putString(InsiderTradingFragment.ARG_INSIDER_NAME, deal.insiderName)
-                        putParcelableArrayList(InsiderTradingFragment.ARG_INSIDER_DEALS, list)
-                    }
-                    (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_insider_trading, bundle)
-                }
-            }
-        }
+        findNavController().navigate(R.id.nav_insider_trading, Bundle().apply {
+            putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
+            putString(InsiderTradingFragment.ARG_INSIDER_NAME, insiderNameRefer)
+        })
+
+
     }
 
 }

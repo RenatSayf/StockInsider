@@ -1,11 +1,10 @@
-package com.renatsayf.stockinsider.ui.tracking
+package com.renatsayf.stockinsider.ui.tracking.list
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -17,7 +16,6 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
 
     sealed class State {
         data class Initial(val list: List<RoomSearchSet>): State()
-        data class Edit(val flag: Boolean): State()
     }
 
     private var _state = MutableLiveData<State>()
@@ -26,5 +24,13 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
         _state.value = state
     }
 
+    var trackedCount: MutableLiveData<Int> = MutableLiveData(-1)
+    private set
+    get() {
+        viewModelScope.launch {
+            field.value = repository.getTrackedCountAsync().await()
+        }
+        return field
+    }
 
 }

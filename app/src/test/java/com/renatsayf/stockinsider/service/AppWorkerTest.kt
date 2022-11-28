@@ -3,16 +3,18 @@ package com.renatsayf.stockinsider.service
 import android.content.Context
 import android.util.Log
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import androidx.work.*
 import androidx.work.impl.utils.SynchronousExecutor
-import androidx.work.testing.TestWorkerBuilder
+import androidx.work.testing.TestListenableWorkerBuilder
 import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.db.FakeAppDao
+import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.network.FakeNetworkRepository
+import com.renatsayf.stockinsider.network.FakeNetRepository
 import io.reactivex.Observable
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
@@ -22,12 +24,10 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
-import java.util.concurrent.Executors
 
 
 @RunWith(RobolectricTestRunner::class)
 @Config(maxSdk = 30, manifest = Config.NONE)
-//@RunWith(AndroidJUnit4::class)
 class AppWorkerTest {
 
     @get:Rule
@@ -36,14 +36,18 @@ class AppWorkerTest {
     private lateinit var context: Context
     private lateinit var config: Configuration
 
-    private lateinit var db: AppDao
+    private lateinit var dao: AppDao
+    private lateinit var db: AppDataBase
 
     @Before
     fun setUp() {
 
         context = ApplicationProvider.getApplicationContext()
 
-        db = FakeAppDao()
+        db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        dao = db.searchSetDao()
 
         config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
@@ -53,13 +57,13 @@ class AppWorkerTest {
 
     @After
     fun tearDown() {
-
+        db.close()
     }
 
     @Test
     fun workManagerEnqueueTest() {
 
-        WorkTask.createPeriodicTask("Microsoft")
+        WorkTask.createPeriodicTask(context, "Microsoft")
 
         val actualWorkRequests = WorkTask.getTaskList()
         assertTrue(actualWorkRequests.isNotEmpty())
@@ -76,7 +80,7 @@ class AppWorkerTest {
     @Test
     fun doWorkTest() {
 
-        val network = FakeNetworkRepository()
+        val network = FakeNetRepository()
         val deal = Deal("18.12.2022").apply {
             ticker = "MSFT"
         }
@@ -96,22 +100,24 @@ class AppWorkerTest {
             isTenPercent = true,
             groupBy = 0,
             sortBy = 0
-        )
+        ).apply {
+            target = com.renatsayf.stockinsider.models.Target.Tracking
+            isTracked = true
+        }
 
-        (db as FakeAppDao).setExpectedResult("Microsoft", roomSearchSet)
+        val worker = TestListenableWorkerBuilder<AppWorker>(context).build()
 
-        val worker = TestWorkerBuilder<AppWorker>(
-            context,
-            Executors.newSingleThreadExecutor(),
-            inputData = Data(workDataOf(AppWorker.SEARCH_SET_KEY to "Microsoft"))
-        ).build()
+        worker.injectDependencies(dao, network, FakeServiceNotification.notify)
 
-        worker.injectDependencies(db, network, FakeServiceNotification.notify)
+        runBlocking{
 
-        val result = worker.doWork()
+            dao.insertOrUpdateSearchSet(roomSearchSet)
 
-        assertTrue(result is ListenableWorker.Result.Success)
-
+            val result = worker.doWork()
+            val result2 = worker.doWork()
+            assertTrue(result is ListenableWorker.Result.Success)
+            assertTrue(result2 is ListenableWorker.Result.Success)
+        }
     }
 }
 

@@ -4,71 +4,79 @@ import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.Single
 import io.reactivex.disposables.CompositeDisposable
 import javax.inject.Inject
 
 
 @HiltViewModel
 class DealViewModel @Inject constructor(
-        private val repositoryImpl: DataRepositoryImpl
-) : ViewModel()
-{
+    private val repositoryImpl: DataRepositoryImpl
+) : ViewModel() {
+
+    sealed class State {
+        object OnLoad : State()
+        data class OnData(val data: ArrayList<Deal>) : State()
+        data class OnError(val error: String) : State()
+    }
+
+    private var _state = MutableLiveData<State>()
+    var state: LiveData<State> = _state
+
+    fun setState(state: State) {
+        _state.value = state
+    }
+
     private var composite = CompositeDisposable()
 
     fun getInsiderDeals(insider: String): LiveData<ArrayList<Deal>> {
+        _state.value = State.OnLoad
         val deals = MutableLiveData<ArrayList<Deal>>()
         composite.add(repositoryImpl.getInsiderTradingFromNetAsync(insider)
-                .subscribe({ list ->
-                   deals.value = list
-                }, { t ->
-                    t.printStackTrace()
-                    deals.value = arrayListOf()
-                }))
+            .subscribe({ list ->
+                deals.value = list
+                _state.value = State.OnData(list)
+            }, { t ->
+                if (BuildConfig.DEBUG) t.printStackTrace()
+                deals.value = arrayListOf()
+                _state.value = State.OnError(t.message ?: "Unknown error")
+            })
+        )
         return deals
-    }
-
-    private var _ticker = MutableLiveData<String>().apply {
-        value = ticker?.value
-    }
-    var ticker : LiveData<String> = _ticker
-    fun setTicker(value: String)
-    {
-        _ticker.value = value
     }
 
     private var _deal = MutableLiveData<Deal>()
     var deal: LiveData<Deal> = _deal
-    fun setDeal(value: Deal)
-    {
+    fun setDeal(value: Deal) {
         _deal.value = value
     }
 
     private var _chart = MutableLiveData<Drawable>()
     var chart: LiveData<Drawable> = _chart
-    fun setChart(chart: Drawable)
-    {
+    fun setChart(chart: Drawable) {
         _chart.value = chart
     }
 
-    fun getTradingByTicker(ticker: String) : LiveData<ArrayList<Deal>>
-    {
+    fun getTradingByTicker(ticker: String): LiveData<ArrayList<Deal>> {
+        _state.value = State.OnLoad
         val deals = MutableLiveData<ArrayList<Deal>>()
         composite.add(repositoryImpl.getTradingByTickerAsync(ticker)
-                .subscribe({ list ->
-                    deals.value = list
-                }, { t ->
-                    t.printStackTrace()
-                    deals.value = arrayListOf()
-                }))
+            .subscribe({ list ->
+                deals.value = list
+                _state.value = State.OnData(list)
+            }, { t ->
+                if (BuildConfig.DEBUG) t.printStackTrace()
+                deals.value = arrayListOf()
+                _state.value = State.OnError(t.message ?: "Unknown error")
+            })
+        )
         return deals
     }
 
-    override fun onCleared()
-    {
+    override fun onCleared() {
         super.onCleared()
         composite.apply {
             dispose()

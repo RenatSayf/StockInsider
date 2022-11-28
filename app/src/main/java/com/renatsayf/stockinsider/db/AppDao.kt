@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.db
 
 import androidx.room.*
-import com.renatsayf.stockinsider.models.Target
 
 @Dao
 interface AppDao
@@ -15,34 +14,47 @@ interface AppDao
     @Query("SELECT * FROM search_set WHERE set_name = :setName")
     suspend fun getSetByName(setName : String) : RoomSearchSet
 
+    @Query ("SELECT * FROM search_set WHERE id = :id")
+    suspend fun getSetById(id: Long) : RoomSearchSet?
+
     @Query("DELETE FROM search_set")
     suspend fun deleteAll() : Int
 
     @Delete(entity = RoomSearchSet::class)
     suspend fun deleteSet(set : RoomSearchSet) : Int
 
+    @Query("DELETE FROM search_set WHERE id = :id")
+    suspend fun deleteSetById(id: Long) : Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Companies::class)
-    suspend fun insertCompanies(list : List<Companies>)
+    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Company::class)
+    suspend fun insertCompanies(list : List<Company>)
 
     @Query("SELECT ticker FROM companies")
     suspend fun getAllTickers() : List<String>
 
     @Query("SELECT * FROM companies")
-    suspend fun getAllCompanies() : List<Companies>?
+    suspend fun getAllCompanies() : List<Company>?
 
-    @Query("SELECT * FROM search_set WHERE target = :target")
+    @Query("SELECT DISTINCT * FROM search_set WHERE target = :target")
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
+    @Query("SELECT DISTINCT * FROM search_set WHERE target = :target AND is_tracked = :isTracked")
+    suspend fun getTrackedSets(target: String, isTracked: Int) : List<RoomSearchSet>
+
+    @Query("SELECT count() FROM search_set WHERE target = 'tracking' AND is_tracked = 1")
+    suspend fun getTrackedCount() : Int
+
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")
-    suspend fun getCompanyByTicker(list: List<String>) : List<Companies>
+    suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 
     @Query("SELECT DISTINCT * FROM companies WHERE company_name like '%' || :pattern || '%' OR ticker like '%' || :pattern || '%'")
-    suspend fun getAllSimilar(pattern: String) : List<Companies>
+    suspend fun getAllSimilar(pattern: String) : List<Company>
 
-    @Query("UPDATE search_set SET ticker = :value WHERE _id = :id")
-    fun updateSearchSetTicker(id: Int, value: String) : Int
+    @Query("UPDATE search_set SET ticker = :value WHERE set_name = :setName")
+    suspend fun updateSearchSetTicker(setName: String, value: String) : Int
+
 
 }

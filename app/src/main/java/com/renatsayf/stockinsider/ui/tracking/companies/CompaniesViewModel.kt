@@ -4,14 +4,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.renatsayf.stockinsider.db.AppDao
-import com.renatsayf.stockinsider.db.Companies
+import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import java.util.regex.Pattern
 import javax.inject.Inject
 
 
@@ -21,50 +17,44 @@ class CompaniesViewModel @Inject constructor(
 ): ViewModel() {
 
     sealed class State {
-        object Initial: State()
+        data class Initial(val ticker: String): State()
+        data class Current(val companies: List<Company>): State()
+        data class OnUpdate(val companies: List<Company>): State()
         object OnAdding: State()
         data class Error(val message: String): State()
     }
 
-    private var _state = MutableLiveData<State>(State.Initial)
+    private var _state = MutableLiveData<State>(State.Initial(""))
     val state: LiveData<State> = _state
 
     fun setState(state: State) {
         _state.value = state
     }
 
-    fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Companies>?> {
-        val companies = MutableLiveData<List<Companies>?>(null)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                val result = repository.getCompanyByTicker(tickers)
-                companies.value = result
-            }
+    fun getCompaniesByTicker(tickers: List<String>) : LiveData<List<Company>?> {
+        val companies = MutableLiveData<List<Company>?>(null)
+        viewModelScope.launch {
+            companies.value = repository.getCompanyByTicker(tickers)
         }
         return companies
     }
 
-    fun getAllSimilarCompanies(pattern: String): LiveData<List<Companies>?> {
-        val companies = MutableLiveData<List<Companies>?>(null)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                val result = repository.getAllSimilar(pattern)
-                companies.value = result
-            }
+    fun getAllSimilarCompanies(pattern: String): LiveData<List<Company>?> {
+        val companies = MutableLiveData<List<Company>?>(null)
+        viewModelScope.launch {
+            val result = repository.getAllSimilar(pattern)
+            companies.value = result
         }
         return companies
     }
 
-    fun addCompanyToSearch(id: Int, value: String): LiveData<Int> {
+    fun addCompanyToSearch(setName: String, value: String): LiveData<Int> {
         val result = MutableLiveData(-1)
-        viewModelScope.launch(Dispatchers.IO) {
-            withContext(Dispatchers.Main) {
-                try {
-                    result.value = repository.updateSearchSetTicker(id, value)
-                    _state.value = State.Initial
-                } catch (e: Exception) {
-                    result.value = -1
-                }
+        viewModelScope.launch {
+            try {
+                result.value = repository.updateSearchSetTickerAsync(setName, value).await()
+            } catch (e: Exception) {
+                result.value = -1
             }
         }
         return result

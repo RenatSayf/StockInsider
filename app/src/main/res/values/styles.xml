@@ -37,7 +37,7 @@
     </style>
     
     <style name="AppRectangularDarkButton" parent="@style/Widget.AppCompat.ImageButton">
-        <item name="android:backgroundTint">@color/colorAccent</item>
+        <item name="android:background">@drawable/bg_ripple_default</item>
         <item name="android:textColor">@color/colorWhite</item>
         <item name="android:textStyle">bold</item>
     </style>
@@ -48,5 +48,15 @@
         <item name="android:paddingTop">10dp</item>
         <item name="android:paddingBottom">10dp</item>
     </style>
+
+    <style name="AppDialogStyle" parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@android:color/transparent</item>
+
+    </style>
+
+    <style name="AppFloatingButton" parent="@style/Widget.Design.FloatingActionButton">
+        <item name="android:backgroundTint">@color/colorPrimary</item>
+    </style>
+
 
 </resources>

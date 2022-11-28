@@ -7,20 +7,27 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.schedule.IScheduler
-import com.renatsayf.stockinsider.schedule.Scheduler
-import dagger.hilt.android.AndroidEntryPoint
-import javax.inject.Inject
 
 
+class TrackingAdapter(
+    //private var list: MutableList<RoomSearchSet> = mutableListOf(),
+    private val listener: Listener? = null
+): ListAdapter<RoomSearchSet, TrackingAdapter.ViewHolder>(object : DiffUtil.ItemCallback<RoomSearchSet>() {
+    override fun areItemsTheSame(oldItem: RoomSearchSet, newItem: RoomSearchSet): Boolean {
+        return oldItem == newItem
+    }
 
-class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableListOf(),
-                      private val scheduler: IScheduler,
-                        private val listener: Listener? = null): RecyclerView.Adapter<TrackingAdapter.ViewHolder>() {
+    override fun areContentsTheSame(oldItem: RoomSearchSet, newItem: RoomSearchSet): Boolean {
+        return oldItem.id == newItem.id
+    }
+
+}) {
 
     interface Listener {
         fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int)
@@ -35,23 +42,23 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val sets = list[position]
-        holder.bind(sets, position)
+        val set = currentList[position]
+        holder.bind(set, position)
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return currentList.size
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    fun setItems(list: MutableList<RoomSearchSet>) {
-        this.list = list
-        notifyDataSetChanged()
-    }
-
-    fun modifyItem(set: RoomSearchSet, position: Int) {
-        list[position] = set
-    }
+//    @SuppressLint("NotifyDataSetChanged")
+//    fun setItems(list: MutableList<RoomSearchSet>) {
+//        this.list = list
+//        notifyDataSetChanged()
+//    }
+//
+//    fun modifyItem(set: RoomSearchSet, position: Int) {
+//        list[position] = set
+//    }
 
     inner class ViewHolder(private val binding: TrackingItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
@@ -62,22 +69,24 @@ class TrackingAdapter(private var list: MutableList<RoomSearchSet> = mutableList
 
                 trackerName.text = set.queryName
                 val dealType = if (set.isPurchase && !set.isSale) {
-                    root.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.buy1000000))
                     context.getString(R.string.text_purchase)
                 }
                 else if (set.isSale && !set.isPurchase) {
-                    root.setBackgroundColor(context.getColor(R.color.sale1000000))
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.sale1000000))
                     context.getString(R.string.text_sale)
                 }
-                else "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
+                else {
+                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.colorWhite))
+                    "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
+                }
 
                 binding.dealType.text = dealType
 
                 if (set.isDefault) editButton.visibility = View.GONE
                 if (set.isDefault) deleteButton.visibility = View.GONE
 
-                val pendingIntent = scheduler.isAlarmSetup(set.queryName, isRepeat = true)
-                trackingSwitcher.isChecked = (pendingIntent != null)
+                trackingSwitcher.isChecked = set.isTracked
 
                 editButton.setOnClickListener {
                     listener?.onTrackingAdapterEditButtonClick(set, position)

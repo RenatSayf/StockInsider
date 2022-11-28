@@ -11,4 +11,5 @@ is_officer,
 is_director, 
 is_ten_percent, 
 group_by, 
-sort_by) VALUES ("sale_more5_for_14", "", "", 5, 5, 0, 1, "4999", "", 1, 1, 1, 0, 3)
+sort_by,
+target) VALUES ("Test entry2", "", "", 5, 5, 0, 1, "9999", "", 1, 1, 1, 0, 3, "tracking")
