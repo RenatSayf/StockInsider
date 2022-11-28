@@ -215,5 +215,7 @@
     <string name="text_show">Показать</string>
     <string name="text_deletion_error">Ошибка удаления</string>
     <string name="text_insider_info">Сведения об инсайдере</string>
+    <string name="text_company_info">Сведения о компании</string>
+    <string name="text_company_deals">Сделки по компании</string>
 
 </resources>

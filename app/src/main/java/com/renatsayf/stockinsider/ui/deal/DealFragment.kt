@@ -102,12 +102,32 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                 companyNameTV.text = value.company
                 companyNameTV.setOnClickListener {
-                    value?.let { d -> companyNameOnClick(d) }
+                    it.setPopUpMenu(R.menu.company_deals_menu).apply {
+                        setOnMenuItemClickListener { item ->
+                            when(item.itemId) {
+                                R.id.show_deals -> {
+                                    value?.let { d -> transitionToCompanyDeals(d) }
+                                    dismiss()
+                                }
+                                R.id.search_info -> {
+                                    @Suppress("RegExpRedundantNestedCharacterClass", "RegExpDuplicateCharacterInClass")
+                                    val name = value.company?.replace(Regex("[[:punct:]]"), "")
+                                    val url = "https://www.google.com/search?q=$name"
+                                    startBrowserSearch(url)
+                                    dismiss()
+                                }
+                            }
+                            true
+                        }
+                    }.show()
                 }
                 tickerTV.text = value.ticker
                 tickerTV.setOnClickListener {
-                    value?.let { d -> companyNameOnClick(d) }
+                    value?.let { d -> transitionToCompanyDeals(d) }
                 }
+
+
+
                 filingDateTV.text = value.filingDate
                 filingDateTV.setOnClickListener {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(value?.filingDateRefer))
@@ -155,11 +175,12 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
     }
 
-    private fun companyNameOnClick(deal: Deal) {
+    private fun transitionToCompanyDeals(deal: Deal) {
         binding.includedProgress.loadProgressBar.setVisible(true)
         deal.ticker?.let { t ->
 
             findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
+                putString(TradingByTickerFragment.ARG_TOOL_BAR_TITLE, getString(R.string.text_trading_by_company))
                 putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
                 putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
                 putString(TradingByTickerFragment.ARG_TICKER, t)

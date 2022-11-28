@@ -30,9 +30,10 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
-        val ARG_TICKER = this::class.java.simpleName.toString().plus("deals_list")
-        val ARG_TITLE = this::class.java.simpleName.toString().plus("title")
-        val ARG_COMPANY_NAME = this::class.java.simpleName.toString().plus("company_name")
+        val ARG_TOOL_BAR_TITLE = "${this::class.java.simpleName}.ARG_TOOL_BAR_TITLE"
+        val ARG_TICKER = this::class.java.simpleName.toString().plus(".ARG_TICKER")
+        val ARG_TITLE = this::class.java.simpleName.toString().plus(".ARG_TITLE")
+        val ARG_COMPANY_NAME = this::class.java.simpleName.toString().plus(".ARG_COMPANY_NAME")
     }
 
     override fun onCreateView(
@@ -59,6 +60,12 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
                 }
             }
 
+            toolBar.apply {
+                title = arguments?.getString(ARG_TOOL_BAR_TITLE)
+                setNavigationOnClickListener {
+                    findNavController().popBackStack()
+                }
+            }
             val title = arguments?.getString(ARG_TITLE)
             val companyName = arguments?.getString(ARG_COMPANY_NAME)
             val ticker = arguments?.getString(ARG_TICKER)
@@ -119,5 +126,15 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
         (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
     }
 
+    override fun onStart() {
+        super.onStart()
+        (requireActivity() as MainActivity).supportActionBar?.hide()
+    }
+
+    override fun onStop() {
+
+        (requireActivity() as MainActivity).supportActionBar?.show()
+        super.onStop()
+    }
 
 }
