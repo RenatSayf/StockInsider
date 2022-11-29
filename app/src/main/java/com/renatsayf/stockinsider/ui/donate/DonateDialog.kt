@@ -10,12 +10,11 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import com.android.billingclient.api.*
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
-
 
 
 @AndroidEntryPoint
@@ -68,7 +67,7 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
         billingClient.startConnection(object : BillingClientStateListener {
             override fun onBillingSetupFinished(result: BillingResult) {
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
-                    viewModel.querySkuDetails(billingClient)
+                    viewModel.queryProductDetails(billingClient)
                 }
             }
             override fun onBillingServiceDisconnected() {
@@ -76,12 +75,13 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
             }
         })
 
-        viewModel.donateList?.observe(viewLifecycleOwner) { list ->
+        viewModel.donateList.observe(viewLifecycleOwner) { list ->
             if (list.isNotEmpty()) {
                 products = list.toMutableList()
                 val priceList = mutableListOf<String>()
                 products.forEach { p ->
-                    priceList.add(p.description)
+                    val price = p.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+                    priceList.add(price)
                 }
                 val adapter = ArrayAdapter(
                     requireContext(),
@@ -92,22 +92,6 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
             }
         }
 
-//        viewModel.priceList.observe(viewLifecycleOwner) {
-//            if (!it.isNullOrEmpty()) {
-//                products = it
-//                val priceList = mutableListOf<String>()
-//                products.forEach { sku ->
-//                    priceList.add(sku.originalPrice)
-//                }
-//                val adapter = ArrayAdapter(
-//                    requireContext(),
-//                    R.layout.app_spinner_item,
-//                    priceList
-//                )
-//                binding.sumSpinnerView.adapter = adapter
-//            }
-//        }
-
         val thanksText = requireContext().getString(R.string.text_thanks).plus(" ")
             .plus(requireContext().getString(R.string.app_name))
         binding.thanksTView.text = thanksText
@@ -116,47 +100,48 @@ class DonateDialog : DialogFragment(), PurchasesUpdatedListener
             dismiss()
         }
 
-//TODO Требуется дороботка, после устранения ошибки Play Console
-// https://developer.android.com/google/play/billing/migrate-gpblv5#initializing-billing:~:text=%2C%20billingFlowParams)-,After,-Kotlin
-//        binding.btnDoDonate.setOnClickListener {
-//            val selectedPrice = binding.sumSpinnerView.selectedItem.toString()
-//            if(!products.isNullOrEmpty())
-//            {
-//                products.forEach {
-//                    if (it.description == selectedPrice)
-//                    {
-//                        val flowParams = BillingFlowParams.newBuilder().setSkuDetails(it).build()
-//                        billingClient.launchBillingFlow(requireActivity(), flowParams)
-//                        return@forEach
-//                    }
-//                }
-//            }
-//        }
+        binding.btnDoDonate.setOnClickListener {
+            val selectedPrice = binding.sumSpinnerView.selectedItem.toString()
+            if(products.isNotEmpty())
+            {
+                products.forEach { details ->
+                    if (details.oneTimePurchaseOfferDetails?.formattedPrice == selectedPrice)
+                    {
+                        val productDetailsParamsList = listOf(
+                            BillingFlowParams.ProductDetailsParams.newBuilder()
+                                .setProductDetails(details)
+                                .build()
+                        )
+                        val flowParams = BillingFlowParams.newBuilder()
+                            .setProductDetailsParamsList(productDetailsParamsList)
+                            .build()
+                        billingClient.launchBillingFlow(requireActivity(), flowParams)
+                        return@forEach
+                    }
+                }
+            }
+        }
 
         viewModel.eventPurchased.observe(viewLifecycleOwner) {
             if (!it.hasBeenHandled) {
-                Snackbar.make(
-                    (requireActivity() as MainActivity).findViewById(R.id.main_content_layout),
-                    getString(R.string.text_thanks_for_donating),
-                    Snackbar.LENGTH_LONG
-                ).show()
+                val layout = (activity as? MainActivity)?.drawerLayout
+                layout?.showSnackBar(getString(R.string.text_thanks_for_donating))
                 dismiss()
             }
         }
     }
 
-    override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?)
-    {
-        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null)
-        {
-            for (purchase in purchases)
-            {
+    override fun onPurchasesUpdated(
+        billingResult: BillingResult,
+        purchases: MutableList<Purchase>?
+    ) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+            for (purchase in purchases) {
                 viewModel.handlePurchase(billingClient, purchase)
             }
-        }
-        else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED)
-        {
-            Snackbar.make((requireActivity() as MainActivity).findViewById(R.id.main_content_layout), getString(R.string.text_purchase_canceled), Snackbar.LENGTH_LONG).show()
+        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+            val layout = (activity as? MainActivity)?.drawerLayout
+            layout?.showSnackBar(getString(R.string.text_purchase_canceled))
             dismiss()
         }
     }

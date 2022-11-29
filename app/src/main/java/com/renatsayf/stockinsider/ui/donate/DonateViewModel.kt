@@ -18,37 +18,6 @@ class DonateViewModel @Inject constructor() : ViewModel()
 {
     val eventPurchased : MutableLiveData<Event<String>> = MutableLiveData()
 
-    fun querySkuDetails(billingClient: BillingClient)
-    {
-        var skuDetailsResult: SkuDetailsResult?
-        val skuList = ArrayList<String>()
-        skuList.add("user_donation_50")
-        skuList.add("user_donation100")
-        skuList.add("user_donation200")
-        skuList.add("user_donation300")
-        skuList.add("user_donation400")
-        skuList.add("user_donation_500")
-        val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
-
-        viewModelScope.launch {
-            skuDetailsResult = withContext(Dispatchers.IO) {
-                billingClient.querySkuDetails(params.build())
-            }
-            val list = skuDetailsResult?.skuDetailsList
-            if (!list.isNullOrEmpty())
-            {
-                val details = list.map {
-                    it
-                }.toMutableList()
-
-                details.sortByDescending { skuDetails -> skuDetails.priceAmountMicros }
-                _priceList.value = details
-            }
-            return@launch
-        }
-    }
-
     fun queryProductDetails(billingClient: BillingClient) {
 
         val productList = listOf(
@@ -64,7 +33,7 @@ class DonateViewModel @Inject constructor() : ViewModel()
             val code = billingResult.responseCode
             if (products.isNotEmpty()) {
                 products.sortByDescending { p -> p.name }
-                donateList?.value = products
+                _donateList.postValue(products)
             }
         }
     }
@@ -76,13 +45,8 @@ class DonateViewModel @Inject constructor() : ViewModel()
         }.build()
     }
 
-    var donateList: MutableLiveData<List<ProductDetails>>? = null
-        private set
-
-    private val _priceList = MutableLiveData<MutableList<SkuDetails>>().apply {
-        value = priceList?.value
-    }
-    var priceList: LiveData<MutableList<SkuDetails>> = _priceList
+    private var _donateList = MutableLiveData<List<ProductDetails>>()
+    var donateList: LiveData<List<ProductDetails>> = _donateList
 
     fun handlePurchase(billingClient: BillingClient, purchase: Purchase)
     {
@@ -104,7 +68,7 @@ class DonateViewModel @Inject constructor() : ViewModel()
                             }
                         }
                     }
-                    eventPurchased.value = Event(outToken)
+                    eventPurchased.postValue(Event(outToken))
                 }
                 return@consumeAsync
             }
