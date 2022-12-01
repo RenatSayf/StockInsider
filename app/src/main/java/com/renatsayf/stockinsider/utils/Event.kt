@@ -3,7 +3,7 @@ package com.renatsayf.stockinsider.utils
 
 //TODO Sending events between Activities/Fragments: Step 1 - create this class, next step in com.renatsayf.stockinsider.ui.dialogs.SearchListDialog.kt
 @Suppress("RedundantSetter")
-open class Event<out T>(private val content: T)
+open class Event<out T>(private val content: T?)
 {
     var hasBeenHandled = false
         private set(value) // Allow external read but not write
@@ -30,5 +30,5 @@ open class Event<out T>(private val content: T)
     /**
      * Returns the content, even if it's already been handled.
      */
-    fun peekContent(): T = content
+    fun peekContent(): T? = content
 }
