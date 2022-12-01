@@ -4,42 +4,45 @@ package com.renatsayf.stockinsider.ui.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.IDeal
+import com.renatsayf.stockinsider.models.SkeletonDeal
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
+class DealListAdapter(private val listener: Listener? = null) : ListAdapter<IDeal, DealListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<IDeal>() {
 
-class DealListAdapter(private val listener: Listener? = null) : RecyclerView.Adapter<DealListAdapter.ViewHolder>()
+    override fun areItemsTheSame(oldItem: IDeal, newItem: IDeal): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: IDeal, newItem: IDeal): Boolean {
+        return oldItem.ticker == newItem.ticker
+    }
+
+})
 {
     private lateinit var binding: DealLayoutBinding
-    private val dealList: MutableList<Deal> = mutableListOf()
-
 
     private var skeletonList = MutableList(10, init = {
-        Deal(null)
+        SkeletonDeal("XXX")
     })
 
     fun showSkeleton() {
-        notifyDataSetChanged()
-    }
-
-    fun addItems(list: List<Deal>) {
-
-        dealList.clear()
-        dealList.addAll(list)
-        notifyDataSetChanged()
+        submitList(skeletonList as List<IDeal>?)
     }
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            dealList.isNotEmpty() -> 1
+            currentList[position] is Deal -> 1
             else -> -1
         }
     }
@@ -61,8 +64,8 @@ class DealListAdapter(private val listener: Listener? = null) : RecyclerView.Ada
     override fun getItemCount() : Int
     {
         return when {
-            dealList.isEmpty() -> skeletonList.size
-            else -> dealList.size
+            currentList.isEmpty() -> skeletonList.size
+            else -> currentList.size
         }
     }
 
@@ -70,7 +73,7 @@ class DealListAdapter(private val listener: Listener? = null) : RecyclerView.Ada
     {
         val viewType = holder.itemViewType
         if (viewType == 1) {
-            ViewHolder(binding).bind(dealList[position])
+            ViewHolder(binding).bind(currentList[position] as Deal)
         }
     }
 

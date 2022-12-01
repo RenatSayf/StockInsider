@@ -11,6 +11,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.IDeal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.deal.DealViewModel
@@ -88,7 +89,7 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
                             insiderNameTView.text = companyName
 
                             dealsAdapter.apply {
-                                addItems(list)
+                                submitList(list as List<IDeal>?)
                             }
                         }
                         else {

@@ -4,11 +4,11 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-data class Deal(var filingDate : String?) : Parcelable
+data class Deal(var filingDate : String?) : Parcelable, IDeal
 {
     var filingDateRefer : String? = ""
     var tradeDate: String? = ""
-    var ticker : String? = ""
+    override var ticker : String? = ""
         set(value)
         {
             field = value

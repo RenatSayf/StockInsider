@@ -22,6 +22,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.IDeal
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -127,7 +128,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                 binding.btnAddToTracking.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
                                 binding.tradeListRV.apply {
-                                    dealsAdapter.addItems(list)
+                                    dealsAdapter.submitList(list as List<IDeal>?)
                                     adapter = dealsAdapter
                                 }
                                 return@let

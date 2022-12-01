@@ -2,7 +2,6 @@
 
 package com.renatsayf.stockinsider.ui.adapters
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,8 +14,8 @@ import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 
 
+
 class TrackingAdapter(
-    //private var list: MutableList<RoomSearchSet> = mutableListOf(),
     private val listener: Listener? = null
 ): ListAdapter<RoomSearchSet, TrackingAdapter.ViewHolder>(object : DiffUtil.ItemCallback<RoomSearchSet>() {
     override fun areItemsTheSame(oldItem: RoomSearchSet, newItem: RoomSearchSet): Boolean {
@@ -49,16 +48,6 @@ class TrackingAdapter(
     override fun getItemCount(): Int {
         return currentList.size
     }
-
-//    @SuppressLint("NotifyDataSetChanged")
-//    fun setItems(list: MutableList<RoomSearchSet>) {
-//        this.list = list
-//        notifyDataSetChanged()
-//    }
-//
-//    fun modifyItem(set: RoomSearchSet, position: Int) {
-//        list[position] = set
-//    }
 
     inner class ViewHolder(private val binding: TrackingItemBinding) : RecyclerView.ViewHolder(binding.root) {
 
