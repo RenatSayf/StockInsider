@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.network
 
+import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
@@ -198,6 +200,88 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 })
             composite.add(subscribe)
         }
+    }
+
+    override fun getAllCompaniesName(): Single<List<Company>> {
+        val set = RoomSearchSet(
+            queryName = "",
+            companyName = "",
+            ticker = "",
+            filingPeriod = 11,
+            tradePeriod = 11,
+            isPurchase = true,
+            isSale = true,
+            tradedMin = "",
+            tradedMax = "",
+            isOfficer = true,
+            isDirector = true,
+            isTenPercent = true,
+            groupBy = 0,
+            sortBy = 3
+        ).toSearchSet()
+
+        return Single.create { emitter ->
+            val subscribe = api.getTradingScreen(
+                set.ticker,
+                set.filingPeriod,
+                set.tradePeriod,
+                set.isPurchase,
+                set.isSale,
+                set.excludeDerivRelated,
+                set.tradedMin,
+                set.tradedMax,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isOfficer,
+                set.isDirector,
+                set.isTenPercent,
+                set.groupBy,
+                set.sortBy
+            )
+                .map { document ->
+                doAllCompanyNameParsing(document)
+            }
+                //.subscribeOn(Schedulers.io())
+                //.observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ set ->
+                    if (!emitter.isDisposed) {
+                        emitter.onSuccess(set.toList())
+                    }
+                }, { t ->
+                    if (!emitter.isDisposed) {
+                        emitter.onError(t)
+                    }
+                })
+            composite.add(subscribe)
+        }
+    }
+
+    fun doAllCompanyNameParsing(document: Document?): Set<Company> {
+
+        val companySet : MutableSet<Company> = mutableSetOf()
+        val body = document?.body()
+        val tableBody = body?.select("#tablewrapper > table > tbody")
+        val size = tableBody?.size ?: 0
+        var trIndex = 1
+        return if (size > 0) {
+            val table = tableBody?.get(0)
+            table?.children()?.forEach { element ->
+                val ticker = element?.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a")?.text()
+                val tdIndex =  0
+                val company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
+                if (ticker != null && company != null) {
+                    companySet.add(Company(ticker, company))
+                }
+                trIndex++
+            }
+            return companySet
+        }
+        else setOf()
     }
 
 
