@@ -9,7 +9,9 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -35,6 +37,8 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     fun getDealList(set: SearchSet) {
         composite.add(
             repositoryImpl.getTradingScreenFromNetAsync(set)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ list ->
                     _state.value = State.DataReceived(list)
                     val companies = list.filter { deal ->

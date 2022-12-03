@@ -47,8 +47,8 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 .map { document ->
                     dealList = doMainParsing(document)
                 }
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribeOn(Schedulers.newThread())
+//                .observeOn(AndroidSchedulers.mainThread())
+//                .subscribeOn(Schedulers.newThread())
                 .subscribe({
                     if (!emitter.isDisposed) {
                         emitter.onNext(dealList)
@@ -67,7 +67,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         }
     }
 
-    private fun doMainParsing(document : Document) : ArrayList<Deal>
+    fun doMainParsing(document : Document) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()

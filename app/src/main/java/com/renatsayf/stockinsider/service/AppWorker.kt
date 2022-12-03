@@ -11,7 +11,9 @@ import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
+import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -52,7 +54,10 @@ class AppWorker (
 
             searchSets?.forEachIndexed { index, set ->
                 val params = set.toSearchSet()
-                val subscribe = net.getTradingScreen(params).subscribe({ list ->
+                val subscribe = net.getTradingScreen(params)
+                    .subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread())
+                    .subscribe({ list ->
                     if (list.isNotEmpty()) {
                         function?.invoke(context, list.size, set)
                         if (index == searchSets.size - 1) {

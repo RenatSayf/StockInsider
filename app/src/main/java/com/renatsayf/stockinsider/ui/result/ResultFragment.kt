@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.result
 
 import android.os.Bundle
@@ -29,16 +31,13 @@ import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.utils.getInterstitialAdId
-import com.renatsayf.stockinsider.utils.getSerializableCompat
-import com.renatsayf.stockinsider.utils.isNetworkAvailable
-import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-
 
 
 @AndroidEntryPoint
 class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
+
     companion object
     {
         val TAG = "${this::class.java.simpleName}.TAG"
@@ -110,13 +109,28 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             adapter = dealsAdapter.apply {
                 showSkeleton()
             }
+            setOnScrollChangeListener(object : View.OnScrollChangeListener {
+                override fun onScrollChange(
+                    v: View?,
+                    scrollX: Int,
+                    scrollY: Int,
+                    oldScrollX: Int,
+                    oldScrollY: Int
+                ) {
+                    if (oldScrollY > scrollY) {
+                        binding.btnAddToTracking.setVisible(true)
+                    }
+                    else binding.btnAddToTracking.setVisible(false)
+                }
+            })
         }
 
         resultVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResultViewModel.State.Initial -> {
-                    binding.noResult.noResultLayout.visibility = View.GONE
-                    binding.includedProgress.visibility = View.VISIBLE
+                    binding.noResult.noResultLayout.setVisible(false)
+                    binding.includedProgress.setVisible(true)
+                    binding.btnAddToTracking.setVisible(false)
                 }
 
                 is ResultViewModel.State.DataReceived -> {
@@ -125,12 +139,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         binding.includedProgress.visibility = View.GONE
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
-                                binding.btnAddToTracking.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
-                                binding.tradeListRV.apply {
-                                    dealsAdapter.submitList(list as List<IDeal>?)
-                                    adapter = dealsAdapter
-                                }
+                                dealsAdapter.submitList(list as List<IDeal>?)
                                 return@let
                             }
                             list.size == 1 && list[0].error!!.isNotEmpty() -> {

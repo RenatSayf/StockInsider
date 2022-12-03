@@ -4,6 +4,8 @@ import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.utils.getStringFromFile
 import io.reactivex.observers.TestObserver
 import io.reactivex.plugins.RxJavaPlugins
@@ -42,6 +44,25 @@ class NetRepositoryTest {
     private val repository = NetRepository(createRetrofit())
 
     private lateinit var testScheduler: TestScheduler
+
+    private val testSet = RoomSearchSet(
+        queryName = "XXX",
+        companyName = "",
+        ticker = "BAC MSFT AA AAPL TSLA NVDA GOOG FB NFLX",
+        filingPeriod = 3,
+        tradePeriod = 3,
+        isPurchase = true,
+        isSale = false,
+        tradedMin = "",
+        isDirector = true,
+        isTenPercent = true,
+        tradedMax = "",
+        isOfficer = true,
+        groupBy = 1,
+        sortBy = 3
+    ).apply {
+        isTracked = true
+    }
 
     @Before
     fun setUp() {
@@ -105,5 +126,34 @@ class NetRepositoryTest {
         val actualList = testObserver.values()[0]
 
         Assert.assertTrue(actualList.isNotEmpty() && actualList.size > 50)
+    }
+
+    @Test
+    fun doMainParsing() {
+        val fromFile = context.getStringFromFile("test-data/buy-all-5000K$.txt")
+        val document = Jsoup.parse(fromFile)
+
+        val actualList = repository.doMainParsing(document)
+        Assert.assertTrue(actualList.isNotEmpty())
+    }
+
+    @Test
+    fun getTradingScreen() {
+        val fromFile = context.getStringFromFile("test-data/buy-all-5000K$.txt")
+
+        server.apply {
+            val response = MockResponse().apply {
+                setResponseCode(200)
+                setBody(fromFile)
+            }
+            this.enqueue(response)
+        }
+        val testObserver = TestObserver<ArrayList<Deal>>()
+
+        val observable = repository.getTradingScreen(testSet.toSearchSet())
+        observable.subscribe(testObserver)
+        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
+        val actualList = testObserver.values()[0]
+        Assert.assertTrue(actualList.isNotEmpty())
     }
 }
