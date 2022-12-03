@@ -218,7 +218,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onRecyclerViewItemClick(deal: Deal) {
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
-        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+        findNavController().navigate(R.id.nav_deal, bundle)
     }
 
     override fun saveSearchDialogOnPositiveClick(searchName: String) {

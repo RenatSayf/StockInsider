@@ -40,49 +40,49 @@
     <string name="text_group_by">Group by</string>
     <string name="text_group_and_sort">Grouping and sorting</string>
     <string name="text_sort_by">Sort by</string>
-    <string name="text_trade_date">Дата сделки</string>
-    <string name="text_trading_screen">Торговый экран</string>
-    <string name="text_deal_value">Объем сделки $</string>
-    <string name="text_company_name">Компания</string>
+    <string name="text_trade_date">Transaction date</string>
+    <string name="text_trading_screen">Trading Screen</string>
+    <string name="text_deal_value">Transaction volume $</string>
+    <string name="text_company_name">Company</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
-    <string name="text_p_purchase">P - Покупка</string>
+    <string name="text_p_purchase">P - Purchase</string>
     <string name="text_10000000">10000000</string>
-    <string name="text_insider_name">Имя инсайдера</string>
-    <string name="text_nothing_found">Ничего не найдено</string>
-    <string name="text_change_parameters">Попробуйте изменить ваши поисковые параметры</string>
-    <string name="text_back_to_search">Назад к поиску</string>
+    <string name="text_insider_name">Insider\'s Name</string>
+    <string name="text_nothing_found">Nothing found</string>
+    <string name="text_change_parameters">Try changing your search parameters</string>
+    <string name="text_back_to_search">Back to search</string>
     <string name="text_0">0</string>
-    <string name="text_results">Найдено</string>
-    <string name="text_deal_details">Детали сделки</string>
-    <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>
-    <string name="text_searching_is_created">Поиск по расписанию был создан</string>
-    <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>
-    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>
-    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>
+    <string name="text_results">Found</string>
+    <string name="text_deal_details">Transaction Details</string>
+<!--    <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>-->
+<!--    <string name="text_searching_is_created">Поиск по расписанию был создан</string>-->
+<!--    <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>-->
+<!--    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>-->
+<!--    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>-->
     <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
-    <string name="text_title_home">Поиск SEC Form 4</string>
-    <string name="text_trading_strategy">Торговая стратегия</string>
-    <string name="text_exit">Выход</string>
-    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>
-    <string name="text_title_trade_type">Тип сделки</string>
-    <string name="text_title_price">Цена, $</string>
-    <string name="text_title_qty">Количество акций в сделке</string>
-    <string name="text_title_owned">Колич. акций во владении</string>
-    <string name="delta_own_title">Прирост/Утрата, %</string>
-    <string name="value_title">Объем сделки,  $</string>
-    <string name="text_deals_for_7_days">Сделки за 7 дней</string>
-    <string name="text_latest_purchases_1">Покупки больше 1 милл.$</string>
-    <string name="text_latest_purchases_5">Покупки больше 5 милл.$</string>
+    <string name="text_title_home">Search for SEC Form 4</string>
+    <string name="text_trading_strategy">Trading Strategy</string>
+    <string name="text_exit">Exit</string>
+<!--    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>-->
+    <string name="text_title_trade_type">Type of transaction</string>
+    <string name="text_title_price">Price, $</string>
+    <string name="text_title_qty">Number of stocks in the transaction</string>
+    <string name="text_title_owned">Number stocks in ownership</string>
+    <string name="delta_own_title">Growth/Loss, %</string>
+    <string name="value_title">Transaction volume,  $</string>
+    <string name="text_deals_for_7_days">Transactions in 7 days</string>
+    <string name="text_latest_purchases_1">Purchases over 1 mill. $</string>
+    <string name="text_latest_purchases_5">Purchases over 5 mill. $</string>
     <string name="text_data_not_avalible">Data is not available, please, try later</string>
-    <string name="text_cancel">Отмена</string>
+    <string name="text_cancel">Cancel</string>
     <string name="text_ok">OK</string>
-    <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
-    <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
-    <string name="text_select_sum">Выберете сумму:</string>
-    <string name="text_to_support">Поддержать</string>
-    <string name="text_support_project">Поддержать проект</string>
-    <string name="text_purchase_canceled">Транзакция отменена. Мне очень жаль, что Вы передумали…</string>
-    <string name="text_thanks_for_donating">Спасибо Вам за поддержку!!!</string>
+    <string name="text_donate">Hi!\nIf this app has helped you earn money…, you can support my project by making a small donation.</string>
+    <string name="text_thanks">Thank you for using the app </string>
+    <string name="text_select_sum">Select the amount:</string>
+    <string name="text_to_support">Make a donation</string>
+    <string name="text_support_project">Support the project</string>
+    <string name="text_purchase_canceled">The transaction has been canceled. I\'m sorry you changed your mind</string>
+    <string name="text_thanks_for_donating">Thank you for your support!!!</string>
 
     <string-array name="ticker_list">
         <item>AA</item>
@@ -92,19 +92,19 @@
     </string-array>
     
     <string-array name="list_for_filing_date">
-        <item>За все время</item>
-        <item>За последний день</item>
-        <item>За последние 2 дня</item>
-        <item>За последние 3 дня</item>
-        <item>За последнюю неделю</item>
-        <item>За последние 2 недели</item>
-        <item>За последний месяц</item>
-        <item>За последние 2 месяца</item>
-        <item>За последние 3 месяца</item>
-        <item>За последние 6 месяцев</item>
-        <item>За последний год</item>
-        <item>За последние 2 года</item>
-        <item>За последние 4 года</item>
+        <item>For all the time</item>
+        <item>For the last day</item>
+        <item>For the last 2 days</item>
+        <item>For the last 3 days</item>
+        <item>For the last week</item>
+        <item>For the last 2 weeks</item>
+        <item>For the last month</item>
+        <item>For the last 2 months</item>
+        <item>For the last 3 months</item>
+        <item>For the last 6 months</item>
+        <item>For the last year</item>
+        <item>For the last 2 years</item>
+        <item>For the last 4 years</item>
     </string-array>
     <integer-array name="value_for_filing_date">
         <item>0</item>
@@ -123,8 +123,8 @@
     </integer-array>
 
     <string-array name="list_for_grouping">
-        <item>Дата регистрации</item>
-        <item>Компания</item>
+        <item>Filing date</item>
+        <item>Company</item>
     </string-array>
     <integer-array name="value_for_grouping">
         <item>0</item>
@@ -132,10 +132,10 @@
     </integer-array>
 
     <string-array name="list_for_sorting">
-        <item>Дата регистрации</item>
-        <item>Дата сделки</item>
-        <item>Тикер</item>
-        <item>Объем сделки</item>
+        <item>Filing date</item>
+        <item>Transaction date</item>
+        <item>Ticker</item>
+        <item>Transaction volume</item>
     </string-array>
     <integer-array name="value_for_sorting">
         <item>0</item>
@@ -149,17 +149,17 @@
         <item>200</item>
     </string-array>
 
-    <string name="text_insider">Инсайдер:</string>
-    <string name="text_company">Компания:</string>
-    <string name="text_financial_support">Сделать пожертвование</string>
-    <string name="text_watch_ads">Посмотреть рекламу</string>
-    <string name="title_trading_screen">Торговый экран</string>
-    <string name="text_purchases_more_1">Покупки более 1 милл.$ за неделю</string>
-    <string name="text_purchases_more_5">Покупки более 5 милл.$ за неделю</string>
-    <string name="text_latest_sales_1">Продажи более 1 милл.$</string>
-    <string name="text_latest_sales_5">Продажи более 5 милл.$</string>
-    <string name="text_sales_more_1">Продажи более 1 милл.$ за неделю</string>
-    <string name="text_sales_more_5">Продажи более 5 милл.$ за неделю</string>
+    <string name="text_insider">Insider:</string>
+    <string name="text_company">Company:</string>
+    <string name="text_financial_support">Make a donation</string>
+    <string name="text_watch_ads">View ads</string>
+    <string name="title_trading_screen">Trading Screen</string>
+    <string name="text_purchases_more_1">Purchases over 1 mill.$ per week</string>
+    <string name="text_purchases_more_5">Purchases over 5 mill.$ per week</string>
+    <string name="text_latest_sales_1">Sales of more than 1 mill.$</string>
+    <string name="text_latest_sales_5">Sales of more than 5 mill.$</string>
+    <string name="text_sales_more_1">Sales of more than 1 mill.$ per week</string>
+    <string name="text_sales_more_5">Sales of more than 5 mill.$ per week</string>
     <string name="text_read">Читать</string>
     <string name="text_hi">Привет!</string>
     <string name="text_strategy_dialog_1">Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»</string>
