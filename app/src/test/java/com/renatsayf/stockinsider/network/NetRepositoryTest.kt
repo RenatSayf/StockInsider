@@ -104,6 +104,6 @@ class NetRepositoryTest {
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
         val actualList = testObserver.values()[0]
 
-        Assert.assertTrue(actualList.isNotEmpty())
+        Assert.assertTrue(actualList.isNotEmpty() && actualList.size > 50)
     }
 }

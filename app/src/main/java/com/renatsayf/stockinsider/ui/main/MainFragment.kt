@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.main
 
-import android.content.Context
 import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
@@ -22,13 +21,15 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.hideKeyBoard
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainFragment : Fragment(R.layout.fragment_home)
-{
+class MainFragment : Fragment(R.layout.fragment_home) {
+
     private lateinit var binding: FragmentHomeBinding
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
@@ -37,26 +38,24 @@ class MainFragment : Fragment(R.layout.fragment_home)
             }
         }
     }
-    private lateinit var searchName : String
+    private val tickersAdapter: TickersListAdapter by lazy {
+        TickersListAdapter(requireContext())
+    }
 
     override fun onCreateView(
-            inflater : LayoutInflater,
-            container : ViewGroup?,
-            savedInstanceState : Bundle?
-                             ) : View?
-    {
-        searchName = getString(R.string.text_current_set_name)
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //setHasOptionsMenu(true)
 
         binding = FragmentHomeBinding.bind(view)
 
-        val isAgree = requireActivity().getSharedPreferences(MainActivity.APP_SETTINGS, Context.MODE_PRIVATE).getBoolean(MainActivity.KEY_IS_AGREE, false)
+        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
@@ -79,7 +78,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
+                    hideKeyBoard(binding.general.tickerET)
                     binding.general.tickerET.clearFocus()
                     binding.searchButton.requestFocus()
                 }
@@ -87,12 +86,12 @@ class MainFragment : Fragment(R.layout.fragment_home)
         }
 
         mainVM.companies.observe(viewLifecycleOwner) { companies ->
-            val tickerListAdapter = companies?.let {
-                TickersListAdapter(requireContext(), it)
+            companies?.let {
+                tickersAdapter.addItems(it.toList())
             }
-            binding.general.tickerET.setAdapter(tickerListAdapter)
+            binding.general.tickerET.setAdapter(tickersAdapter)
             binding.general.tickerET.clearFocus()
-            (activity as MainActivity).hideKeyBoard(binding.general.tickerET)
+            hideKeyBoard(binding.general.tickerET)
         }
 
         var tickerText = ""
@@ -140,25 +139,19 @@ class MainFragment : Fragment(R.layout.fragment_home)
             binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
         }
 
-        binding.date.filingDateSpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener
-        {
-            override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long)
-            {
-                val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
-                val selectedItem = array[p2]
-                when
-                {
-                    selectedItem < 3 && selectedItem != 0 -> binding.date.tradeDateSpinner.setSelection(3)
-                    selectedItem == 0 -> binding.date.tradeDateSpinner.setSelection(0)
-                    else -> binding.date.tradeDateSpinner.setSelection(p2)
+        binding.date.filingDateSpinner.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
+                    val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
+                    val selectedItem = array[p2]
+                    when {
+                        selectedItem < 3 && selectedItem != 0 -> binding.date.tradeDateSpinner.setSelection(3)
+                        selectedItem == 0 -> binding.date.tradeDateSpinner.setSelection(0)
+                        else -> binding.date.tradeDateSpinner.setSelection(p2)
+                    }
                 }
+                override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
-
-            override fun onNothingSelected(p0: AdapterView<*>?)
-            {
-
-            }
-        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             if (this@MainFragment.isNetworkAvailable())
@@ -218,8 +211,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
     }
 
-    override fun onPause()
-    {
+    override fun onPause() {
         (requireActivity() as MainActivity).drawerLayout.isEnabled = false
         val set = scanScreen()
         set.queryName = getString(R.string.text_current_set_name)
@@ -232,7 +224,7 @@ class MainFragment : Fragment(R.layout.fragment_home)
 
         with(binding) {
             return RoomSearchSet(
-                searchName,
+                queryName = getString(R.string.text_current_set_name),
                 "",
                 general.tickerET.text.toString(),
                 date.filingDateSpinner.selectedItemPosition,
@@ -249,41 +241,6 @@ class MainFragment : Fragment(R.layout.fragment_home)
             )
         }
     }
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater)
-//    {
-//        super.onCreateOptionsMenu(menu, inflater)
-//        inflater.inflate(R.menu.main, menu)
-//    }
-//
-//    override fun onOptionsItemSelected(item: MenuItem): Boolean
-//    {
-//        when(item.itemId)
-//        {
-//            R.id.action_default_search ->
-//            {
-//                val searchName = getString(R.string.text_default_set_name)
-//                mainVM.getSearchSetByName(searchName).observe(viewLifecycleOwner) {
-//                    mainVM.setState(MainViewModel.State.Initial(it))
-//                }
-//            }
-//            R.id.action_my_search ->
-//            {
-//                mainVM.getSearchSetList().observe(viewLifecycleOwner) { list ->
-//                    SearchListDialog.newInstance(list as MutableList<RoomSearchSet>, object : SearchListDialog.Listener {
-//                        override fun onSearchDialogPositiveClick(roomSearchSet: RoomSearchSet) {
-//                            mainVM.setState(MainViewModel.State.Initial(roomSearchSet))
-//                        }
-//
-//                        override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
-//                            mainVM.deleteSearchSet(roomSearchSet)
-//                        }
-//                    }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
-//                }
-//            }
-//        }
-//        return super.onOptionsItemSelected(item)
-//    }
 
 
 }

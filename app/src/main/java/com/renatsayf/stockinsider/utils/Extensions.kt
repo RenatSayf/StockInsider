@@ -12,6 +12,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
@@ -222,6 +223,14 @@ fun Fragment.startBrowserSearch(url: String) {
     requireActivity().startBrowserSearch(url)
 }
 
+fun Context.hideKeyBoard(view: View) {
+    val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Fragment.hideKeyBoard(view: View) {
+    requireContext().hideKeyBoard(view)
+}
 
 
 

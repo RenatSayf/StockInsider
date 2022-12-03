@@ -94,7 +94,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         if (savedInstanceState == null)
         {
             val title = arguments?.getString(ARG_TITLE)
-            (requireActivity() as MainActivity).supportActionBar?.title = title
+            binding.toolBar.title = title
 
             val notificationId = arguments?.getInt(ServiceNotification.ARG_ID)
             notificationId?.let { id ->
@@ -172,9 +172,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 }
             }
         }
-
-        val title = arguments?.getString(ARG_TITLE) ?: ""
-        resultVM.setToolBarTitle(title)
 
         binding.noResult.backButton.setOnClickListener {
             findNavController().popBackStack()

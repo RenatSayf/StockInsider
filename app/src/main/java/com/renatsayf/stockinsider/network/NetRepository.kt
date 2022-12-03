@@ -246,8 +246,6 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 .map { document ->
                 doAllCompanyNameParsing(document)
             }
-                //.subscribeOn(Schedulers.io())
-                //.observeOn(AndroidSchedulers.mainThread())
                 .subscribe({ set ->
                     if (!emitter.isDisposed) {
                         emitter.onSuccess(set.toList())
