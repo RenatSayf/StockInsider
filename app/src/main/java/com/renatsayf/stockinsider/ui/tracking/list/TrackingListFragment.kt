@@ -111,7 +111,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             )
             findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
                 putSerializable(TrackingFragment.ARG_SET, set)
-                putString(TrackingFragment.ARG_TITLE, "Отслеживание. Новый поиск")
+                putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
                 putBoolean(TrackingFragment.ARG_IS_EDIT, true)
             })
         }
@@ -121,7 +121,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int) {
         findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
             putSerializable(TrackingFragment.ARG_SET, set)
-            putString(TrackingFragment.ARG_TITLE, "Отслеживание. Редактирование")
+            putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_editing))
             putBoolean(TrackingFragment.ARG_IS_EDIT, true)
         })
     }
@@ -158,9 +158,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
             if (id > 0) {
                 when (checked) {
-                    true -> showSnackBar("Отслеживание включено")
+                    true -> showSnackBar(getString(R.string.text_tracking_enabled))
                     else -> {
-                        showSnackBar("Отслеживание выключено")
+                        showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
                                 cancelBackgroundWork()
@@ -175,7 +175,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int) {
         findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
             putSerializable(TrackingFragment.ARG_SET, set)
-            putString(TrackingFragment.ARG_TITLE, "Отслеживание. Просмотр")
+            putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_viewing))
             putBoolean(TrackingFragment.ARG_IS_EDIT, false)
         })
     }

@@ -218,5 +218,10 @@
     <string name="text_company_deals">Сделки по компании</string>
     <string name="text_add_to_tracking">Дабавить в список отслеживания</string>
     <string name="text_do_track">Отслеживать</string>
+    <string name="text_tracking_new_search">Отслеживание. Новый поиск</string>
+    <string name="text_tracking_editing">Отслеживание. Редактирование</string>
+    <string name="text_tracking_viewing">Отслеживание. Просмотр</string>
+    <string name="text_tracking_enabled">Отслеживание включено</string>
+    <string name="text_tracking_disabled">Отслеживание выключено</string>
 
 </resources>

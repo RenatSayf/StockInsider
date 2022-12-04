@@ -217,5 +217,10 @@
     <string name="text_company_deals">Company transactions</string>
     <string name="text_add_to_tracking">Add to the tracking list</string>
     <string name="text_do_track">Observe</string>
+    <string name="text_tracking_new_search">Tracking. New search</string>
+    <string name="text_tracking_editing">Tracking. Editing</string>
+    <string name="text_tracking_viewing">Tracking. Viewing</string>
+    <string name="text_tracking_enabled">Tracking enabled</string>
+    <string name="text_tracking_disabled">Tracking is disabled</string>
 
 </resources>

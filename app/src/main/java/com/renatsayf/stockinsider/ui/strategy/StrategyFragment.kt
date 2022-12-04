@@ -4,7 +4,6 @@ package com.renatsayf.stockinsider.ui.strategy
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
@@ -50,14 +49,6 @@ class StrategyFragment : Fragment(R.layout.fragment_strategy)
                 loadUrl("file:///android_asset/strategy/index-en.html")
             }
         }
-
-//        binding.webView.setOnTouchListener(object : View.OnTouchListener{
-//            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
-//            {
-//                //p0?.performClick()
-//                return p0?.performClick() ?: true
-//            }
-//        })
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             findNavController().popBackStack()
