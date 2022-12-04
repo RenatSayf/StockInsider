@@ -63,4 +63,5 @@ class ExtensionsKtTest {
         val actualList = sortByAnotherList(targetList, anotherList)
         Assert.assertEquals(targetList, actualList)
     }
+
 }

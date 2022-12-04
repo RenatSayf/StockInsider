@@ -2,11 +2,17 @@
 
 package com.renatsayf.stockinsider.ui.result
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.Animation
+import android.view.animation.Transformation
+import android.widget.LinearLayout
 import androidx.activity.addCallback
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.marginBottom
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -109,6 +115,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             adapter = dealsAdapter.apply {
                 showSkeleton()
             }
+
             setOnScrollChangeListener(object : View.OnScrollChangeListener {
                 override fun onScrollChange(
                     v: View?,
@@ -118,9 +125,26 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     oldScrollY: Int
                 ) {
                     if (oldScrollY > scrollY) {
+                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
                         binding.btnAddToTracking.setVisible(true)
+                        ValueAnimator.ofInt(bottomMargin, 64.dp).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.btnAddToTracking.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
                     }
-                    else binding.btnAddToTracking.setVisible(false)
+                    else {
+                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
+                        ValueAnimator.ofInt(bottomMargin, -138).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.btnAddToTracking.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
+                    }
                 }
             })
         }

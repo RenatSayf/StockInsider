@@ -21,9 +21,7 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.utils.appPref
-import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.isNetworkAvailable
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
