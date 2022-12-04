@@ -53,6 +53,9 @@ class AppWorker (
             val searchSets = getTrackingSetsAsync().await()
 
             searchSets?.forEachIndexed { index, set ->
+
+                val duration = (10..20).random()
+                delay(duration * 1000L)
                 val params = set.toSearchSet()
                 val subscribe = net.getTradingScreen(params)
                     .subscribeOn(Schedulers.io())
