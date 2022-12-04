@@ -9,7 +9,7 @@
         android:id="@+id/dialogTextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        tools:text="Это приложение разработано по мотивам серии статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»"
+        tools:text="@string/text_strategy_dialog_1"
         android:padding="16dp"
         android:textAlignment="center"
         android:textSize="18sp"

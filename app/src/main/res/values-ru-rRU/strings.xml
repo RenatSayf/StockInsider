@@ -8,10 +8,12 @@
     <string name="ad_mob_app_id">ca-app-pub-1615119435047194~5095683894</string>
     <string name="interstitial_ad_1">ca-app-pub-1615119435047194/7629529654</string>
     <string name="interstitial_ad_2">ca-app-pub-1615119435047194/6049672910</string>
+    <string name="interstitial_ad_3">ca-app-pub-1615119435047194/9457497746</string>
 
     <string-array name="interstitial_ads">
         <item>ca-app-pub-1615119435047194/7629529654</item>
         <item>ca-app-pub-1615119435047194/6049672910</item>
+        <item>ca-app-pub-1615119435047194/9457497746</item>
     </string-array>
 
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
@@ -214,5 +216,7 @@
     <string name="text_insider_info">Сведения об инсайдере</string>
     <string name="text_company_info">Сведения о компании</string>
     <string name="text_company_deals">Сделки по компании</string>
+    <string name="text_add_to_tracking">Дабавить в список отслеживания</string>
+    <string name="text_do_track">Отслеживать</string>
 
 </resources>

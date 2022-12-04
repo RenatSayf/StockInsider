@@ -24,32 +24,92 @@
         android:visibility="visible"
         android:background="@color/colorPrimarylite">
 
-        <View
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:background="@color/colorPrimary"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimary"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="2"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_skeleton_row" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimary"/>
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_skeleton_row" />
 
-        <View
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="16dp"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginTop="10dp"
-            android:background="@color/colorPrimary"/>
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="2"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_skeleton_row" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_skeleton_row" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="2"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_skeleton_row" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_skeleton_row" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp">
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="2"
+                app:layout_constraintTop_toTopOf="parent"
+                android:background="@drawable/bg_skeleton_row" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="16dp"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:background="@drawable/bg_skeleton_row" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </LinearLayout>
 

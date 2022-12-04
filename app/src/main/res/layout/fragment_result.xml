@@ -130,7 +130,7 @@
         android:visibility="gone"
         tools:visibility="visible"
         android:contentDescription="@string/app_name"
-        android:text="Дабаввить в список отслеживания"
+        android:text="@string/text_add_to_tracking"
         android:textAllCaps="false"
         android:background="@drawable/bg_ripple_default"
         android:drawableStart="@drawable/ic_add"

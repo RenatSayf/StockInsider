@@ -346,18 +346,17 @@ class MainActivity : AppCompatActivity()
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         p2 == 6 && p3 == 1 -> {
-                            ad?.let {
-                                it.show(this@MainActivity)
-                                it.fullScreenContentCallback =
-                                    object : FullScreenContentCallback() {
-                                        override fun onAdDismissedFullScreenContent() {}
-                                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                            if (BuildConfig.DEBUG) {
-                                                Exception(p0.message).printStackTrace()
-                                            }
-                                        }
+                            val adId = this@MainActivity.getInterstitialAdId(index = 2)
+                            InterstitialAd.load(this@MainActivity, adId, adRequest, object : InterstitialAdLoadCallback() {
+                                override fun onAdLoaded(ad: InterstitialAd) {
+                                    ad.show(this@MainActivity)
+                                }
+                                override fun onAdFailedToLoad(p0: LoadAdError) {
+                                    if (BuildConfig.DEBUG) {
+                                        Exception(p0.message).printStackTrace()
                                     }
-                            }
+                                }
+                            })
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
