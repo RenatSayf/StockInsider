@@ -222,5 +222,6 @@
     <string name="text_tracking_viewing">Tracking. Viewing</string>
     <string name="text_tracking_enabled">Tracking enabled</string>
     <string name="text_tracking_disabled">Tracking is disabled</string>
+    <string name="text_deletion_confirm">Confirm the deletion</string>
 
 </resources>

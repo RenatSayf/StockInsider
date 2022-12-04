@@ -129,8 +129,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int) {
 
         ConfirmationDialog.newInstance(
-            message = "Подтвердите удаление",
-            positiveButtonText = "Удалить",
+            message = getString(R.string.text_deletion_confirm),
+            positiveButtonText = getString(R.string.text_delete),
             listener = object : ConfirmationDialog.Listener {
                 override fun onPositiveClick() {
                     lifecycleScope.launch {
