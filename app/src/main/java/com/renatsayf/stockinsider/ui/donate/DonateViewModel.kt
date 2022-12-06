@@ -45,13 +45,14 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
             buildProduct("user_donation200"),
             buildProduct("user_donation300"),
             buildProduct("user_donation400"),
-            buildProduct("user_donation_500")
+            buildProduct("user_donation_500"),
+            buildProduct("user_donation_1000")
         )
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         billingClient.queryProductDetailsAsync(params.build()) { billingResult, products ->
             val code = billingResult.responseCode
             if (products.isNotEmpty()) {
-                products.sortByDescending { p -> p.name }
+                products.sortByDescending { p -> p.oneTimePurchaseOfferDetails?.formattedPrice }
                 _donateList.postValue(products)
             }
         }
