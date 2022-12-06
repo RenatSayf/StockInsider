@@ -5,14 +5,18 @@ package com.renatsayf.stockinsider.ui.result
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import android.view.animation.Animation
 import android.view.animation.Transformation
 import android.widget.LinearLayout
+import android.widget.PopupWindow
 import androidx.activity.addCallback
+import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.marginBottom
+import androidx.core.widget.PopupWindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
@@ -36,6 +40,7 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
+import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -215,6 +220,12 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             val name = roomSearchSet?.generateQueryName()
             name?.let { n ->
                 SaveSearchDialog.getInstance(n, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+            }
+        }
+        binding.btnSorting.apply {
+
+            setOnClickListener {
+                SortingDialog.instance().show(childFragmentManager, SortingDialog.TAG)
             }
         }
 
