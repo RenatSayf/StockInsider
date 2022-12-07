@@ -5,21 +5,12 @@ package com.renatsayf.stockinsider.ui.result
 import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.Animation
-import android.view.animation.Transformation
-import android.widget.LinearLayout
-import android.widget.PopupWindow
 import androidx.activity.addCallback
-import androidx.appcompat.widget.PopupMenu
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.marginBottom
-import androidx.core.widget.PopupWindowCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -42,6 +33,7 @@ import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -60,6 +52,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private lateinit var binding: FragmentResultBinding
     private val resultVM : ResultViewModel by viewModels()
     private val mainViewModel : MainViewModel by viewModels()
+    private val sortingVM: SortingViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
@@ -292,6 +285,12 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             } ?: run { findNavController().popBackStack() }
         }
         else findNavController().popBackStack()
+    }
+
+    override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
+        val currentList = dealsAdapter.currentList as List<Deal>
+        val sortedList = sortingVM.doSort(currentList, sorting)
+        resultVM.setState(ResultViewModel.State.DataReceived(sortedList as ArrayList<Deal>))
     }
 
 
