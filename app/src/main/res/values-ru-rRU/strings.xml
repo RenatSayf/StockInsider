@@ -224,5 +224,8 @@
     <string name="text_tracking_enabled">Отслеживание включено</string>
     <string name="text_tracking_disabled">Отслеживание выключено</string>
     <string name="text_deletion_confirm">Подтвердите удаление</string>
+    <string name="text_order_by_asc">По возрастанию</string>
+    <string name="text_order_by_desc">По убыванию</string>
+    <string name="text_do_not_group">Не группировать</string>
 
 </resources>

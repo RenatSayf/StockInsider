@@ -223,5 +223,8 @@
     <string name="text_tracking_enabled">Tracking enabled</string>
     <string name="text_tracking_disabled">Tracking is disabled</string>
     <string name="text_deletion_confirm">Confirm the deletion</string>
+    <string name="text_order_by_asc">Order by ASC</string>
+    <string name="text_order_by_desc">Order by DESC</string>
+    <string name="text_do_not_group">Do not group</string>
 
 </resources>

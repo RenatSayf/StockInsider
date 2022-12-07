@@ -1,27 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.appcompat.widget.LinearLayoutCompat
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.appcompat.widget.LinearLayoutCompat xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_gravity="center"
     android:background="@drawable/bg_dialog_default">
 
-    <TextView
-        android:id="@+id/tv_title"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/text_group_and_sort"
-        android:padding="16dp"
-        android:textSize="20sp"
-        android:textColor="@color/colorGold"
-        android:background="@color/colorPrimary"/>
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        android:background="@color/colorPrimary" >
 
-<!--    <View-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="1dp"-->
-<!--        android:background="@color/colorWhite"-->
-<!--        />-->
+        <TextView
+            android:id="@+id/tv_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/text_group_and_sort"
+            android:textSize="20sp"
+            android:textColor="@color/colorGold"
+            />
+
+        <ImageButton
+            android:id="@+id/btn_close"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="@+id/tv_title"
+            app:layout_constraintBottom_toBottomOf="@+id/tv_title"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:src="@drawable/ic_clear_grey"
+            android:background="@drawable/bg_ripple_round_transparent"
+            android:contentDescription="@string/text_close" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
         android:layout_width="match_parent"
@@ -43,16 +61,31 @@
         android:paddingBottom="16dp">
 
         <RadioButton
+            android:id="@+id/rb_not_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
-            android:text="@string/text_company"
-            android:textSize="16sp"
-            android:textColor="@color/colorWhite"
             android:buttonTint="@color/colorWhite"
-            android:layoutDirection="rtl"/>
+            android:layoutDirection="rtl"
+            android:minHeight="48dp"
+            android:text="@string/text_do_not_group"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp" />
 
         <RadioButton
+            android:id="@+id/rb_company"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="0dp"
+            android:buttonTint="@color/colorWhite"
+            android:layoutDirection="rtl"
+            android:minHeight="48dp"
+            android:text="@string/text_company"
+            android:textColor="@color/colorWhite"
+            android:textSize="16sp" />
+
+        <RadioButton
+            android:id="@+id/rb_insider"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -66,7 +99,7 @@
 
     <View
         android:layout_width="wrap_content"
-        android:layout_height="1dp"
+        android:layout_height="0.4dp"
         android:background="@color/colorWhite"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"/>
@@ -92,6 +125,7 @@
         >
 
         <RadioButton
+            android:id="@+id/rb_filling_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="0dp"
@@ -102,6 +136,7 @@
             android:layoutDirection="rtl"/>
 
         <RadioButton
+            android:id="@+id/rb_trade_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -112,6 +147,7 @@
             android:layoutDirection="rtl"/>
 
         <RadioButton
+            android:id="@+id/rb_ticker"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -122,6 +158,7 @@
             android:layoutDirection="rtl"/>
 
         <RadioButton
+            android:id="@+id/rb_deal_volume"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
@@ -138,29 +175,34 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal">
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_by_asc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Order by ASC"
-            android:gravity="center"
-            android:textColor="@color/colorWhite"
-            android:padding="12dp"
             android:background="@drawable/bg_ripple_corners_0"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            android:gravity="center"
+            android:padding="12dp"
+            android:text="@string/text_order_by_asc"
+            android:textColor="@color/colorWhite"
+            android:drawableStart="@drawable/ic_double_arrow_up"
+            />
 
-        <TextView
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tv_by_desc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Order by DESC"
+            android:text="@string/text_order_by_desc"
             android:gravity="center"
             android:textColor="@color/colorWhite"
             android:padding="12dp"
             android:background="@drawable/bg_ripple_corners_0"
             android:clickable="true"
-            android:focusable="true"/>
+            android:focusable="true"
+            app:drawableEndCompat="@drawable/ic_double_arrow_down" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

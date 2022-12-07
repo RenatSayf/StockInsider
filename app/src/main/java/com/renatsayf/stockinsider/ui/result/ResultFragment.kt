@@ -47,7 +47,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
+class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener,
+    SortingDialog.Listener {
 
     companion object
     {
@@ -225,7 +226,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding.btnSorting.apply {
 
             setOnClickListener {
-                SortingDialog.instance().show(childFragmentManager, SortingDialog.TAG)
+                SortingDialog.instance(this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
             }
         }
 
