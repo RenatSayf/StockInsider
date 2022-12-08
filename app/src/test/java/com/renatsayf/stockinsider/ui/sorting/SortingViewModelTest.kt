@@ -71,4 +71,19 @@ class SortingViewModelTest {
         val actualList = viewModel.doSort(emptyList(), sorting)
         Assert.assertTrue(actualList.isEmpty())
     }
+
+    @Test
+    fun doSort_groupBy_ticker_sortBy_ticker(){
+        val sorting = SortingViewModel.Sorting(
+            groupingBy = SortingViewModel.Sorting.GroupingBy.TICKER,
+            sortingBy = SortingViewModel.Sorting.SortingBy.TICKER,
+            orderBy = SortingViewModel.Sorting.OrderBy.ASC
+        )
+        val actualList = viewModel.doSort(dealList, sorting)
+        val subList = actualList.subList(0, 4)
+        val actualResult = subList.all {
+            it.ticker == "AAA"
+        }
+        Assert.assertTrue(actualResult)
+    }
 }

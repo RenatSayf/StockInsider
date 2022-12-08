@@ -1,7 +1,5 @@
 package com.renatsayf.stockinsider.ui.sorting
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.models.Deal
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,69 +21,64 @@ class SortingViewModel @Inject constructor() : ViewModel() {
         _sorting = sorting
         val mutableList = list.toMutableList()
 
+        val sortedList = when (sorting.sortingBy) {
+
+            Sorting.SortingBy.FILLING_DATE -> {
+                if (sorting.orderBy == Sorting.OrderBy.ASC) mutableList.sortedBy {
+                    it.filingDate
+                } else mutableList.sortedByDescending {
+                    it.filingDate
+                }
+            }
+            Sorting.SortingBy.TRADE_DATE -> {
+                if (sorting.orderBy == Sorting.OrderBy.ASC) mutableList.sortedBy {
+                    it.tradeDate
+                } else mutableList.sortedByDescending {
+                    it.tradeDate
+                }
+            }
+            Sorting.SortingBy.TICKER -> {
+                if (sorting.orderBy == Sorting.OrderBy.ASC) mutableList.sortedBy {
+                    it.ticker
+                } else mutableList.sortedByDescending {
+                    it.ticker
+                }
+            }
+            Sorting.SortingBy.VOLUME -> {
+                if (sorting.orderBy == Sorting.OrderBy.ASC) mutableList.sortedBy {
+                    it.volume
+                } else mutableList.sortedByDescending {
+                    it.volume
+                }
+            }
+        }
+
         val groupedMap = when (sorting.groupingBy) {
             Sorting.GroupingBy.TICKER -> {
-                val map = mutableList.groupBy {
+                val map = sortedList.groupBy {
                     it.ticker
                 }
                 map
             }
             Sorting.GroupingBy.INSIDER -> {
-                val map = mutableList.groupBy {
+                val map = sortedList.groupBy {
                     it.insiderName
                 }
                 map
             }
             else -> {
-                val map = mutableList.groupBy {
+                val map = sortedList.groupBy {
                     it.filingDate
                 }
                 map
             }
         }
-        val sortedMap = mutableMapOf<String, List<Deal>>()
-        groupedMap.forEach { (t, u) ->
-            val deals = when (sorting.sortingBy) {
 
-                Sorting.SortingBy.FILLING_DATE -> {
-                    if (sorting.orderBy == Sorting.OrderBy.ASC) u.sortedBy {
-                        it.filingDate
-                    } else u.sortedByDescending {
-                        it.filingDate
-                    }
-                }
-                Sorting.SortingBy.TRADE_DATE -> {
-                    if (sorting.orderBy == Sorting.OrderBy.ASC) u.sortedBy {
-                        it.tradeDate
-                    } else u.sortedByDescending {
-                        it.tradeDate
-                    }
-                }
-                Sorting.SortingBy.TICKER -> {
-                    if (sorting.orderBy == Sorting.OrderBy.ASC) u.sortedBy {
-                        it.ticker
-                    } else u.sortedByDescending {
-                        it.ticker
-                    }
-                }
-                Sorting.SortingBy.VOLUME -> {
-                    if (sorting.orderBy == Sorting.OrderBy.ASC) u.sortedBy {
-                        it.volume
-                    } else u.sortedByDescending {
-                        it.volume
-                    }
-                }
-            }
-            t?.let {
-                sortedMap[it] = deals
-            }
+        val newSortedList = mutableListOf<Deal>()
+        groupedMap.forEach { (_, list) ->
+            newSortedList.addAll(list)
         }
-
-        val sortedList = mutableListOf<Deal>()
-        sortedMap.forEach { (_, list) ->
-            sortedList.addAll(list)
-        }
-        return sortedList
+        return newSortedList
     }
 
     data class Sorting(

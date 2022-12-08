@@ -158,22 +158,23 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
-                        binding.noResult.noResultLayout.visibility = View.GONE
-                        binding.includedProgress.visibility = View.GONE
+                        binding.noResult.noResultLayout.setVisible(false)
+                        binding.includedProgress.setVisible(false)
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
                                 binding.resultTV.text = list.size.toString()
                                 dealsAdapter.submitList(list as List<IDeal>?)
+                                dealsAdapter.notifyDataSetChanged()
                                 return@let
                             }
                             list.size == 1 && list[0].error!!.isNotEmpty() -> {
                                 binding.resultTV.text = 0.toString()
                                 binding.noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                                binding.noResult.noResultLayout.setVisible(true)
                             }
                             else -> {
                                 binding.resultTV.text = list.size.toString()
-                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                                binding.noResult.noResultLayout.setVisible(true)
                             }
                         }
                     }
@@ -217,9 +218,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             }
         }
         binding.btnSorting.apply {
-
             setOnClickListener {
-                SortingDialog.instance(this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
+                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
             }
         }
 
@@ -289,8 +289,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
         val currentList = dealsAdapter.currentList as List<Deal>
-        val sortedList = sortingVM.doSort(currentList, sorting)
-        resultVM.setState(ResultViewModel.State.DataReceived(sortedList as ArrayList<Deal>))
+        if (currentList.isNotEmpty()) {
+            val sortedList = sortingVM.doSort(currentList, sorting)
+
+            dealsAdapter.clear()
+            dealsAdapter.submitList(sortedList, object : Runnable {
+                override fun run() {
+                    binding.tradeListRV.scrollToPosition(0)
+                    resultVM.setState(ResultViewModel.State.DataReceived(sortedList as ArrayList<Deal>))
+                }
+            })
+            dealsAdapter.notifyDataSetChanged()
+        }
     }
 
 

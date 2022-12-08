@@ -9,11 +9,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.RadioGroup
-import androidx.core.view.forEach
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DialogSortingBinding
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
+import com.renatsayf.stockinsider.utils.getSerializableCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -22,19 +22,21 @@ class SortingDialog : DialogFragment() {
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
+        val ARG_SORTING = "${this::class.java.simpleName}.ARG_SORTING"
 
         private var dialog: SortingDialog? = null
+        private var sorting: SortingViewModel.Sorting? = null
         private var listener: Listener? = null
 
-        fun instance(listener: Listener): SortingDialog {
+        fun instance(sorting: SortingViewModel.Sorting, listener: Listener): SortingDialog {
 
+            this.sorting = sorting
             this.listener = listener
             return if (dialog == null) SortingDialog() else dialog!!
         }
     }
 
     private var binding: DialogSortingBinding? = null
-    private var sorting = SortingViewModel.Sorting()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -59,40 +61,45 @@ class SortingDialog : DialogFragment() {
 
         binding?.let { b ->
 
-            when(sorting.groupingBy) {
-                SortingViewModel.Sorting.GroupingBy.NOT -> {
-                    b.rbNotGroup.isChecked = true
+            sorting?.let {
+                when(it.groupingBy) {
+                    SortingViewModel.Sorting.GroupingBy.NOT -> {
+                        b.rbNotGroup.isChecked = true
+                    }
+                    SortingViewModel.Sorting.GroupingBy.TICKER -> {
+                        b.rbCompany.isChecked = true
+                    }
+                    SortingViewModel.Sorting.GroupingBy.INSIDER -> {
+                        b.rbInsider.isChecked = true
+                    }
                 }
-                SortingViewModel.Sorting.GroupingBy.TICKER -> {
-                    b.rbCompany.isChecked = true
-                }
-                SortingViewModel.Sorting.GroupingBy.INSIDER -> {
-                    b.rbInsider.isChecked = true
-                }
-            }
-            when(sorting.sortingBy) {
-                SortingViewModel.Sorting.SortingBy.FILLING_DATE -> {
-                    b.rbFillingDate.isChecked = true
-                }
-                SortingViewModel.Sorting.SortingBy.TRADE_DATE -> {
-                    b.rbTradeDate.isChecked = true
-                }
-                SortingViewModel.Sorting.SortingBy.TICKER -> {
-                    b.rbTicker.isChecked = true
-                }
-                SortingViewModel.Sorting.SortingBy.VOLUME -> {
-                    b.rbDealVolume.isChecked = true
+                when(it.sortingBy) {
+                    SortingViewModel.Sorting.SortingBy.FILLING_DATE -> {
+                        b.rbFillingDate.isChecked = true
+                    }
+                    SortingViewModel.Sorting.SortingBy.TRADE_DATE -> {
+                        b.rbTradeDate.isChecked = true
+                    }
+                    SortingViewModel.Sorting.SortingBy.TICKER -> {
+                        b.rbTicker.isChecked = true
+                    }
+                    SortingViewModel.Sorting.SortingBy.VOLUME -> {
+                        b.rbDealVolume.isChecked = true
+                    }
                 }
             }
 
             b.rgGrouping.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
                 override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                     when(checkedId) {
+                        R.id.rb_not_group -> {
+                            sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.NOT
+                        }
                         R.id.rb_company -> {
-                            sorting.groupingBy = SortingViewModel.Sorting.GroupingBy.TICKER
+                            sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.TICKER
                         }
                         R.id.rb_insider -> {
-                            sorting.groupingBy = SortingViewModel.Sorting.GroupingBy.INSIDER
+                            sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.INSIDER
                         }
                     }
                 }
@@ -100,26 +107,33 @@ class SortingDialog : DialogFragment() {
             b.rgSorting.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
                 override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                     when(checkedId) {
+                        R.id.rb_filling_date -> {
+                            sorting?.sortingBy = SortingViewModel.Sorting.SortingBy.FILLING_DATE
+                        }
                         R.id.rb_trade_date -> {
-                            sorting.sortingBy = SortingViewModel.Sorting.SortingBy.TRADE_DATE
+                            sorting?.sortingBy = SortingViewModel.Sorting.SortingBy.TRADE_DATE
                         }
                         R.id.rb_ticker -> {
-                            sorting.sortingBy = SortingViewModel.Sorting.SortingBy.TICKER
+                            sorting?.sortingBy = SortingViewModel.Sorting.SortingBy.TICKER
                         }
                         R.id.rb_deal_volume -> {
-                            sorting.sortingBy = SortingViewModel.Sorting.SortingBy.VOLUME
+                            sorting?.sortingBy = SortingViewModel.Sorting.SortingBy.VOLUME
                         }
                     }
                 }
             })
             b.tvByAsc.setOnClickListener {
-                sorting.orderBy = SortingViewModel.Sorting.OrderBy.ASC
-                listener?.onSortingDialogButtonClick(sorting)
+                sorting?.let {
+                    it.orderBy = SortingViewModel.Sorting.OrderBy.ASC
+                    listener?.onSortingDialogButtonClick(it)
+                }
                 dismiss()
             }
             b.tvByDesc.setOnClickListener {
-                sorting.orderBy = SortingViewModel.Sorting.OrderBy.DESC
-                listener?.onSortingDialogButtonClick(sorting)
+                sorting?.let {
+                    it.orderBy = SortingViewModel.Sorting.OrderBy.DESC
+                    listener?.onSortingDialogButtonClick(it)
+                }
                 dismiss()
             }
             b.btnClose.setOnClickListener {

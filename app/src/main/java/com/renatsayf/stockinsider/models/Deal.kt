@@ -6,8 +6,8 @@ import android.os.Parcelable
 
 data class Deal(var filingDate : String?) : Parcelable, IDeal
 {
-    var filingDateRefer : String? = ""
-    var tradeDate: String? = ""
+    override var filingDateRefer : String? = ""
+    override var tradeDate: String? = ""
     override var ticker : String? = ""
         set(value)
         {
@@ -24,7 +24,7 @@ data class Deal(var filingDate : String?) : Parcelable, IDeal
         }
     var companyRefer : String? = ""
         private set
-    var insiderName : String? = ""
+    override var insiderName : String? = ""
     var insiderNameRefer : String? = ""
         set(value)
         {
@@ -61,7 +61,7 @@ data class Deal(var filingDate : String?) : Parcelable, IDeal
             field = value?.replace(",", " ")
         }
     var deltaOwn : String? = ""
-    var volumeStr : String? = ""
+    override var volumeStr : String? = ""
         set(value)
         {
             field = value ?: ""

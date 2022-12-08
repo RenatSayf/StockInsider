@@ -25,7 +25,11 @@ class DealListAdapter(private val listener: Listener? = null) : ListAdapter<IDea
     }
 
     override fun areContentsTheSame(oldItem: IDeal, newItem: IDeal): Boolean {
-        return oldItem.ticker == newItem.ticker
+        return oldItem.ticker == newItem.ticker &&
+                oldItem.insiderName == newItem.insiderName &&
+                oldItem.filingDateRefer == newItem.filingDateRefer &&
+                oldItem.tradeDate == newItem.tradeDate &&
+                oldItem.volumeStr == newItem.volumeStr
     }
 
 })
@@ -75,6 +79,11 @@ class DealListAdapter(private val listener: Listener? = null) : ListAdapter<IDea
         if (viewType == 1) {
             ViewHolder(binding).bind(currentList[position] as Deal)
         }
+    }
+
+    fun clear() {
+        submitList(listOf())
+        notifyDataSetChanged()
     }
 
     interface Listener {
