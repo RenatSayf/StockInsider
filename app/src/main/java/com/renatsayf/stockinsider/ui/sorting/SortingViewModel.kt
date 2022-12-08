@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.ui.sorting
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.models.Deal
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -10,8 +12,15 @@ import javax.inject.Inject
 @HiltViewModel
 class SortingViewModel @Inject constructor() : ViewModel() {
 
+    private var _sorting: Sorting = Sorting()
+    val sorting: Sorting = _sorting
+    fun setSorting(sorting: Sorting) {
+        _sorting = sorting
+    }
+
     fun doSort(list: List<Deal>, sorting: Sorting): List<Deal> {
 
+        _sorting = sorting
         val mutableList = list.toMutableList()
 
         val groupedMap = when (sorting.groupingBy) {
