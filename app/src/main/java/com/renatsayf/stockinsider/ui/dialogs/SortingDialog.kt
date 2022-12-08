@@ -13,7 +13,6 @@ import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DialogSortingBinding
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
-import com.renatsayf.stockinsider.utils.getSerializableCompat
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -22,7 +21,6 @@ class SortingDialog : DialogFragment() {
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
-        val ARG_SORTING = "${this::class.java.simpleName}.ARG_SORTING"
 
         private var dialog: SortingDialog? = null
         private var sorting: SortingViewModel.Sorting? = null

@@ -1,17 +1,16 @@
 package com.renatsayf.stockinsider.ui.result.ticker
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.IDeal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.deal.DealViewModel
@@ -24,10 +23,6 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
     private lateinit var binding: FragmentResultBinding
 
     private val dealVM: DealViewModel by viewModels()
-
-    private val dealsAdapter: DealListAdapter by lazy {
-        DealListAdapter(this@TradingByTickerFragment)
-    }
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
@@ -50,15 +45,14 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
         binding = FragmentResultBinding.bind(view)
         with(binding) {
 
+            btnSorting.setVisible(false)
             includedProgress.setVisible(true)
             insiderNameLayout.setVisible(true)
             noResult.root.setVisible(false)
 
             tradeListRV.apply {
                 setHasFixedSize(true)
-                adapter = dealsAdapter.apply {
-                    showSkeleton()
-                }
+                adapter = DealListAdapter()
             }
 
             toolBar.apply {
@@ -88,8 +82,10 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
                             titleTView.text = title
                             insiderNameTView.text = companyName
 
-                            dealsAdapter.apply {
-                                submitList(list as List<IDeal>?)
+                            binding.tradeListRV.apply {
+                                adapter = DealListAdapter(this@TradingByTickerFragment).apply {
+                                    addItems(list)
+                                }
                             }
                         }
                         else {

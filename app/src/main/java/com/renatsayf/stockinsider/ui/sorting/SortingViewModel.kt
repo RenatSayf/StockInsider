@@ -12,9 +12,6 @@ class SortingViewModel @Inject constructor() : ViewModel() {
 
     private var _sorting: Sorting = Sorting()
     val sorting: Sorting = _sorting
-    fun setSorting(sorting: Sorting) {
-        _sorting = sorting
-    }
 
     fun doSort(list: List<Deal>, sorting: Sorting): List<Deal> {
 

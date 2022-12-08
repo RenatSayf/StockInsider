@@ -25,7 +25,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.IDeal
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -55,9 +54,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val sortingVM: SortingViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
-    private val dealsAdapter: DealListAdapter by lazy {
-        DealListAdapter(this@ResultFragment)
-    }
+    //private var dealsAdapter: DealListAdapter? = null
 
     private var ad:InterstitialAd? = null
     private val isAdEnabled = true
@@ -105,15 +102,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 ServiceNotification.cancelNotifications(requireContext(), id)
             }
             roomSearchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
-            roomSearchSet?.let {
-                resultVM.getDealList(it.toSearchSet())
-            }
         }
 
         binding.tradeListRV.apply {
-            adapter = dealsAdapter.apply {
-                showSkeleton()
-            }
+
+            adapter = DealListAdapter()
 
             setOnScrollChangeListener(object : View.OnScrollChangeListener {
                 override fun onScrollChange(
@@ -154,8 +147,10 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     binding.noResult.noResultLayout.setVisible(false)
                     binding.includedProgress.setVisible(true)
                     binding.btnAddToTracking.setVisible(false)
+                    roomSearchSet?.let {
+                        resultVM.getDealList(it.toSearchSet())
+                    }
                 }
-
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
                         binding.noResult.noResultLayout.setVisible(false)
@@ -163,8 +158,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
                                 binding.resultTV.text = list.size.toString()
-                                dealsAdapter.submitList(list as List<IDeal>?)
-                                dealsAdapter.notifyDataSetChanged()
+                                binding.tradeListRV.apply {
+                                    adapter = DealListAdapter(this@ResultFragment).apply {
+                                        addItems(list)
+                                    }
+                                }
                                 return@let
                             }
                             list.size == 1 && list[0].error!!.isNotEmpty() -> {
@@ -288,18 +286,10 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     }
 
     override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
-        val currentList = dealsAdapter.currentList as List<Deal>
+        val currentList = (binding.tradeListRV.adapter as DealListAdapter).getItems()
         if (currentList.isNotEmpty()) {
             val sortedList = sortingVM.doSort(currentList, sorting)
-
-            dealsAdapter.clear()
-            dealsAdapter.submitList(sortedList, object : Runnable {
-                override fun run() {
-                    binding.tradeListRV.scrollToPosition(0)
-                    resultVM.setState(ResultViewModel.State.DataReceived(sortedList as ArrayList<Deal>))
-                }
-            })
-            dealsAdapter.notifyDataSetChanged()
+            resultVM.setState(ResultViewModel.State.DataReceived(sortedList as ArrayList<Deal>))
         }
     }
 

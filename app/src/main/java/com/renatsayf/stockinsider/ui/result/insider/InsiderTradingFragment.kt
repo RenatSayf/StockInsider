@@ -11,7 +11,6 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.models.IDeal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.deal.DealViewModel
@@ -24,10 +23,6 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
     private lateinit var binding: FragmentResultBinding
 
     private val dealVM: DealViewModel by viewModels()
-
-    private val dealsAdapter: DealListAdapter by lazy {
-        DealListAdapter(this@InsiderTradingFragment)
-    }
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
@@ -62,11 +57,10 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
 
             tradeListRV.apply {
                 setHasFixedSize(true)
-                adapter = dealsAdapter.apply {
-                    showSkeleton()
-                }
+                adapter = DealListAdapter()
             }
 
+            btnSorting.setVisible(false)
             insiderNameLayout.setVisible(true)
             includedProgress.setVisible(true)
             noResult.root.setVisible(false)
@@ -87,8 +81,10 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                             titleTView.text = title
                             insiderNameTView.text = list[0].insiderName
 
-                            dealsAdapter.apply {
-                                submitList(list as List<IDeal>?)
+                            binding.tradeListRV.apply {
+                                adapter = DealListAdapter(this@InsiderTradingFragment).apply {
+                                    addItems(list)
+                                }
                             }
                         }
                         else {
