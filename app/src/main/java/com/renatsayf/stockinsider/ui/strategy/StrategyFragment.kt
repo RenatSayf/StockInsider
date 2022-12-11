@@ -4,10 +4,10 @@ package com.renatsayf.stockinsider.ui.strategy
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.os.ConfigurationCompat
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
@@ -40,16 +40,15 @@ class StrategyFragment : Fragment(R.layout.fragment_strategy)
         binding = FragmentStrategyBinding.bind(view)
 
         binding.webView.apply {
-            loadUrl("file:///android_asset/strategy/index.html")
-        }
-
-        binding.webView.setOnTouchListener(object : View.OnTouchListener{
-            override fun onTouch(p0: View?, p1: MotionEvent?): Boolean
-            {
-                p0?.performClick()
-                return false
+            val currentLocale = ConfigurationCompat.getLocales(resources.configuration)[0]
+            val language = currentLocale?.language
+            if (language == "ru") {
+                loadUrl("file:///android_asset/strategy/index.html")
             }
-        })
+            else {
+                loadUrl("file:///android_asset/strategy/index-en.html")
+            }
+        }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             findNavController().popBackStack()

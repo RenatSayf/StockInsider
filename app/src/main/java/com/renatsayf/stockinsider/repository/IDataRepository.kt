@@ -16,6 +16,8 @@ interface IDataRepository
 
     fun getInsiderTradingFromNetAsync(insider: String) : Single<ArrayList<Deal>>
 
+    fun getAllCompaniesName() : Single<List<Company>>
+
     suspend fun getAllSearchSetsFromDbAsync() : List<RoomSearchSet>
 
     fun getTradingByTickerAsync(ticker: String) : Single<ArrayList<Deal>>

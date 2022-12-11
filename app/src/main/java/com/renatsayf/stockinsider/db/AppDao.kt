@@ -29,7 +29,7 @@ interface AppDao
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 
-    @Insert(onConflict = OnConflictStrategy.REPLACE, entity = Company::class)
+    @Insert(onConflict = OnConflictStrategy.IGNORE, entity = Company::class)
     suspend fun insertCompanies(list : List<Company>)
 
     @Query("SELECT ticker FROM companies")

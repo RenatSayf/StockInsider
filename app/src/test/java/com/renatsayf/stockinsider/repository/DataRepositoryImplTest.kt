@@ -292,6 +292,23 @@ internal class DataRepositoryImplTest {
         }
 
     }
+
+    @Test
+    fun insertCompanies() {
+
+        val companies = listOf(
+            Company("AAA", "AAAAAAAAA"),
+            Company("BBB", "BBBBBBBBBBBBBB"),
+            Company("CCC", "CCCCCCCCCCC CCCCC")
+        )
+
+        runBlocking {
+
+            repository.insertCompanies(companies)
+            val actualList = repository.getCompaniesFromDbAsync()
+            Assert.assertTrue(actualList?.size == 3)
+        }
+    }
 }
 
 

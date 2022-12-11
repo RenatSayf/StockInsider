@@ -1,0 +1,707 @@
+<!doctype html> 
+    <html lang=en>
+    <head>
+    <script type="text/javascript" src="/js/sic.js" async></script>
+    <meta charset=utf-8>
+    <title>Insider Trading Screener -  - OpenInsider</title>
+    <meta name=viewport content="width=device-width, initial-scale=1">
+    <meta name="description" content="Insider Trading Screener. Monitor SEC Form 4 Insider Trading Filings for Insider Buying and Selling. Real-time Insider Trading Stock Screener. Long and Short Trading Ideas using Insider Transaction Data." />
+    <meta name="keywords" content="insider buying, insider trading, insider transactions, Form 4, insider score, insider monitor, gurufocus, insider selling, stocks to buy, stocks to sell, stocks to short" />
+    <style type="text/css">
+    #logotext { margin:0px;padding:0px 3px;font-size:16px;
+    }
+    .menu{
+    	border:0px;
+    	margin:0px;
+    	padding:0px;
+    	font-family:sans-serif,arial,verdana,geneva,helvetica,sans-serif;
+    	font-size:14px;
+    	font-weight:normal;
+    	}
+    .menu ul{
+    	height:28px;
+    	list-style:none;
+    	margin:0px;
+    	padding:0px;
+    	}
+    	.menu li{
+    		background:#222244;
+    		border-top:1px solid #ddd;
+    		border-left:1px solid #ccc;
+    		border-right:1px solid #555;
+    		border-bottom:1px solid #555;
+    		float:left;
+    		height:28px;
+    		margin:0px 0px 0px 0px;
+    		padding:0px;
+    		}
+    	.menu li a{
+    		color:#fff;
+    		display:block;
+    		font-weight:normal;
+    		line-height:28px;
+    		margin:0px;
+    		padding:0px 7px;
+    		text-align:center;
+    		text-decoration:none;
+    		}
+    	.menu li a:hover{
+    		background:#ff6600;
+    		color:#fff;
+    		text-decoration:none;
+    		}
+    	.menu li ul{
+    		background:#333;
+    		margin:0px;
+    		padding:0px;
+    		border-top:1px solid #ccc;
+    		border-left:1px solid #ccc;
+    		border-right:1px solid #555;
+    		border-bottom:1px solid #555;
+    		display:none;
+    		line-height:auto;
+    		height:auto;
+    		filter:alpha(opacity=95);
+    		opacity:0.95;
+    		position:absolute;
+    		width:340px;
+    		z-index:200;
+    		/*top:1em;
+    		/*left:0;*/
+    		}
+    	.menu li:hover ul{
+    		display:block;
+    		}
+    	.menu li li {
+    		margin:0px;
+    		padding:0px;
+    		border:0px;
+    		display:block;
+    		float:none;
+    		width:340px;
+    		}
+    	.menu li ul a{
+    		height:26px;
+    		margin:0px;
+    		padding:0px;
+    		border:0px;
+    		display:block;
+    		font-size:14px;
+    		font-style:normal;
+    		padding:0px 0px 0px 7px;
+    		text-align:left;
+    		}
+    	.menu li ul a:hover{
+    		background:#ff6600;
+    		color:#fff;
+    		opacity:1.0;
+    		filter:alpha(opacity=100);
+    		}
+    	.menu p{
+    		clear:left;
+    		}	
+    	.menu #current{
+    		background:#333366;
+    		color:#ffffff;
+    		}
+    	.menu #current:hover{
+    		background:#ff6600;
+    		color:#ffffff;
+    		}
+    </style>
+    	
+    <style type="text/css">
+    .box{
+        display: none;
+        width: 100%;
+    }
+    
+    a:hover + .box,.box:hover{
+        display: block;
+        position: relative;
+        z-index: 100;
+    }
+    
+    #menuwrapper { position: fixed; top: 0; width:100%; background:#000000; }
+    #maxmin { max-width: 1200px; min-width:600px; margin: 0 auto; border: none; padding: 0; }
+      a:link { color:#1a0dab; text-decoration:none; }
+      a:visited { color:#660066; text-decoration:none; }
+      a:hover { color:#1a0dab; text-decoration:underline; }
+    
+    * {margin:0; padding:0; outline:0;}
+    #branding {font:11px Arial,Verdana;}
+    body {font:11px sans-serif,Arial,Verdana; font-weight:400; color:#242424; margin:0px 1px 5px; background:#f5f9fc; text-align:left;}
+    .h1title h1 {margin:0px 0px 2px; padding:2px 6px; color:#fff; background:#333366; font:16px sans-serif,Arial,Verdana; font-weight:600; text-decoration:none; text-align:left;}
+    .h1title h1 a {margin:0px 0px 2px; padding:2px 6px; color:#fff; background:#333366; font:16px sans-serif,Arial,Verdana; font-weight:600; text-decoration:none; text-align:left;}
+    .h1title h1 a:hover {color:#ff6600; text-decoration:none;}
+    .h2title h2 {clear:both; margin:0px; padding:4px 6px; color:#eee; background:#222; font:16px sans-serif,Arial,Verdana; text-decoration:none; text-align:left;}
+    .h2title h2:hover {color:#fff; background:#ff6600; text-decoration:none;}
+    #titlelink {text-decoration:none;}
+    img { border:none; vertical-align:top;}
+    #tablewrapper { max-width:1230px; min-width
+V/OKPRFL_1dv8v6p_RSB: :760px; margin:0 auto;}
+    #tableheader {height:55px;}
+    .search {float:left; padding:6px; border:1px solid #c6d5e1; background:#fff;}
+    #tableheader select {float:left; font-size:11px; width:125px; padding:2px 4px 4px;}
+    #tableheader input {float:left; font-size:11px; width:225px; padding:2px 4px 4px; margin-left:4px;}
+    .details {float:right; padding-top:12px;}
+    .details div {float:left; margin-left:15px; font-size:11px;}
+    .tinytable { max-width:1230px; min-width:760px; solid #c6d5e1; solid #c6d5e1; border-bottom:none;}
+    .tinytable th {background:#cce6ff; text-align:left; color:#000; border:1px solid #fff;}
+    .tinytable th h3 {font:12px sans-serif,Arial,Verdana; font-weight:400; padding:2px 1px;}
+    .tinytable td {padding:5px 2px; border-bottom:1px solid #c6d5e1; border-right:1px solid #c6d5e1;}
+    .tinytable td div {overflow: hidden; white-space: nowrap;}
+    .tinytable .head h3 {background:url(/images/sort.gif) 7px center no-repeat; cursor:pointer; padding-left:18px;}
+    .tinytable .desc {background:#12648a;color:#fff;}
+    .tinytable .asc {background:#12648a;color:#fff;}
+    .tinytable .desc h3 {background:url(/images/desc.gif) 7px center no-repeat; cursor:pointer; padding-left:18px;}
+    .tinytable .asc h3 {background:url(/images/asc.gif) 7px  center no-repeat; cursor:pointer; padding-left:18px;}
+    .tinytable .head:hover {background:#12648a;color:#fff;}
+    .tinytable .desc:hover {background:#12648a;color:#fff;}
+    .tinytable .asc:hover {background:#12648a;color:#fff;}
+    .tinytable .evenrow td {background:#fff}
+    .tinytable .oddrow td {background:#ecf2f6}
+    .tinytable td.evenselected {background:#ecf2f6}
+    .tinytable td.oddselected {background:#dce6ee}
+    .tinytable tfoot {background:#fff; font-weight:bold;}
+    .tinytable tfoot td {text-align:right; padding:2px 3px 2px 0px;}
+    #tablefooter {height:15px; margin-top:20px;}
+    #tablenav {float:left;}
+    #tablenav img {cursor:pointer;}
+    #tablenav div {float:left; margin-right:15px;}
+    #tablelocation {float:right; font-size:11px;}
+    #tablelocation select {margin-right:3px;}
+    #tablelocation div {float:left; margin-left:15px;}
+    .page {margin-top:2px; font-style:italic;}
+    #selectedrow td {background:#c6d5e1;}
+    .tinytable tr:hover td {background-color:#cce6ff; }
+    .tinytable th:hover {background-color:#cce6ff; }
+    
+    #chart {
+        line-height:30px;
+        background-color:#f5f9fc;
+        height:280px;
+        width:560px;
+        float:left;
+        padding:0px 5px; 
+    }
+    #adLgRect {
+        width:356px;
+        float:left;
+        padding:0px 5px; 
+    }
+    #results {
+        clear:both;
+        padding:0px; 
+    }
+    </style>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-NV4RCJYE6Q"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+    
+      gtag('config', 'G-NV4RCJYE6Q');
+    </script>
+    
+    <script>
+      (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+      })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    
+      ga('create', 'UA-25031931-1', 'auto');
+      ga('send', 'pageview');
+    </script>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4513325110590560"
+         crossorigin="anonymous"></script>
+    
+    </head>
+    
+    <body onload="initDropDown(-100)">
+    
+    <div id="tablewrapper">
+    <div class="menu" style="position:fixed; width:100%; z-index:100;">
+    <ul>
+    <li><a id="logotext" href="/" ><b>OpenInsider</b></a>
+    </li>
+    <li><a href="#" >Latest</a>
+    	<ul>
+    	<li><a href="/latest-cluster-buys" >Latest Cluster Buys</a></li>
+    	<li><a href="/latest-penny-stock-buys" >Latest Penny Stock Buys</a></li>
+    	<li><a href="/latest-insider-trading" >Latest Insider Trading (all filings)</a></li>
+    	<li><a href="/insider-purchases" >Latest Insider Purchases</a></li>
+    	<li><a href="/latest-insider-purchases-25k" >Latest Insider Purchases $25k+</a></li>
+    	<li><a href="/latest-officer-purchases-25k" >Latest Officer Purchases $25k
+V/OKPRFL_1dv8v6p_RSB: +</a></li>
+    	<li><a href="/latest-ceo-cfo-purchases-25k" >Latest CEO/CFO Purchases $25k+</a></li>
+    	<li><a href="/insider-sales" >Latest Insider Sales</a></li>
+    	<li><a href="/latest-insider-sales-100k" >Latest Insider Sales $100k+</a></li>
+    	<li><a href="/latest-officer-sales-100k" >Latest Officer Sales $100k+</a></li>
+    	<li><a href="/latest-ceo-cfo-sales-100k" >Latest CEO/CFO Sales $100k+</a></li>
+    	</ul>
+    </li>
+    <li><a href="#" >Top</a>
+    	<ul>
+    	<li><a href="/top-officer-purchases-of-the-day" >Top Officer Purchases Today</a></li>
+    	<li><a href="/top-officer-purchases-of-the-week" >Top Officer Purchases Past Week</a></li>
+    	<li><a href="/top-officer-purchases-of-the-month" >Top Officer Purchases Past Month</a></li>
+    	<li><a href="/top-insider-purchases-of-the-day" >Top Insider Purchases Today</a></li>
+    	<li><a href="/top-insider-purchases-of-the-week" >Top Insider Purchases Past Week</a></li>
+    	<li><a href="/top-insider-purchases-of-the-month" >Top Insider Purchases Past Month</a></li>
+    	<li><a href="/top-insider-sales-of-the-day" >Top Insider Sales Today</a></li>
+    	<li><a href="/top-insider-sales-of-the-week" >Top Insider Sales Past Week</a></li>
+    	<li><a href="/top-insider-sales-of-the-month" >Top Insider Sales Past Month</a></li>
+    	</ul>
+    </li>
+    <li><a href="/charts" >Charts</a>
+    </li>
+    <li>
+    <div id="searchbox" style="margin:6px 3px;">
+    <form action="/search" method="GET">
+    <input type="search" name="q" style="font-size:14px;" placeholder="Tickers" maxlength="20000" size="8" />
+    <input type="submit" value="Go" />
+    </form>
+    </div>
+    </li>
+    </ul>
+    
+    </div>
+    
+    <br><br><br><div class="h1title" style="clear:both;"><h1>Insider Trading Screener - </h1></div><div id="subjectDetails" style="clear:both;"></div><div id="screener" style="clear:both;">
+    
+    <form action="/screener" method="GET">
+    <table cellpadding="2" cellspacing="2">
+    <tr><td>
+    
+    <fieldset>
+    <legend><strong>General</strong></legend>
+    <table cellpadding="4" cellspacing="4" border="0">
+    <tr><td align=right>Tickers</td><td><input type="text" name="s" placeholder="Symbols or CIKs" value="" maxlength="20000" size="16" /></td></tr>
+    <tr><td align=right>Insider</td><td><input type="text" name="o" placeholder="Insider Name or CIK" value="" maxlength="80" size="16" /></td></tr>
+    <tr><td align=right>Sh Price $</td><td>
+    <input type="number" name="pl" placeholder="Min" value="" min=0 max=9999 step=1 maxlength="4" size="3" />
+    <input type="number" name="ph" placeholder="Max" value="" min=0 max=9999 step=1 maxlength="4" size="3" />
+    </td></tr>
+    <tr><td align=right>Lqdty M$</td><td>
+    <input type="number" name="ll" placeholder="Min" value="" min=0 max=999 step=0.1 maxlength="3" size="3" />
+    <input type="number" name="lh" placeholder="Max" value="" min=0 max=999 step=1 maxlength="3" size="3" />
+    </td></tr>
+    
+    </table>
+    </fieldset>
+    
+    <fieldset>
+    <legend><strong>Date</strong></legend>
+    <table cellpadding="4" cellspacing="4" border="0">
+    <tr><td align=right>Filing Date</td><td>
+    <select name="fd" id="dropdownFD">
+    	<option value="0" >All dates</option>
+    	<option value="-1" >Custom</option>
+    	<option value="1" >Latest day</option>
+    	<option value="3" >Last 3 days</option>
+    	<option value="7" >Last 1 week</option>
+    	<option value="14"  selected>Last 2 weeks</option>
+    	<option value="30" >Last 1 month</option>
+    	<option value="60" >Last 2 months</option>
+    	<option value="90" >Last 3 months</option>
+    	<option value="180" >Last 6 months</option>
+    	<option value="365" >Last 1 year</option>
+    	<option value="730" >Last 2 years</option>
+    	<option value="1461" >Last 4 years</option>
+    </select>
+    </td></tr>
+    <tr><td colspan="2">
+    &nbsp;&nbsp;
+    <input type="text" id="textboxFD" name="fdr" placeholder="Filing Date Range" size=27 value="">
+    </td></tr>
+    <script type="text/javascript">
+        var textboxFD = document.getElementById('textboxFD');
+        var dropdownFD = document.getElementById('dropdownFD');
+    
+        dropdownFD.onchange = function(){
+              if (this.value!=-1) textboxFD.value = '';
+        }
+        textboxFD.onfocus = function(){
+              if (this.value!='') dropdownFD.value = '-
+V/OKPRFL_1dv8v6p_RSB: 1';
+        }
+    </script>
+    
+    <tr><td align=right>Trade Date</td><td>
+    <select name="td" id="dropdownTD">
+    	<option value="0" >All dates</option>
+    	<option value="-1" >Custom</option>
+    	<option value="1" >Latest day</option>
+    	<option value="3" >Last 3 days</option>
+    	<option value="7" >Last 1 week</option>
+    	<option value="14"  selected>Last 2 weeks</option>
+    	<option value="30" >Last 1 month</option>
+    	<option value="60" >Last 2 months</option>
+    	<option value="90" >Last 3 months</option>
+    	<option value="180" >Last 6 months</option>
+    	<option value="365" >Last 1 year</option>
+    	<option value="730" >Last 2 years</option>
+    	<option value="1461" >Last 4 years</option>
+    </select>
+    </td></tr>
+    <tr><td colspan="2">
+    &nbsp;&nbsp;<input type="text" id="textboxTD" name="tdr" placeholder="Trade Date Range" size=27 value="" />
+    </td></tr>
+    
+    <script type="text/javascript">
+        var textboxTD = document.getElementById('textboxTD');
+        var dropdownTD = document.getElementById('dropdownTD');
+    
+        dropdownTD.onchange = function(){
+              if (this.value!=-1) textboxTD.value = '';
+        }
+        textboxTD.onfocus = function(){
+              if (this.value!='') dropdownTD.value = '-1';
+        }
+    </script>
+    <tr><td align=right>Filing Delay</td><td>
+    <input type="number" name="fdlyl" placeholder="Min" value="" min=0 max=99 step=1 maxlength="1" size="1" />
+    <input type="number" name="fdlyh" placeholder="Max" value="" min=0 max=9999 step=1 maxlength="1" size="1" />
+    </td></tr>
+    <tr><td align=right>N Days Ago</td><td><input type="number" name="daysago" value="" min=0 max=9999 step=1 maxlength="4" size="4" />
+    </td></tr>
+    
+    </table>
+    </fieldset>
+    
+    </td>
+    <td>
+    <table>
+    
+    <tr><td colspan=2>
+    <fieldset>
+    <legend><strong>Transaction Filing</strong></legend>
+    <table><tr><td>
+    <input type=checkbox name=xp value=1  checked>&nbsp;P&nbsp;-&nbsp;Purchase<br><input type=checkbox name=xs value=1 >&nbsp;S&nbsp;-&nbsp;Sale<br><input type=checkbox name=xa value=1 >&nbsp;A&nbsp;-&nbsp;Grant<br><input type=checkbox name=xd value=1 >&nbsp;D&nbsp;-&nbsp;Sale to Iss<br><input type=checkbox name=xg value=1 >&nbsp;G&nbsp;-&nbsp;Gift<br></td><td><input type=checkbox name=xf value=1 >&nbsp;F&nbsp;-&nbsp;Tax<br><input type=checkbox name=xm value=1 >&nbsp;M&nbsp;-&nbsp;Option Ex<br><input type=checkbox name=xx value=1 >&nbsp;X&nbsp;-&nbsp;Option Ex<br><input type=checkbox name=xc value=1 >&nbsp;C&nbsp;-&nbsp;Cnv Deriv<br><input type=checkbox name=xw value=1 >&nbsp;W&nbsp;-&nbsp;Inherited<br></td></tr>
+    <tr><td>
+    <input type="checkbox" name="excludeDerivRelated" value=1 checked /> No deriv
+    </td>
+    <td>
+    <input type="checkbox" name="tmult" value=1  /> Multiple Days
+    </td></tr>
+    
+    <tr><td align=right>Traded K$</td><td>
+    <input type="number" name="vl" placeholder="Min" value="4999" min=0 max=2147483 step=5 maxlength="4" size="4" />
+    <input type="number" name="vh" placeholder="Max" value="" min=0 max=2147483 step=5 maxlength="4" size="4" />
+    </td></tr>
+    <tr><td align=right>Own Chg %</td><td>
+    <input type="number" name="ocl" placeholder="Min" value="" min=-100 max=999 step=1 maxlength="3" size="3" />
+    <input type="number" name="och" placeholder="Max" value="" min=-100 max=999 step=1 maxlength="3" size="3" />
+    </td></tr>
+    
+    </table>
+    </fieldset>
+    </td></tr>
+    <tr><td colspan=2>
+    
+    <fieldset style="width: 220px;">
+    <legend><strong>Industry</strong></legend>
+    <table>
+    <tr>
+    <td style="text-align: left;">
+    <select name="sic1" id="sector" onchange="setSubsectors();">
+    <option value="-1" selected>All Sectors (except Funds)</option>
+    <option value="1">Agriculture, Forestry, Fish</option>
+    <option value="10">Mining</option>
+    <option value="15">Construction</option>
+    <option value="20">Manufacturing</option>
+    <option value="40">Transportation & Utilities</option>
+    <option value="50">Wholesale Trade</option>
+    <option value="52">Retail Trade</option>
+    <option value="60">Financial</option>
+    <option value="70">Services</option>
+    <option value="0">Closed-End Funds</option>
+    </select>
+    </td>
+    </tr><tr>
+    <td style="text-align: left;">
+    <select name="sic2" id="subsector" onchange="setIndustries
+V/OKPRFL_1dv8v6p_RSB: ();">
+    </select>
+    </td>
+    </tr><tr>
+    <td style="text-align: left;">
+    <select name="sic3"  id="industry" onchange="setSicMinMax();">
+    </select>
+    </td>
+    </tr>
+    
+    <tr><td>
+    <input type="hidden" name="sicl" id="sicMin" placeholder="Min" value="" min=0 max=9999 step=1 maxlength="4" size="4" />
+    <input type="hidden" name="sich" id="sicMax" placeholder="Max" value="" min=0 max=9999 step=1 maxlength="4" size="4" />
+    </td></tr>
+    
+    </table>
+    </fieldset>
+    
+    
+    </td></tr>
+    
+    </table>
+    </td>
+    <td>
+    <table cellpadding="4" cellspacing="4" border="0">
+    
+    <tr><td>
+    <fieldset>
+    <legend><strong>Insider&nbsp;Title&nbsp;&nbsp;</strong></legend>
+    <script>
+    function isoffCheck() {
+        var o = document.getElementById("isofficer");
+        document.getElementById("iscob").checked = o.checked;
+        document.getElementById("isceo").checked = o.checked;
+        document.getElementById("ispres").checked = o.checked;
+        document.getElementById("iscoo").checked = o.checked;
+        document.getElementById("iscfo").checked = o.checked;
+        document.getElementById("isgc").checked = o.checked;
+        document.getElementById("isvp").checked = o.checked;
+    }
+    function isoffClear() {
+        document.getElementById("isofficer").checked = false;
+    }
+    </script>
+    &nbsp;<input type="checkbox" name="isofficer" id="isofficer" value=1 onclick="isoffCheck()" checked /> Officer<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="iscob" id="iscob" value=1 onclick="isoffClear()" checked /> COB<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="isceo" id="isceo" value=1 onclick="isoffClear()" checked /> CEO<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="ispres" id="ispres" value=1 onclick="isoffClear()" checked /> Pres<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="iscoo" id="iscoo" value=1 onclick="isoffClear()" checked /> COO<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="iscfo" id="iscfo" value=1 onclick="isoffClear()" checked /> CFO<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="isgc" id="isgc" value=1 onclick="isoffClear()" checked /> GC<br>
+    &nbsp;&nbsp;&nbsp;<input type="checkbox" name="isvp" id="isvp" value=1 onclick="isoffClear()" checked /> VP<br>
+    &nbsp;<input type="checkbox" name="isdirector" value=1 checked /> Director<br>
+    &nbsp;<input type="checkbox" name="istenpercent" value=1 checked /> 10%own<br>
+    &nbsp;<input type="checkbox" name="isother" value=1  /> Other
+    </fieldset>
+    </td></tr>
+    
+    </table>
+    </td>
+    <td>
+    
+    <table>
+    
+    <tr><td align=right>Group by</td><td>
+    <script type="text/javascript">
+    function toggleGrp2() {
+    	var sel = document.getElementById("grpsel").value;
+    	document.getElementById("grp2").disabled = (sel==0) ? true: false;
+    	document.getElementById("grp2set").style.visibility = (sel==0) ? 'hidden': 'visible';
+    }
+    </script>
+    <select id="grpsel" name="grp" onchange="toggleGrp2();">
+    	<option value="0"  selected>Filing</option>
+    	<option value="2" >Company</option>
+    </select>
+    </td></tr>
+    </table>
+    
+    <div id="grp2set" style="visibility:hidden">
+    <fieldset>
+    <legend><strong>Company Totals</strong></legend>
+    <table cellpadding="4" cellspacing="4" border="0">
+    
+    <tr><td align=right>Filings</td><td>
+    <input type="number" name="nfl" id="grp2" placeholder="Min" value="" min=0 max=99 step=1 maxlength="2" size="2" />
+    <input type="number" name="nfh" id="grp2" placeholder="Max" value="" min=0 max=99 step=1 maxlength="2" size="2" />
+    </td></tr>
+    <tr><td align=right>Insiders</td><td>
+    <input type="number" name="nil" id="grp2" placeholder="Min" value="" min=0 max=9 step=1 maxlength="1" size="1" />
+    <input type="number" name="nih" id="grp2" placeholder="Max" value="" min=0 max=9 step=1 maxlength="1" size="1" />
+    </td></tr>
+    <tr><td align=right>Officers</td><td>
+    <input type="number" name="nol" id="grp2" placeholder="Min" value="" min=0 max=9 step=1 maxlength="1" size="1" />
+    <input type="number" name="noh" id="grp2" placeholder="Max" value="" min=0 max=9 step=1 maxlength="1" size="1" />
+    </td></tr>
+    <tr><td align=right>Traded K$</td><td>
+    <input type="number" name="v2l" id="grp2" placeholder="Min" value="" min=0 max=2147483 step=5 maxlength="4" size
+V/OKPRFL_1dv8v6p_RSB: ="4" />
+    <input type="number" name="v2h" id="grp2" placeholder="Max" value="" min=0 max=2147483 step=5 maxlength="4" size="4" />
+    </td></tr>
+    <tr><td align=right>Own Chg %</td><td>
+    <input type="number" name="oc2l" id="grp2" placeholder="Min" value="" min=-100 max=999 step=1 maxlength="3" size="3" />
+    <input type="number" name="oc2h" id="grp2" placeholder="Max" value="" min=-100 max=999 step=1 maxlength="3" size="3" />
+    </td></tr>
+    
+    </table>
+    </fieldset>
+    </div>
+    
+    <table>
+    <tr><td align=right>Sort by</td><td>
+    <select name="sortcol">
+    	<option value="0" >Filing Date</option>
+    	<option value="1" >Trade Date</option>
+    	<option value="2" >Ticker Symbol</option>
+    	<option value="8"  selected>Trade Value</option>
+    </select>
+    </td></tr>
+    <tr><td align=right>Max Results</td><td><input type="number" name="cnt" value="100" min=100 max=1000 step=100 maxlength="5" size="5" /></td></tr>
+    <tr><td align=right>Page</td><td><input type="number" name="page" value="1" min=1 max=99 step=1 maxlength="2" size="2" /></td></tr>
+    <tr><td>
+    </td><td><input type="submit" value="Search" />
+    &nbsp;&nbsp;&nbsp;<a href="/screener">clear</a>
+    </td></tr>
+    
+    </table>
+    </td>
+    <td valign="top">
+    </td></tr>
+    </table>
+    </form>
+    </div>
+    
+    <div id="results">24 results. <a href="https://finviz.com/quote.ashx?a=30565236&t=AKUS,HHC,IOVA,UHAL,TNYA,ET,EVA,GLG,RYAN,BDSX,HRT,IAC,LFCR,GOEV" target="_blank">Finviz</a><br><table cellpadding=0 cellspacing=2 border=0><thead><tr align=right><td>TC</td><td>cnt</td><td>1d</td><td>1w</td><td>1m</td><td>6m</td></tr></thead><tbody></tbody></table></div>			<table width="100%" cellpadding="0" cellspacing="0" border="0" class="tinytable">
+    			<thead>
+    			<tr>
+    			<th width="31"><h3>X</h3></th>
+    			<th width="108"><h3>Filing&nbsp;Date</h3></th>
+    			<th width="64"><h3>Trade&nbsp;Date</h3></th>
+    			<th width="45"><h3>Ticker</h3></th>
+    			<th width="190"><h3>Company&nbsp;Name</h3></th><th width="180"><h3>Insider&nbsp;Name</h3></th><th width="100"><h3>Title</h3></th> 
+    			<th><h3>Trade&nbsp;Type&nbsp;&nbsp;</h3></th>
+    			<th><h3>Price</h3></th>
+    			<th><h3>Qty</h3></th>
+    			<th><h3>Owned</h3></th>
+    			<th><h3>&Delta;Own</h3></th>
+    			<th><h3>Value</h3></th>
+    			<th><h3>1d</h3></th>
+    			<th><h3>1w</h3></th>
+    			<th><h3>1m</h3></th>
+    			<th><h3>6m</h3></th>
+    			</tr>
+    			</thead>
+    			<tbody>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1722271/000089924322037279/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-12-01 16:10:12</a></div></td><td align=right><div>2022-11-30</div></td><td><b> <a href="/AKUS" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=AKUS&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">AKUS</a></b></td><td><a href="/AKUS">Akouos, Inc.</a></td><td><a href="/insider/Kearny-Acquisition-Corp/1951111" title="100 direct shares
+    Lilly Corporate Center
+    Indianapolis, IN 46285">Kearny Acquisition Corp</a></td><td>10%</td><td>P - Purchase</td><td align=right>$12.50</td><td align=right>+29,992,668</td><td align=right>100</td><td align=right>-100%</td><td align=right>+$374,908,350</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1498828/000110465922123376/xslF345X03/tm2231334-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-30 20:57:19</a></div></td><td align=right><div>2022-11-29</div></td><td><b> <a href="/HHC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HHC&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HHC</a></b></td><td><a href="/HHC">Howard Hughes Corp</a></td><td><a href="/insider/Pershing-Square-Capital-Management--L.P./1336528" title="15,180,369 indirect shares
+    787 Eleventh Avenue
+    9Th Floor
+    New York, NY 10019">Pershin
+V/OKPRFL_1dv8v6p_RSB: g Square Capital Management, L.P.</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$70.00</td><td align=right>+1,560,205</td><td align=right>15,180,369</td><td align=right>+11%</td><td align=right>+$109,214,243</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1425205/000110465922124196/xslF345X03/tm2231927-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-12-02 17:29:18</a></div></td><td align=right><div>2022-12-02</div></td><td><b> <a href="/IOVA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=IOVA&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">IOVA</a></b></td><td><a href="/IOVA">Iovance Biotherapeutics, Inc.</a></td><td><a href="/insider/Rothbaum-Wayne-P./1423102" title="18,067,333 indirect shares
+    C/O Iovance Biotherapeutics, Inc.
+    825 Industrial Road, 4Th Floor
+    San Carlos, CA 94070">Rothbaum Wayne P.</a></td><td>Dir</td><td>P - Purchase</td><td align=right>$6.50</td><td align=right>+10,000,000</td><td align=right>18,067,333</td><td align=right>+124%</td><td align=right>+$65,000,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/4457/000110465922123372/xslF345X03/tm2231708-3_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-30 20:43:37</a></div></td><td align=right><div>2022-11-28</div></td><td><b> <a href="/UHAL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UHAL&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UHAL</a></b></td><td><a href="/UHAL">Amerco /nv/</a></td><td><a href="/insider/Shoen-Edward-J/925122" title="85,757,341 indirect shares
+    207 E Clarendon Ave
+    Phoenix, AZ 85012">Shoen Edward J</a></td><td>Pres, 10%</td><td>P - Purchase</td><td align=right>$59.75</td><td align=right>+472,550</td><td align=right>85,757,341</td><td align=right>+1%</td><td align=right>+$28,232,494</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/4457/000110465922123370/xslF345X03/tm2231708-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-30 20:41:40</a></div></td><td align=right><div>2022-11-28</div></td><td><b> <a href="/UHAL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UHAL&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UHAL</a></b></td><td><a href="/UHAL">Amerco /nv/</a></td><td><a href="/insider/Willow-Grove-Holdings-LP/1662239" title="85,505,810 indirect shares
+    207 E Clarendon Ave
+    Phoenix, AZ 85012">Willow Grove Holdings LP</a></td><td>10%</td><td>P - Purchase</td><td align=right>$59.75</td><td align=right>+472,550</td><td align=right>85,505,810</td><td align=right>+1%</td><td align=right>+$28,232,494</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/4457/000110465922123371/xslF345X03/tm2231708-2_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-30 20:42:29</a></div></td><td align=right><div>2022-11-28</div></td><td><b> <a href="/UHAL" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=UHAL&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">UHAL</a></b></td><td><a href="/UHAL">Amerco /nv/</a></td><td><a href="/insider/Shoen-Mark-V/1134431" 
+V/OKPRFL_1dv8v6p_RSB: title="85,871,641 indirect shares
+    207 E Clarendon Ave
+    Phoenix, AZ 85012">Shoen Mark V</a></td><td>10%</td><td>P - Purchase</td><td align=right>$59.75</td><td align=right>+472,550</td><td align=right>85,871,641</td><td align=right>+1%</td><td align=right>+$28,232,494</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1858848/000089924322036907/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-23 16:11:02</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/TNYA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TNYA&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TNYA</a></b></td><td><a href="/TNYA">Tenaya Therapeutics, Inc.</a></td><td><a href="/insider/Goeddel-David-V/1182464" title="19,015,674 indirect shares
+    1 Letterman Drive
+    Building D, Suite Dm-900
+    South San Francisco, CA 94129">Goeddel David V</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$2.60</td><td align=right>+9,615,384</td><td align=right>19,015,674</td><td align=right>+102%</td><td align=right>+$24,999,998</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1858848/000089924322036910/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-23 16:12:16</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/TNYA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=TNYA&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">TNYA</a></b></td><td><a href="/TNYA">Tenaya Therapeutics, Inc.</a></td><td><a href="/insider/Column-Group-III-Gp--LP/1790965" title="19,015,674 indirect shares
+    1 Letterman Dr
+    Bldg. D, Ste. Dm-900
+    San Francisco, CA 94129">Column Group III Gp, LP</a></td><td>10%</td><td>P - Purchase</td><td align=right>$2.60</td><td align=right>+9,615,384</td><td align=right>19,015,674</td><td align=right>+102%</td><td align=right>+$24,999,998</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1276187/000120919122058846/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-28 16:01:53</a></div></td><td align=right><div>2022-11-23</div></td><td><b> <a href="/ET" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ET&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ET</a></b></td><td><a href="/ET">Energy Transfer LP</a></td><td><a href="/insider/Warren-Kelcy-L/1276191" title="287,799,984 direct shares
+    8111 Westchester Drive
+    Dallas, TX 75225">Warren Kelcy L</a></td><td>Exec COB</td><td>P - Purchase</td><td align=right>$12.39</td><td align=right>+1,300,000</td><td align=right>287,799,984</td><td align=right>0%</td><td align=right>+$16,107,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1592057/000090266422005021/xslF345X03/ownership.xml" title="SEC Form 4" target="_blank">2022-12-02 21:23:48</a></div></td><td align=right><div>2022-11-30</div></td><td><b> <a href="/EVA" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=EVA&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">EVA</a></b></td><td><a href="/EVA">Enviva Inc.</a></td><td><a href="/insider/U
+V/OKPRFL_1dv8v6p_RSB: bben-Jeffrey-W/1159187" title="5,747,693 indirect shares
+    1170 Gorgas Avenue
+    San Francisco, CA 94129">Ubben Jeffrey W</a></td><td>Dir</td><td>P - Purchase</td><td align=right>$54.78</td><td align=right>+228,697</td><td align=right>5,747,693</td><td align=right>+4%</td><td align=right>+$12,528,167</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1556266/000121390022076403/xslF345X03/ownership.xml" title="SEC Form 4" target="_blank">2022-11-30 16:30:34</a></div></td><td align=right><div>2022-11-28</div></td><td><b> <a href="/GLG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GLG&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GLG</a></b></td><td><a href="/GLG">Td Holdings, Inc.</a></td><td><a href="/insider/Zhang-Shuxiang/1731175" title="17,934,000 direct shares
+    Chenfu Road, Haidian District
+    Beijing, F4 100000">Zhang Shuxiang</a></td><td>10%</td><td>P - Purchase</td><td align=right>$1.15</td><td align=right>+10,000,000</td><td align=right>17,934,000</td><td align=right>+126%</td><td align=right>+$11,500,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1556266/000121390022076406/xslF345X03/ownership.xml" title="SEC Form 4" target="_blank">2022-11-30 16:30:37</a></div></td><td align=right><div>2022-11-28</div></td><td><b> <a href="/GLG" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GLG&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GLG</a></b></td><td><a href="/GLG">Td Holdings, Inc.</a></td><td><a href="/insider/Ouyang-Renmei/1813361" title="13,574,385 direct shares
+    Xiangshan Zhong Jie, Nanshan District
+    Shenzhen, F4 518000">Ouyang Renmei</a></td><td>CEO</td><td>P - Purchase</td><td align=right>$1.15</td><td align=right>+10,000,000</td><td align=right>13,574,385</td><td align=right>+280%</td><td align=right>+$11,500,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1849253/000120919122058755/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-23 20:38:42</a></div></td><td align=right><div>2022-11-23</div></td><td><b> <a href="/RYAN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=RYAN&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">RYAN</a></b></td><td><a href="/RYAN">Ryan Specialty Holdings, Inc.</a></td><td><a href="/insider/Ryan-Patrick-G/1145037" title="13,499,562 indirect shares
+    Two Prudential Plaza
+    180 N. Stetson Ave., Suite 4600
+    Chicago, IL 60601">Ryan Patrick G</a></td><td>CEO, 10%</td><td>P - Purchase</td><td align=right>$38.78</td><td align=right>+285,058</td><td align=right>13,499,562</td><td align=right>+2%</td><td align=right>+$11,054,570</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1849253/000120919122058246/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-21 17:56:16</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/RYAN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=RYAN&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">RYAN</a></b></td><td><a href="/RYAN">Ryan Specialty Holdings, Inc.</a></
+V/OKPRFL_1dv8v6p_RSB: td><td><a href="/insider/Ryan-Patrick-G/1145037" title="12,926,879 indirect shares
+    Two Prudential Plaza
+    180 N. Stetson Ave., Suite 4600
+    Chicago, IL 60601">Ryan Patrick G</a></td><td>CEO, 10%</td><td>P - Purchase</td><td align=right>$38.26</td><td align=right>+288,038</td><td align=right>12,926,879</td><td align=right>+2%</td><td align=right>+$11,021,025</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1849253/000120919122058496/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-22 18:49:16</a></div></td><td align=right><div>2022-11-22</div></td><td><b> <a href="/RYAN" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=RYAN&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">RYAN</a></b></td><td><a href="/RYAN">Ryan Specialty Holdings, Inc.</a></td><td><a href="/insider/Ryan-Patrick-G/1145037" title="13,214,504 indirect shares
+    Two Prudential Plaza
+    180 N. Stetson Ave., Suite 4600
+    Chicago, IL 60601">Ryan Patrick G</a></td><td>CEO, 10%</td><td>P - Purchase</td><td align=right>$37.98</td><td align=right>+287,625</td><td align=right>13,214,504</td><td align=right>+2%</td><td align=right>+$10,923,930</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#dfffdf"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1439725/000114036122042601/xslF345X03/form4.xml" title="SEC Form 4" target="_blank">2022-11-21 18:03:07</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/BDSX" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=BDSX&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">BDSX</a></b></td><td><a href="/BDSX">Biodesix Inc</a></td><td><a href="/insider/Schuler-Jack-W/1021412" title="19,952,112 indirect shares
+    2970 Wilderness Place
+    Suite 100
+    Boulder, CO 80301">Schuler Jack W</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$1.15</td><td align=right>+8,695,652</td><td align=right>19,952,112</td><td align=right>+77%</td><td align=right>+$10,000,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e0ffe0"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1859285/000095014222003277/xslF345X03/es220308465_4-hrt2.xml" title="SEC Form 4" target="_blank">2022-11-29 19:10:51</a></div></td><td align=right><div>2022-11-25</div></td><td><b> <a href="/HRT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HRT&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HRT</a></b></td><td><a href="/HRT">Hireright Holdings Corp</a></td><td><a href="/insider/General-Atlantic-Genpar-%28Bermuda%29--L.P./1467927" title="31,386,818 indirect shares
+    C/O Conyers Client Services Limited
+    Clarendon House, 2 Church Street
+    Hamilton, D0 HM11">General Atlantic Genpar (Bermuda), L.P.</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$11.85</td><td align=right>+591,824</td><td align=right>31,386,818</td><td align=right>+2%</td><td align=right>+$7,013,106</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e0ffe0"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1859285/000095014222003276/xslF345X03/es220308464_4-hrt1.xml" title="SEC Form 4" target="_blank">2022-11-29 19:10:01</a></div></td><td align=right><div>2022-11-25</div></td><td><b> <a href="/HRT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HRT&v=stock-cha
+V/OKPRFL_1dv8v6p_RSB: rt&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HRT</a></b></td><td><a href="/HRT">Hireright Holdings Corp</a></td><td><a href="/insider/General-Atlantic--L.P./1017645" title="31,386,818 indirect shares
+    C/O General Atlantic Service Co.,L.P.
+    55 East 52Nd Street, 33Rd Floor
+    New York, NY 10055">General Atlantic, L.P.</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$11.85</td><td align=right>+591,824</td><td align=right>31,386,818</td><td align=right>+2%</td><td align=right>+$7,013,106</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e0ffe0"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1276187/000120919122058792/xslF345X03/doc4.xml" title="SEC Form 4" target="_blank">2022-11-25 16:00:13</a></div></td><td align=right><div>2022-11-22</div></td><td><b> <a href="/ET" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=ET&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">ET</a></b></td><td><a href="/ET">Energy Transfer LP</a></td><td><a href="/insider/Warren-Kelcy-L/1276191" title="286,499,984 direct shares
+    8111 Westchester Drive
+    Dallas, TX 75225">Warren Kelcy L</a></td><td>Exec COB</td><td>P - Purchase</td><td align=right>$12.36</td><td align=right>+500,000</td><td align=right>286,499,984</td><td align=right>0%</td><td align=right>+$6,180,000</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e1ffe1"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1859285/000095014222003259/xslF345X03/es220306701_4-hrt2.xml" title="SEC Form 4" target="_blank">2022-11-23 21:17:06</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/HRT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HRT&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HRT</a></b></td><td><a href="/HRT">Hireright Holdings Corp</a></td><td><a href="/insider/General-Atlantic-Genpar-%28Bermuda%29--L.P./1467927" title="30,794,994 indirect shares
+    C/O Conyers Client Services Limited
+    Clarendon House, 2 Church Street
+    Hamilton, D0 HM11">General Atlantic Genpar (Bermuda), L.P.</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$10.62</td><td align=right>+520,108</td><td align=right>30,794,994</td><td align=right>+2%</td><td align=right>+$5,525,463</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e1ffe1"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1859285/000095014222003258/xslF345X03/es220307811_4-hrt1.xml" title="SEC Form 4" target="_blank">2022-11-23 21:16:10</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/HRT" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=HRT&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">HRT</a></b></td><td><a href="/HRT">Hireright Holdings Corp</a></td><td><a href="/insider/General-Atlantic--L.P./1017645" title="30,794,994 indirect shares
+    C/O General Atlantic Service Co.,L.P.
+    55 East 52Nd Street, 33Rd Floor
+    New York, NY 10055">General Atlantic, L.P.</a></td><td>Dir, 10%</td><td>P - Purchase</td><td align=right>$10.62</td><td align=right>+520,108</td><td align=right>30,794,994</td><td align=right>+2%</td><td align=right>+$5,525,463</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e1ffe1"><td align=right>M</td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1800227/000110465922122113/xslF345X03/tm2231363-1_4seq1.xml" title="SEC Fo
+V/OKPRFL_1dv8v6p_RSB: rm 4" target="_blank">2022-11-25 16:15:34</a></div></td><td align=right><div>2022-11-22</div></td><td><b> <a href="/IAC" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=IAC&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">IAC</a></b></td><td><a href="/IAC">Iac Inc.</a></td><td><a href="/insider/Eisner-Michael-D/1205854" title="197,639 direct shares
+    C/O the Tornante Company, LLC
+    233 South Beverly Drive, 2Nd Floor
+    Beverly Hills,, CA 90212">Eisner Michael D</a></td><td>Dir</td><td>P - Purchase</td><td align=right>$47.13</td><td align=right>+106,241</td><td align=right>197,639</td><td align=right>+116%</td><td align=right>+$5,006,792</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e1ffe1"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/28626/000110465922122879/xslF345X03/tm2231480-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-29 16:15:32</a></div></td><td align=right><div>2022-11-25</div></td><td><b> <a href="/LFCR" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=LFCR&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">LFCR</a></b></td><td><a href="/LFCR">Lifecore Biomedical Inc</a></td><td><a href="/insider/Wynnefield-Partners-Small-Cap-Value-LP-I/1251565" title="4,411,033 indirect shares
+    450 Seventh Avenue
+    Suite 509
+    New York, NY 10123">Wynnefield Partners Small Cap Value LP I</a></td><td>10%</td><td>P - Purchase</td><td align=right>$7.97</td><td align=right>+627,746</td><td align=right>4,411,033</td><td align=right>+17%</td><td align=right>+$5,003,136</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    <tr style="background:#e1ffe1"><td align=right></td><td align=right><div><a href="http://www.sec.gov/Archives/edgar/data/1750153/000110465922121807/xslF345X03/tm2231251-1_4seq1.xml" title="SEC Form 4" target="_blank">2022-11-23 17:04:06</a></div></td><td align=right><div>2022-11-21</div></td><td><b> <a href="/GOEV" onmouseover="Tip('<img src=\'https://www.profitspi.com/stock/stock-charts.ashx?chart=GOEV&v=stock-chart&vs=637453390322078326\' alt=\'\' width=\'360px\' height=\'280px\'>', DELAY, 1)" onmouseout="UnTip()">GOEV</a></b></td><td><a href="/GOEV">Canoo Inc.</a></td><td><a href="/insider/Aquila-Tony/1399053" title="62,980,492 indirect shares
+    C/O Canoo Inc.
+    19951 Mariner Ave
+    Torrance, CA 90503">Aquila Tony</a></td><td>Exec COB, CEO, 10%</td><td>P - Purchase</td><td align=right>$1.11</td><td align=right>+4,504,505</td><td align=right>62,980,492</td><td align=right>+8%</td><td align=right>+$5,000,001</td><td align=right></td><td align=right></td><td align=right></td><td align=right></td></tr>
+    </tbody></table><center>
+    <br>
+    <div>
+    	<table cellpadding="4" cellspacing="4" border="0">
+    		<tr><td>A</td><td>Amended filing</td></tr>
+    		<tr><td>D</td><td>Derivative transaction in filing (usually option exercise)</td></tr>
+    		<tr><td>E</td><td>Error detected in filing</td></tr>
+    		<tr><td>M</td><td>Multiple transactions in filing; earliest reported transaction date and weighted average transaction price</td></tr>
+    	</table>
+    	<table>
+    	<tr style="background:#ffefef"><td>S - Sale</td><td>Sale of securities on an exchange or to another person</td></tr><tr style="background:#ffffdf"><td>S - Sale+OE</td><td>Sale of securities on an exchange or to another person (after option exercise)</td></tr><tr style="background:#efefff"><td>F - Tax</td><td>Payment of exercise price or tax liability using portion of securities received from the company</td></tr><tr style="background:#efffef"><td>P - Purchase</td><td>Purchase of securities on an exchange or from another person</td></tr>	</table>
+    </div>
+    <a href="#">Return to top</a><br><br>
+    <div id="footer">Data provided by sec.gov 6:00-22:00 ET Mon-Fri exc
+V/OKPRFL_1dv8v6p_RSB: ept federal holidays.<br>Copyright &copy; 2011-2021 openinsider.com. All rights reserved. <a href="/terms.txt">Terms</a> - <a href="/privacy.txt">Privacy</a> - <a href="/contact">Contact</a></div>
+    </center>
+    <br>
+    </div>
+    </div>
+    
+    <link href="/js/jquery.datepick/jquery.datepick.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+    <script src="/js/jquery.datepick/jquery.plugin.js"></script>
+    <script src="/js/jquery.datepick/jquery.datepick.js"></script>
+    <script>
+    $(function() {
+    	$('#textboxFD').datepick({rangeSelect: true, showTrigger: '#calImg'});
+    	$('#textboxTD').datepick({rangeSelect: true, showTrigger: '#calImg'});
+    });
+    </script>
+    <script type="text/javascript" src="/js/wz_tooltip.js"></script>
+    
+    </body>
+    </html>

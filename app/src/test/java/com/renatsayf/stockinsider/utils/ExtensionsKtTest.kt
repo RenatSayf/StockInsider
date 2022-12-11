@@ -63,4 +63,13 @@ class ExtensionsKtTest {
         val actualList = sortByAnotherList(targetList, anotherList)
         Assert.assertEquals(targetList, actualList)
     }
+
+    @Test
+    fun convertDefaultWithoutTime() {
+
+        val dateString = "2022-12-09 21:57:45"
+        val actualResult = dateString.convertDefaultWithoutTime()
+        Assert.assertEquals("2022-12-09", actualResult)
+    }
+
 }

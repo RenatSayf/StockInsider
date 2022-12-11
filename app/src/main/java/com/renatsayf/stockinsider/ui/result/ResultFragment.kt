@@ -1,13 +1,16 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.ui.result
 
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.AdRequest
@@ -27,17 +30,17 @@ import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
+import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.utils.getInterstitialAdId
-import com.renatsayf.stockinsider.utils.getSerializableCompat
-import com.renatsayf.stockinsider.utils.isNetworkAvailable
-import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
-
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener {
+class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener,
+    SortingDialog.Listener {
+
     companion object
     {
         val TAG = "${this::class.java.simpleName}.TAG"
@@ -48,10 +51,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private lateinit var binding: FragmentResultBinding
     private val resultVM : ResultViewModel by viewModels()
     private val mainViewModel : MainViewModel by viewModels()
+    private val sortingVM: SortingViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
-        DealListAdapter(this@ResultFragment)
+        DealListAdapter(this)
     }
 
     private var ad:InterstitialAd? = null
@@ -93,53 +97,86 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         if (savedInstanceState == null)
         {
             val title = arguments?.getString(ARG_TITLE)
-            (requireActivity() as MainActivity).supportActionBar?.title = title
+            binding.toolBar.title = title
 
             val notificationId = arguments?.getInt(ServiceNotification.ARG_ID)
             notificationId?.let { id ->
                 ServiceNotification.cancelNotifications(requireContext(), id)
             }
             roomSearchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
-            roomSearchSet?.let {
-                resultVM.getDealList(it.toSearchSet())
-            }
         }
 
         binding.tradeListRV.apply {
+
             adapter = dealsAdapter.apply {
                 showSkeleton()
             }
+
+            setOnScrollChangeListener(object : View.OnScrollChangeListener {
+                override fun onScrollChange(
+                    v: View?,
+                    scrollX: Int,
+                    scrollY: Int,
+                    oldScrollX: Int,
+                    oldScrollY: Int
+                ) {
+                    if (oldScrollY > scrollY) {
+                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
+                        binding.btnAddToTracking.setVisible(true)
+                        ValueAnimator.ofInt(bottomMargin, 64.dp).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.btnAddToTracking.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
+                    }
+                    else {
+                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
+                        ValueAnimator.ofInt(bottomMargin, -138).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.btnAddToTracking.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
+                    }
+                }
+            })
         }
 
         resultVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResultViewModel.State.Initial -> {
-                    binding.noResult.noResultLayout.visibility = View.GONE
-                    binding.includedProgress.visibility = View.VISIBLE
+                    binding.noResult.noResultLayout.setVisible(false)
+                    binding.includedProgress.setVisible(true)
+                    binding.btnAddToTracking.setVisible(false)
+                    roomSearchSet?.let {
+                        resultVM.getDealList(it.toSearchSet())
+                    }
                 }
-
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
-                        binding.noResult.noResultLayout.visibility = View.GONE
-                        binding.includedProgress.visibility = View.GONE
+                        binding.noResult.noResultLayout.setVisible(false)
+                        binding.includedProgress.setVisible(false)
                         when {
                             list.size > 0 && list[0].error!!.isEmpty() -> {
-                                binding.btnAddToTracking.visibility = View.VISIBLE
                                 binding.resultTV.text = list.size.toString()
                                 binding.tradeListRV.apply {
-                                    dealsAdapter.addItems(list)
-                                    adapter = dealsAdapter
+                                    val sorting = sortingVM.sorting
+                                    val map = sortingVM.doSort(list, sorting)
+                                    dealsAdapter.replaceItems(map, sorting)
                                 }
                                 return@let
                             }
                             list.size == 1 && list[0].error!!.isNotEmpty() -> {
                                 binding.resultTV.text = 0.toString()
                                 binding.noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                                binding.noResult.noResultLayout.setVisible(true)
                             }
                             else -> {
                                 binding.resultTV.text = list.size.toString()
-                                binding.noResult.noResultLayout.visibility = View.VISIBLE
+                                binding.noResult.noResultLayout.setVisible(true)
                             }
                         }
                     }
@@ -169,11 +206,12 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         }
                     }
                 }
+                is ResultViewModel.State.DataSorted -> {
+                    val dealsMap = state.dealsMap
+                    dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
+                }
             }
         }
-
-        val title = arguments?.getString(ARG_TITLE) ?: ""
-        resultVM.setToolBarTitle(title)
 
         binding.noResult.backButton.setOnClickListener {
             findNavController().popBackStack()
@@ -183,6 +221,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             val name = roomSearchSet?.generateQueryName()
             name?.let { n ->
                 SaveSearchDialog.getInstance(n, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+            }
+        }
+        binding.btnSorting.apply {
+            setOnClickListener {
+                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
             }
         }
 
@@ -210,7 +253,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onRecyclerViewItemClick(deal: Deal) {
         val bundle = Bundle()
         bundle.putParcelable(DealFragment.ARG_DEAL, deal)
-        requireActivity().findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+        findNavController().navigate(R.id.nav_deal, bundle)
     }
 
     override fun saveSearchDialogOnPositiveClick(searchName: String) {
@@ -248,6 +291,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             } ?: run { findNavController().popBackStack() }
         }
         else findNavController().popBackStack()
+    }
+
+    override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
+        val currentList = dealsAdapter.getDeals()
+        if (currentList.isNotEmpty()) {
+            val sortedMap = sortingVM.doSort(currentList.toList(), sorting)
+            resultVM.setState(ResultViewModel.State.DataSorted(sortedMap))
+        }
     }
 
 

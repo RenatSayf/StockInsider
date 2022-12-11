@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!--    don't translate-->
+    <string name="app_name">Stock Insider</string>
+    <string name="locale_en_US">en-US</string>
+    <string name="app_time_zone">America/Chicago</string>
+    <string name="ad_mob_app_id">ca-app-pub-1615119435047194~5095683894</string>
+    <string name="interstitial_ad_1">ca-app-pub-1615119435047194/7629529654</string>
+    <string name="interstitial_ad_2">ca-app-pub-1615119435047194/6049672910</string>
+    <string name="interstitial_ad_3">ca-app-pub-1615119435047194/9457497746</string>
+
+    <string-array name="interstitial_ads">
+        <item>ca-app-pub-1615119435047194/7629529654</item>
+        <item>ca-app-pub-1615119435047194/6049672910</item>
+        <item>ca-app-pub-1615119435047194/9457497746</item>
+    </string-array>
+
+    <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="text_default_set_name">default_set</string>
+    <string name="text_current_set_name">current_set</string>
+
+
+    <!--    translation to other languages-->
+    <string name="action_settings">Настройки</string>
+    <string name="app_link">https://play.google.com/store/apps/details?id=</string>
+    <string name="menu_strategy">Торговая стратегия</string>
+    <string name="menu_exit">Выход</string>
+    <string name="text_general">Компания</string>
+    <string name="text_ticker">Тикер</string>
+    <string name="text_filing_date">Дата регистрации</string>
+    <string name="text_date">Дата</string>
+    <string name="text_transaction_filing">Тип сделки</string>
+    <string name="text_purchase">Покупка</string>
+    <string name="text_sale">Продажа</string>
+    <string name="text_traded_k">Объем сделки K$</string>
+    <string name="text_min">Min</string>
+    <string name="text_max">Max</string>
+    <string name="text_officer">Сотрудник</string>
+    <string name="text_director">Директор</string>
+    <string name="text_10_owner">10% Владелец</string>
+    <string name="text_insider_title">Должность инсайдера</string>
+    <string name="text_group_by">Группировка по</string>
+    <string name="text_group_and_sort">Группировка и сортировка</string>
+    <string name="text_sort_by">Сортировка по</string>
+    <string name="text_trade_date">Дата сделки</string>
+    <string name="text_trading_screen">Торговый экран</string>
+    <string name="text_deal_value">Объем сделки $</string>
+    <string name="text_company_name">Компания</string>
+    <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
+    <string name="text_p_purchase">P - Покупка</string>
+    <string name="text_10000000">10000000</string>
+    <string name="text_insider_name">Имя инсайдера</string>
+    <string name="text_nothing_found">Ничего не найдено</string>
+    <string name="text_change_parameters">Попробуйте изменить ваши поисковые параметры</string>
+    <string name="text_back_to_search">Назад к поиску</string>
+    <string name="text_0">0</string>
+    <string name="text_results">Найдено</string>
+    <string name="text_deal_details">Детали сделки</string>
+<!--    <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>-->
+<!--    <string name="text_searching_is_created">Поиск по расписанию был создан</string>-->
+<!--    <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>-->
+<!--    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>-->
+<!--    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>-->
+    <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
+    <string name="text_title_home">Поиск SEC Form 4</string>
+    <string name="text_trading_strategy">Торговая стратегия</string>
+    <string name="text_exit">Выход</string>
+<!--    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>-->
+    <string name="text_title_trade_type">Тип сделки</string>
+    <string name="text_title_price">Цена, $</string>
+    <string name="text_title_qty">Количество акций в сделке</string>
+    <string name="text_title_owned">Колич. акций во владении</string>
+    <string name="delta_own_title">Прирост/Утрата, %</string>
+    <string name="value_title">Объем сделки,  $</string>
+    <string name="text_deals_for_7_days">Сделки за 7 дней</string>
+    <string name="text_latest_purchases_1">Покупки больше 1 милл.$</string>
+    <string name="text_latest_purchases_5">Покупки больше 5 милл.$</string>
+    <string name="text_data_not_avalible">Data is not available, please, try later</string>
+    <string name="text_cancel">Отмена</string>
+    <string name="text_ok">OK</string>
+    <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
+    <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
+    <string name="text_select_sum">Выберете сумму:</string>
+    <string name="text_to_support">Поддержать</string>
+    <string name="text_support_project">Поддержать проект</string>
+    <string name="text_purchase_canceled">Транзакция отменена. Мне очень жаль, что Вы передумали…</string>
+    <string name="text_thanks_for_donating">Спасибо Вам за поддержку!!!</string>
+
+    <string-array name="ticker_list">
+        <item>AA</item>
+        <item>BA</item>
+        <item>BAC</item>
+        <item>CAT</item>
+    </string-array>
+
+    <string-array name="list_for_filing_date">
+        <item>За все время</item>
+        <item>За последний день</item>
+        <item>За последние 2 дня</item>
+        <item>За последние 3 дня</item>
+        <item>За последнюю неделю</item>
+        <item>За последние 2 недели</item>
+        <item>За последний месяц</item>
+        <item>За последние 2 месяца</item>
+        <item>За последние 3 месяца</item>
+        <item>За последние 6 месяцев</item>
+        <item>За последний год</item>
+        <item>За последние 2 года</item>
+        <item>За последние 4 года</item>
+    </string-array>
+    <integer-array name="value_for_filing_date">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>7</item>
+        <item>14</item>
+        <item>30</item>
+        <item>60</item>
+        <item>90</item>
+        <item>180</item>
+        <item>365</item>
+        <item>730</item>
+        <item>1461</item>
+    </integer-array>
+
+    <string-array name="list_for_grouping">
+        <item>Дата регистрации</item>
+        <item>Компания</item>
+    </string-array>
+    <integer-array name="value_for_grouping">
+        <item>0</item>
+        <item>2</item>
+    </integer-array>
+
+    <string-array name="list_for_sorting">
+        <item>Дата регистрации</item>
+        <item>Дата сделки</item>
+        <item>Тикер</item>
+        <item>Объем сделки</item>
+    </string-array>
+    <integer-array name="value_for_sorting">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>8</item>
+    </integer-array>
+    <string-array name="donate_sum">
+        <item>50</item>
+        <item>100</item>
+        <item>200</item>
+    </string-array>
+
+    <string name="text_insider">Инсайдер:</string>
+    <string name="text_company">Компания:</string>
+    <string name="text_financial_support">Сделать пожертвование</string>
+    <string name="text_watch_ads">Посмотреть рекламу</string>
+    <string name="title_trading_screen">Торговый экран</string>
+    <string name="text_purchases_more_1">Покупки более 1 милл.$ за неделю</string>
+    <string name="text_purchases_more_5">Покупки более 5 милл.$ за неделю</string>
+    <string name="text_latest_sales_1">Продажи более 1 милл.$</string>
+    <string name="text_latest_sales_5">Продажи более 5 милл.$</string>
+    <string name="text_sales_more_1">Продажи более 1 милл.$ за неделю</string>
+    <string name="text_sales_more_5">Продажи более 5 милл.$ за неделю</string>
+    <string name="text_read">Читать</string>
+    <string name="text_hi">Привет!</string>
+    <string name="text_strategy_dialog_1">Это приложение разработано по мотивам статей, опубликованных в журнале Forex Magazine под названием «CFD на акции. Торгуем с умными деньгами»</string>
+    <string name="text_strategy_dialog_2">Полный обзор этих статей, описывающих стратегию торговли, вы можете прочитать в этом разделе.</string>
+    <string name="text_set_search_name">Задайте название поиска</string>
+    <string name="text_saving_search">Сохранение параметров поиска</string>
+    <string name="text_save">Сохранить</string>
+    <string name="text_my_search">Мои поиски</string>
+    <string name="text_default_search">Поиск по умолчанию</string>
+    <string name="text_my_search_requests">Мои поисковые запросы</string>
+    <string name="text_inet_not_connection">Отсутствует соединение с интернет. Подключитесь к сети и попробуйте снова</string>
+    <string name="text_all_tickers">Все тикеры</string>
+    <string name="text_delete">Удалить</string>
+    <string name="text_deals_for_3_days">Сделки за последние 3 дня</string>
+    <string name="text_close">Закрыть</string>
+    <string name="text_not_show_again">Больше не показывать</string>
+    <string name="text_pur_more1_for_3">Покупки более 1 милл.$ за 3 дня</string>
+    <string name="text_pur_more5_for_3">Покупки более 5 милл.$ за 3 дня</string>
+    <string name="text_sale_more1_for_3">Продажи более 1 милл.$ за 3 дня</string>
+    <string name="text_sale_more5_for_3">Продажи более 5 милл.$ за 3 дня</string>
+
+    <string name="text_pur_more1_for_14">Покупки более 1 милл.$ за 14 дней</string>
+    <string name="text_pur_more5_for_14">Покупки более 5 милл.$ за 14 дней</string>
+    <string name="text_sale_more1_for_14">Продажи более 1 милл.$ за 14 дней</string>
+    <string name="text_sale_more5_for_14">Продажи более 5 милл.$ за 14 дней</string>
+    <string name="text_accept">Принимаю</string>
+    <string name="text_user_agreement">Пользовательское соглашение</string>
+    <string name="text_share_using">Поделиться с помощью</string>
+    <string name="text_developer_name">Разработка: RenatSayf</string>
+    <string name="text_developer_email">E-mail: renatsayf@gmail.com</string>
+    <string name="text_evaluate">Оценить</string>
+    <string name="privacy_policy_text_link">Политика конфиденциальности</string>
+    <string name="privacy_policy_link">https://sites.google.com/view/stock-insider/</string>
+    <string name="text_share">Поделиться</string>
+    <string name="text_about_app">О программе</string>
+    <string name="text_insider_deals">Сделки инсайдера</string>
+    <string name="text_trading_by_company">Торги по акциям компании</string>
+    <string name="text_search_param_is_saved">Параметры поиска сохранены.</string>
+    <string name="text_no_search_request">Нет сохраненных поисковых запросов</string>
+    <string name="text_deals_for_14_days">Сделки за 14 дней</string>
+    <string name="text_tracking_list">Список отслеживания</string>
+    <string name="text_tracking_params">Параметры отслеживания</string>
+    <string name="text_company_list">Список компаний</string>
+    <string name="text_ticker_already_exists">Такой тикер уже есть в списке</string>
+    <string name="hint_request_name">Введите название запроса</string>
+    <string name="title_request_name">Название запроса</string>
+    <string name="text_generate">Сгенерировать</string>
+    <string name="text_failed_to_save">Не удалось сохранить изменения</string>
+    <string name="text_show">Показать</string>
+    <string name="text_deletion_error">Ошибка удаления</string>
+    <string name="text_insider_info">Сведения об инсайдере</string>
+    <string name="text_company_info">Сведения о компании</string>
+    <string name="text_company_deals">Сделки по компании</string>
+    <string name="text_add_to_tracking">Дабавить в список отслеживания</string>
+    <string name="text_do_track">Отслеживать</string>
+    <string name="text_tracking_new_search">Отслеживание. Новый поиск</string>
+    <string name="text_tracking_editing">Отслеживание. Редактирование</string>
+    <string name="text_tracking_viewing">Отслеживание. Просмотр</string>
+    <string name="text_tracking_enabled">Отслеживание включено</string>
+    <string name="text_tracking_disabled">Отслеживание выключено</string>
+    <string name="text_deletion_confirm">Подтвердите удаление</string>
+    <string name="text_order_by_asc">По возрастанию</string>
+    <string name="text_order_by_desc">По убыванию</string>
+    <string name="text_do_not_group">Не группировать</string>
+
+</resources>

@@ -1,13 +1,20 @@
 package com.renatsayf.stockinsider.ui.main
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import com.renatsayf.stockinsider.utils.appPref
 import dagger.hilt.android.lifecycle.HiltViewModel
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -15,15 +22,17 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class MainViewModel @Inject constructor(private val repository: DataRepositoryImpl) : ViewModel()
-{
+class MainViewModel @Inject constructor(
+    private val repository: DataRepositoryImpl,
+    app: Application
+) : AndroidViewModel(app) {
+
     sealed class State {
-        data class Initial(val set: RoomSearchSet): State()
+        data class Initial(val set: RoomSearchSet) : State()
     }
 
-    private var _state = MutableLiveData<State>().apply {
-
-    }
+    private val composite = CompositeDisposable()
+    private var _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
     fun setState(state: State) {
         _state.value = state
@@ -32,23 +41,14 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
     private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
         value = searchSet?.value
     }
-    var searchSet : LiveData<RoomSearchSet>? = _searchSet
-    fun setSearchSet(set : RoomSearchSet)
-    {
+    var searchSet: LiveData<RoomSearchSet>? = _searchSet
+    fun setSearchSet(set: RoomSearchSet) {
         _searchSet.value = set
     }
 
-    private suspend fun getUserSearchSets() : MutableList<RoomSearchSet>
-    {
+    private suspend fun getUserSearchSets(): MutableList<RoomSearchSet> {
         return repository.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
     }
-
-    private var _searchSetList = MutableLiveData<MutableList<RoomSearchSet>>().apply {
-        viewModelScope.launch {
-            value = getUserSearchSets()
-        }
-    }
-    //val searchSets: LiveData<MutableList<RoomSearchSet>> = _searchSetList
 
     fun getSearchSetByName(setName: String): LiveData<RoomSearchSet> {
         val set = MutableLiveData<RoomSearchSet>()
@@ -75,8 +75,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return sets
     }
 
-    fun saveSearchSet(set: RoomSearchSet): LiveData<Long>
-    {
+    fun saveSearchSet(set: RoomSearchSet): LiveData<Long> {
         val id = MutableLiveData<Long>(-1)
         viewModelScope.launch {
             try {
@@ -89,7 +88,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return id
     }
 
-    fun deleteSearchSet(set: RoomSearchSet): StateFlow<Int>  {
+    fun deleteSearchSet(set: RoomSearchSet): StateFlow<Int> {
 
         val res = MutableStateFlow(-1)
         viewModelScope.launch {
@@ -98,7 +97,7 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
         return res
     }
 
-    fun deleteSearchSetById(id: Long): StateFlow<Int>  {
+    fun deleteSearchSetById(id: Long): StateFlow<Int> {
 
         val res = MutableStateFlow(-1)
         viewModelScope.launch {
@@ -113,18 +112,46 @@ class MainViewModel @Inject constructor(private val repository: DataRepositoryIm
             postValue(c)
         }
     }
-    var companies : LiveData<Array<Company>> = _companies
+    var companies: LiveData<Array<Company>> = _companies
 
-    private suspend fun getCompanies() : Array<Company>? = run {
+    private suspend fun getCompanies(): Array<Company>? = run {
         repository.getCompaniesFromDbAsync()
     }
 
-    override fun onCleared()
-    {
+    override fun onCleared() {
         repository.destructor()
+        composite.apply {
+            dispose()
+            clear()
+        }
         super.onCleared()
     }
 
+    init {
+
+        val isAgree = app.appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
+        if (!isAgree) {
+
+            val subscribe = repository.getAllCompaniesName()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe({ list ->
+                    if (list.isNotEmpty()) {
+                        viewModelScope.launch {
+                            repository.insertCompanies(list)
+                            val companies = repository.getCompaniesFromDbAsync()
+                            companies?.let { list ->
+                                _companies.postValue(list)
+                            }
+                        }
+                    }
+                }, { t ->
+                    if (BuildConfig.DEBUG) t.printStackTrace()
+                })
+
+            composite.add(subscribe)
+        }
+    }
 
 
 }

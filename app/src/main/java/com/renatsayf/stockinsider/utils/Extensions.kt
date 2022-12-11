@@ -7,10 +7,13 @@ import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
+import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
@@ -22,6 +25,9 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
 
@@ -203,6 +209,39 @@ fun Fragment.isNetworkAvailable(): Boolean {
 }
 //endregion Checking_internet_connection
 
+fun View.setPopUpMenu(menuResource: Int): PopupMenu {
+    return PopupMenu(this.context, this).apply {
+        inflate(menuResource)
+    }
+}
+
+fun Activity.startBrowserSearch(url: String) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+    }
+    this.startActivity(intent)
+}
+
+fun Fragment.startBrowserSearch(url: String) {
+    requireActivity().startBrowserSearch(url)
+}
+
+fun Context.hideKeyBoard(view: View) {
+    val imm = this.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+    imm.hideSoftInputFromWindow(view.windowToken, 0)
+}
+
+fun Fragment.hideKeyBoard(view: View) {
+    requireContext().hideKeyBoard(view)
+}
+
+fun String.convertDefaultWithoutTime(): String? {
+    val format = "yyyy-MM-dd"
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val parsedDate = dateFormat.parse(this)
+    val dayMonthFormat = SimpleDateFormat(format, Locale.getDefault())
+    return parsedDate?.let { dayMonthFormat.format(parsedDate) }
+}
 
 
 

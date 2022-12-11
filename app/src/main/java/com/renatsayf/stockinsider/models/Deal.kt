@@ -4,7 +4,7 @@ import android.os.Parcel
 import android.os.Parcelable
 
 
-data class Deal(var filingDate : String?) : Parcelable
+data class Deal(var filingDate : String?) : Parcelable, BaseDeal()
 {
     var filingDateRefer : String? = ""
     var tradeDate: String? = ""

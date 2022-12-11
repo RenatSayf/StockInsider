@@ -25,6 +25,10 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         return network.getInsiderTrading(insider)
     }
 
+    override fun getAllCompaniesName(): Single<List<Company>> {
+        return network.getAllCompaniesName()
+    }
+
     override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
         withContext(Dispatchers.Main) {
             db.getSearchSets()
@@ -128,7 +132,10 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     override fun destructor()
     {
         if (network is NetRepository) {
-            network.composite.clear()
+            network.composite.apply {
+                dispose()
+                clear()
+            }
         }
     }
 

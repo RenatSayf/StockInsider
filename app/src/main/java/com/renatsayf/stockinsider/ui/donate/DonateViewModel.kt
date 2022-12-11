@@ -1,8 +1,9 @@
 package com.renatsayf.stockinsider.ui.donate
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.billingclient.api.*
 import com.renatsayf.stockinsider.utils.Event
@@ -14,39 +15,26 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class DonateViewModel @Inject constructor() : ViewModel()
-{
+class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(app), PurchasesUpdatedListener {
+
     val eventPurchased : MutableLiveData<Event<String>> = MutableLiveData()
+    val billingClient = BillingClient.newBuilder(app)
+        .setListener(this)
+        .enablePendingPurchases()
+        .build()
 
-    fun querySkuDetails(billingClient: BillingClient)
-    {
-        var skuDetailsResult: SkuDetailsResult?
-        val skuList = ArrayList<String>()
-        skuList.add("user_donation_50")
-        skuList.add("user_donation100")
-        skuList.add("user_donation200")
-        skuList.add("user_donation300")
-        skuList.add("user_donation400")
-        skuList.add("user_donation_500")
-        val params = SkuDetailsParams.newBuilder()
-        params.setSkusList(skuList).setType(BillingClient.SkuType.INAPP)
+    init {
 
-        viewModelScope.launch {
-            skuDetailsResult = withContext(Dispatchers.IO) {
-                billingClient.querySkuDetails(params.build())
+        billingClient.startConnection(object : BillingClientStateListener {
+            override fun onBillingSetupFinished(result: BillingResult) {
+                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                    queryProductDetails(billingClient)
+                }
             }
-            val list = skuDetailsResult?.skuDetailsList
-            if (!list.isNullOrEmpty())
-            {
-                val details = list.map {
-                    it
-                }.toMutableList()
-
-                details.sortByDescending { skuDetails -> skuDetails.priceAmountMicros }
-                _priceList.value = details
+            override fun onBillingServiceDisconnected() {
+                _donateList.postValue(listOf())
             }
-            return@launch
-        }
+        })
     }
 
     fun queryProductDetails(billingClient: BillingClient) {
@@ -57,14 +45,15 @@ class DonateViewModel @Inject constructor() : ViewModel()
             buildProduct("user_donation200"),
             buildProduct("user_donation300"),
             buildProduct("user_donation400"),
-            buildProduct("user_donation_500")
+            buildProduct("user_donation_500"),
+            buildProduct("user_donation_1000")
         )
         val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
         billingClient.queryProductDetailsAsync(params.build()) { billingResult, products ->
             val code = billingResult.responseCode
             if (products.isNotEmpty()) {
-                products.sortByDescending { p -> p.name }
-                donateList?.value = products
+                products.sortByDescending { p -> p.oneTimePurchaseOfferDetails?.formattedPrice }
+                _donateList.postValue(products)
             }
         }
     }
@@ -76,15 +65,31 @@ class DonateViewModel @Inject constructor() : ViewModel()
         }.build()
     }
 
-    var donateList: MutableLiveData<List<ProductDetails>>? = null
-        private set
+    private var _donateList = MutableLiveData<List<ProductDetails>>()
+    var donateList: LiveData<List<ProductDetails>> = _donateList
 
-    private val _priceList = MutableLiveData<MutableList<SkuDetails>>().apply {
-        value = priceList?.value
+    fun buildBillingFlowParams(price: String): LiveData<BillingFlowParams?> {
+        val flowParams = MutableLiveData<BillingFlowParams>(null)
+        val value = _donateList.value
+        if(!value.isNullOrEmpty())
+        {
+            val productDetails = value.first { details ->
+                details.oneTimePurchaseOfferDetails?.formattedPrice == price
+            }
+
+            val productDetailsParamsList = listOf(
+                BillingFlowParams.ProductDetailsParams.newBuilder()
+                    .setProductDetails(productDetails)
+                    .build()
+            )
+            flowParams.value = BillingFlowParams.newBuilder()
+                .setProductDetailsParamsList(productDetailsParamsList)
+                .build()
+        }
+        return flowParams
     }
-    var priceList: LiveData<MutableList<SkuDetails>> = _priceList
 
-    fun handlePurchase(billingClient: BillingClient, purchase: Purchase)
+    private fun handlePurchase(billingClient: BillingClient, purchase: Purchase)
     {
         val consumeParams = ConsumeParams.newBuilder()
             .setPurchaseToken(purchase.purchaseToken)
@@ -104,10 +109,20 @@ class DonateViewModel @Inject constructor() : ViewModel()
                             }
                         }
                     }
-                    eventPurchased.value = Event(outToken)
+                    eventPurchased.postValue(Event(outToken))
                 }
                 return@consumeAsync
             }
+        }
+    }
+
+    override fun onPurchasesUpdated(billingResult: BillingResult, purchases: MutableList<Purchase>?) {
+        if (billingResult.responseCode == BillingClient.BillingResponseCode.OK && purchases != null) {
+            for (purchase in purchases) {
+                handlePurchase(billingClient, purchase)
+            }
+        } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
+            eventPurchased.postValue(Event(null))
         }
     }
 }
