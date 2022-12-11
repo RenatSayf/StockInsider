@@ -25,6 +25,9 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.collections.ArrayList
 
 const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
 
@@ -230,6 +233,14 @@ fun Context.hideKeyBoard(view: View) {
 
 fun Fragment.hideKeyBoard(view: View) {
     requireContext().hideKeyBoard(view)
+}
+
+fun String.convertDefaultWithoutTime(): String? {
+    val format = "yyyy-MM-dd"
+    val dateFormat = SimpleDateFormat(format, Locale.getDefault())
+    val parsedDate = dateFormat.parse(this)
+    val dayMonthFormat = SimpleDateFormat(format, Locale.getDefault())
+    return parsedDate?.let { dayMonthFormat.format(parsedDate) }
 }
 
 

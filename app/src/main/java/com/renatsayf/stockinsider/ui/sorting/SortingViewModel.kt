@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.ui.sorting
 
 import androidx.lifecycle.ViewModel
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.utils.convertDefaultWithoutTime
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.io.Serializable
 import javax.inject.Inject
@@ -65,19 +66,12 @@ class SortingViewModel @Inject constructor() : ViewModel() {
             }
             else -> {
                 val map = sortedList.groupBy {
-                    it.filingDate
+                    it.filingDate?.convertDefaultWithoutTime()
                 }
                 map
             }
         }
 
-//        val newSortedList = mutableListOf<IDeal>()
-//        groupedMap.forEach { (key, list) ->
-//            key?.let {
-//                newSortedList.add(GroupHead(it))
-//            }
-//            newSortedList.addAll(list)
-//        }
         val mutableMap = groupedMap.toMutableMap()
         val sortedMap = mutableMapOf<String, List<Deal>>()
         val entries = if (sorting.orderBy == Sorting.OrderBy.ASC) mutableMap.entries.sortedBy {

@@ -2,6 +2,7 @@
 
 package com.renatsayf.stockinsider.ui.adapters
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -9,19 +10,17 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.viewbinding.ViewBinding
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.databinding.ItemGroupHeaderBinding
+import com.renatsayf.stockinsider.models.BaseDeal
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.GroupHead
-import com.renatsayf.stockinsider.models.BaseDeal
 import com.renatsayf.stockinsider.models.Skeleton
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.List
 
 
 class DealListAdapter(
@@ -42,7 +41,8 @@ class DealListAdapter(
         notifyItemRangeChanged(0, dealsList.size)
     }
 
-    fun addItems(map: Map<String, List<Deal>>, sorting: SortingViewModel.Sorting) {
+    @SuppressLint("NotifyDataSetChanged")
+    private fun addItems(map: Map<String, List<Deal>>, sorting: SortingViewModel.Sorting) {
 
         this.sorting = sorting
         map.forEach { (key, list) ->
@@ -132,13 +132,13 @@ class DealListAdapter(
                     }
                     SortingViewModel.Sorting.GroupingBy.TICKER -> {
                         context?.let {
-                            val text = "${it.getString(R.string.text_company_name)}: $title"
+                            val text = "${it.getString(R.string.text_ticker)}: $title"
                             tvTitle.text = text
                         }
                     }
                     SortingViewModel.Sorting.GroupingBy.INSIDER -> {
                         context?.let {
-                            val text = "${it.getString(R.string.text_insider_name)}: $title"
+                            val text = "${it.getString(R.string.text_insider)} $title"
                             tvTitle.text = text
                         }
                     }
