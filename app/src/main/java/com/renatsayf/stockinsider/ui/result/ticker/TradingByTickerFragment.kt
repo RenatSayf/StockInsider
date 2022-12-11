@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -25,6 +26,10 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
 
     private val dealVM: DealViewModel by viewModels()
     private val sortingVM: SortingViewModel by viewModels()
+
+    private val dealsAdapter by lazy {
+        DealListAdapter(this)
+    }
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
@@ -54,7 +59,9 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
 
             tradeListRV.apply {
                 setHasFixedSize(true)
-                adapter = DealListAdapter()
+                adapter = dealsAdapter.apply {
+                    showSkeleton()
+                }
             }
 
             toolBar.apply {
@@ -83,13 +90,8 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
                             resultTV.text = list.size.toString()
                             titleTView.text = title
                             insiderNameTView.text = companyName
-
-                            binding.tradeListRV.apply {
-                                val map = sortingVM.doSort(list, sortingVM.sorting)
-                                adapter = DealListAdapter(this@TradingByTickerFragment).apply {
-                                    addItems(map, sortingVM.sorting)
-                                }
-                            }
+                            val map = sortingVM.doSort(list, sortingVM.sorting)
+                            dealsAdapter.replaceItems(map, sortingVM.sorting)
                         }
                         else {
                             insiderNameLayout.setVisible(false)
@@ -123,7 +125,7 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
             putParcelable(DealFragment.ARG_DEAL, deal)
             putString(DealFragment.ARG_TITLE, deal.company)
         }
-        (activity as MainActivity).findNavController(R.id.nav_host_fragment).navigate(R.id.nav_deal, bundle)
+        findNavController().navigate(R.id.nav_deal, bundle)
     }
 
     override fun onStart() {

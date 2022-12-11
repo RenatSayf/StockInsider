@@ -26,6 +26,10 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
     private val dealVM: DealViewModel by viewModels()
     private val soringVM: SortingViewModel by viewModels()
 
+    private val dealsAdapter by lazy {
+        DealListAdapter(this)
+    }
+
     companion object {
         val TAG = this::class.java.simpleName.toString()
         val ARG_TOOL_BAR_TITLE = "${this::class.java.simpleName}.ARG_TOOL_BAR_TITLE"
@@ -59,7 +63,9 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
 
             tradeListRV.apply {
                 setHasFixedSize(true)
-                adapter = DealListAdapter()
+                adapter = dealsAdapter.apply {
+                    showSkeleton()
+                }
             }
 
             btnSorting.setVisible(false)
@@ -82,13 +88,8 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                             resultTV.text = list.size.toString()
                             titleTView.text = title
                             insiderNameTView.text = list[0].insiderName
-
-                            binding.tradeListRV.apply {
-                                val map = soringVM.doSort(list, soringVM.sorting)
-                                adapter = DealListAdapter(this@InsiderTradingFragment).apply {
-                                    addItems(map, soringVM.sorting)
-                                }
-                            }
+                            val map = soringVM.doSort(list, soringVM.sorting)
+                            dealsAdapter.replaceItems(map, soringVM.sorting)
                         }
                         else {
                             insiderNameLayout.setVisible(false)

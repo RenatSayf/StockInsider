@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.viewbinding.ViewBinding
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
@@ -31,14 +32,14 @@ class DealListAdapter(
     private var sorting: SortingViewModel.Sorting? = null
 
     private var dealsList = mutableListOf<BaseDeal>()
+    private val skeletonList = List(10, init = {
+        Skeleton(it)
+    })
 
     fun showSkeleton() {
-        val skeletonList = List(10, init = {
-            Skeleton(it)
-        })
         dealsList.clear()
         dealsList.addAll(skeletonList)
-        notifyItemRangeChanged(0, this.itemCount)
+        notifyItemRangeChanged(0, dealsList.size)
     }
 
     fun addItems(map: Map<String, List<Deal>>, sorting: SortingViewModel.Sorting) {
@@ -48,7 +49,7 @@ class DealListAdapter(
             dealsList.add(GroupHead(key))
             dealsList.addAll(list)
         }
-        notifyItemRangeChanged(0, this.itemCount)
+        notifyDataSetChanged()
     }
 
     fun replaceItems(map: Map<String, List<Deal>>, sorting: SortingViewModel.Sorting) {
@@ -66,14 +67,10 @@ class DealListAdapter(
 
     override fun getItemViewType(position: Int): Int {
         return when {
-            dealsList[position] is Deal -> 1
-            dealsList[position] is GroupHead -> 0
+            dealsList.isNotEmpty() && dealsList[position] is Deal -> 1
+            dealsList.isNotEmpty() && dealsList[position] is GroupHead -> 0
             else -> -1
         }
-    }
-
-    override fun getItemId(position: Int): Long {
-        return this.getItemId(position)
     }
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder

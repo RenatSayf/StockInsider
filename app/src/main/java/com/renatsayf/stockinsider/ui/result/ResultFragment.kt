@@ -54,7 +54,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val sortingVM: SortingViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
-    //private var dealsAdapter: DealListAdapter? = null
+    private val dealsAdapter: DealListAdapter by lazy {
+        DealListAdapter(this)
+    }
 
     private var ad:InterstitialAd? = null
     private val isAdEnabled = true
@@ -106,7 +108,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         binding.tradeListRV.apply {
 
-            adapter = DealListAdapter().apply {
+            adapter = dealsAdapter.apply {
                 showSkeleton()
             }
 
@@ -163,9 +165,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                 binding.tradeListRV.apply {
                                     val sorting = sortingVM.sorting
                                     val map = sortingVM.doSort(list, sorting)
-                                    adapter = DealListAdapter(this@ResultFragment).apply {
-                                        addItems(map, sorting)
-                                    }
+                                    dealsAdapter.replaceItems(map, sorting)
                                 }
                                 return@let
                             }
@@ -208,7 +208,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 }
                 is ResultViewModel.State.DataSorted -> {
                     val dealsMap = state.dealsMap
-                    (binding.tradeListRV.adapter as DealListAdapter).replaceItems(dealsMap, sortingVM.sorting)
+                    dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
                 }
             }
         }
@@ -294,8 +294,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     }
 
     override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
-        val adapter = binding.tradeListRV.adapter as DealListAdapter
-        val currentList = adapter.getDeals()
+        val currentList = dealsAdapter.getDeals()
         if (currentList.isNotEmpty()) {
             val sortedMap = sortingVM.doSort(currentList.toList(), sorting)
             resultVM.setState(ResultViewModel.State.DataSorted(sortedMap))
