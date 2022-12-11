@@ -21,6 +21,7 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     sealed class State {
         object Initial : State()
         data class DataReceived(val deals: ArrayList<Deal>) : State()
+        data class DataSorted(val dealsMap: Map<String, List<Deal>>) : State()
         data class DataError(val throwable: Throwable) : State()
     }
 

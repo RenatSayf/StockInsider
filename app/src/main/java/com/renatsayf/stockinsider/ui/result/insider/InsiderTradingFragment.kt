@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.deal.DealViewModel
+import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,6 +24,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
     private lateinit var binding: FragmentResultBinding
 
     private val dealVM: DealViewModel by viewModels()
+    private val soringVM: SortingViewModel by viewModels()
 
     companion object {
         val TAG = this::class.java.simpleName.toString()
@@ -82,8 +84,9 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
                             insiderNameTView.text = list[0].insiderName
 
                             binding.tradeListRV.apply {
+                                val map = soringVM.doSort(list, soringVM.sorting)
                                 adapter = DealListAdapter(this@InsiderTradingFragment).apply {
-                                    addItems(list)
+                                    addItems(map, soringVM.sorting)
                                 }
                             }
                         }

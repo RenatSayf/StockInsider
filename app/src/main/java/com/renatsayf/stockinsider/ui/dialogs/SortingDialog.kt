@@ -61,7 +61,7 @@ class SortingDialog : DialogFragment() {
 
             sorting?.let {
                 when(it.groupingBy) {
-                    SortingViewModel.Sorting.GroupingBy.NOT -> {
+                    SortingViewModel.Sorting.GroupingBy.FILLING_DATE -> {
                         b.rbNotGroup.isChecked = true
                     }
                     SortingViewModel.Sorting.GroupingBy.TICKER -> {
@@ -91,7 +91,7 @@ class SortingDialog : DialogFragment() {
                 override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
                     when(checkedId) {
                         R.id.rb_not_group -> {
-                            sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.NOT
+                            sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.FILLING_DATE
                         }
                         R.id.rb_company -> {
                             sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.TICKER

@@ -13,7 +13,7 @@ class SortingViewModel @Inject constructor() : ViewModel() {
     private var _sorting: Sorting = Sorting()
     val sorting: Sorting = _sorting
 
-    fun doSort(list: List<Deal>, sorting: Sorting): List<Deal> {
+    fun doSort(list: List<Deal>, sorting: Sorting): Map<String, List<Deal>> {
 
         _sorting = sorting
         val mutableList = list.toMutableList()
@@ -71,21 +71,36 @@ class SortingViewModel @Inject constructor() : ViewModel() {
             }
         }
 
-        val newSortedList = mutableListOf<Deal>()
-        groupedMap.forEach { (_, list) ->
-            newSortedList.addAll(list)
+//        val newSortedList = mutableListOf<IDeal>()
+//        groupedMap.forEach { (key, list) ->
+//            key?.let {
+//                newSortedList.add(GroupHead(it))
+//            }
+//            newSortedList.addAll(list)
+//        }
+        val mutableMap = groupedMap.toMutableMap()
+        val sortedMap = mutableMapOf<String, List<Deal>>()
+        val entries = if (sorting.orderBy == Sorting.OrderBy.ASC) mutableMap.entries.sortedBy {
+            it.key
+        } else mutableMap.entries.sortedByDescending {
+            it.key
         }
-        return newSortedList
+        entries.forEach { entry ->
+            entry.key?.let {
+                sortedMap[it] = entry.value
+            }
+        }
+        return sortedMap
     }
 
     data class Sorting(
-        var groupingBy: GroupingBy = GroupingBy.NOT,
+        var groupingBy: GroupingBy = GroupingBy.FILLING_DATE,
         var sortingBy: SortingBy = SortingBy.FILLING_DATE,
         var orderBy: OrderBy = OrderBy.ASC
     ) : Serializable {
 
         enum class GroupingBy {
-            NOT, TICKER, INSIDER
+            FILLING_DATE, TICKER, INSIDER
         }
         enum class SortingBy {
             FILLING_DATE, TRADE_DATE, TICKER, VOLUME
