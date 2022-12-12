@@ -191,7 +191,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             }
                             else -> {
                                 if (this.isNetworkAvailable()) {
-                                    Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                                    showSnackBar(it.message.toString())
                                 } else {
                                     with(binding) {
                                         resultTV.text = 0.toString()
@@ -207,6 +207,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 is ResultViewModel.State.DataSorted -> {
                     val dealsMap = state.dealsMap
                     if (dealsMap.isNotEmpty()) {
+                        binding.resultTV.text = dealsMap.size.toString()
                         binding.noResult.noResultLayout.setVisible(false)
                         binding.includedProgress.setVisible(false)
                         dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
