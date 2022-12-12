@@ -1,19 +1,17 @@
 package com.renatsayf.stockinsider.network
 
+import com.renatsayf.stockinsider.di.App
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.jsoup.nodes.Document
 import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface IApi
 {
-    @Headers(
-            userAgentHeader,
-            "Content-Type:application/x-www-form-urlencoded; charset=utf-8"
-            )
     @GET("screener")
     fun getTradingScreen(
                 @Query("s", encoded = true) ticker: String,
@@ -35,19 +33,23 @@ interface IApi
                 @Query("isdirector", encoded = true) isDirector: String,
                 @Query("istenpercent", encoded = true) isTenPercent: String,
                 @Query("grp", encoded = true) groupBy: String,
-                @Query("sortcol", encoded = true) sortBy: String
+                @Query("sortcol", encoded = true) sortBy: String,
+                @Header("User-Agent") agent: String = userAgent,
                          ): Observable<Document>
 
-    @Headers(userAgentHeader)
     @GET("{insiderName}")
-    fun getInsiderTrading(@Path("insiderName", encoded = true) insiderName: String): Single<Document>
+    fun getInsiderTrading(
+        @Path("insiderName", encoded = true) insiderName: String,
+        @Header("User-Agent") agent: String = userAgent
+    ): Single<Document>
 
-    @Headers(userAgentHeader)
     @GET("{ticker}")
-    fun getTradingByTicker(@Path("ticker", encoded = true) ticker: String): Single<Document>
+    fun getTradingByTicker(
+        @Path("ticker", encoded = true) ticker: String,
+        @Header("User-Agent") agent: String = userAgent
+    ): Single<Document>
 
-    companion object Factory
-    {
-        private const val userAgentHeader = "User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3987.106 Safari/537.36"
+    companion object Factory {
+        private val userAgent = App.userAgent
     }
 }

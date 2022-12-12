@@ -29,6 +29,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.google.android.material.navigation.NavigationView
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -40,10 +41,8 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity()
-{
-    companion object
-    {
+class MainActivity : AppCompatActivity() {
+    companion object {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
@@ -61,8 +60,11 @@ class MainActivity : AppCompatActivity()
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    private val firebaseVM: FireBaseViewModel by lazy {
+        ViewModelProvider(this)[FireBaseViewModel::class.java]
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setTheme(R.style.AppTheme_NoActionBar)
@@ -88,13 +90,7 @@ class MainActivity : AppCompatActivity()
             true
         }
 
-        //region TODO перед релизом удалить или закомментировать
-//        appPref.edit {
-//            putBoolean(KEY_NO_SHOW_AGAIN, false)
-//            putBoolean(KEY_IS_AGREE, false)
-//            apply()
-//        }
-        //endregion
+        firebaseVM
 
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
