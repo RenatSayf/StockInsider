@@ -206,7 +206,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 }
                 is ResultViewModel.State.DataSorted -> {
                     val dealsMap = state.dealsMap
-                    dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
+                    if (dealsMap.isNotEmpty()) {
+                        binding.noResult.noResultLayout.setVisible(false)
+                        binding.includedProgress.setVisible(false)
+                        dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
+                    }
                 }
             }
         }
