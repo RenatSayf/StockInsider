@@ -180,15 +180,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+
         (activity as MainActivity).supportActionBar?.hide()
+        super.onResume()
     }
 
-    override fun onStop() {
+    override fun onDestroyView() {
+
         (activity as MainActivity).supportActionBar?.show()
-        super.onStop()
+        super.onDestroyView()
     }
-
 
 }

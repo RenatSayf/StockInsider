@@ -90,8 +90,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     {
         super.onViewCreated(view, savedInstanceState)
 
-        (requireActivity() as MainActivity).supportActionBar?.hide()
-
         binding = FragmentResultBinding.bind(view)
 
         if (savedInstanceState == null)
@@ -234,6 +232,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onResume() {
         super.onResume()
 
+        (requireActivity() as MainActivity).supportActionBar?.hide()
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             showAdOnBackPressed(isAdEnabled)
         }
@@ -264,9 +264,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
+            isDefault = false
             mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
                 if (id > 0) {
                     showSnackBar(getString(R.string.text_search_param_is_saved))
+                    findNavController().navigate(R.id.trackingListFragment)
                 }
                 else showSnackBar("Saving error...")
             }

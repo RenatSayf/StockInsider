@@ -1,0 +1,2 @@
+1. user-agent -> firebase
+2. Баг: Если в ResultFragment применить сортировку, затем перейти на DealFragment и обратно, то ResultFragment показывает заглушку "Ни чего не найдено"

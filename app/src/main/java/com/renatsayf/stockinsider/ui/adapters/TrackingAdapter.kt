@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-
+import com.renatsayf.stockinsider.utils.setVisible
 
 
 class TrackingAdapter(
@@ -72,8 +72,8 @@ class TrackingAdapter(
 
                 binding.dealType.text = dealType
 
-                if (set.isDefault) editButton.visibility = View.GONE
-                if (set.isDefault) deleteButton.visibility = View.GONE
+//                if (set.isDefault) editButton.setVisible(false)
+//                if (set.isDefault) deleteButton.setVisible(false)
 
                 trackingSwitcher.isChecked = set.isTracked
 
