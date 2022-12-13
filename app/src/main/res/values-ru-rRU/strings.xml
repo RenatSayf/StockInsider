@@ -227,5 +227,9 @@
     <string name="text_order_by_asc">По возрастанию</string>
     <string name="text_order_by_desc">По убыванию</string>
     <string name="text_do_not_group">Не группировать</string>
+    <string name="text_search_params_is_saved_but_not_tracked">
+        Параметры поиска сохранены, но не добавлены в список отслеживаемых. Превышено максимальное количество фоновых запросов.
+    </string>
+    <string name="text_exceeded_max_background_requests">Превышено допустимое количество фоновых запросов</string>
 
 </resources>

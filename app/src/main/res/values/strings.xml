@@ -226,5 +226,9 @@
     <string name="text_order_by_asc">Order by ASC</string>
     <string name="text_order_by_desc">Order by DESC</string>
     <string name="text_do_not_group">Do not group</string>
+    <string name="text_search_params_is_saved_but_not_tracked">
+        The search parameters are saved, but not added to the tracked list. Exceeded the maximum number of background requests.
+    </string>
+    <string name="text_exceeded_max_background_requests">Exceeded the allowed number of background requests</string>
 
 </resources>

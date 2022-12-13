@@ -1,12 +1,11 @@
 package com.renatsayf.stockinsider.network
 
-import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.jsoup.nodes.Document
 import retrofit2.http.GET
 import retrofit2.http.Header
-import retrofit2.http.Headers
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -50,6 +49,6 @@ interface IApi
     ): Single<Document>
 
     companion object Factory {
-        private val userAgent = App.userAgent
+        private val userAgent = FireBaseViewModel.userAgent
     }
 }

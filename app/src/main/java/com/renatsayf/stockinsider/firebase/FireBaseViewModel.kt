@@ -3,9 +3,9 @@ package com.renatsayf.stockinsider.firebase
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.google.firebase.ktx.Firebase
-import com.google.firebase.remoteconfig.ktx.get
 import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.di.App
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +17,12 @@ class FireBaseViewModel @Inject constructor(
     app: Application
 ) : AndroidViewModel(app) {
 
+    companion object {
+        var userAgent = ""
+        var workerPeriod = 480L
+        var requestsCount = 5
+    }
+
     private val configSettings = remoteConfigSettings {
         minimumFetchIntervalInSeconds = 3600
     }
@@ -26,8 +32,10 @@ class FireBaseViewModel @Inject constructor(
             setConfigSettingsAsync(configSettings)
             setDefaultsAsync(R.xml.remote_config_defaults)
             fetchAndActivate()
-            val userAgent = get("user_agent").asString()
-            App.userAgent = userAgent
+            userAgent = getString("user_agent")
+            workerPeriod = if(BuildConfig.DEBUG) 15L else getLong("worker_period")
+            requestsCount = getLong("requests_count").toInt()
         }
     }
 }
+

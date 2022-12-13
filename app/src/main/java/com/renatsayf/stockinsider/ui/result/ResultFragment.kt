@@ -18,12 +18,12 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
@@ -33,6 +33,7 @@ import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,6 +53,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val resultVM : ResultViewModel by viewModels()
     private val mainViewModel : MainViewModel by viewModels()
     private val sortingVM: SortingViewModel by viewModels()
+    private val trackingVM: TrackingListViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
@@ -261,21 +263,33 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         findNavController().navigate(R.id.nav_deal, bundle)
     }
 
-    override fun saveSearchDialogOnPositiveClick(searchName: String) {
+    override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
         roomSearchSet?.apply {
             queryName = searchName
-            isTracked = true
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
             isDefault = false
-            mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
-                if (id > 0) {
-                    showSnackBar(getString(R.string.text_search_param_is_saved))
-                    findNavController().navigate(R.id.trackingListFragment)
+            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                if (count < FireBaseViewModel.requestsCount) {
+                    this.isTracked = true
+                    mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
+                        if (id > 0) {
+                            showSnackBar(getString(R.string.text_search_param_is_saved))
+                            findNavController().navigate(R.id.trackingListFragment)
+                        }
+                        else showSnackBar("Saving error...")
+                    }
+                } else {
+                    this.isTracked = false
+                    mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
+                        if (id > 0) {
+                            showSnackBar(getString(R.string.text_search_params_is_saved_but_not_tracked))
+                        }
+                        else showSnackBar("Saving error...")
+                    }
                 }
-                else showSnackBar("Saving error...")
             }
         }
     }

@@ -5,16 +5,15 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
-import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import java.util.concurrent.TimeUnit
-
 
 
 object WorkTask: IWorkTask {
 
     const val TAG = "TAG555555555"
 
-    private val timePeriod = if(BuildConfig.DEBUG) 15L else 480L
+    private val timePeriod = FireBaseViewModel.workerPeriod
 
     private val taskList = mutableSetOf<PeriodicWorkRequest>()
 

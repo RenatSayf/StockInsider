@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
@@ -95,25 +96,32 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         binding.addButton.setOnClickListener {
-            val set = RoomSearchSet(
-                queryName = "",
-                companyName = "",
-                ticker = "",
-                filingPeriod = 1,
-                tradePeriod = 3,
-                tradedMin = "",
-                tradedMax = "",
-                isOfficer = true,
-                isDirector = true,
-                isTenPercent = true,
-                groupBy = 0,
-                sortBy = 3
-            )
-            findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
-                putSerializable(TrackingFragment.ARG_SET, set)
-                putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
-                putBoolean(TrackingFragment.ARG_IS_EDIT, true)
-            })
+            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                if (count < FireBaseViewModel.requestsCount) {
+                    val set = RoomSearchSet(
+                        queryName = "",
+                        companyName = "",
+                        ticker = "",
+                        filingPeriod = 1,
+                        tradePeriod = 3,
+                        tradedMin = "",
+                        tradedMax = "",
+                        isOfficer = true,
+                        isDirector = true,
+                        isTenPercent = true,
+                        groupBy = 0,
+                        sortBy = 3
+                    )
+                    findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+                        putSerializable(TrackingFragment.ARG_SET, set)
+                        putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
+                        putBoolean(TrackingFragment.ARG_IS_EDIT, true)
+                    })
+                }
+                else {
+                    showSnackBar(getString(R.string.text_exceeded_max_background_requests))
+                }
+            }
         }
 
     }
