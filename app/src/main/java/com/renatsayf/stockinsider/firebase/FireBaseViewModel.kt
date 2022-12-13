@@ -7,7 +7,6 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.di.App
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
