@@ -9,7 +9,6 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.network.MockApi
 import com.renatsayf.stockinsider.network.NetRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert

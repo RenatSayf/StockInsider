@@ -96,8 +96,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         binding.addButton.setOnClickListener {
-            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                if (count < FireBaseViewModel.requestsCount) {
+
+            trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
+                if (count != null && count < FireBaseViewModel.requestsCount) {
                     val set = RoomSearchSet(
                         queryName = "",
                         companyName = "",

@@ -16,7 +16,6 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -27,7 +26,6 @@ import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.material.navigation.NavigationView
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -38,6 +36,7 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
+
 
 
 @AndroidEntryPoint
@@ -52,7 +51,6 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     lateinit var drawerLayout : DrawerLayout
 
@@ -67,27 +65,19 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTheme(R.style.AppTheme_NoActionBar)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbar : Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navView : NavigationView = findViewById(R.id.nav_view)
+        drawerLayout = binding.drawerLayout
         navController = findNavController(R.id.nav_host_fragment)
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_exit) {
-                finish()
+        binding.navView.apply {
+            setupWithNavController(navController)
+            setNavigationItemSelectedListener { item ->
+                if (item.itemId == R.id.nav_exit) {
+                    finish()
+                }
+                true
             }
-            true
         }
 
         firebaseVM
@@ -106,7 +96,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
 
-        binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
+        binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
 
         appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 

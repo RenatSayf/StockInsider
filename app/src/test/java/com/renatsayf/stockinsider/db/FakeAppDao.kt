@@ -64,6 +64,10 @@ class FakeAppDao : AppDao {
         return 0
     }
 
+    override suspend fun getTargetCount(): Int {
+        return 0
+    }
+
     override suspend fun getCompanyByTicker(list: List<String>): List<Company> {
         return emptyList()
     }

@@ -172,11 +172,11 @@ class CompaniesFragment : Fragment(R.layout.companies_fragment), CompanyListAdap
 
     override fun onStart() {
         super.onStart()
-        (activity as MainActivity).supportActionBar?.hide()
+        (requireActivity() as MainActivity).supportActionBar?.hide()
     }
 
     override fun onStop() {
-        (activity as MainActivity).supportActionBar?.show()
+        (requireActivity() as MainActivity).supportActionBar?.show()
         super.onStop()
     }
 

@@ -1,13 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
-    android:layout_width="match_parent"
+<androidx.appcompat.widget.LinearLayoutCompat android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/tool_bar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:navigationIcon="@drawable/ic_arrow_back_white"
+        app:title="@string/text_deal_details"
+        app:titleTextColor="@color/colorWhite"
+        android:background="@drawable/app_bar_background"/>
+
     <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -454,4 +463,4 @@
         tools:visibility="visible"
         />
 
-</FrameLayout>
+</androidx.appcompat.widget.LinearLayoutCompat>

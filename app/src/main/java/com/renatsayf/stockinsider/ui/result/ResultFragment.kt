@@ -271,8 +271,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             filingPeriod = 1
             tradePeriod = 3
             isDefault = false
-            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                if (count < FireBaseViewModel.requestsCount) {
+            trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
+                if (count != null && count < FireBaseViewModel.requestsCount) {
                     this.isTracked = true
                     mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
                         if (id > 0) {
@@ -282,6 +282,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         else showSnackBar("Saving error...")
                     }
                 } else {
+                    this.target = null
                     this.isTracked = false
                     mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
                         if (id > 0) {

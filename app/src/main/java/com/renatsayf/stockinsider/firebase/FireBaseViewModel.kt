@@ -33,7 +33,7 @@ class FireBaseViewModel @Inject constructor(
             fetchAndActivate()
             userAgent = getString("user_agent")
             workerPeriod = if(BuildConfig.DEBUG) 15L else getLong("worker_period")
-            requestsCount = getLong("requests_count").toInt()
+            requestsCount = if(BuildConfig.DEBUG) 5 else getLong("requests_count").toInt()
         }
     }
 }

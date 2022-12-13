@@ -15,37 +15,32 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class AboutAppFragment : Fragment(R.layout.about_app_fragment)
-{
+class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
     private lateinit var binding: AboutAppFragmentBinding
 
-    companion object
-    {
+    companion object {
         fun getInstance() = AboutAppFragment()
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
+    override fun onCreateView(
+        inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?): View?
-    {
+        savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.about_app_fragment, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = AboutAppFragmentBinding.bind(view)
 
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
-        val versionName = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P)
-        {
-            "v.${packageInfo.versionName}.${packageInfo.longVersionCode}"
-        }
-        else
-        {
-            "v.${packageInfo.versionName}"
-        }
+        val versionName = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+                "v.${packageInfo.versionName}.${packageInfo.longVersionCode}"
+            } else {
+                "v.${packageInfo.versionName}"
+            }
         binding.versionNameView.text = versionName
 
         binding.btnEvaluate.setOnClickListener {
@@ -55,11 +50,20 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment)
         }
 
         binding.privacyPolicyLinkView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
+            val intent =
+                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
             startActivity(intent)
         }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+        binding.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
             findNavController().popBackStack()
         }
     }

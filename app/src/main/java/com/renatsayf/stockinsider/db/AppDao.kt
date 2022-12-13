@@ -47,6 +47,9 @@ interface AppDao
     @Query("SELECT count() FROM search_set WHERE target = 'tracking' AND is_tracked = 1")
     suspend fun getTrackedCount() : Int
 
+    @Query("SELECT count() FROM search_set WHERE target = 'tracking'")
+    suspend fun getTargetCount() : Int
+
     @Query("SELECT * FROM companies WHERE ticker IN(:list)")
     suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 

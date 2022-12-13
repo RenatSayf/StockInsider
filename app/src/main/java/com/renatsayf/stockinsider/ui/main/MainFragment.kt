@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import androidx.activity.addCallback
+import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -172,7 +173,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             else requireActivity().finish()
         }
 
-        requireActivity().addMenuProvider(object : MenuProvider {
+        binding.toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.main, menu)
             }
@@ -206,6 +207,16 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
 
         }, viewLifecycleOwner)
+
+        binding.toolbar.setNavigationOnClickListener {
+            val drawerLayout = (requireActivity() as MainActivity).drawerLayout
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            else {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
 
     }
 

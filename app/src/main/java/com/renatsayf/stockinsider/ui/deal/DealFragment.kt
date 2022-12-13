@@ -15,7 +15,6 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
@@ -31,47 +30,35 @@ import java.util.*
 
 
 @AndroidEntryPoint
-class DealFragment : Fragment(R.layout.fragment_deal)
-{
+class DealFragment : Fragment(R.layout.fragment_deal) {
     private lateinit var binding: FragmentDealBinding
 
-    companion object
-    {
+    companion object {
         val TAG = "${this::class.java.simpleName}.Tag"
         val ARG_DEAL = "${this::class.java.simpleName}.deal"
         val ARG_TITLE = "${this::class.java.simpleName}.title"
     }
 
-    private lateinit var viewModel : DealViewModel
+    private lateinit var viewModel: DealViewModel
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         viewModel = ViewModelProvider(this)[DealViewModel::class.java]
     }
 
     override fun onCreateView(
-            inflater : LayoutInflater, container : ViewGroup?, savedInstanceState : Bundle?
-                             ) : View?
-    {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
         return inflater.inflate(R.layout.fragment_deal, container, false)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?)
-    {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentDealBinding.bind(view)
 
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
-
-        if (savedInstanceState == null)
-        {
-            val title = arguments?.getString(ARG_TITLE)
-            if (!title.isNullOrEmpty()) {
-                (activity as MainActivity).supportActionBar?.title = title
-            }
-
+        if (savedInstanceState == null) {
             deal?.let { viewModel.setDeal(it) }
         }
 
@@ -86,12 +73,23 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 val uri = Uri.parse(value?.tickerRefer)
                 Glide.with(this@DealFragment).load(uri)
                     .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(e: GlideException?, model: Any?, target: Target<Drawable>?, isFirstResource: Boolean): Boolean {
+                        override fun onLoadFailed(
+                            e: GlideException?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            isFirstResource: Boolean
+                        ): Boolean {
                             binding.imgLoadProgBar.visibility = View.GONE
                             return false
                         }
 
-                        override fun onResourceReady(resource: Drawable?, model: Any?, target: Target<Drawable>?, dataSource: DataSource?, isFirstResource: Boolean): Boolean {
+                        override fun onResourceReady(
+                            resource: Drawable?,
+                            model: Any?,
+                            target: Target<Drawable>?,
+                            dataSource: DataSource?,
+                            isFirstResource: Boolean
+                        ): Boolean {
                             resource?.let { viewModel.setChart(it) }
                             binding.imgLoadProgBar.visibility = View.GONE
                             return false
@@ -104,13 +102,16 @@ class DealFragment : Fragment(R.layout.fragment_deal)
                 companyNameTV.setOnClickListener {
                     it.setPopUpMenu(R.menu.company_deals_menu).apply {
                         setOnMenuItemClickListener { item ->
-                            when(item.itemId) {
+                            when (item.itemId) {
                                 R.id.show_deals -> {
                                     value?.let { d -> transitionToCompanyDeals(d) }
                                     dismiss()
                                 }
                                 R.id.search_info -> {
-                                    @Suppress("RegExpRedundantNestedCharacterClass", "RegExpDuplicateCharacterInClass")
+                                    @Suppress(
+                                        "RegExpRedundantNestedCharacterClass",
+                                        "RegExpDuplicateCharacterInClass"
+                                    )
                                     val name = value.company?.replace(Regex("[[:punct:]]"), "")
                                     val url = "https://www.google.com/search?q=$name"
                                     startBrowserSearch(url)
@@ -139,14 +140,17 @@ class DealFragment : Fragment(R.layout.fragment_deal)
 
                     it.setPopUpMenu(R.menu.insider_deals_menu).apply {
                         setOnMenuItemClickListener { item ->
-                            when(item.itemId) {
+                            when (item.itemId) {
                                 R.id.show_deals -> {
                                     transitionToInsiderDeals(value)
                                     dismiss()
                                 }
                                 R.id.search_info -> {
 
-                                    @Suppress("RegExpRedundantNestedCharacterClass", "RegExpDuplicateCharacterInClass")
+                                    @Suppress(
+                                        "RegExpRedundantNestedCharacterClass",
+                                        "RegExpDuplicateCharacterInClass"
+                                    )
                                     val name = value.insiderName?.replace(Regex("[[:punct:]]"), "")
                                     val url = "https://www.google.com/search?q=$name"
                                     startBrowserSearch(url)
@@ -173,6 +177,10 @@ class DealFragment : Fragment(R.layout.fragment_deal)
             binding.chartImagView.setImageDrawable(it)
         }
 
+        binding.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
+
     }
 
     private fun transitionToCompanyDeals(deal: Deal) {
@@ -180,9 +188,15 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         deal.ticker?.let { t ->
 
             findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
-                putString(TradingByTickerFragment.ARG_TOOL_BAR_TITLE, getString(R.string.text_trading_by_company))
+                putString(
+                    TradingByTickerFragment.ARG_TOOL_BAR_TITLE,
+                    getString(R.string.text_trading_by_company)
+                )
                 putString(TradingByTickerFragment.ARG_TITLE, getString(R.string.text_company))
-                putString(TradingByTickerFragment.ARG_COMPANY_NAME, binding.companyNameTV.text.toString())
+                putString(
+                    TradingByTickerFragment.ARG_COMPANY_NAME,
+                    binding.companyNameTV.text.toString()
+                )
                 putString(TradingByTickerFragment.ARG_TICKER, t)
             })
         }
@@ -193,7 +207,10 @@ class DealFragment : Fragment(R.layout.fragment_deal)
         val insiderNameRefer = deal.insiderNameRefer
 
         findNavController().navigate(R.id.nav_insider_trading, Bundle().apply {
-            putString(InsiderTradingFragment.ARG_TOOL_BAR_TITLE, getString(R.string.text_insider_deals))
+            putString(
+                InsiderTradingFragment.ARG_TOOL_BAR_TITLE,
+                getString(R.string.text_insider_deals)
+            )
             putString(InsiderTradingFragment.ARG_TITLE, getString(R.string.text_insider))
             putString(InsiderTradingFragment.ARG_INSIDER_NAME, insiderNameRefer)
         })
