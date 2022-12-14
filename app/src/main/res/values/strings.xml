@@ -206,6 +206,7 @@
     <string name="text_tracking_params">Tracking Parameters</string>
     <string name="text_company_list">Company list</string>
     <string name="text_ticker_already_exists">Such a ticker is already in the list</string>
+    <string name="text_search_already_exists">There is already such a search query</string>
     <string name="hint_request_name">Enter the name of the request</string>
     <string name="title_request_name">Request name</string>
     <string name="text_generate">Generate</string>
@@ -230,5 +231,9 @@
         The search parameters are saved, but not added to the tracked list. Exceeded the maximum number of background requests.
     </string>
     <string name="text_exceeded_max_background_requests">Exceeded the allowed number of background requests</string>
+    <string name="text_warning">Warning</string>
+    <string name="text_success">Success</string>
+    <string name="text_info">Information</string>
+    <string name="text_error">Error</string>
 
 </resources>

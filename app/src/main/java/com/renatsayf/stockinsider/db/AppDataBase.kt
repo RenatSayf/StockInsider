@@ -6,7 +6,7 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-private const val DB_VERSION = 18
+private const val DB_VERSION = 19
 
 @Database(entities = [RoomSearchSet::class, Company::class],
     version = DB_VERSION,

@@ -29,6 +29,9 @@ interface AppDao
     @Insert(onConflict = OnConflictStrategy.REPLACE, entity = RoomSearchSet::class)
     suspend fun insertOrUpdateSearchSet(set : RoomSearchSet) : Long
 
+    @Insert(entity = RoomSearchSet::class, onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertOrIgnore(set: RoomSearchSet) : Long
+
     @Insert(onConflict = OnConflictStrategy.IGNORE, entity = Company::class)
     suspend fun insertCompanies(list : List<Company>)
 

@@ -154,6 +154,25 @@ internal class DataRepositoryImplTest {
     }
 
     @Test
+    fun addNewSearchSetAsync_same_ticker() {
+
+        val set1 = testSet.copy().apply {
+            ticker = "XXX"
+        }
+        val set2 = testSet.copy().apply {
+            ticker = "XXX"
+        }
+
+        runBlocking {
+            val id1 = repository.addNewSearchSetAsync(set1).await()
+            Assert.assertEquals(1L, id1)
+
+            val id2 = repository.addNewSearchSetAsync(set2).await()
+            Assert.assertEquals(-1L, id2)
+        }
+    }
+
+    @Test
     fun getSearchSetByIdAsync_actual_id() {
 
         val expectedSet = RoomSearchSet(

@@ -18,12 +18,10 @@ import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.cancelBackgroundWork
-import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showSnackBar
-import com.renatsayf.stockinsider.utils.startBackgroundWork
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -98,7 +96,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         binding.addButton.setOnClickListener {
 
             trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
-                if (count != null && count < FireBaseViewModel.requestsCount) {
+                if (count < FireBaseViewModel.requestsCount) {
                     val set = RoomSearchSet(
                         queryName = "",
                         companyName = "",
@@ -120,7 +118,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     })
                 }
                 else {
-                    showSnackBar(getString(R.string.text_exceeded_max_background_requests))
+                    //showSnackBar(getString(R.string.text_exceeded_max_background_requests))
+                    showInfoDialog(
+                        title = getString(R.string.text_exceeded_max_background_requests),
+                        status = InfoDialog.DialogStatus.ERROR
+                    )
                 }
             }
         }
@@ -151,7 +153,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                                 res == 0 -> {
-                                    showSnackBar(getString(R.string.text_deletion_error))
+                                    //showSnackBar(getString(R.string.text_deletion_error))
+                                    showInfoDialog(title = getString(R.string.text_deletion_error), status = InfoDialog.DialogStatus.ERROR)
                                 }
                             }
                         }
@@ -165,7 +168,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         set.isTracked = checked
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
-            if (id > 0) {
+            if (id != null && id > 0) {
                 when (checked) {
                     true -> showSnackBar(getString(R.string.text_tracking_enabled))
                     else -> {

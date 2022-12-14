@@ -405,7 +405,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
             lifecycleScope.launch {
                 mainVM.saveSearchSet(it).asFlow().collectLatest { id ->
                     when {
-                        id > 0L -> {
+                        id != null && id > 0L -> {
                             trackingVM.setState(TrackingViewModel.State.OnSave(newSet))
                         }
                         id == 0L -> {

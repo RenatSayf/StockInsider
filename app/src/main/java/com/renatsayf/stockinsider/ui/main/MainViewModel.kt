@@ -1,14 +1,15 @@
 package com.renatsayf.stockinsider.ui.main
 
 import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import com.renatsayf.stockinsider.utils.appPref
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,8 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class MainViewModel @Inject constructor(
     private val repository: DataRepositoryImpl,
-    app: Application
-) : AndroidViewModel(app) {
+    app: Application? = Application()
+) : ViewModel() {
 
     sealed class State {
         data class Initial(val set: RoomSearchSet) : State()
@@ -75,17 +76,31 @@ class MainViewModel @Inject constructor(
         return sets
     }
 
-    fun saveSearchSet(set: RoomSearchSet): LiveData<Long> {
-        val id = MutableLiveData<Long>(-1)
+    fun addNewSearchSet(set: RoomSearchSet): LiveData<ResultData<Long>> {
+        val res = MutableLiveData<ResultData<Long>>(ResultData.Init)
         viewModelScope.launch {
             try {
-                id.value = repository.saveSearchSetAsync(set).await()
-
+                val id = repository.addNewSearchSetAsync(set).await()
+                res.value = ResultData.Success(id)
             } catch (e: Exception) {
-                e.printStackTrace()
+                res.value = ResultData.Error(e.message ?: "Unknown error...")
             }
         }
-        return id
+        return res
+    }
+
+    fun saveSearchSet(set: RoomSearchSet): LiveData<Long?> {
+        val res = MutableLiveData<Long?>(null)
+        viewModelScope.launch {
+            try {
+                res.value = repository.saveSearchSetAsync(set).await()
+
+            } catch (e: Exception) {
+                if (BuildConfig.DEBUG) e.printStackTrace()
+                res.value = -1
+            }
+        }
+        return res
     }
 
     fun deleteSearchSet(set: RoomSearchSet): StateFlow<Int> {
@@ -129,7 +144,7 @@ class MainViewModel @Inject constructor(
 
     init {
 
-        val isAgree = app.appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
+        val isAgree = app?.appPref?.getBoolean(MainActivity.KEY_IS_AGREE, false) ?: true
         if (!isAgree) {
 
             val subscribe = repository.getAllCompaniesName()

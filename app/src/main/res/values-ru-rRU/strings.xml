@@ -76,7 +76,7 @@
     <string name="text_deals_for_7_days">Сделки за 7 дней</string>
     <string name="text_latest_purchases_1">Покупки больше 1 милл.$</string>
     <string name="text_latest_purchases_5">Покупки больше 5 милл.$</string>
-    <string name="text_data_not_avalible">Data is not available, please, try later</string>
+    <string name="text_data_not_avalible">Данные недоступны, пожалуйста, попробуйте позже</string>
     <string name="text_cancel">Отмена</string>
     <string name="text_ok">OK</string>
     <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
@@ -207,6 +207,7 @@
     <string name="text_tracking_params">Параметры отслеживания</string>
     <string name="text_company_list">Список компаний</string>
     <string name="text_ticker_already_exists">Такой тикер уже есть в списке</string>
+    <string name="text_search_already_exists">Такой поисковый запрос уже есть.</string>
     <string name="hint_request_name">Введите название запроса</string>
     <string name="title_request_name">Название запроса</string>
     <string name="text_generate">Сгенерировать</string>
@@ -231,5 +232,9 @@
         Параметры поиска сохранены, но не добавлены в список отслеживаемых. Превышено максимальное количество фоновых запросов.
     </string>
     <string name="text_exceeded_max_background_requests">Превышено допустимое количество фоновых запросов</string>
+    <string name="text_warning">Предупреждение</string>
+    <string name="text_success">Успешно</string>
+    <string name="text_info">Информация</string>
+    <string name="text_error">Ошибка</string>
 
 </resources>

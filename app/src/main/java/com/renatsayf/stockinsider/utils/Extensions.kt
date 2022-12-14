@@ -13,7 +13,9 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
@@ -23,6 +25,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.service.WorkTask
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -241,6 +244,23 @@ fun String.convertDefaultWithoutTime(): String? {
     val parsedDate = dateFormat.parse(this)
     val dayMonthFormat = SimpleDateFormat(format, Locale.getDefault())
     return parsedDate?.let { dayMonthFormat.format(parsedDate) }
+}
+
+fun AppCompatActivity.showInfoDialog(
+    title: String = "",
+    message: String = "",
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+) {
+    val dialog = InfoDialog.newInstance(title, message, status)
+    dialog.show(this.supportFragmentManager, InfoDialog.TAG)
+}
+
+fun Fragment.showInfoDialog(
+    title: String = "",
+    message: String = "",
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+) {
+    (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status)
 }
 
 

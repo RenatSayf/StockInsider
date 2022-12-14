@@ -25,10 +25,12 @@ import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -265,34 +267,82 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        roomSearchSet?.apply {
+        val set = roomSearchSet?.apply {
             queryName = searchName
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
             isDefault = false
+        }
+        set?.let {
             trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
-                if (count != null && count < FireBaseViewModel.requestsCount) {
-                    this.isTracked = true
-                    mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
-                        if (id > 0) {
-                            showSnackBar(getString(R.string.text_search_param_is_saved))
-                            findNavController().navigate(R.id.trackingListFragment)
+                if (count < FireBaseViewModel.requestsCount) {
+                    it.isTracked = true
+                    mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                        when(res) {
+                            is ResultData.Error -> {
+                                showInfoDialog(
+                                    title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                )
+                            }
+                            is ResultData.Success -> {
+                                if (res.data > 0) {
+                                    showInfoDialog(
+                                        title = getString(R.string.text_success),
+                                        message = getString(R.string.text_search_param_is_saved),
+                                        status = InfoDialog.DialogStatus.SUCCESS
+                                    )
+                                    findNavController().navigate(R.id.trackingListFragment)
+                                }
+                                else {
+                                    showInfoDialog(
+                                        title = getString(R.string.text_warning),
+                                        message = getString(R.string.text_search_already_exists),
+                                        status = InfoDialog.DialogStatus.WARNING
+                                    )
+                                }
+                            }
+                            ResultData.Init -> {}
                         }
-                        else showSnackBar("Saving error...")
                     }
                 } else {
-                    this.target = null
-                    this.isTracked = false
-                    mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
-                        if (id > 0) {
-                            showSnackBar(getString(R.string.text_search_params_is_saved_but_not_tracked))
+                    it.let {
+                        it.target = null
+                        it.isTracked = false
+                        mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                            when(res) {
+                                ResultData.Init -> {
+
+                                }
+                                is ResultData.Error -> {
+                                    showInfoDialog(
+                                        title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                    )
+                                }
+                                is ResultData.Success -> {
+                                    if (res.data > 0) {
+                                        showInfoDialog(
+                                            title = getString(R.string.text_warning),
+                                            message = getString(R.string.text_search_params_is_saved_but_not_tracked),
+                                            status = InfoDialog.DialogStatus.WARNING
+                                        )
+                                    }
+                                    else {
+                                        //TODO Bug - the dialog is called many times
+                                        showInfoDialog(
+                                            title = getString(R.string.text_warning),
+                                            message = getString(R.string.text_search_already_exists),
+                                            status = InfoDialog.DialogStatus.WARNING
+                                        )
+                                    }
+                                }
+                            }
                         }
-                        else showSnackBar("Saving error...")
                     }
                 }
             }
         }
+
     }
 
     private fun showAdOnBackPressed(flag: Boolean) {
