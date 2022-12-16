@@ -9,6 +9,7 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -31,17 +32,23 @@ class AppWorker (
 
     private var db: AppDao
     private var net: INetRepository
-
     private var function: ((Context, Int, RoomSearchSet) -> Unit)? = ServiceNotification.notify
+    private var userAgent: String = ""
 
     init {
         db = RoomDataBaseModule.provideRoomDataBase(context)
         net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
-    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, Int, RoomSearchSet) -> Unit)? = null) {
+    fun injectDependencies(
+        db: AppDao,
+        networkRepository: INetRepository,
+        userAgent: String = FireBaseViewModel.userAgent,
+        function: ((Context, Int, RoomSearchSet) -> Unit)? = null
+    ) {
         this.db = db
         this.net = networkRepository
+        this.userAgent = userAgent
         this.function = function
     }
 
@@ -57,7 +64,7 @@ class AppWorker (
                 val duration = (10..20).random()
                 delay(duration * 1000L)
                 val params = set.toSearchSet()
-                val subscribe = net.getTradingScreen(params)
+                val subscribe = net.getTradingScreen(params, userAgent)
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ list ->

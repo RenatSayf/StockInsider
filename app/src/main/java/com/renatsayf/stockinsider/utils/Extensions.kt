@@ -121,7 +121,7 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
 }
 
 fun Activity.startBackgroundWork() {
-    val workRequest = WorkTask.createPeriodicTask(this, TrackingListFragment.TASK_NAME)
+    val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         TrackingListFragment.WORK_NAME,
         ExistingPeriodicWorkPolicy.KEEP,
@@ -262,6 +262,7 @@ fun Fragment.showInfoDialog(
 ) {
     (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status)
 }
+
 
 
 

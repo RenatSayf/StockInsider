@@ -14,15 +14,15 @@ class FakeNetRepository : INetRepository {
         this.result = result
     }
 
-    override fun getTradingScreen(set: SearchSet): Observable<ArrayList<Deal>> {
+    override fun getTradingScreen(set: SearchSet, userAgent: String): Observable<ArrayList<Deal>> {
         return result as Observable<ArrayList<Deal>>
     }
 
-    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>> {
+    override fun getInsiderTrading(insider: String, userAgent: String): Single<ArrayList<Deal>> {
         return Single.just(ArrayList())
     }
 
-    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
+    override fun getTradingByTicker(ticker: String, userAgent: String): Single<ArrayList<Deal>> {
         return Single.just(ArrayList())
     }
 

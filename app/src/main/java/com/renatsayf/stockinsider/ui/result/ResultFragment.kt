@@ -274,46 +274,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             tradePeriod = 3
             isDefault = false
         }
-        set?.let {
-            trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
-                if (count < FireBaseViewModel.requestsCount) {
-                    it.isTracked = true
-                    mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
-                        when(res) {
-                            is ResultData.Error -> {
-                                showInfoDialog(
-                                    title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
-                                )
-                            }
-                            is ResultData.Success -> {
-                                if (res.data > 0) {
-                                    showInfoDialog(
-                                        title = getString(R.string.text_success),
-                                        message = getString(R.string.text_search_param_is_saved),
-                                        status = InfoDialog.DialogStatus.SUCCESS
-                                    )
-                                    findNavController().navigate(R.id.trackingListFragment)
-                                }
-                                else {
-                                    showInfoDialog(
-                                        title = getString(R.string.text_warning),
-                                        message = getString(R.string.text_search_already_exists),
-                                        status = InfoDialog.DialogStatus.WARNING
-                                    )
-                                }
-                            }
-                            ResultData.Init -> {}
-                        }
-                    }
-                } else {
-                    it.let {
-                        it.target = null
-                        it.isTracked = false
-                        mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+        set?.let { s ->
+            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
+                count?.let { c ->
+                    if (c < FireBaseViewModel.requestsCount) {
+                        s.isTracked = true
+                        mainViewModel.addNewSearchSet(s).observe(viewLifecycleOwner) { res ->
                             when(res) {
-                                ResultData.Init -> {
-
-                                }
                                 is ResultData.Error -> {
                                     showInfoDialog(
                                         title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
@@ -322,18 +289,51 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                 is ResultData.Success -> {
                                     if (res.data > 0) {
                                         showInfoDialog(
-                                            title = getString(R.string.text_warning),
-                                            message = getString(R.string.text_search_params_is_saved_but_not_tracked),
-                                            status = InfoDialog.DialogStatus.WARNING
+                                            title = getString(R.string.text_success),
+                                            message = getString(R.string.text_search_param_is_saved),
+                                            status = InfoDialog.DialogStatus.SUCCESS
                                         )
+                                        findNavController().navigate(R.id.trackingListFragment)
                                     }
                                     else {
-                                        //TODO Bug - the dialog is called many times
                                         showInfoDialog(
                                             title = getString(R.string.text_warning),
                                             message = getString(R.string.text_search_already_exists),
                                             status = InfoDialog.DialogStatus.WARNING
                                         )
+                                    }
+                                }
+                                ResultData.Init -> {}
+                            }
+                        }
+                    }
+                    else {
+                        s.let {
+                            it.target = null
+                            it.isTracked = false
+                            mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                                when(res) {
+                                    ResultData.Init -> {}
+                                    is ResultData.Error -> {
+                                        showInfoDialog(
+                                            title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                        )
+                                    }
+                                    is ResultData.Success -> {
+                                        if (res.data > 0) {
+                                            showInfoDialog(
+                                                title = getString(R.string.text_warning),
+                                                message = getString(R.string.text_search_params_is_saved_but_not_tracked),
+                                                status = InfoDialog.DialogStatus.WARNING
+                                            )
+                                        }
+                                        else {
+                                            showInfoDialog(
+                                                title = getString(R.string.text_warning),
+                                                message = getString(R.string.text_search_already_exists),
+                                                status = InfoDialog.DialogStatus.WARNING
+                                            )
+                                        }
                                     }
                                 }
                             }

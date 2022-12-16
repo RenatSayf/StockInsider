@@ -8,6 +8,7 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import okhttp3.internal.userAgent
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
-    override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
+    override fun getTradingScreen(set: SearchSet, userAgent: String) : io.reactivex.Observable<ArrayList<Deal>>
     {
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
@@ -42,13 +43,12 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isDirector,
                 set.isTenPercent,
                 set.groupBy,
-                set.sortBy
+                set.sortBy,
+                userAgent
             )
                 .map { document ->
                     dealList = doMainParsing(document)
                 }
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.newThread())
                 .subscribe({
                     if (!emitter.isDisposed) {
                         emitter.onNext(dealList)
@@ -125,11 +125,11 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
+    override fun getInsiderTrading(insider: String, userAgent: String): Single<ArrayList<Deal>>
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getInsiderTrading(insider)
+            val subscribe = api.getInsiderTrading(insider, userAgent)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#subjectDetails")
                 }
@@ -180,10 +180,10 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
+    override fun getTradingByTicker(ticker: String, userAgent: String): Single<ArrayList<Deal>> {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getTradingByTicker(ticker)
+            val subscribe = api.getTradingByTicker(ticker, userAgent)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#tablewrapper")
                 }
@@ -241,7 +241,8 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isDirector,
                 set.isTenPercent,
                 set.groupBy,
-                set.sortBy
+                set.sortBy,
+                userAgent
             )
                 .map { document ->
                 doAllCompanyNameParsing(document)

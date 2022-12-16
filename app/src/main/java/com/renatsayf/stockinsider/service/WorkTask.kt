@@ -9,11 +9,13 @@ import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import java.util.concurrent.TimeUnit
 
 
-object WorkTask: IWorkTask {
+class WorkTask(
+    private val timePeriod: Long = FireBaseViewModel.workerPeriod
+): IWorkTask {
 
-    const val TAG = "TAG555555555"
-
-    private val timePeriod = FireBaseViewModel.workerPeriod
+    companion object {
+        const val TAG = "TAG555555555"
+    }
 
     private val taskList = mutableSetOf<PeriodicWorkRequest>()
 

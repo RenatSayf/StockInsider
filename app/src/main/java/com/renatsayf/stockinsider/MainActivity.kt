@@ -36,7 +36,7 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-
+import kotlinx.coroutines.runBlocking
 
 
 @AndroidEntryPoint
@@ -420,11 +420,14 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-
-        val count = trackedVM.trackedCount.value
-        if (count != null && count > 0) {
-            startBackgroundWork()
+        runBlocking {
+            trackedVM.trackedCount().observe(this@MainActivity) { count ->
+                if (count != null && count > 0) {
+                    startBackgroundWork()
+                }
+            }
         }
+
         super.onDestroy()
     }
 

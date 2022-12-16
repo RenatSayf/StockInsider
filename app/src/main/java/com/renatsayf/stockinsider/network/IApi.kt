@@ -33,22 +33,22 @@ interface IApi
                 @Query("istenpercent", encoded = true) isTenPercent: String,
                 @Query("grp", encoded = true) groupBy: String,
                 @Query("sortcol", encoded = true) sortBy: String,
-                @Header("User-Agent") agent: String = userAgent,
+                @Header("User-Agent") agent: String,
                          ): Observable<Document>
 
     @GET("{insiderName}")
     fun getInsiderTrading(
         @Path("insiderName", encoded = true) insiderName: String,
-        @Header("User-Agent") agent: String = userAgent
+        @Header("User-Agent") agent: String
     ): Single<Document>
 
     @GET("{ticker}")
     fun getTradingByTicker(
         @Path("ticker", encoded = true) ticker: String,
-        @Header("User-Agent") agent: String = userAgent
+        @Header("User-Agent") agent: String
     ): Single<Document>
 
     companion object Factory {
-        private val userAgent = FireBaseViewModel.userAgent
+        //private val userAgent = FireBaseViewModel.userAgent
     }
 }

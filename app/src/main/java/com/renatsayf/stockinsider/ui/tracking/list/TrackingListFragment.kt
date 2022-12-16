@@ -60,8 +60,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState == null) {
-            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                if (count > 0) startBackgroundWork()
+            trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
+                if (count != null && count > 0) startBackgroundWork()
             }
         }
 
@@ -95,34 +95,35 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         binding.addButton.setOnClickListener {
 
-            trackingVM.targetCount.observe(viewLifecycleOwner) { count ->
-                if (count < FireBaseViewModel.requestsCount) {
-                    val set = RoomSearchSet(
-                        queryName = "",
-                        companyName = "",
-                        ticker = "",
-                        filingPeriod = 1,
-                        tradePeriod = 3,
-                        tradedMin = "",
-                        tradedMax = "",
-                        isOfficer = true,
-                        isDirector = true,
-                        isTenPercent = true,
-                        groupBy = 0,
-                        sortBy = 3
-                    )
-                    findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
-                        putSerializable(TrackingFragment.ARG_SET, set)
-                        putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
-                        putBoolean(TrackingFragment.ARG_IS_EDIT, true)
-                    })
-                }
-                else {
-                    //showSnackBar(getString(R.string.text_exceeded_max_background_requests))
-                    showInfoDialog(
-                        title = getString(R.string.text_exceeded_max_background_requests),
-                        status = InfoDialog.DialogStatus.ERROR
-                    )
+            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
+                count?.let {
+                    if (it < FireBaseViewModel.requestsCount) {
+                        val set = RoomSearchSet(
+                            queryName = "",
+                            companyName = "",
+                            ticker = "",
+                            filingPeriod = 1,
+                            tradePeriod = 3,
+                            tradedMin = "",
+                            tradedMax = "",
+                            isOfficer = true,
+                            isDirector = true,
+                            isTenPercent = true,
+                            groupBy = 0,
+                            sortBy = 3
+                        )
+                        findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+                            putSerializable(TrackingFragment.ARG_SET, set)
+                            putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
+                            putBoolean(TrackingFragment.ARG_IS_EDIT, true)
+                        })
+                    }
+                    else {
+                        showInfoDialog(
+                            title = getString(R.string.text_exceeded_max_background_requests),
+                            status = InfoDialog.DialogStatus.ERROR
+                        )
+                    }
                 }
             }
         }
@@ -173,7 +174,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     true -> showSnackBar(getString(R.string.text_tracking_enabled))
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
-                        trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
                                 cancelBackgroundWork()
                             }

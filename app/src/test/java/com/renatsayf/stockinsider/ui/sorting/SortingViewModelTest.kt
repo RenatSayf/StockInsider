@@ -101,8 +101,8 @@ class SortingViewModelTest {
 
         val actualDateStart = actualMap.keys.first()
         val actualDateEnd = actualMap.keys.last()
-        Assert.assertEquals("2022-12-09 19:29:44", actualDateStart)
-        Assert.assertEquals("2022-12-00 10:20:44", actualDateEnd)
+        Assert.assertEquals("2022-12-09", actualDateStart)
+        Assert.assertEquals("2022-11-30", actualDateEnd)
     }
 
     @Test
