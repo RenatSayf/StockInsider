@@ -6,7 +6,6 @@ import androidx.work.WorkerParameters
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 
 class AppWorkerFactory(
     private val callback: ((Context, Int, RoomSearchSet) -> Unit)
@@ -19,8 +18,8 @@ class AppWorkerFactory(
                     injectDependencies(
                         db = RoomDataBaseModule.provideRoomDataBase(appContext),
                         networkRepository = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(appContext)),
-                        userAgent = FireBaseViewModel.userAgent,
-                        callback)
+                        callback
+                    )
                 }
                 appWorker
             }

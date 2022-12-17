@@ -26,7 +26,9 @@ class WorkTask(
     override fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest {
 
         val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
-            val data = Data.Builder().putString(AppWorker.SEARCH_SET_KEY, name).build()
+            val data = Data.Builder().apply {
+                putString(AppWorker.SEARCH_SET_KEY, name)
+            }.build()
             setInputData(data)
             setConstraints(constraints)
             addTag(TAG)

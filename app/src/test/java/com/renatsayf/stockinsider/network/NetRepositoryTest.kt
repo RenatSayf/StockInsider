@@ -150,7 +150,7 @@ class NetRepositoryTest {
         }
         val testObserver = TestObserver<ArrayList<Deal>>()
 
-        val observable = repository.getTradingScreen(testSet.toSearchSet(), "")
+        val observable = repository.getTradingScreen(testSet.toSearchSet())
         observable.subscribe(testObserver)
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
         val actualList = testObserver.values()[0]

@@ -36,7 +36,6 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.runBlocking
 
 
 @AndroidEntryPoint
@@ -46,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
 
-        var ad: InterstitialAd? = null
+        var interstitialAd: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -62,6 +61,10 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[FireBaseViewModel::class.java]
     }
 
+    private val trackedVM: TrackingListViewModel by lazy {
+        ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -72,10 +75,8 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host_fragment)
         binding.navView.apply {
             setupWithNavController(navController)
-            setNavigationItemSelectedListener { item ->
-                if (item.itemId == R.id.nav_exit) {
-                    finish()
-                }
+            setNavigationItemSelectedListener {
+                finish()
                 true
             }
         }
@@ -87,7 +88,7 @@ class MainActivity : AppCompatActivity() {
         val adUnitId = this.getInterstitialAdId(index = 0)
         InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(p0: InterstitialAd) {
-                ad = p0
+                interstitialAd = p0
             }
             override fun onAdFailedToLoad(p0: LoadAdError) {
                 if (BuildConfig.DEBUG) {
@@ -150,22 +151,29 @@ class MainActivity : AppCompatActivity() {
                         }
                         9 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            ad?.let {
-                                it.show(this@MainActivity)
-                                it.fullScreenContentCallback =
-                                    object : FullScreenContentCallback() {
-                                        override fun onAdDismissedFullScreenContent() {
-                                            finish()
-                                        }
-
-                                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                            if (BuildConfig.DEBUG) {
-                                                Exception(p0.message).printStackTrace()
-                                            }
-                                            finish()
-                                        }
+                            trackedVM.trackedCount().observe(this@MainActivity) { count ->
+                                count?.let {
+                                    if (it > 0) {
+                                        startBackgroundWork()
                                     }
-                            } ?: run { finish() }
+                                    interstitialAd?.let { ad ->
+                                        ad.show(this@MainActivity)
+                                        ad.fullScreenContentCallback =
+                                            object : FullScreenContentCallback() {
+                                                override fun onAdDismissedFullScreenContent() {
+                                                    finish()
+                                                }
+
+                                                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                                    if (BuildConfig.DEBUG) {
+                                                        Exception(p0.message).printStackTrace()
+                                                    }
+                                                    finish()
+                                                }
+                                            }
+                                    } ?: run { finish() }
+                                }
+                            }
                         }
                     }
                     return false
@@ -413,22 +421,6 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
-    }
-
-    private val trackedVM: TrackingListViewModel by lazy {
-        ViewModelProvider(this)[TrackingListViewModel::class.java]
-    }
-
-    override fun onDestroy() {
-        runBlocking {
-            trackedVM.trackedCount().observe(this@MainActivity) { count ->
-                if (count != null && count > 0) {
-                    startBackgroundWork()
-                }
-            }
-        }
-
-        super.onDestroy()
     }
 
 }

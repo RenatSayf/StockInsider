@@ -2,8 +2,7 @@
 
 package com.renatsayf.stockinsider.firebase
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -11,14 +10,11 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import dagger.hilt.android.lifecycle.HiltViewModel
-import java.lang.Exception
 import javax.inject.Inject
 
 
 @HiltViewModel
-class FireBaseViewModel @Inject constructor(
-    app: Application
-) : AndroidViewModel(app) {
+class FireBaseViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         var userAgent = Firebase.remoteConfig.getString("user_agent")
@@ -39,9 +35,6 @@ class FireBaseViewModel @Inject constructor(
                     if (BuildConfig.DEBUG) e.printStackTrace()
                 }
             })
-//            userAgent = getString("user_agent")
-//            workerPeriod = if(BuildConfig.DEBUG) 15L else getLong("worker_period")
-//            requestsCount = if(BuildConfig.DEBUG) 5 else getLong("requests_count").toInt()
         }
     }
 }

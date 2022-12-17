@@ -2,13 +2,13 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
-import okhttp3.internal.userAgent
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
@@ -18,7 +18,20 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
-    override fun getTradingScreen(set: SearchSet, userAgent: String) : io.reactivex.Observable<ArrayList<Deal>>
+    private val userAgent = try {
+        FireBaseViewModel.userAgent
+    }
+    catch (e: ExceptionInInitializerError) {
+        okhttp3.internal.userAgent
+    }
+    catch (e: NoClassDefFoundError) {
+        okhttp3.internal.userAgent
+    }
+    catch (e: Exception) {
+        okhttp3.internal.userAgent
+    }
+
+    override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
         return io.reactivex.Observable.create {emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
@@ -125,7 +138,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    override fun getInsiderTrading(insider: String, userAgent: String): Single<ArrayList<Deal>>
+    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
@@ -180,7 +193,8 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    override fun getTradingByTicker(ticker: String, userAgent: String): Single<ArrayList<Deal>> {
+    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
+
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
             val subscribe = api.getTradingByTicker(ticker, userAgent)
@@ -203,6 +217,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     }
 
     override fun getAllCompaniesName(): Single<List<Company>> {
+
         val set = RoomSearchSet(
             queryName = "",
             companyName = "",

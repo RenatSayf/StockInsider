@@ -1,16 +1,15 @@
 package com.renatsayf.stockinsider.network
 
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import io.reactivex.Observable
 import io.reactivex.Single
 import org.jsoup.nodes.Document
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 interface IApi
 {
+    @Headers(
+        "Content-Type:application/x-www-form-urlencoded; charset=utf-8"
+    )
     @GET("screener")
     fun getTradingScreen(
                 @Query("s", encoded = true) ticker: String,
@@ -48,7 +47,4 @@ interface IApi
         @Header("User-Agent") agent: String
     ): Single<Document>
 
-    companion object Factory {
-        //private val userAgent = FireBaseViewModel.userAgent
-    }
 }

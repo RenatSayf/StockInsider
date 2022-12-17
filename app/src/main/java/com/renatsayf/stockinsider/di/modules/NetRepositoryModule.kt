@@ -17,11 +17,9 @@ import java.util.concurrent.TimeUnit
 
 @InstallIn(SingletonComponent::class)
 @Module
-object NetRepositoryModule
-{
+object NetRepositoryModule {
     @Provides
-    fun provideSearchRequest(api: IApi): INetRepository
-    {
+    fun provideSearchRequest(api: IApi): INetRepository {
         return NetRepository(api)
     }
 
@@ -32,9 +30,9 @@ object NetRepositoryModule
 
         val okHttpClient = OkHttpClient().newBuilder()
             .addInterceptor(interceptor)
-            .connectTimeout(60, TimeUnit.SECONDS)
-            .readTimeout(60, TimeUnit.SECONDS)
-            .writeTimeout(60, TimeUnit.SECONDS).apply {
+            .connectTimeout(20, TimeUnit.SECONDS)
+            .readTimeout(20, TimeUnit.SECONDS)
+            .writeTimeout(20, TimeUnit.SECONDS).apply {
                 if (BuildConfig.DEBUG) {
                     addInterceptor(OkHttpProfilerInterceptor())
                 }
@@ -46,7 +44,7 @@ object NetRepositoryModule
             .baseUrl("http://openinsider.com/")
             .client(okHttpClient).build()
 
-        return when(BuildConfig.DATA_SOURCE) {
+        return when (BuildConfig.DATA_SOURCE) {
             "NETWORK" -> retrofit.create(IApi::class.java)
             else -> MockApi(context)
         }

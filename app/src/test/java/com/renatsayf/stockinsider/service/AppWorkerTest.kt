@@ -16,7 +16,6 @@ import com.renatsayf.stockinsider.network.FakeNetRepository
 import io.reactivex.Observable
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -60,23 +59,6 @@ class AppWorkerTest {
         db.close()
     }
 
-//    @Test
-//    fun workManagerEnqueueTest() {
-//
-//        val workTask = WorkTask(15L)
-//
-//        val actualWorkRequests = workTask.getTaskList()
-//        assertTrue(actualWorkRequests.isNotEmpty())
-//
-//        val workManager = WorkManager.getInstance(context)
-//
-//        workManager.enqueue(actualWorkRequests).result.get()
-//
-//        val workInfo = workManager.getWorkInfoById(actualWorkRequests[0].id).get()
-//
-//        assertEquals(WorkInfo.State.ENQUEUED, workInfo.state)
-//    }
-
     @Test
     fun doWorkTest() {
 
@@ -110,18 +92,14 @@ class AppWorkerTest {
         worker.injectDependencies(
             dao,
             network,
-            "",
             FakeServiceNotification.notify
         )
 
         runBlocking{
 
             dao.insertOrUpdateSearchSet(roomSearchSet)
-
             val result = worker.doWork()
-            val result2 = worker.doWork()
             assertTrue(result is ListenableWorker.Result.Success)
-            assertTrue(result2 is ListenableWorker.Result.Success)
         }
     }
 }
