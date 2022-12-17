@@ -9,6 +9,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.ConfigurationCompat
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -26,7 +27,16 @@ class WebViewDialog : DialogFragment() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         binding = WebViewDialogBinding.inflate(layoutInflater)
 
-        binding.dialogWebView.loadUrl("file:///android_asset/user-agreement/index.html")
+        binding.dialogWebView.apply {
+            val currentLocale = ConfigurationCompat.getLocales(resources.configuration)[0]
+            val language = currentLocale?.language
+            if (language == "ru") {
+                loadUrl("file:///android_asset/user-agreement/index.html")
+            }
+            else {
+                loadUrl("file:///android_asset/user-agreement/index-en.html")
+            }
+        }
 
         val builder = AlertDialog.Builder(requireContext()).apply {
             setView(binding.root)
