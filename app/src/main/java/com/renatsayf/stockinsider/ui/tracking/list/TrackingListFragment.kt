@@ -14,15 +14,14 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.cancelBackgroundWork
-import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showSnackBar
-import com.renatsayf.stockinsider.utils.startBackgroundWork
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -61,8 +60,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         if (savedInstanceState == null) {
-            trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
-                if (count > 0) startBackgroundWork()
+            trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
+                if (count != null && count > 0) startBackgroundWork()
             }
         }
 
@@ -95,25 +94,38 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         }
 
         binding.addButton.setOnClickListener {
-            val set = RoomSearchSet(
-                queryName = "",
-                companyName = "",
-                ticker = "",
-                filingPeriod = 1,
-                tradePeriod = 3,
-                tradedMin = "",
-                tradedMax = "",
-                isOfficer = true,
-                isDirector = true,
-                isTenPercent = true,
-                groupBy = 0,
-                sortBy = 3
-            )
-            findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
-                putSerializable(TrackingFragment.ARG_SET, set)
-                putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
-                putBoolean(TrackingFragment.ARG_IS_EDIT, true)
-            })
+
+            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
+                count?.let {
+                    if (it < FireBaseViewModel.requestsCount) {
+                        val set = RoomSearchSet(
+                            queryName = "",
+                            companyName = "",
+                            ticker = "",
+                            filingPeriod = 1,
+                            tradePeriod = 3,
+                            tradedMin = "",
+                            tradedMax = "",
+                            isOfficer = true,
+                            isDirector = true,
+                            isTenPercent = true,
+                            groupBy = 0,
+                            sortBy = 3
+                        )
+                        findNavController().navigate(R.id.action_trackingListFragment_to_trackingFragment, Bundle().apply {
+                            putSerializable(TrackingFragment.ARG_SET, set)
+                            putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_new_search))
+                            putBoolean(TrackingFragment.ARG_IS_EDIT, true)
+                        })
+                    }
+                    else {
+                        showInfoDialog(
+                            title = getString(R.string.text_exceeded_max_background_requests),
+                            status = InfoDialog.DialogStatus.ERROR
+                        )
+                    }
+                }
+            }
         }
 
     }
@@ -142,7 +154,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                                 res == 0 -> {
-                                    showSnackBar(getString(R.string.text_deletion_error))
+                                    //showSnackBar(getString(R.string.text_deletion_error))
+                                    showInfoDialog(title = getString(R.string.text_deletion_error), status = InfoDialog.DialogStatus.ERROR)
                                 }
                             }
                         }
@@ -156,12 +169,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         set.isTracked = checked
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
-            if (id > 0) {
+            if (id != null && id > 0) {
                 when (checked) {
                     true -> showSnackBar(getString(R.string.text_tracking_enabled))
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
-                        trackingVM.trackedCount.observe(viewLifecycleOwner) { count ->
+                        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
                                 cancelBackgroundWork()
                             }
@@ -180,15 +193,16 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         })
     }
 
-    override fun onStart() {
-        super.onStart()
+    override fun onResume() {
+
         (activity as MainActivity).supportActionBar?.hide()
+        super.onResume()
     }
 
-    override fun onStop() {
+    override fun onDestroyView() {
+
         (activity as MainActivity).supportActionBar?.show()
-        super.onStop()
+        super.onDestroyView()
     }
-
 
 }

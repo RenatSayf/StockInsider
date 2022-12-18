@@ -16,7 +16,6 @@ import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.ExpandableListView
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -27,8 +26,8 @@ import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.material.navigation.NavigationView
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -40,20 +39,17 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity()
-{
-    companion object
-    {
+class MainActivity : AppCompatActivity() {
+    companion object {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
 
-        var ad: InterstitialAd? = null
+        var interstitialAd: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
     private lateinit var navController: NavController
-    private lateinit var appBarConfiguration : AppBarConfiguration
     private lateinit var appDialogObserver : AppDialog.EventObserver
     lateinit var drawerLayout : DrawerLayout
 
@@ -61,47 +57,38 @@ class MainActivity : AppCompatActivity()
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    override fun onCreate(savedInstanceState: Bundle?)
-    {
+    private val firebaseVM: FireBaseViewModel by lazy {
+        ViewModelProvider(this)[FireBaseViewModel::class.java]
+    }
+
+    private val trackedVM: TrackingListViewModel by lazy {
+        ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTheme(R.style.AppTheme_NoActionBar)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val toolbar : Toolbar = findViewById(R.id.toolbar)
-        setSupportActionBar(toolbar)
-
-        drawerLayout = findViewById(R.id.drawer_layout)
-        val navView : NavigationView = findViewById(R.id.nav_view)
+        drawerLayout = binding.drawerLayout
         navController = findNavController(R.id.nav_host_fragment)
-
-        // Passing each menu ID as a set of Ids because each
-        // menu should be considered as top level destinations.
-        appBarConfiguration = AppBarConfiguration(setOf(R.id.nav_home), drawerLayout)
-        setupActionBarWithNavController(navController, appBarConfiguration)
-        navView.setupWithNavController(navController)
-        navView.setNavigationItemSelectedListener { item ->
-            if (item.itemId == R.id.nav_exit) {
+        binding.navView.apply {
+            setupWithNavController(navController)
+            setNavigationItemSelectedListener {
                 finish()
+                true
             }
-            true
         }
 
-        //region TODO перед релизом удалить или закомментировать
-//        appPref.edit {
-//            putBoolean(KEY_NO_SHOW_AGAIN, false)
-//            putBoolean(KEY_IS_AGREE, false)
-//            apply()
-//        }
-        //endregion
+        firebaseVM
 
         MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
         val adUnitId = this.getInterstitialAdId(index = 0)
         InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
             override fun onAdLoaded(p0: InterstitialAd) {
-                ad = p0
+                interstitialAd = p0
             }
             override fun onAdFailedToLoad(p0: LoadAdError) {
                 if (BuildConfig.DEBUG) {
@@ -110,7 +97,7 @@ class MainActivity : AppCompatActivity()
             }
         })
 
-        binding.appBarMain.contentMain.included.loadProgressBar.visibility = View.GONE
+        binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
 
         appDialogObserver = ViewModelProvider(this)[AppDialog.EventObserver::class.java]
 
@@ -164,22 +151,29 @@ class MainActivity : AppCompatActivity()
                         }
                         9 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            ad?.let {
-                                it.show(this@MainActivity)
-                                it.fullScreenContentCallback =
-                                    object : FullScreenContentCallback() {
-                                        override fun onAdDismissedFullScreenContent() {
-                                            finish()
-                                        }
-
-                                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                            if (BuildConfig.DEBUG) {
-                                                Exception(p0.message).printStackTrace()
-                                            }
-                                            finish()
-                                        }
+                            trackedVM.trackedCount().observe(this@MainActivity) { count ->
+                                count?.let {
+                                    if (it > 0) {
+                                        startBackgroundWork()
                                     }
-                            } ?: run { finish() }
+                                    interstitialAd?.let { ad ->
+                                        ad.show(this@MainActivity)
+                                        ad.fullScreenContentCallback =
+                                            object : FullScreenContentCallback() {
+                                                override fun onAdDismissedFullScreenContent() {
+                                                    finish()
+                                                }
+
+                                                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+                                                    if (BuildConfig.DEBUG) {
+                                                        Exception(p0.message).printStackTrace()
+                                                    }
+                                                    finish()
+                                                }
+                                            }
+                                    } ?: run { finish() }
+                                }
+                            }
                         }
                     }
                     return false
@@ -427,19 +421,6 @@ class MainActivity : AppCompatActivity()
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
-    }
-
-    private val trackedVM: TrackingListViewModel by lazy {
-        ViewModelProvider(this)[TrackingListViewModel::class.java]
-    }
-
-    override fun onDestroy() {
-
-        val count = trackedVM.trackedCount.value
-        if (count != null && count > 0) {
-            startBackgroundWork()
-        }
-        super.onDestroy()
     }
 
 }

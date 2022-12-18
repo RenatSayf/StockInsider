@@ -16,7 +16,6 @@ import com.renatsayf.stockinsider.network.FakeNetRepository
 import io.reactivex.Observable
 import kotlinx.coroutines.runBlocking
 import org.junit.After
-import org.junit.Assert.assertEquals
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -47,7 +46,7 @@ class AppWorkerTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
             .allowMainThreadQueries()
             .build()
-        dao = db.searchSetDao()
+        dao = db.appDao()
 
         config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
@@ -58,23 +57,6 @@ class AppWorkerTest {
     @After
     fun tearDown() {
         db.close()
-    }
-
-    @Test
-    fun workManagerEnqueueTest() {
-
-        WorkTask.createPeriodicTask(context, "Microsoft")
-
-        val actualWorkRequests = WorkTask.getTaskList()
-        assertTrue(actualWorkRequests.isNotEmpty())
-
-        val workManager = WorkManager.getInstance(context)
-
-        workManager.enqueue(actualWorkRequests).result.get()
-
-        val workInfo = workManager.getWorkInfoById(actualWorkRequests[0].id).get()
-
-        assertEquals(WorkInfo.State.ENQUEUED, workInfo.state)
     }
 
     @Test
@@ -107,16 +89,17 @@ class AppWorkerTest {
 
         val worker = TestListenableWorkerBuilder<AppWorker>(context).build()
 
-        worker.injectDependencies(dao, network, FakeServiceNotification.notify)
+        worker.injectDependencies(
+            dao,
+            network,
+            FakeServiceNotification.notify
+        )
 
         runBlocking{
 
             dao.insertOrUpdateSearchSet(roomSearchSet)
-
             val result = worker.doWork()
-            val result2 = worker.doWork()
             assertTrue(result is ListenableWorker.Result.Success)
-            assertTrue(result2 is ListenableWorker.Result.Success)
         }
     }
 }

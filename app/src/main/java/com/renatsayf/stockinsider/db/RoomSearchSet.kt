@@ -7,7 +7,16 @@ import androidx.room.PrimaryKey
 import com.renatsayf.stockinsider.models.SearchSet
 import java.io.Serializable
 
-@Entity(tableName = "search_set", indices = [Index("set_name")])
+@Entity(
+        tableName = "search_set",
+        indices = [
+                Index(
+                        value = [
+                                "set_name",
+                                "ticker"
+                        ], unique = true
+                )]
+)
 data class RoomSearchSet(
 
         @ColumnInfo(name = "set_name")
@@ -54,7 +63,7 @@ data class RoomSearchSet(
 
         @PrimaryKey(autoGenerate = true)
         @ColumnInfo(name = "id", defaultValue = "0")
-        val id: Long = 0
+        var id: Long = 0
 ) : Serializable {
 
         @ColumnInfo(name = "target")

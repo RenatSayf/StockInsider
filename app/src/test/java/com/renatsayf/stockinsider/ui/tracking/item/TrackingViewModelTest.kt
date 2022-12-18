@@ -1,52 +1,68 @@
 package com.renatsayf.stockinsider.ui.tracking.item
 
-import com.renatsayf.stockinsider.db.FakeAppDao
+import android.content.Context
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.room.Room
+import androidx.test.core.app.ApplicationProvider
+import com.renatsayf.stockinsider.db.AppDao
+import com.renatsayf.stockinsider.db.AppDataBase
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.network.FakeNetRepository
-import com.renatsayf.stockinsider.repository.FakeDataRepositoryImpl
+import com.renatsayf.stockinsider.network.MockApi
+import com.renatsayf.stockinsider.network.NetRepository
+import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import com.renatsayf.stockinsider.ui.main.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.*
-import org.junit.After
-import org.junit.Assert
-import org.junit.Before
-import org.junit.Test
+import org.junit.*
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 
 
 @OptIn(ExperimentalCoroutinesApi::class)
+@RunWith(RobolectricTestRunner::class)
+@Config(maxSdk = 31)
 class TrackingViewModelTest {
 
+    @get:Rule
+    val archRule = InstantTaskExecutorRule() //выполнение всех операций архитектурных компонентов в главном потоке
+
     private lateinit var trackingVM: TrackingViewModel
-    private lateinit var repository: FakeDataRepositoryImpl
-    private lateinit var dao: FakeAppDao
+    private lateinit var db: AppDataBase
+    private lateinit var dao: AppDao
+    private lateinit var repository: DataRepositoryImpl
     private var dispatcher = UnconfinedTestDispatcher()
 
     @Before
     fun setUp() {
 
         Dispatchers.setMain(dispatcher)
-        dao = FakeAppDao()
-        repository = FakeDataRepositoryImpl(
-            net = FakeNetRepository(),
-            dao = this.dao
-        )
+
+        val context = ApplicationProvider.getApplicationContext<Context>()
+        db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
+            .allowMainThreadQueries()
+            .build()
+        dao = db.appDao()
+
+        repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
         trackingVM = TrackingViewModel(repository)
     }
 
     @After
     fun tearDown() {
-
         Dispatchers.resetMain()
     }
 
     @Test
-    fun getSearchSetById() = runTest {
+    fun getSearchSetById() = runBlocking {
 
         val inputSet = RoomSearchSet(
             id = 1,
-            queryName = "XXX",
+            queryName = "XXXXX XXX",
             companyName = "",
-            ticker = "BAC MSFT AA AAPL TSLA NVDA GOOG FB NFLX",
+            ticker = "XXX",
             filingPeriod = 3,
             tradePeriod = 3,
             isPurchase = true,
@@ -62,9 +78,9 @@ class TrackingViewModelTest {
             isTracked = true
         }
 
-        dao.setExpectedResult("", inputSet)
+        MainViewModel(repository, null).saveSearchSet(inputSet)
 
         val actualSet = trackingVM.getSearchSetById(1).value
-        Assert.assertTrue(actualSet is RoomSearchSet)
+        Assert.assertEquals(inputSet, actualSet)
     }
 }

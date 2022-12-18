@@ -40,6 +40,10 @@ class FakeAppDao : AppDao {
         return -1L
     }
 
+    override suspend fun insertOrIgnore(set: RoomSearchSet): Long {
+        return 0L
+    }
+
     override suspend fun insertCompanies(list: List<Company>) {
 
     }
@@ -61,6 +65,10 @@ class FakeAppDao : AppDao {
     }
 
     override suspend fun getTrackedCount(): Int {
+        return 0
+    }
+
+    override suspend fun getTargetCount(): Int {
         return 0
     }
 

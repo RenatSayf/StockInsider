@@ -30,7 +30,8 @@ class MockApi(private val context: Context): IApi {
         isDirector: String,
         isTenPercent: String,
         groupBy: String,
-        sortBy: String
+        sortBy: String,
+        agent: String
     ): Observable<Document> {
         return Observable.create { emitter ->
             val stringFromFile = context.getStringFromFile("test-data/buy_sell_deals.txt")
@@ -39,7 +40,7 @@ class MockApi(private val context: Context): IApi {
         }
     }
 
-    override fun getInsiderTrading(insiderName: String): Single<Document> {
+    override fun getInsiderTrading(insiderName: String, agent: String): Single<Document> {
         return Single.create {
             val stringFromFile = context.getStringFromFile("test-data/deals_by_insider.txt")
             val document = Jsoup.parse(stringFromFile)
@@ -47,7 +48,7 @@ class MockApi(private val context: Context): IApi {
         }
     }
 
-    override fun getTradingByTicker(ticker: String): Single<Document> {
+    override fun getTradingByTicker(ticker: String, agent: String): Single<Document> {
         return Single.create {
             val stringFromFile = context.getStringFromFile("test-data/deals_by_tiker.txt")
             val document = Jsoup.parse(stringFromFile)

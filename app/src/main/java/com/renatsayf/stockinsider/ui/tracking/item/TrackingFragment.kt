@@ -67,12 +67,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
 
         binding = TrackingFragmentBinding.bind(view)
 
-        val title = arguments?.getString(ARG_TITLE)
-
         with(binding) {
 
-            toolbar.title = title
-
+            toolbar.title = arguments?.getString(ARG_TITLE)
             toolbar.setNavigationOnClickListener {
                 findNavController().popBackStack()
             }
@@ -408,7 +405,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
             lifecycleScope.launch {
                 mainVM.saveSearchSet(it).asFlow().collectLatest { id ->
                     when {
-                        id > 0L -> {
+                        id != null && id > 0L -> {
                             trackingVM.setState(TrackingViewModel.State.OnSave(newSet))
                         }
                         id == 0L -> {
@@ -420,7 +417,15 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
         }
     }
 
+    override fun onResume() {
+        (activity as MainActivity).supportActionBar?.hide()
+        super.onResume()
+    }
 
+    override fun onDestroyView() {
+        (activity as MainActivity).supportActionBar?.show()
+        super.onDestroyView()
+    }
 
 
 

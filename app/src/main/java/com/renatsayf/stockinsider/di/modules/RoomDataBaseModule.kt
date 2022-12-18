@@ -8,7 +8,6 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 //TODO Hilt step 5
 @InstallIn(SingletonComponent::class)
@@ -18,6 +17,6 @@ object RoomDataBaseModule
     @Provides
     fun provideRoomDataBase(@ApplicationContext context: Context) : AppDao
     {
-        return AppDataBase.getInstance(context).searchSetDao()
+        return AppDataBase.getInstance(context).appDao()
     }
 }

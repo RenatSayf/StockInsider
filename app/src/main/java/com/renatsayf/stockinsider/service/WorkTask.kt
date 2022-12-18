@@ -5,16 +5,17 @@ import androidx.work.Constraints
 import androidx.work.Data
 import androidx.work.NetworkType
 import androidx.work.PeriodicWorkRequest
-import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import java.util.concurrent.TimeUnit
 
 
+class WorkTask(
+    private val timePeriod: Long = FireBaseViewModel.workerPeriod
+): IWorkTask {
 
-object WorkTask: IWorkTask {
-
-    const val TAG = "TAG555555555"
-
-    private val timePeriod = if(BuildConfig.DEBUG) 15L else 480L
+    companion object {
+        const val TAG = "TAG555555555"
+    }
 
     private val taskList = mutableSetOf<PeriodicWorkRequest>()
 
@@ -25,7 +26,9 @@ object WorkTask: IWorkTask {
     override fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest {
 
         val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
-            val data = Data.Builder().putString(AppWorker.SEARCH_SET_KEY, name).build()
+            val data = Data.Builder().apply {
+                putString(AppWorker.SEARCH_SET_KEY, name)
+            }.build()
             setInputData(data)
             setConstraints(constraints)
             addTag(TAG)

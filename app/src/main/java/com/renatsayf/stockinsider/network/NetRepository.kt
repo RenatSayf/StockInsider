@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
@@ -16,6 +17,19 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
 {
     var composite = CompositeDisposable()
     private var searchTicker : String = ""
+
+    private val userAgent = try {
+        FireBaseViewModel.userAgent
+    }
+    catch (e: ExceptionInInitializerError) {
+        okhttp3.internal.userAgent
+    }
+    catch (e: NoClassDefFoundError) {
+        okhttp3.internal.userAgent
+    }
+    catch (e: Exception) {
+        okhttp3.internal.userAgent
+    }
 
     override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
     {
@@ -42,13 +56,12 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isDirector,
                 set.isTenPercent,
                 set.groupBy,
-                set.sortBy
+                set.sortBy,
+                userAgent
             )
                 .map { document ->
                     dealList = doMainParsing(document)
                 }
-//                .observeOn(AndroidSchedulers.mainThread())
-//                .subscribeOn(Schedulers.newThread())
                 .subscribe({
                     if (!emitter.isDisposed) {
                         emitter.onNext(dealList)
@@ -129,7 +142,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     {
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getInsiderTrading(insider)
+            val subscribe = api.getInsiderTrading(insider, userAgent)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#subjectDetails")
                 }
@@ -181,9 +194,10 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     }
 
     override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
+
         return Single.create { emitter ->
             var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getTradingByTicker(ticker)
+            val subscribe = api.getTradingByTicker(ticker, userAgent)
                 .map { doc ->
                     dealList = doAdditionalParsing(doc, "#tablewrapper")
                 }
@@ -203,6 +217,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     }
 
     override fun getAllCompaniesName(): Single<List<Company>> {
+
         val set = RoomSearchSet(
             queryName = "",
             companyName = "",
@@ -241,7 +256,8 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isDirector,
                 set.isTenPercent,
                 set.groupBy,
-                set.sortBy
+                set.sortBy,
+                userAgent
             )
                 .map { document ->
                 doAllCompanyNameParsing(document)

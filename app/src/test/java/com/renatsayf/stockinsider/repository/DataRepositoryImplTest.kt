@@ -9,7 +9,6 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.network.MockApi
 import com.renatsayf.stockinsider.network.NetRepository
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Assert
@@ -53,7 +52,7 @@ internal class DataRepositoryImplTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
             .allowMainThreadQueries()
             .build()
-        dao = db.searchSetDao()
+        dao = db.appDao()
         repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
     }
 
@@ -151,6 +150,25 @@ internal class DataRepositoryImplTest {
             Assert.assertEquals(set2.queryName, actualSet.queryName)
             Assert.assertEquals(set2.ticker, actualSet.ticker)
             Assert.assertEquals(set2.isTracked, actualSet.isTracked)
+        }
+    }
+
+    @Test
+    fun addNewSearchSetAsync_same_ticker() {
+
+        val set1 = testSet.copy().apply {
+            ticker = "XXX"
+        }
+        val set2 = testSet.copy().apply {
+            ticker = "XXX"
+        }
+
+        runBlocking {
+            val id1 = repository.addNewSearchSetAsync(set1).await()
+            Assert.assertEquals(1L, id1)
+
+            val id2 = repository.addNewSearchSetAsync(set2).await()
+            Assert.assertEquals(-1L, id2)
         }
     }
 

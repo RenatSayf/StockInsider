@@ -31,7 +31,6 @@ class AppWorker (
 
     private var db: AppDao
     private var net: INetRepository
-
     private var function: ((Context, Int, RoomSearchSet) -> Unit)? = ServiceNotification.notify
 
     init {
@@ -39,7 +38,11 @@ class AppWorker (
         net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
-    fun injectDependencies(db: AppDao, networkRepository: INetRepository, function: ((Context, Int, RoomSearchSet) -> Unit)? = null) {
+    fun injectDependencies(
+        db: AppDao,
+        networkRepository: INetRepository,
+        function: ((Context, Int, RoomSearchSet) -> Unit)? = null
+    ) {
         this.db = db
         this.net = networkRepository
         this.function = function

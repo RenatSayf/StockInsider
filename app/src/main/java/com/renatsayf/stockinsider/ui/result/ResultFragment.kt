@@ -18,21 +18,24 @@ import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,6 +55,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val resultVM : ResultViewModel by viewModels()
     private val mainViewModel : MainViewModel by viewModels()
     private val sortingVM: SortingViewModel by viewModels()
+    private val trackingVM: TrackingListViewModel by viewModels()
     private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
@@ -89,8 +93,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-
-        (requireActivity() as MainActivity).supportActionBar?.hide()
 
         binding = FragmentResultBinding.bind(view)
 
@@ -193,7 +195,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             }
                             else -> {
                                 if (this.isNetworkAvailable()) {
-                                    Snackbar.make(binding.tradeListRV, it.message.toString(), Snackbar.LENGTH_LONG).show()
+                                    showSnackBar(it.message.toString())
                                 } else {
                                     with(binding) {
                                         resultTV.text = 0.toString()
@@ -208,7 +210,12 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 }
                 is ResultViewModel.State.DataSorted -> {
                     val dealsMap = state.dealsMap
-                    dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
+                    if (dealsMap.isNotEmpty()) {
+                        binding.resultTV.text = dealsMap.getValuesSize().toString()
+                        binding.noResult.noResultLayout.setVisible(false)
+                        binding.includedProgress.setVisible(false)
+                        dealsAdapter.replaceItems(dealsMap, sortingVM.sorting)
+                    }
                 }
             }
         }
@@ -234,6 +241,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     override fun onResume() {
         super.onResume()
 
+        (requireActivity() as MainActivity).supportActionBar?.hide()
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             showAdOnBackPressed(isAdEnabled)
         }
@@ -256,21 +265,84 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         findNavController().navigate(R.id.nav_deal, bundle)
     }
 
-    override fun saveSearchDialogOnPositiveClick(searchName: String) {
+    override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        roomSearchSet?.apply {
+        val set = roomSearchSet?.apply {
             queryName = searchName
-            isTracked = true
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
-            mainViewModel.saveSearchSet(this).observe(viewLifecycleOwner) { id ->
-                if (id > 0) {
-                    showSnackBar(getString(R.string.text_search_param_is_saved))
+            isDefault = false
+        }
+        set?.let { s ->
+            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
+                count?.let { c ->
+                    if (c < FireBaseViewModel.requestsCount) {
+                        s.isTracked = true
+                        mainViewModel.addNewSearchSet(s).observe(viewLifecycleOwner) { res ->
+                            when(res) {
+                                is ResultData.Error -> {
+                                    showInfoDialog(
+                                        title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                    )
+                                }
+                                is ResultData.Success -> {
+                                    if (res.data > 0) {
+                                        showInfoDialog(
+                                            title = getString(R.string.text_success),
+                                            message = getString(R.string.text_search_param_is_saved),
+                                            status = InfoDialog.DialogStatus.SUCCESS
+                                        )
+                                        findNavController().navigate(R.id.trackingListFragment)
+                                    }
+                                    else {
+                                        showInfoDialog(
+                                            title = getString(R.string.text_warning),
+                                            message = getString(R.string.text_search_already_exists),
+                                            status = InfoDialog.DialogStatus.WARNING
+                                        )
+                                    }
+                                }
+                                ResultData.Init -> {}
+                            }
+                        }
+                    }
+                    else {
+                        s.let {
+                            it.target = null
+                            it.isTracked = false
+                            mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                                when(res) {
+                                    ResultData.Init -> {}
+                                    is ResultData.Error -> {
+                                        showInfoDialog(
+                                            title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                        )
+                                    }
+                                    is ResultData.Success -> {
+                                        if (res.data > 0) {
+                                            showInfoDialog(
+                                                title = getString(R.string.text_warning),
+                                                message = getString(R.string.text_search_params_is_saved_but_not_tracked),
+                                                status = InfoDialog.DialogStatus.WARNING
+                                            )
+                                        }
+                                        else {
+                                            showInfoDialog(
+                                                title = getString(R.string.text_warning),
+                                                message = getString(R.string.text_search_already_exists),
+                                                status = InfoDialog.DialogStatus.WARNING
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                else showSnackBar("Saving error...")
             }
         }
+
     }
 
     private fun showAdOnBackPressed(flag: Boolean) {

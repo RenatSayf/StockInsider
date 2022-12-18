@@ -18,7 +18,8 @@ class AppWorkerFactory(
                     injectDependencies(
                         db = RoomDataBaseModule.provideRoomDataBase(appContext),
                         networkRepository = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(appContext)),
-                        callback)
+                        callback
+                    )
                 }
                 appWorker
             }

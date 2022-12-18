@@ -66,6 +66,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
+    override suspend fun addNewSearchSetAsync(set: RoomSearchSet): Deferred<Long> {
+        return coroutineScope {
+            async {
+                db.insertOrIgnore(set)
+            }
+        }
+    }
+
     override suspend fun deleteSearchSetAsync(set: RoomSearchSet): Deferred<Int> = coroutineScope {
         async {
             db.deleteSet(set)
@@ -96,6 +104,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         return coroutineScope {
             async {
                 db.getTrackedCount()
+            }
+        }
+    }
+
+    override suspend fun getTargetCountAsync(): Deferred<Int> {
+        return coroutineScope {
+            async {
+                db.getTargetCount()
             }
         }
     }

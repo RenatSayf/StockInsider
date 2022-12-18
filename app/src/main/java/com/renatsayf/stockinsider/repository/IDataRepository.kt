@@ -30,6 +30,8 @@ interface IDataRepository
 
     suspend fun saveSearchSetAsync(set: RoomSearchSet) : Deferred<Long>
 
+    suspend fun addNewSearchSetAsync(set: RoomSearchSet) : Deferred<Long>
+
     suspend fun deleteSearchSetAsync(set: RoomSearchSet) : Deferred<Int>
 
     suspend fun deleteSetByIdAsync(id: Long) : Deferred<Int>
@@ -39,6 +41,8 @@ interface IDataRepository
     suspend fun getSearchSetsByTarget(target: String) : List<RoomSearchSet>
 
     suspend fun getTrackedCountAsync() : Deferred<Int>
+
+    suspend fun getTargetCountAsync() : Deferred<Int>
 
     suspend fun getCompanyByTicker(list: List<String>) : List<Company>
 

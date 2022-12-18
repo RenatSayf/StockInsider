@@ -1,11 +1,10 @@
+@file:Suppress("ObjectLiteralToLambda")
+
 package com.renatsayf.stockinsider.di
 
 import android.app.Application
 import android.util.Log
 import androidx.work.Configuration
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.WorkManager
-import com.renatsayf.stockinsider.service.WorkTask
 import dagger.hilt.android.HiltAndroidApp
 
 

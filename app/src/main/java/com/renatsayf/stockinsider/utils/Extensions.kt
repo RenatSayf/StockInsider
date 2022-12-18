@@ -13,7 +13,9 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.WorkManager
@@ -22,7 +24,9 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.WorkTask
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
 import java.text.SimpleDateFormat
@@ -118,7 +122,7 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
 }
 
 fun Activity.startBackgroundWork() {
-    val workRequest = WorkTask.createPeriodicTask(this, TrackingListFragment.TASK_NAME)
+    val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         TrackingListFragment.WORK_NAME,
         ExistingPeriodicWorkPolicy.KEEP,
@@ -242,6 +246,32 @@ fun String.convertDefaultWithoutTime(): String? {
     val dayMonthFormat = SimpleDateFormat(format, Locale.getDefault())
     return parsedDate?.let { dayMonthFormat.format(parsedDate) }
 }
+
+fun AppCompatActivity.showInfoDialog(
+    title: String = "",
+    message: String = "",
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+) {
+    val dialog = InfoDialog.newInstance(title, message, status)
+    dialog.show(this.supportFragmentManager, InfoDialog.TAG)
+}
+
+fun Fragment.showInfoDialog(
+    title: String = "",
+    message: String = "",
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+) {
+    (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status)
+}
+
+fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
+    var size = 0
+    this.forEach { (t, u) ->
+        size += u.size
+    }
+    return size
+}
+
 
 
 

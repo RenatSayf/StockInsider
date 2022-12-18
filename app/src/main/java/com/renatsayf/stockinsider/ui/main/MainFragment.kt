@@ -3,7 +3,9 @@ package com.renatsayf.stockinsider.ui.main
 import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.addCallback
+import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
@@ -21,6 +23,7 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -36,6 +39,11 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
         }
     }
+
+    private val trackedVM: TrackingListViewModel by lazy {
+        ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
     }
@@ -154,7 +162,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             if (this@MainFragment.isNetworkAvailable())
             {
-                MainActivity.ad?.let {
+                MainActivity.interstitialAd?.let {
                     it.show(requireActivity())
                     it.fullScreenContentCallback = object : FullScreenContentCallback() {
                         override fun onAdDismissedFullScreenContent() {
@@ -172,7 +180,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             else requireActivity().finish()
         }
 
-        requireActivity().addMenuProvider(object : MenuProvider {
+        binding.toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.main, menu)
             }
@@ -207,6 +215,33 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         }, viewLifecycleOwner)
 
+        binding.toolbar.setNavigationOnClickListener {
+            val drawerLayout = (requireActivity() as MainActivity).drawerLayout
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            else {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
+        }
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
+                    count?.let {
+                        if (it > 0) {
+                            startBackgroundWork()
+                        }
+                        requireActivity().finish()
+                    }
+                }
+            }
+        })
     }
 
     override fun onPause() {

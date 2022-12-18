@@ -6,7 +6,6 @@ import android.app.AlertDialog
 import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
-import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.SaveSearchLayoutBinding
@@ -48,7 +47,7 @@ class SaveSearchDialog : DialogFragment()
                     if (!binding.searchNameView.text.isNullOrEmpty())
                     {
                         val name = binding.searchNameView.text.toString()
-                        listener?.saveSearchDialogOnPositiveClick(name)
+                        listener?.onSaveSearchDialogPositiveClick(name)
                         dismiss()
                     }
                 }
@@ -67,7 +66,7 @@ class SaveSearchDialog : DialogFragment()
     }
 
     interface Listener {
-        fun saveSearchDialogOnPositiveClick(searchName: String)
+        fun onSaveSearchDialogPositiveClick(searchName: String)
     }
 
 
