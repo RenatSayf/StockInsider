@@ -44,7 +44,7 @@ class TrackingViewModelTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
             .allowMainThreadQueries()
             .build()
-        dao = db.searchSetDao()
+        dao = db.appDao()
 
         repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
         trackingVM = TrackingViewModel(repository)

@@ -17,7 +17,7 @@ private const val DB_VERSION = 19
     autoMigrations = [AutoMigration(from = DB_VERSION - 1, to = DB_VERSION)]
 )
 abstract class AppDataBase : RoomDatabase() {
-    abstract fun searchSetDao(): AppDao
+    abstract fun appDao(): AppDao
 
     companion object {
         private const val DATABASE = "stock-insider.db"

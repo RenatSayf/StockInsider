@@ -55,7 +55,7 @@ class MainViewModelTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
             .allowMainThreadQueries()
             .build()
-        val dao = db.searchSetDao()
+        val dao = db.appDao()
         val repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
         mainVm = MainViewModel(repository, null)
     }
@@ -92,7 +92,7 @@ class MainViewModelTest {
             val secondId = mainVm.saveSearchSet(set2).value
             Assert.assertEquals(2L, secondId)
 
-            val list = db.searchSetDao().getSearchSets()
+            val list = db.appDao().getSearchSets()
             val size = list.size
             Assert.assertEquals(1, size)
         }

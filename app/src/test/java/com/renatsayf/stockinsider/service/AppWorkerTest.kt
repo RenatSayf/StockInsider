@@ -46,7 +46,7 @@ class AppWorkerTest {
         db = Room.inMemoryDatabaseBuilder(context, AppDataBase::class.java)
             .allowMainThreadQueries()
             .build()
-        dao = db.searchSetDao()
+        dao = db.appDao()
 
         config = Configuration.Builder()
             .setMinimumLoggingLevel(Log.DEBUG)
