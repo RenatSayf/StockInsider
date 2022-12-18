@@ -11,8 +11,8 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 11 // TODO before release requires change the version code
-        versionName '2.0.0'
+        versionCode 12 // TODO before release requires change the version code
+        versionName '2.0.1'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
