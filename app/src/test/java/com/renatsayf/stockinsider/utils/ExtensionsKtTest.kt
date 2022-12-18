@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.utils
 
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.models.Deal
 import org.junit.Assert
 import org.junit.Test
 
@@ -70,6 +71,26 @@ class ExtensionsKtTest {
         val dateString = "2022-12-09 21:57:45"
         val actualResult = dateString.convertDefaultWithoutTime()
         Assert.assertEquals("2022-12-09", actualResult)
+    }
+
+    @Test
+    fun getMapValuesSize() {
+        val deals = List(3, init = {
+            Deal("date $it")
+        })
+        val map = mapOf(
+            "1" to deals,
+            "2" to deals
+        )
+        val actualSize = map.getValuesSize()
+        Assert.assertEquals(6, actualSize)
+    }
+
+    @Test
+    fun getMapValuesSize_empty_map() {
+        val emptyMap = emptyMap<String, List<Deal>>()
+        val actualSize = emptyMap.getValuesSize()
+        Assert.assertEquals(0, actualSize)
     }
 
 }

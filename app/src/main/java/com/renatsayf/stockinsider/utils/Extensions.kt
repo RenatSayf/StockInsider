@@ -24,6 +24,7 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
@@ -261,6 +262,14 @@ fun Fragment.showInfoDialog(
     status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
 ) {
     (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status)
+}
+
+fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
+    var size = 0
+    this.forEach { (t, u) ->
+        size += u.size
+    }
+    return size
 }
 
 
