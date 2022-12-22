@@ -12,10 +12,12 @@
         android:layout_height="?attr/actionBarSize"
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/app_bar_background"
-        app:popupTheme="@style/AppTheme.PopupOverlay"
+        android:theme="@style/AppTheme.PopupOverlay"
         app:navigationIcon="@drawable/ic_hamburger_white"
         app:title="@string/text_title_home"
-        app:titleTextColor="@color/colorWhite"/>
+        app:titleTextColor="@color/colorWhite"
+        app:menu="@menu/main"
+        />
 
     <ScrollView
         android:id="@+id/scrollView"
