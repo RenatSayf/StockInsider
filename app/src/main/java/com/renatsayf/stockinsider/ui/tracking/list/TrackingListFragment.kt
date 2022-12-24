@@ -154,7 +154,6 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                                 res == 0 -> {
-                                    //showSnackBar(getString(R.string.text_deletion_error))
                                     showInfoDialog(title = getString(R.string.text_deletion_error), status = InfoDialog.DialogStatus.ERROR)
                                 }
                             }
@@ -171,7 +170,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
             if (id != null && id > 0) {
                 when (checked) {
-                    true -> showSnackBar(getString(R.string.text_tracking_enabled))
+                    true -> {
+                        //TODO Xiaomi check required
+                        showSnackBar(getString(R.string.text_tracking_enabled))
+                    }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->

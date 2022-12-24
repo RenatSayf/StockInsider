@@ -11,6 +11,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
@@ -270,6 +271,17 @@ fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
         size += u.size
     }
     return size
+}
+
+fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+    startActivity(Intent().apply {
+        this.action = action
+        data = Uri.fromParts("package", this@openAppSystemSettings.packageName, null)
+    })
+}
+
+fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+    requireActivity().openAppSystemSettings(action)
 }
 
 
