@@ -19,12 +19,14 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -123,12 +125,24 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
 }
 
 fun Activity.startBackgroundWork() {
+
     val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         TrackingListFragment.WORK_NAME,
         ExistingPeriodicWorkPolicy.KEEP,
         workRequest
     )
+}
+
+fun Context.startOneTimeBackgroundWork() {
+    val formattedString = System.currentTimeMillis().timeToFormattedString()
+    val workRequest = WorkTask().createOneTimeTask(
+        this,
+        "Task $formattedString",
+        FireBaseViewModel.workerPeriod
+    )
+    WorkManager.getInstance(this)
+        .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
 }
 
 fun Activity.cancelBackgroundWork() {
@@ -283,6 +297,11 @@ fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_
 fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
     requireActivity().openAppSystemSettings(action)
 }
+
+fun Long.timeToFormattedString(): String =
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }.format(this)
 
 
 

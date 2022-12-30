@@ -29,13 +29,14 @@ class ServiceNotification @Inject constructor() : Notification()
         const val NOTIFICATION_ID : Int = 15917
         val ARG_ID = "${this::class.java.simpleName}.ARG_ID"
 
-        val notify: (Context, Int, RoomSearchSet) -> Unit = { context: Context, count: Int, set ->
+        val notify: (Context, Int, RoomSearchSet?) -> Unit = { context: Context, count: Int, set ->
 
             val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
-            val message = "According to the ${set.queryName} search query, $count results were found \n" +
+            val message = "According to the ${set?.queryName} search query, $count results were found \n" +
                     if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
 
-            val notificationId = 555555 + set.id.toInt()
+            val setId = set?.id?.toInt() ?: 0
+            val notificationId = 5555 + setId
             val pendingIntent = NavDeepLinkBuilder(context)
                 .setComponentName(MainActivity::class.java)
                 .setGraph(R.navigation.mobile_navigation)

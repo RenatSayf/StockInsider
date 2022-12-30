@@ -1,11 +1,10 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
-import androidx.work.Constraints
-import androidx.work.Data
-import androidx.work.NetworkType
-import androidx.work.PeriodicWorkRequest
+import androidx.work.*
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.utils.timeToFormattedString
 import java.util.concurrent.TimeUnit
 
 
@@ -22,6 +21,17 @@ class WorkTask(
     private val constraints = Constraints.Builder().apply {
         setRequiredNetworkType(NetworkType.CONNECTED)
     }.build()
+
+    override fun createOneTimeTask(context: Context, name: String, initialDelay: Long): OneTimeWorkRequest {
+
+        val request = OneTimeWorkRequest.Builder(AppWorker::class.java).apply {
+            setInitialDelay(initialDelay, TimeUnit.MINUTES)
+            setConstraints(constraints)
+            addTag(TAG.plus("_").plus(System.currentTimeMillis().timeToFormattedString()))
+        }.build()
+
+        return request
+    }
 
     override fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest {
 

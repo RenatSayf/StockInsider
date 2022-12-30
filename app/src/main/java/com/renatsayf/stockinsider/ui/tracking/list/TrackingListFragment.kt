@@ -61,7 +61,10 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         if (savedInstanceState == null) {
             trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
-                if (count != null && count > 0) startBackgroundWork()
+                if (count != null && count > 0) {
+                    //startBackgroundWork()
+                    requireContext().startOneTimeBackgroundWork()
+                }
             }
         }
 

@@ -11,6 +11,7 @@ import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
+import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
@@ -50,10 +51,10 @@ class AppWorker (
 
     override suspend fun doWork(): Result
     {
+        val searchSets = getTrackingSetsAsync().await()
         return try
         {
             if (BuildConfig.DEBUG) println("******************** Start background work ********************")
-            val searchSets = getTrackingSetsAsync().await()
 
             searchSets?.forEachIndexed { index, set ->
 
@@ -64,7 +65,7 @@ class AppWorker (
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe({ list ->
-                    if (list.isNotEmpty()) {
+                    if (true) {
                         function?.invoke(context, list.size, set)
                         if (index == searchSets.size - 1) {
                             composite.dispose()
@@ -97,6 +98,9 @@ class AppWorker (
             }.build()
             if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
             Result.failure(data)
+        }
+        finally {
+            if (!searchSets.isNullOrEmpty()) context.startOneTimeBackgroundWork()
         }
     }
 

@@ -233,7 +233,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            startBackgroundWork()
+                            //startBackgroundWork()
+                            requireContext().startOneTimeBackgroundWork()
                         }
                         requireActivity().finish()
                     }

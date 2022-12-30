@@ -28,6 +28,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -154,7 +155,8 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        startBackgroundWork()
+                                        //startBackgroundWork()
+                                        startOneTimeBackgroundWork()
                                     }
                                     interstitialAd?.let { ad ->
                                         ad.show(this@MainActivity)
@@ -378,6 +380,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -421,6 +424,16 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
+    }
+
+    override fun onDestroy() {
+
+        val nextFillingTime = AppCalendar.getNextFillingTime(1)
+        val formattedString = nextFillingTime.timeToFormattedString()
+        val one = Scheduler(this).scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
+        one
+
+        super.onDestroy()
     }
 
 }
