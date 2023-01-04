@@ -40,9 +40,10 @@ class AppCalendarTest {
         val newYorkCalendar = Calendar.getInstance(newYorkTimeZone).apply {
             timeInMillis = System.currentTimeMillis() + newYorkZoneOffset
         }
-        val expectedTime = newYorkCalendar.timeInMillis.timeToFormattedString()
-        val actualTime = AppCalendar.getCurrentTime().timeToFormattedString()
-        Assert.assertEquals(expectedTime, actualTime)
+        AppCalendar.setCalendar(newYorkCalendar)
+        val actualTime = AppCalendar.getCurrentTime()
+        val actualOffset = (actualTime - System.currentTimeMillis()) / 3600 / 1000
+        Assert.assertEquals(-5, actualOffset)
     }
 
     @Test
@@ -56,6 +57,7 @@ class AppCalendarTest {
             set(Calendar.DAY_OF_MONTH, 24)
             set(Calendar.HOUR_OF_DAY, 6)
             set(Calendar.MINUTE, 0)
+            timeInMillis += newYorkTimeZone.rawOffset
         }
         AppCalendar.setCalendar(calendar)
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
@@ -78,13 +80,17 @@ class AppCalendarTest {
             set(Calendar.DAY_OF_MONTH, 26)
             set(Calendar.HOUR_OF_DAY, 8)
             set(Calendar.MINUTE, 0)
+            timeInMillis += newYorkTimeZone.rawOffset
         }
         AppCalendar.setCalendar(calendar)
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
         var actualResult = AppCalendar.isFillingTime
         Assert.assertEquals(true, actualResult)
 
-        calendar.set(Calendar.HOUR_OF_DAY, 3)
+        calendar.apply {
+            set(Calendar.HOUR_OF_DAY, 2)
+            timeInMillis += newYorkTimeZone.rawOffset
+        }
         AppCalendar.setCalendar(calendar)
         actualResult = AppCalendar.isFillingTime
         Assert.assertEquals(false, actualResult)
@@ -112,7 +118,7 @@ class AppCalendarTest {
         var isFillingTime = AppCalendar.isFillingTime
         Assert.assertEquals(false, isFillingTime)
 
-        val nextFillingTime = AppCalendar.getNextFillingTime(4)
+        val nextFillingTime = AppCalendar.getNextFillingTime()
         val nextFillingTimeStr = nextFillingTime.timeToFormattedString()
 
         calendar.timeInMillis = nextFillingTime
@@ -124,7 +130,7 @@ class AppCalendarTest {
         isFillingTime = AppCalendar.isFillingTime
         Assert.assertEquals(true, isFillingTime)
 
-        val nextFillingTime1 = AppCalendar.getNextFillingTime(4)
+        val nextFillingTime1 = AppCalendar.getNextFillingTime()
         calendar.timeInMillis = nextFillingTime1
         AppCalendar.setCalendar(calendar)
 
@@ -141,9 +147,9 @@ class AppCalendarTest {
         val newYorkZoneId = "America/New_York"
         val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
         val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2022)
-            set(Calendar.MONTH, 11)
-            set(Calendar.DAY_OF_MONTH, 26)
+            set(Calendar.YEAR, 2023)
+            set(Calendar.MONTH, 0)
+            set(Calendar.DAY_OF_MONTH, 4)
             set(Calendar.HOUR_OF_DAY, 7)
             set(Calendar.MINUTE, 0)
             timeInMillis += newYorkTimeZone.rawOffset
@@ -151,8 +157,27 @@ class AppCalendarTest {
         AppCalendar.setCalendar(calendar)
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
-        val actualTime = AppCalendar.getNextFillingTime(4).timeToFormattedString()
-        Assert.assertEquals("2022-12-26T11:00:00", actualTime)
+        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
+        Assert.assertEquals("2023-01-04T11:00:00", actualTime)
+    }
+
+    @Test
+    fun getNextFillingTime_on_the_end_filling_day() {
+        val newYorkZoneId = "America/New_York"
+        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
+        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
+            set(Calendar.YEAR, 2023)
+            set(Calendar.MONTH, 0)
+            set(Calendar.DAY_OF_MONTH, 4)
+            set(Calendar.HOUR_OF_DAY, 19)
+            set(Calendar.MINUTE, 0)
+            timeInMillis += newYorkTimeZone.rawOffset
+        }
+        AppCalendar.setCalendar(calendar)
+        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
+
+        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
+        Assert.assertEquals("2023-01-04T23:00:00", actualTime)
     }
 
     @Test
@@ -163,27 +188,26 @@ class AppCalendarTest {
         val ekbZoneId = "Asia/Yekaterinburg"
         val defaultZone = TimeZone.getTimeZone(ekbZoneId)
         val defaultCalendar = Calendar.getInstance(defaultZone).apply {
-            set(Calendar.YEAR, 2022)
-            set(Calendar.MONTH, 11)
-            set(Calendar.DAY_OF_MONTH, 26)
+            set(Calendar.YEAR, 2023)
+            set(Calendar.MONTH, 0)
+            set(Calendar.DAY_OF_MONTH, 4)
             set(Calendar.HOUR_OF_DAY, 7)
             set(Calendar.MINUTE, 0)
             timeInMillis += defaultZone.rawOffset
         }
         val defaultCurrentTime = defaultCalendar.timeInMillis.timeToFormattedString()
 
-        val hourOffset = 1
-        val nextTimeNewYork = AppCalendar.getNextFillingTime(hourOffset)
-        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone(hourOffset)
+        val nextTimeNewYork = AppCalendar.getNextFillingTime()
+        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone()
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
         val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
-        val actualResult = diffInHours - hourOffset
+        val actualResult = diffInHours - AppCalendar.requestPeriod
 
         val defaultHourOffset = TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().rawOffset.toLong())
         val appHourOffset = TimeUnit.MILLISECONDS.toHours(AppCalendar.timeZone.rawOffset.toLong())
-        val expectedResult = defaultHourOffset + appHourOffset
+        val expectedResult = abs(defaultHourOffset) + abs(appHourOffset)
 
-        currentNewYorkTime
+        Assert.assertEquals(expectedResult, actualResult)
     }
 }

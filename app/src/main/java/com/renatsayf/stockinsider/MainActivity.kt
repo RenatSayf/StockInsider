@@ -428,7 +428,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
 
-        val nextFillingTime = AppCalendar.getNextFillingTime(1)
+        val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
         val formattedString = nextFillingTime.timeToFormattedString()
         val one = Scheduler(this).scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
         one
