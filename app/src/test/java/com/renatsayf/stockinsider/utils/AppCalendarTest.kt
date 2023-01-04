@@ -158,7 +158,7 @@ class AppCalendarTest {
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
         val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
-        Assert.assertEquals("2023-01-04T11:00:00", actualTime)
+        Assert.assertEquals("2023-01-04T08:00:00", actualTime)
     }
 
     @Test
@@ -169,7 +169,7 @@ class AppCalendarTest {
             set(Calendar.YEAR, 2023)
             set(Calendar.MONTH, 0)
             set(Calendar.DAY_OF_MONTH, 4)
-            set(Calendar.HOUR_OF_DAY, 19)
+            set(Calendar.HOUR_OF_DAY, 22)
             set(Calendar.MINUTE, 0)
             timeInMillis += newYorkTimeZone.rawOffset
         }
@@ -202,7 +202,7 @@ class AppCalendarTest {
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
         val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
-        val actualResult = diffInHours - AppCalendar.requestPeriod
+        val actualResult = diffInHours - AppCalendar.workerPeriod
 
         val defaultHourOffset = TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().rawOffset.toLong())
         val appHourOffset = TimeUnit.MILLISECONDS.toHours(AppCalendar.timeZone.rawOffset.toLong())

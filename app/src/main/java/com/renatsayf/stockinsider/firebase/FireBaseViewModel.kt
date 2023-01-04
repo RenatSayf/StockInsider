@@ -18,7 +18,7 @@ class FireBaseViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         var userAgent = Firebase.remoteConfig.getString("user_agent")
-        var workerPeriod = if(BuildConfig.DEBUG) 15L else Firebase.remoteConfig.getLong("worker_period")
+        var workerPeriod = if(BuildConfig.DEBUG) 1L else Firebase.remoteConfig.getLong("worker_period")
         var requestsCount = if(BuildConfig.DEBUG) 3 else Firebase.remoteConfig.getLong("requests_count").toInt()
     }
 

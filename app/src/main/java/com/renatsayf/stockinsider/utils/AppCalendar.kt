@@ -3,11 +3,23 @@ package com.renatsayf.stockinsider.utils
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import androidx.annotation.VisibleForTesting
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import java.util.concurrent.TimeUnit
 
 object AppCalendar {
 
-    const val requestPeriod = 4
+    val workerPeriod = try {
+        FireBaseViewModel.workerPeriod
+    }
+    catch (e: ExceptionInInitializerError) {
+        1L
+    }
+    catch (e: NoClassDefFoundError) {
+        1L
+    }
+    catch (e: Exception) {
+        1L
+    }
     private const val START_FILLING_HOUR: Int = 6
     private const val END_FILLING_HOUR: Int = 23
 
@@ -42,7 +54,7 @@ object AppCalendar {
         }
 
     fun getNextFillingTime(): Long {
-        val nextTime = calendar.timeInMillis + (TimeUnit.HOURS.toMillis(requestPeriod.toLong()))
+        val nextTime = calendar.timeInMillis + (TimeUnit.HOURS.toMillis(workerPeriod))
         val newCalendar = Calendar.getInstance(timeZone).apply {
             timeInMillis = nextTime
         }

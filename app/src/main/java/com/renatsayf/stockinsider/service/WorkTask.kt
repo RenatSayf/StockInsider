@@ -9,7 +9,18 @@ import java.util.concurrent.TimeUnit
 
 
 class WorkTask(
-    private val timePeriod: Long = FireBaseViewModel.workerPeriod
+    private val timePeriod: Long = try {
+        FireBaseViewModel.workerPeriod
+    }
+    catch (e: ExceptionInInitializerError) {
+        1L
+    }
+    catch (e: NoClassDefFoundError) {
+        1L
+    }
+    catch (e: Exception) {
+        1L
+    }
 ): IWorkTask {
 
     companion object {
