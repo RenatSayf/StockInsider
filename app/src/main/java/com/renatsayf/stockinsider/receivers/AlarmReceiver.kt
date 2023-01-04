@@ -12,7 +12,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class AlarmReceiver : BroadcastReceiver() {
+open class AlarmReceiver : BroadcastReceiver() {
 
     companion object {
         val TAG: String = this::class.java.name

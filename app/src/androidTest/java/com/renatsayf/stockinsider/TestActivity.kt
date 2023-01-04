@@ -1,16 +1,12 @@
-package com.renatsayf.stockinsider;
+package com.renatsayf.stockinsider
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 
-import android.os.Bundle;
+class TestActivity : AppCompatActivity() {
 
-public class TestActivity extends AppCompatActivity
-{
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_test);
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_test)
     }
 }

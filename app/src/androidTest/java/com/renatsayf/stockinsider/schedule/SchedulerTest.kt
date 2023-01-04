@@ -5,7 +5,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.TestActivity
-import com.renatsayf.stockinsider.utils.checkTestPort
+import com.renatsayf.stockinsider.receivers.TestReceiver
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -20,7 +20,6 @@ class SchedulerTest {
 
     @Before
     fun setUp() {
-        checkTestPort()
         scenario = rule.scenario
     }
 
@@ -33,8 +32,10 @@ class SchedulerTest {
     fun scheduleOne() {
 
         var scheduler: Scheduler? = null
+
         scenario?.onActivity { activity ->
-            scheduler = Scheduler(activity)
+
+            scheduler = Scheduler(activity, TestReceiver().javaClass)
             val result = scheduler!!.scheduleOne(System.currentTimeMillis() + 5000, 0, "XXX")
             Assert.assertTrue(result)
         }
