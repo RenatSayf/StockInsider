@@ -303,6 +303,12 @@ fun Long.timeToFormattedString(): String =
         timeZone = TimeZone.getTimeZone("UTC")
     }.format(this)
 
+@Throws(Exception::class)
+fun checkTestPort(): Boolean {
+    return if (BuildConfig.DATA_SOURCE == "LOCALHOST") true
+    else throw Exception("****************** Не тестовый порт. Выберите в меню Build Variants localhostDebug *************************")
+}
+
 
 
 

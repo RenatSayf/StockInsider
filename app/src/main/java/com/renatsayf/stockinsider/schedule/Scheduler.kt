@@ -10,7 +10,10 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import javax.inject.Inject
 
 
-class Scheduler @Inject constructor(private val context: Context): IScheduler {
+class Scheduler @Inject constructor(
+    private val context: Context,
+    private val receiverClass: Class<AlarmReceiver> = AlarmReceiver::class.java
+) : IScheduler {
 
     companion object {
         private const val REQUEST_CODE = 2455563
@@ -22,7 +25,8 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
     private val alarmManager = context.applicationContext.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
     private fun createPendingIntent(action: String, intentName: String, requestCode: Int): PendingIntent {
-        val intent = Intent(context, AlarmReceiver::class.java).apply {
+
+        val intent = Intent(context, receiverClass).apply {
             this.action = action
             putExtra(SET_NAME, intentName)
         }
@@ -53,7 +57,7 @@ class Scheduler @Inject constructor(private val context: Context): IScheduler {
     }
 
     override fun isAlarmSetup(name: String, isRepeat: Boolean): PendingIntent? {
-        val intent = Intent(context, AlarmReceiver::class.java).let {
+        val intent = Intent(context, receiverClass).let {
             it.action = when(isRepeat) {
                 true -> REPEAT_SHOOT_ACTION
                 else -> ONE_SHOOT_ACTION
