@@ -2,7 +2,6 @@ package com.renatsayf.stockinsider.service
 
 import android.content.Context
 import androidx.work.*
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.utils.timeToFormattedString
 import java.util.concurrent.TimeUnit

@@ -139,18 +139,7 @@ fun Context.startOneTimeBackgroundWork() {
     val workRequest = WorkTask().createOneTimeTask(
         context = this,
         name = "Task $formattedString",
-        initialDelay = try {
-            FireBaseViewModel.workerPeriod
-        }
-        catch (e: ExceptionInInitializerError) {
-            1L
-        }
-        catch (e: NoClassDefFoundError) {
-            1L
-        }
-        catch (e: Exception) {
-            1L
-        }
+        initialDelay = 0
     )
     WorkManager.getInstance(this)
         .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)

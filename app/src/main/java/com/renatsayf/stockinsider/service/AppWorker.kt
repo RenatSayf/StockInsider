@@ -100,7 +100,7 @@ class AppWorker (
             Result.failure(data)
         }
         finally {
-            if (!searchSets.isNullOrEmpty()) context.startOneTimeBackgroundWork()
+            //if (!searchSets.isNullOrEmpty()) context.startOneTimeBackgroundWork()
         }
     }
 
