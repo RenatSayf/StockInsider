@@ -5,6 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.receivers.TestReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.utils.setAlarm
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -21,7 +22,7 @@ class MainActivityTest {
     fun setUp() {
         scenario = rule.scenario
         scenario.onActivity { activity ->
-            scheduler = Scheduler(activity, TestReceiver().javaClass)
+            scheduler = Scheduler(activity.applicationContext, TestReceiver().javaClass)
             val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
             pendingIntent?.let {
                 scheduler.cancel(it)

@@ -25,6 +25,7 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
@@ -304,6 +305,23 @@ fun Long.timeToFormattedString(): String =
 fun checkTestPort(): Boolean {
     return if (BuildConfig.DATA_SOURCE == "LOCALHOST") true
     else throw Exception("****************** Не тестовый порт. Выберите в меню Build Variants localhostDebug *************************")
+}
+
+fun Activity.setAlarm(scheduler: Scheduler): Boolean {
+    val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+    return if (pendingIntent == null) {
+        val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+        val formattedString = nextFillingTime.timeToFormattedString()
+        if (BuildConfig.DEBUG) println("*************** nextFillingTime = $formattedString *********************")
+        scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
+    }
+    else {
+        false
+    }
+}
+
+fun Fragment.setAlarm(scheduler: Scheduler): Boolean {
+    return requireActivity().setAlarm(scheduler)
 }
 
 

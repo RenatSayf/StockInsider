@@ -19,7 +19,7 @@ open class AlarmReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
         if (context != null && intent != null) {
 
-            val scheduler = Scheduler(context)
+            val scheduler = Scheduler(context.applicationContext)
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {
 
                 val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()

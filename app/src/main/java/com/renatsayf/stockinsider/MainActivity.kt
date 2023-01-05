@@ -2,7 +2,6 @@
 
 package com.renatsayf.stockinsider
 
-import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -157,7 +156,7 @@ class MainActivity : AppCompatActivity() {
                                 count?.let {
                                     if (it > 0) {
                                         setAlarm(
-                                            scheduler = Scheduler(this@MainActivity)
+                                            scheduler = Scheduler(this@MainActivity.applicationContext)
                                         )
                                     }
                                     interstitialAd?.let { ad ->
@@ -430,15 +429,4 @@ class MainActivity : AppCompatActivity() {
 
 }
 
-fun  Activity.setAlarm(scheduler: Scheduler): Boolean {
-    val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-    return if (pendingIntent == null) {
-        val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
-        val formattedString = nextFillingTime.timeToFormattedString()
-        if (BuildConfig.DEBUG) println("*************** nextFillingTime = $formattedString *********************")
-        scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
-    }
-    else {
-        false
-    }
-}
+

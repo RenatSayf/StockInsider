@@ -24,7 +24,7 @@ class SchedulerTest {
     fun setUp() {
         scenario = rule.scenario
         scenario.onActivity { activity ->
-            scheduler = Scheduler(activity, TestReceiver().javaClass)
+            scheduler = Scheduler(activity.applicationContext, TestReceiver().javaClass)
         }
     }
 

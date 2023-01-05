@@ -20,7 +20,6 @@ import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.setAlarm
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
@@ -29,6 +28,7 @@ import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
+import com.renatsayf.stockinsider.utils.setAlarm
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -237,8 +237,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            requireActivity().setAlarm(
-                                scheduler = Scheduler(requireContext())
+                            setAlarm(
+                                scheduler = Scheduler(requireActivity().applicationContext)
                             )
                         }
                         requireActivity().finish()
