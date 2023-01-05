@@ -1,23 +1,20 @@
-package com.renatsayf.stockinsider.schedule
+package com.renatsayf.stockinsider
 
-import android.app.PendingIntent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.renatsayf.stockinsider.TestActivity
 import com.renatsayf.stockinsider.receivers.TestReceiver
+import com.renatsayf.stockinsider.schedule.Scheduler
 import org.junit.*
 import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class SchedulerTest {
+class MainActivityTest {
 
     @get:Rule
     var rule = ActivityScenarioRule(TestActivity::class.java)
-
     private lateinit var scenario: ActivityScenario<TestActivity>
-
     private lateinit var scheduler: Scheduler
 
     @Before
@@ -25,6 +22,10 @@ class SchedulerTest {
         scenario = rule.scenario
         scenario.onActivity { activity ->
             scheduler = Scheduler(activity, TestReceiver().javaClass)
+            val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+            pendingIntent?.let {
+                scheduler.cancel(it)
+            }
         }
     }
 
@@ -40,24 +41,28 @@ class SchedulerTest {
     }
 
     @Test
-    fun scheduleOne() {
+    fun setAlarm_if_not_exist() {
 
-        scenario.onActivity {
-            val result = scheduler.scheduleOne(System.currentTimeMillis() + 5000, 0, Scheduler.SET_NAME)
-            Assert.assertTrue(result)
+        scenario.onActivity { activity ->
+            val actualResult = activity.setAlarm(scheduler)
+            Assert.assertEquals(true, actualResult)
+        }
+        Thread.sleep(5000)
+    }
+
+    @Test
+    fun setAlarm_if_already_exist() {
+
+        scenario.onActivity { activity ->
+            val actualResult = activity.setAlarm(scheduler)
+            Assert.assertEquals(true, actualResult)
         }
 
         Thread.sleep(5000)
 
-        scenario.onActivity {
-            var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertTrue(pendingIntent is PendingIntent)
-
-            scheduler.cancel(pendingIntent!!)
-            pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertEquals(null, pendingIntent)
+        scenario.onActivity { activity ->
+            val actualResult = activity.setAlarm(scheduler)
+            Assert.assertEquals(false, actualResult)
         }
-        Thread.sleep(10000)
     }
-
 }

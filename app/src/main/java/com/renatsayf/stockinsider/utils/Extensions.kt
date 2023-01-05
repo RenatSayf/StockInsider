@@ -16,7 +16,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
@@ -26,8 +25,6 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
@@ -124,7 +121,7 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
     }
 }
 
-fun Activity.startBackgroundWork() {
+fun Activity.startBackgroundPeriodicWork() {
 
     val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
@@ -149,8 +146,8 @@ fun Activity.cancelBackgroundWork() {
     WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
 }
 
-fun Fragment.startBackgroundWork() {
-    requireActivity().startBackgroundWork()
+fun Fragment.startBackgroundPeriodicWork() {
+    requireActivity().startBackgroundPeriodicWork()
 }
 
 fun Fragment.cancelBackgroundWork() {

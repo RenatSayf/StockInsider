@@ -57,7 +57,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isTenPercent,
                 set.groupBy,
                 set.sortBy,
-                userAgent
+                agent = userAgent
             )
                 .map { document ->
                     dealList = doMainParsing(document)
@@ -257,7 +257,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.isTenPercent,
                 set.groupBy,
                 set.sortBy,
-                userAgent
+                agent = userAgent
             )
                 .map { document ->
                 doAllCompanyNameParsing(document)

@@ -32,6 +32,7 @@ interface IApi
                 @Query("istenpercent", encoded = true) isTenPercent: String,
                 @Query("grp", encoded = true) groupBy: String,
                 @Query("sortcol", encoded = true) sortBy: String,
+                @Query("cnt", encoded = true) maxResult: String = "500",
                 @Header("User-Agent") agent: String,
                          ): Observable<Document>
 

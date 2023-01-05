@@ -2,6 +2,7 @@
 
 package com.renatsayf.stockinsider
 
+import android.app.Activity
 import android.content.Intent
 import android.graphics.Color
 import android.net.Uri
@@ -155,8 +156,9 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        //startBackgroundWork()
-                                        startOneTimeBackgroundWork()
+                                        setAlarm(
+                                            scheduler = Scheduler(this@MainActivity)
+                                        )
                                     }
                                     interstitialAd?.let { ad ->
                                         ad.show(this@MainActivity)
@@ -426,14 +428,17 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
-    override fun onDestroy() {
+}
 
+fun  Activity.setAlarm(scheduler: Scheduler): Boolean {
+    val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+    return if (pendingIntent == null) {
         val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
         val formattedString = nextFillingTime.timeToFormattedString()
-        val one = Scheduler(this).scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
-        one
-
-        super.onDestroy()
+        if (BuildConfig.DEBUG) println("*************** nextFillingTime = $formattedString *********************")
+        scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
     }
-
+    else {
+        false
+    }
 }

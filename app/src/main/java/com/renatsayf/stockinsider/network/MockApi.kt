@@ -31,6 +31,7 @@ class MockApi(private val context: Context): IApi {
         isTenPercent: String,
         groupBy: String,
         sortBy: String,
+        maxResult: String,
         agent: String
     ): Observable<Document> {
         return Observable.create { emitter ->
