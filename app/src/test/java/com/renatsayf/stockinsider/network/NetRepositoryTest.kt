@@ -10,6 +10,7 @@ import com.renatsayf.stockinsider.utils.getStringFromFile
 import io.reactivex.observers.TestObserver
 import io.reactivex.plugins.RxJavaPlugins
 import io.reactivex.schedulers.TestScheduler
+import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import okhttp3.mockwebserver.MockResponse
@@ -155,5 +156,22 @@ class NetRepositoryTest {
         testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
         val actualList = testObserver.values()[0]
         Assert.assertTrue(actualList.isNotEmpty())
+    }
+
+    @Test
+    fun getDealsListAsync_200Ok() {
+        val fromFile = context.getStringFromFile("test-data/buy-all-5000K$.txt")
+
+        server.apply {
+            val response = MockResponse().apply {
+                setResponseCode(200)
+                setBody(fromFile)
+            }
+            this.enqueue(response)
+        }
+        runBlocking {
+            val actualResult = repository.getDealsListAsync(testSet.toSearchSet()).await()
+            Assert.assertEquals(24, actualResult.size)
+        }
     }
 }

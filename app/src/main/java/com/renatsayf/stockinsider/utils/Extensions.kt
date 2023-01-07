@@ -139,8 +139,9 @@ fun Context.startOneTimeBackgroundWork() {
         name = "Task $formattedString",
         initialDelay = 0
     )
-    WorkManager.getInstance(this)
+    val operation = WorkManager.getInstance(this)
         .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
+    operation
 }
 
 fun Activity.cancelBackgroundWork() {

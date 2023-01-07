@@ -9,6 +9,9 @@ import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
@@ -131,6 +134,14 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
+    suspend fun doMainParsingAsync(document: Document): Deferred<List<Deal>> {
+        return coroutineScope {
+            async {
+                doMainParsing(document)
+            }
+        }
+    }
+
     override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
     {
         return Single.create { emitter ->
@@ -239,13 +250,6 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                 set.tradedMin,
                 set.tradedMax,
                 set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
-//                set.isOfficer,
                 set.isDirector,
                 set.isTenPercent,
                 set.groupBy,
@@ -265,6 +269,32 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                     }
                 })
             composite.add(subscribe)
+        }
+    }
+
+    override suspend fun getDealsListAsync(set: SearchSet): Deferred<List<Deal>> {
+        return coroutineScope {
+            async {
+                val response = api.getDealsListAsync(
+                    set.ticker,
+                    set.filingPeriod,
+                    set.tradePeriod,
+                    set.isPurchase,
+                    set.isSale,
+                    set.excludeDerivRelated,
+                    set.tradedMin,
+                    set.tradedMax,
+                    set.isOfficer,
+                    set.isDirector,
+                    set.isTenPercent,
+                    set.groupBy,
+                    set.sortBy,
+                    agent = userAgent
+                )
+                val document = response.body()
+                if (document != null) doMainParsingAsync(document).await()
+                else listOf()
+            }
         }
     }
 
