@@ -1,3 +1,5 @@
+@file:Suppress("UnnecessaryVariable")
+
 package com.renatsayf.stockinsider.utils
 
 import android.app.Activity
@@ -19,6 +21,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.ExistingWorkPolicy
+import androidx.work.Operation
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
@@ -132,7 +135,7 @@ fun Activity.startBackgroundPeriodicWork() {
     )
 }
 
-fun Context.startOneTimeBackgroundWork() {
+fun Context.startOneTimeBackgroundWork(): Operation {
     val formattedString = System.currentTimeMillis().timeToFormattedString()
     val workRequest = WorkTask().createOneTimeTask(
         context = this,
@@ -141,7 +144,7 @@ fun Context.startOneTimeBackgroundWork() {
     )
     val operation = WorkManager.getInstance(this)
         .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
-    operation
+    return operation
 }
 
 fun Activity.cancelBackgroundWork() {

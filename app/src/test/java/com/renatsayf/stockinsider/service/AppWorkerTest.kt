@@ -89,9 +89,10 @@ class AppWorkerTest {
 
         val worker = TestListenableWorkerBuilder<AppWorker>(context).build()
 
-        worker.injectDependencies(
+        AppWorker.injectDependenciesToTest(
             dao,
             network,
+            null,
             FakeServiceNotification.notify
         )
 
