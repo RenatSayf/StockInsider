@@ -134,7 +134,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return listDeal
     }
 
-    suspend fun doMainParsingAsync(document: Document): Deferred<List<Deal>> {
+    private suspend fun doMainParsingAsync(document: Document): Deferred<List<Deal>> {
         return coroutineScope {
             async {
                 doMainParsing(document)
