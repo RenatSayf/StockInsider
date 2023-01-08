@@ -13,8 +13,8 @@ class TestReceiver : AlarmReceiver() {
 
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {
                 ServiceNotification.notify(context, 0, null)
-                Assert.assertEquals(intent.action, Scheduler.ONE_SHOOT_ACTION)
             }
+            Assert.assertEquals(intent.action, Scheduler.ONE_SHOOT_ACTION)
         }
     }
 }
