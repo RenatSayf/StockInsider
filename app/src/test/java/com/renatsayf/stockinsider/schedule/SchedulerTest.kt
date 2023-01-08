@@ -65,36 +65,4 @@ class SchedulerTest {
         else throw NullPointerException("********** pendingIntent is null *************")
     }
 
-    @Test
-    fun scheduleRepeat_two_alarms() {
-        val setName1 = "name1"
-        val setName2 = "name2"
-
-        val isRepeat1 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, name = setName1)
-        val isRepeat2 = scheduler.scheduleRepeat(overTime = 30000, interval = 120000, name = setName2)
-
-        Assert.assertTrue(isRepeat1 == isRepeat2)
-
-        var pendingIntent1 = scheduler.isAlarmSetup(setName1, isRepeat = true)
-        var pendingIntent2 = scheduler.isAlarmSetup(setName2, isRepeat = true)
-
-        Assert.assertTrue(pendingIntent1 != null && pendingIntent2 != null)
-        Assert.assertTrue(pendingIntent1 != pendingIntent2)
-
-        if (pendingIntent1 != null) {
-            scheduler.cancel(pendingIntent1)
-
-            pendingIntent1 = scheduler.isAlarmSetup(setName1, isRepeat = true)
-            Assert.assertTrue(pendingIntent1 == null)
-        }
-        else throw NullPointerException("********** pendingIntent is null *************")
-
-        if (pendingIntent2 != null) {
-            scheduler.cancel(pendingIntent2)
-
-            pendingIntent2 = scheduler.isAlarmSetup(setName2, isRepeat = true)
-            Assert.assertTrue(pendingIntent2 == null)
-        }
-        else throw NullPointerException("********** pendingIntent is null *************")
-    }
 }

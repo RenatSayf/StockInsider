@@ -28,6 +28,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -154,7 +155,9 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        startBackgroundWork()
+                                        setAlarm(
+                                            scheduler = Scheduler(this@MainActivity.applicationContext)
+                                        )
                                     }
                                     interstitialAd?.let { ad ->
                                         ad.show(this@MainActivity)
@@ -378,6 +381,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -424,3 +428,5 @@ class MainActivity : AppCompatActivity() {
     }
 
 }
+
+

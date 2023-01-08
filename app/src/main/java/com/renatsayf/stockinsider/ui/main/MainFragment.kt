@@ -19,12 +19,16 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.hideKeyBoard
+import com.renatsayf.stockinsider.utils.isNetworkAvailable
+import com.renatsayf.stockinsider.utils.setAlarm
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -181,9 +185,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         }
 
         binding.toolbar.addMenuProvider(object : MenuProvider {
-            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                menuInflater.inflate(R.menu.main, menu)
-            }
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
 
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 when(menuItem.itemId)
@@ -235,7 +237,9 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            startBackgroundWork()
+                            setAlarm(
+                                scheduler = Scheduler(requireActivity().applicationContext)
+                            )
                         }
                         requireActivity().finish()
                     }

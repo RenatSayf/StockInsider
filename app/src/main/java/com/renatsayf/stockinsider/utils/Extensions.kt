@@ -1,3 +1,5 @@
+@file:Suppress("UnnecessaryVariable")
+
 package com.renatsayf.stockinsider.utils
 
 import android.app.Activity
@@ -11,20 +13,22 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
+import android.provider.Settings
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.ExistingWorkPolicy
+import androidx.work.Operation
 import androidx.work.WorkManager
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
-import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
@@ -121,7 +125,8 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
     }
 }
 
-fun Activity.startBackgroundWork() {
+fun Activity.startBackgroundPeriodicWork() {
+
     val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
     WorkManager.getInstance(this).enqueueUniquePeriodicWork(
         TrackingListFragment.WORK_NAME,
@@ -130,12 +135,24 @@ fun Activity.startBackgroundWork() {
     )
 }
 
+fun Context.startOneTimeBackgroundWork(): Operation {
+    val formattedString = System.currentTimeMillis().timeToFormattedString()
+    val workRequest = WorkTask().createOneTimeTask(
+        context = this,
+        name = "Task $formattedString",
+        initialDelay = 0
+    )
+    val operation = WorkManager.getInstance(this)
+        .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
+    return operation
+}
+
 fun Activity.cancelBackgroundWork() {
     WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
 }
 
-fun Fragment.startBackgroundWork() {
-    requireActivity().startBackgroundWork()
+fun Fragment.startBackgroundPeriodicWork() {
+    requireActivity().startBackgroundPeriodicWork()
 }
 
 fun Fragment.cancelBackgroundWork() {
@@ -270,6 +287,45 @@ fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
         size += u.size
     }
     return size
+}
+
+fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+    startActivity(Intent().apply {
+        this.action = action
+        data = Uri.fromParts("package", this@openAppSystemSettings.packageName, null)
+    })
+}
+
+fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+    requireActivity().openAppSystemSettings(action)
+}
+
+fun Long.timeToFormattedString(): String =
+    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+        timeZone = TimeZone.getTimeZone("UTC")
+    }.format(this)
+
+@Throws(Exception::class)
+fun checkTestPort(): Boolean {
+    return if (BuildConfig.DATA_SOURCE == "LOCALHOST") true
+    else throw Exception("****************** Не тестовый порт. Выберите в меню Build Variants localhostDebug *************************")
+}
+
+fun Activity.setAlarm(scheduler: Scheduler): Boolean {
+    val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+    return if (pendingIntent == null) {
+        val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+        val formattedString = nextFillingTime.timeToFormattedString()
+        if (BuildConfig.DEBUG) println("*************** Alarm time will be in $formattedString *********************")
+        scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
+    }
+    else {
+        false
+    }
+}
+
+fun Fragment.setAlarm(scheduler: Scheduler): Boolean {
+    return requireActivity().setAlarm(scheduler)
 }
 
 

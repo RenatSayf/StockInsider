@@ -15,9 +15,10 @@ class AppWorkerFactory(
         return when(workerClassName) {
             AppWorker::class.java.name -> {
                 val appWorker = AppWorker(appContext, workerParameters).apply {
-                    injectDependencies(
+                    AppWorker.injectDependenciesToTest(
                         db = RoomDataBaseModule.provideRoomDataBase(appContext),
                         networkRepository = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(appContext)),
+                        null,
                         callback
                     )
                 }

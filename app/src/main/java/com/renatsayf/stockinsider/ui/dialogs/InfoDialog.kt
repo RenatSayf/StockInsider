@@ -30,6 +30,8 @@ class InfoDialog private constructor() : DialogFragment() {
         }
     }
 
+    private var listener: Listener? = null
+
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
         return AlertDialog.Builder(requireContext()).apply {
@@ -47,6 +49,7 @@ class InfoDialog private constructor() : DialogFragment() {
             }
             setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
+                    listener?.onInfoDialogPositiveClick()
                     dismiss()
                 }
             })
@@ -55,7 +58,15 @@ class InfoDialog private constructor() : DialogFragment() {
         }
     }
 
+    fun setOnPositiveClickListener(listener: Listener) {
+        this.listener = listener
+    }
+
     enum class DialogStatus {
         SUCCESS, INFO, WARNING, ERROR
+    }
+
+    interface Listener {
+        fun onInfoDialogPositiveClick()
     }
 }

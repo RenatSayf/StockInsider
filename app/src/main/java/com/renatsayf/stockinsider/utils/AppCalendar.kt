@@ -1,81 +1,77 @@
 package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
-import android.icu.util.TimeUnit
 import android.icu.util.TimeZone
-import com.renatsayf.stockinsider.BuildConfig
-import javax.inject.Inject
+import androidx.annotation.VisibleForTesting
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import java.util.concurrent.TimeUnit
 
-class AppCalendar @Inject constructor(private val timeZone: TimeZone)
-{
-    companion object
-    {
-        private val START_HOUR : Int = if (BuildConfig.DEBUG) 0 else 5
-        const val START_MINUTE : Int = 0
-        const val END_HOUR : Int = 23
-        private const val END_MINUTE : Int = 0
-        private val LOAD_INTERVAL : Long = if (BuildConfig.DEBUG)  30 * 1000 else 60 * 60 * 1000
+object AppCalendar {
+
+    val workerPeriod = try {
+        FireBaseViewModel.workerPeriod
+    }
+    catch (e: ExceptionInInitializerError) {
+        1L
+    }
+    catch (e: NoClassDefFoundError) {
+        1L
+    }
+    catch (e: Exception) {
+        1L
+    }
+    private const val START_FILLING_HOUR: Int = 6
+    private const val END_FILLING_HOUR: Int = 23
+
+    val timeZone: TimeZone
+        get() {
+            return TimeZone.getTimeZone("America/New_York")
+        }
+
+    private var calendar = Calendar.getInstance(timeZone).apply {
+        timeInMillis = System.currentTimeMillis() + timeZone.rawOffset
     }
 
-    private val isCheckWeekend = true
-
-    private data class Result(val isFilingTime : Boolean, val isAfterFiling : Boolean)
-
-    fun getNextCalendar() : Calendar
-    {
-        val calendar = Calendar.getInstance(timeZone)
-        if (calendar.isWeekend && isCheckWeekend)
-        {
-            return calendar.apply {
-                var day = 1
-                while (this.isWeekend)
-                {
-                    this.add(Calendar.DATE, day)
-                    this.set(Calendar.HOUR_OF_DAY, START_HOUR)
-                    this.set(Calendar.MINUTE, START_MINUTE)
-                    day++
-                }
-            }
-        }
-        if (checkFilingTime().isFilingTime)
-        {
-            return calendar.apply {
-                this.timeInMillis += LOAD_INTERVAL
-            }
-        }
-        if (!checkFilingTime().isFilingTime && checkFilingTime().isAfterFiling)
-        {
-            return calendar.apply {
-                this.add(Calendar.DATE, 1)
-                this.set(Calendar.HOUR_OF_DAY, START_HOUR)
-                this.set(Calendar.MINUTE, START_MINUTE)
-            }
-        }
-        if (!checkFilingTime().isFilingTime && !checkFilingTime().isAfterFiling)
-        {
-            return calendar.apply {
-                this.set(Calendar.HOUR_OF_DAY, START_HOUR)
-                this.set(Calendar.MINUTE, START_MINUTE)
-            }
-        }
-        return calendar
+    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    fun setCalendar(calendar: Calendar) {
+        this.calendar = calendar
     }
 
-    private fun checkFilingTime() : Result
-    {
-        val startCalendar = Calendar.getInstance(timeZone).apply {
-            set(Calendar.HOUR_OF_DAY, START_HOUR)
-            set(Calendar.MINUTE, START_MINUTE)
-        }
-        val endCalendar = Calendar.getInstance(timeZone).apply {
-            set(Calendar.HOUR_OF_DAY, END_HOUR)
-            set(Calendar.MINUTE, END_MINUTE)
-        }
-        val currentCalendar = Calendar.getInstance(timeZone)
-        val isFilingTime = currentCalendar.after(startCalendar) && currentCalendar.before(endCalendar)
+    fun getCurrentTime(): Long {
+        return calendar.timeInMillis
+    }
 
-        val isAfterFiling: Boolean = currentCalendar.after(endCalendar)
+    val isWeekEnd: Boolean
+        get() {
+            return calendar.isWeekend
+        }
 
-        return Result(isFilingTime, isAfterFiling)
+    val isFillingTime: Boolean
+        get() {
+            val hourOffset = TimeUnit.MILLISECONDS.toHours(timeZone.rawOffset.toLong()).toInt()
+            val currentHour = calendar.get(Calendar.HOUR_OF_DAY) - hourOffset
+            return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
+        }
+
+    fun getNextFillingTime(): Long {
+        val nextTime = calendar.timeInMillis + (TimeUnit.HOURS.toMillis(workerPeriod))
+        val newCalendar = Calendar.getInstance(timeZone).apply {
+            timeInMillis = nextTime
+        }
+        while (newCalendar.isWeekend) {
+            newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+        }
+        setCalendar(newCalendar)
+        while (!this.isFillingTime) {
+            newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+        }
+
+        return this.calendar.timeInMillis
+    }
+
+    fun getNextFillingTimeByDefaultTimeZone(): Long {
+        val utcOffset = timeZone.rawOffset
+        val defaultOffset = TimeZone.getDefault().rawOffset
+        return getNextFillingTime() - utcOffset + defaultOffset
     }
 }

@@ -5,6 +5,9 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Observable
 import io.reactivex.Single
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 
 class FakeNetRepository : INetRepository {
 
@@ -28,5 +31,13 @@ class FakeNetRepository : INetRepository {
 
     override fun getAllCompaniesName(): Single<List<Company>> {
         return Single.just(listOf())
+    }
+
+    override suspend fun getDealsListAsync(set: SearchSet): Deferred<List<Deal>> {
+        return coroutineScope {
+            async {
+                listOf()
+            }
+        }
     }
 }

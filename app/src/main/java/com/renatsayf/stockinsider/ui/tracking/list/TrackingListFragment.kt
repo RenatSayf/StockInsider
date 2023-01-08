@@ -16,6 +16,7 @@ import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -58,12 +59,6 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        if (savedInstanceState == null) {
-            trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
-                if (count != null && count > 0) startBackgroundWork()
-            }
-        }
 
         binding.includedToolBar.appToolbar.apply {
             title = getString(R.string.text_tracking_list)
@@ -154,7 +149,6 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                                 res == 0 -> {
-                                    //showSnackBar(getString(R.string.text_deletion_error))
                                     showInfoDialog(title = getString(R.string.text_deletion_error), status = InfoDialog.DialogStatus.ERROR)
                                 }
                             }
@@ -171,12 +165,19 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
             if (id != null && id > 0) {
                 when (checked) {
-                    true -> showSnackBar(getString(R.string.text_tracking_enabled))
+                    true -> {
+                        showSnackBar(getString(R.string.text_tracking_enabled))
+                    }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
-                                cancelBackgroundWork()
+                                Scheduler(requireContext()).apply {
+                                    val pendingIntent = isAlarmSetup(Scheduler.SET_NAME, false)
+                                    if (pendingIntent != null) {
+                                        this.cancel(pendingIntent)
+                                    }
+                                }
                             }
                         }
                     }
