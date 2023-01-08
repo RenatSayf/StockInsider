@@ -316,7 +316,7 @@ fun Activity.setAlarm(scheduler: Scheduler): Boolean {
     return if (pendingIntent == null) {
         val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
         val formattedString = nextFillingTime.timeToFormattedString()
-        if (BuildConfig.DEBUG) println("*************** nextFillingTime = $formattedString *********************")
+        if (BuildConfig.DEBUG) println("*************** Alarm time will be in $formattedString *********************")
         scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
     }
     else {

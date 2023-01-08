@@ -60,8 +60,13 @@ class AppWorker (
                 delay(duration * 1000L)
                 val params = set.toSearchSet()
                 val deals = net.getDealsListAsync(params).await()
-                if (deals.isNotEmpty()) {
-                    function?.invoke(context, deals.size, set)
+                when {
+                    BuildConfig.DEBUG -> function?.invoke(context, deals.size, set)
+                    else -> {
+                        if (deals.isNotEmpty()) {
+                            function?.invoke(context, deals.size, set)
+                        }
+                    }
                 }
                 deals.isNotEmpty()
             }?.toBooleanArray()?: booleanArrayOf()
