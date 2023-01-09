@@ -183,6 +183,9 @@ dependencies {
     // ...with Kotlin.
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.38.1'
 
+    //Yandex ads
+    implementation 'com.yandex.android:mobileads:5.5.0'
+
 
 
 }

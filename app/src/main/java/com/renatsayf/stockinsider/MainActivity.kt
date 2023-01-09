@@ -24,10 +24,13 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -36,6 +39,7 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
+import com.yandex.mobile.ads.common.InitializationListener
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -84,19 +88,41 @@ class MainActivity : AppCompatActivity() {
 
         firebaseVM
 
-        MobileAds.initialize(this)
         val adRequest = AdRequest.Builder().build()
-        val adUnitId = this.getInterstitialAdId(index = 0)
-        InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdLoaded(p0: InterstitialAd) {
-                interstitialAd = p0
-            }
-            override fun onAdFailedToLoad(p0: LoadAdError) {
-                if (BuildConfig.DEBUG) {
-                    Exception(p0.message).printStackTrace()
+
+        if (this.currentCountryCode == CountryCode.RU.name) {
+            com.yandex.mobile.ads.common.MobileAds.initialize(this, object : InitializationListener {
+                override fun onInitializationCompleted() {
+                    if (BuildConfig.DEBUG) println("*************** Yandex mobile ads has been initialized *****************")
                 }
-            }
-        })
+            })
+        }
+        else {
+            MobileAds.initialize(this, object : OnInitializationCompleteListener {
+
+                override fun onInitializationComplete(p0: InitializationStatus) {
+
+                    if (BuildConfig.DEBUG) println("*************** Google mobile ads has been initialized *****************")
+                    val adUnitId = this@MainActivity.getInterstitialAdId(index = 0)
+                    InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
+                        override fun onAdLoaded(p0: InterstitialAd) {
+                            interstitialAd = p0
+                        }
+                        override fun onAdFailedToLoad(p0: LoadAdError) {
+                            if (BuildConfig.DEBUG) {
+                                Exception(p0.message).printStackTrace()
+                            }
+                            com.yandex.mobile.ads.common.MobileAds.initialize(this@MainActivity, object : InitializationListener {
+                                override fun onInitializationCompleted() {
+                                    if (BuildConfig.DEBUG) println("*************** Yandex mobile ads has been initialized *****************")
+                                }
+                            })
+                        }
+                    })
+                }
+            })
+
+        }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
 
