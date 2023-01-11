@@ -4,22 +4,22 @@ import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.google.android.gms.ads.AdError
 import com.google.android.gms.ads.FullScreenContentCallback
-import com.renatsayf.stockinsider.BuildConfig
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
@@ -27,13 +27,15 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setAlarm
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainFragment : Fragment(R.layout.fragment_home) {
+class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
 
     private lateinit var binding: FragmentHomeBinding
     private val mainVM : MainViewModel by lazy {
@@ -51,6 +53,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
     }
+
+    private val adVM: AdViewModel by activityViewModels()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -163,26 +167,26 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
 
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            if (this@MainFragment.isNetworkAvailable())
-            {
-                MainActivity.interstitialAd?.let {
-                    it.show(requireActivity())
-                    it.fullScreenContentCallback = object : FullScreenContentCallback() {
-                        override fun onAdDismissedFullScreenContent() {
-                            requireActivity().finish()
-                        }
-                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                            if (BuildConfig.DEBUG) {
-                                Exception(p0.message).printStackTrace()
-                            }
-                            requireActivity().finish()
-                        }
-                    }
-                } ?: run { requireActivity().finish() }
-            }
-            else requireActivity().finish()
-        }
+//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
+//            if (this@MainFragment.isNetworkAvailable())
+//            {
+//                MainActivity.interstitialAd?.let {
+//                    it.show(requireActivity())
+//                    it.fullScreenContentCallback = object : FullScreenContentCallback() {
+//                        override fun onAdDismissedFullScreenContent() {
+//                            requireActivity().finish()
+//                        }
+//                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
+//                            if (BuildConfig.DEBUG) {
+//                                Exception(p0.message).printStackTrace()
+//                            }
+//                            requireActivity().finish()
+//                        }
+//                    }
+//                } ?: run { requireActivity().finish() }
+//            }
+//            else requireActivity().finish()
+//        }
 
         binding.toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
@@ -241,8 +245,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                                 scheduler = Scheduler(requireActivity().applicationContext)
                             )
                         }
-                        requireActivity().finish()
                     }
+                    adVM.loadAd(indexId = 0, isOnExit = true, this@MainFragment)
                 }
             }
         })
@@ -277,6 +281,45 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 sorting.sortSpinner.selectedItemPosition
             )
         }
+    }
+
+    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+        ad.show(requireActivity())
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                if (isOnExit) {
+                    requireActivity().finish()
+                }
+            }
+        }
+    }
+
+    override fun onYandexAdLoaded(
+        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+        isOnExit: Boolean
+    ) {
+        ad.show()
+        ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
+            override fun onAdLoaded() {}
+
+            override fun onAdFailedToLoad(p0: AdRequestError) {}
+
+            override fun onAdShown() {}
+
+            override fun onAdDismissed() {
+                if (isOnExit) {
+                    requireActivity().finish()
+                }
+            }
+
+            override fun onAdClicked() {}
+
+            override fun onLeftApplication() {}
+
+            override fun onReturnedToApplication() {}
+
+            override fun onImpression(p0: ImpressionData?) {}
+        })
     }
 
 

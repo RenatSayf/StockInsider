@@ -4,8 +4,8 @@ import android.app.PendingIntent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.renatsayf.stockinsider.TestActivity
-import com.renatsayf.stockinsider.receivers.TestReceiver
+import com.renatsayf.stockinsider.ui.testing.TestActivity
+import com.renatsayf.stockinsider.ui.testing.TestReceiver
 import org.junit.*
 import org.junit.runner.RunWith
 

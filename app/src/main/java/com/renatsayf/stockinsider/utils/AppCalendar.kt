@@ -9,7 +9,7 @@ import java.util.concurrent.TimeUnit
 object AppCalendar {
 
     val workerPeriod = try {
-        FireBaseViewModel.workerPeriod
+        FireBaseViewModel.workerHoursPeriod
     }
     catch (e: ExceptionInInitializerError) {
         1L

@@ -15,6 +15,7 @@ import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.ExpandableListView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
@@ -24,14 +25,11 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.initialization.InitializationStatus
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
-import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -39,18 +37,19 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
-import com.yandex.mobile.ads.common.InitializationListener
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), AdViewModel.Listener {
+
     companion object {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
-
-        var interstitialAd: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -70,6 +69,8 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
+    private val adVM: AdViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -87,42 +88,6 @@ class MainActivity : AppCompatActivity() {
         }
 
         firebaseVM
-
-        val adRequest = AdRequest.Builder().build()
-
-        if (this.currentCountryCode == CountryCode.RU.name) {
-            com.yandex.mobile.ads.common.MobileAds.initialize(this, object : InitializationListener {
-                override fun onInitializationCompleted() {
-                    if (BuildConfig.DEBUG) println("*************** Yandex mobile ads has been initialized *****************")
-                }
-            })
-        }
-        else {
-            MobileAds.initialize(this, object : OnInitializationCompleteListener {
-
-                override fun onInitializationComplete(p0: InitializationStatus) {
-
-                    if (BuildConfig.DEBUG) println("*************** Google mobile ads has been initialized *****************")
-                    val adUnitId = this@MainActivity.getInterstitialAdId(index = 0)
-                    InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
-                        override fun onAdLoaded(p0: InterstitialAd) {
-                            interstitialAd = p0
-                        }
-                        override fun onAdFailedToLoad(p0: LoadAdError) {
-                            if (BuildConfig.DEBUG) {
-                                Exception(p0.message).printStackTrace()
-                            }
-                            com.yandex.mobile.ads.common.MobileAds.initialize(this@MainActivity, object : InitializationListener {
-                                override fun onInitializationCompleted() {
-                                    if (BuildConfig.DEBUG) println("*************** Yandex mobile ads has been initialized *****************")
-                                }
-                            })
-                        }
-                    })
-                }
-            })
-
-        }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
 
@@ -185,23 +150,8 @@ class MainActivity : AppCompatActivity() {
                                             scheduler = Scheduler(this@MainActivity.applicationContext)
                                         )
                                     }
-                                    interstitialAd?.let { ad ->
-                                        ad.show(this@MainActivity)
-                                        ad.fullScreenContentCallback =
-                                            object : FullScreenContentCallback() {
-                                                override fun onAdDismissedFullScreenContent() {
-                                                    finish()
-                                                }
-
-                                                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                                    if (BuildConfig.DEBUG) {
-                                                        Exception(p0.message).printStackTrace()
-                                                    }
-                                                    finish()
-                                                }
-                                            }
-                                    } ?: run { finish() }
                                 }
+                                adVM.loadAd(indexId = 0, isOnExit = true, listener = this@MainActivity)
                             }
                         }
                     }
@@ -369,17 +319,7 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         p2 == 6 && p3 == 1 -> {
-                            val adId = this@MainActivity.getInterstitialAdId(index = 2)
-                            InterstitialAd.load(this@MainActivity, adId, adRequest, object : InterstitialAdLoadCallback() {
-                                override fun onAdLoaded(ad: InterstitialAd) {
-                                    ad.show(this@MainActivity)
-                                }
-                                override fun onAdFailedToLoad(p0: LoadAdError) {
-                                    if (BuildConfig.DEBUG) {
-                                        Exception(p0.message).printStackTrace()
-                                    }
-                                }
-                            })
+                            adVM.loadAd(indexId = 1, listener = this@MainActivity)
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -451,6 +391,42 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
+    }
+
+    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+        ad.show(this)
+        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
+            override fun onAdDismissedFullScreenContent() {
+                if (isOnExit) {
+                    finish()
+                }
+            }
+        }
+    }
+
+    override fun onYandexAdLoaded(ad: com.yandex.mobile.ads.interstitial.InterstitialAd, isOnExit: Boolean) {
+        ad.show()
+        ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
+            override fun onAdLoaded() {}
+
+            override fun onAdFailedToLoad(p0: AdRequestError) {}
+
+            override fun onAdShown() {}
+
+            override fun onAdDismissed() {
+                if (isOnExit) {
+                    finish()
+                }
+            }
+
+            override fun onAdClicked() {}
+
+            override fun onLeftApplication() {}
+
+            override fun onReturnedToApplication() {}
+
+            override fun onImpression(p0: ImpressionData?) {}
+        })
     }
 
 }

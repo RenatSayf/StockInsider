@@ -5,7 +5,7 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.work.Operation
 import androidx.work.await
-import com.renatsayf.stockinsider.TestActivity
+import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule

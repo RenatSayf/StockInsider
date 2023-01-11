@@ -12,13 +12,13 @@ class WorkTask(
         FireBaseViewModel.workerPeriod
     }
     catch (e: ExceptionInInitializerError) {
-        1L
+        15L
     }
     catch (e: NoClassDefFoundError) {
-        1L
+        15L
     }
     catch (e: Exception) {
-        1L
+        15L
     }
 ): IWorkTask {
 

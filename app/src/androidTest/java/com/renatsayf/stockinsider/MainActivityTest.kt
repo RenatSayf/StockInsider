@@ -3,8 +3,9 @@ package com.renatsayf.stockinsider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.renatsayf.stockinsider.receivers.TestReceiver
+import com.renatsayf.stockinsider.ui.testing.TestReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.setAlarm
 import org.junit.*
 import org.junit.runner.RunWith

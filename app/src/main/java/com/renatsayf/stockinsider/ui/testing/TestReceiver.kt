@@ -1,7 +1,8 @@
-package com.renatsayf.stockinsider.receivers
+package com.renatsayf.stockinsider.ui.testing
 
 import android.content.Context
 import android.content.Intent
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.ServiceNotification
 import org.junit.Assert

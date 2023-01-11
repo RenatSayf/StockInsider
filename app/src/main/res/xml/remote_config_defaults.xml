@@ -8,6 +8,11 @@
 
   <entry>
     <key>worker_period</key>
+    <value>240</value>
+  </entry>
+
+  <entry>
+    <key>worker_period_in_hours</key>
     <value>4</value>
   </entry>
 
