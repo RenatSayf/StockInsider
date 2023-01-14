@@ -23,7 +23,7 @@ import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment

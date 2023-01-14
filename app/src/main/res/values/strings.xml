@@ -243,5 +243,6 @@
     <string name="text_success">Success</string>
     <string name="text_info">Information</string>
     <string name="text_error">Error</string>
+    <string name="text_search_is_going">There is a search for new deals on SEC Form 4…</string>
 
 </resources>

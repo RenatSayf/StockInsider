@@ -12,6 +12,7 @@ import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import kotlinx.coroutines.*
 import java.util.*
 

@@ -7,6 +7,7 @@ import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.service.NetworkService
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import dagger.hilt.android.AndroidEntryPoint
@@ -29,20 +30,8 @@ open class AlarmReceiver : BroadcastReceiver() {
                 val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
                 scheduler.scheduleOne(nextTime, 0, Scheduler.SET_NAME)
 
-                val operation = context.startOneTimeBackgroundWork()
-                operation.result.addListener(object : Runnable {
-                    override fun run() {
-                        if (BuildConfig.DEBUG) {
-                            println("*************** run(). Background work has been done. ***************")
-                        }
-                    }
-                }, object : Executor {
-                    override fun execute(command: Runnable?) {
-                        if (BuildConfig.DEBUG) {
-                            println("*************** execute(). Background work has been done. ***************")
-                        }
-                    }
-                })
+                val networkService = NetworkService()
+                networkService.start(context)
             }
         }
     }

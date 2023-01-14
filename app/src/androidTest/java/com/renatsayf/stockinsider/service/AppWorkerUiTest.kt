@@ -12,6 +12,7 @@ import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.network.MockApi
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.checkTestPort
 import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import kotlinx.coroutines.runBlocking

@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.service
+package com.renatsayf.stockinsider.service.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel

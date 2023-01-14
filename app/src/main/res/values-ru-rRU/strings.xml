@@ -244,5 +244,6 @@
     <string name="text_success">Успешно</string>
     <string name="text_info">Информация</string>
     <string name="text_error">Ошибка</string>
+    <string name="text_search_is_going">Идет поиск новых сделок по SEC Form 4...</string>
 
 </resources>
