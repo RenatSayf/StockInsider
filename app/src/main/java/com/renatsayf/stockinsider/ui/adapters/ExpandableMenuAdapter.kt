@@ -33,7 +33,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataHeader.add(context.getString(R.string.text_exit))
 
         // Adding data icons
-        ContextCompat.getDrawable(context, R.drawable.ic_stock_hause_cold)?.let { listDataIcons.add(it) }
+        ContextCompat.getDrawable(context, R.drawable.ic_stock_hause_gold)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_3)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_7)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_14)?.let { listDataIcons.add(it) }

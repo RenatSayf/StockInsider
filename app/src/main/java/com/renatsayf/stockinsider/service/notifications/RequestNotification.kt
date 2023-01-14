@@ -4,6 +4,7 @@ import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import com.renatsayf.stockinsider.BuildConfig
@@ -35,10 +36,13 @@ class RequestNotification(private val context: Context) {
             val message = context.getString(R.string.text_search_is_going)
             val title = context.getString(R.string.app_name)
 
+            val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.icon_logo)
+
             return NotificationCompat.Builder(context, channelID)
                 .setPriority(NotificationManager.IMPORTANCE_HIGH)
-                .setCategory(Notification.CATEGORY_SERVICE)
-                .setSmallIcon(R.drawable.ic_stock_hause_cold)
+                .setCategory(Notification.CATEGORY_RECOMMENDATION)
+                .setSmallIcon(R.drawable.ic_stock_hause_gold)
+                .setLargeIcon(bitmap)
                 .setColor(context.getColor(R.color.colorPrimary))
                 .setContentTitle(title)
                 .setContentText(message)

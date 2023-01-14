@@ -66,8 +66,8 @@ class ServiceNotification @Inject constructor() : Notification()
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
                            text : String,
-                           smallIconRes: Int = R.drawable.ic_stock_hause_cold,
-                           largeIconRes: Int = R.drawable.ic_notification_logo
+                           smallIconRes: Int = R.drawable.ic_stock_hause_gold,
+                           largeIconRes: Int = R.drawable.icon_logo
                            ) : ServiceNotification
     {
         this.context = context
