@@ -246,8 +246,8 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
                             )
                         }
                     }
-                    adVM.loadAd(indexId = 0, isOnExit = true, this@MainFragment)
                 }
+                adVM.loadAd(indexId = 0, isOnExit = true, this@MainFragment)
             }
         })
     }

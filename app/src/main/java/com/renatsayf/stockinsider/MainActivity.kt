@@ -151,8 +151,8 @@ class MainActivity : AppCompatActivity(), AdViewModel.Listener {
                                         )
                                     }
                                 }
-                                adVM.loadAd(indexId = 0, isOnExit = true, listener = this@MainActivity)
                             }
+                            adVM.loadAd(indexId = 0, isOnExit = true, listener = this@MainActivity)
                         }
                     }
                     return false
