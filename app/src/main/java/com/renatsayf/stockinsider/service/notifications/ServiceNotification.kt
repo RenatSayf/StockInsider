@@ -17,7 +17,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.utils.Utils
+import com.renatsayf.stockinsider.utils.getFormattedDateTime
 import javax.inject.Inject
 
 
@@ -31,7 +31,7 @@ class ServiceNotification @Inject constructor() : Notification()
 
         val notify: (Context, Int, RoomSearchSet?) -> Unit = { context: Context, count: Int, set ->
 
-            val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
+            val time = Calendar.getInstance().time.getFormattedDateTime(0)
             val message = "According to the ${set?.queryName} search query, $count results were found \n" +
                     if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
 
