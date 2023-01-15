@@ -13,6 +13,7 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.models.CountryCode
+import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.currentCountryCode
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
@@ -25,7 +26,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AdViewModel @Inject constructor(private val app: Application) : AndroidViewModel(app) {
 
+    companion object {
+        const val KEY_IS_AD_DISABLED = "KEY_IS_AD_DISABLED"
+    }
+
     private var status: Boolean = false
+    private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
     private val googleAdRequest = AdRequest.Builder().build()
     private val yandexAdRequest = com.yandex.mobile.ads.common.AdRequest.Builder().build()
 
@@ -65,68 +71,76 @@ class AdViewModel @Inject constructor(private val app: Application) : AndroidVie
 
     fun loadAd(indexId: Int = 0, isOnExit: Boolean = false, listener: Listener) {
 
-        if (status) {
-            val googleAdId = getGoogleAdId(indexId)
-            InterstitialAd.load(app, googleAdId, googleAdRequest, object : InterstitialAdLoadCallback() {
-                override fun onAdLoaded(p0: InterstitialAd) {
-                    listener.onGoogleAdLoaded(p0, isOnExit)
-                }
-                override fun onAdFailedToLoad(p0: LoadAdError) {
-                    if (BuildConfig.DEBUG) {
-                        Exception(p0.message).printStackTrace()
+        if (!isDisabled) {
+            if (status) {
+                val googleAdId = getGoogleAdId(indexId)
+                InterstitialAd.load(app, googleAdId, googleAdRequest, object : InterstitialAdLoadCallback() {
+                    override fun onAdLoaded(p0: InterstitialAd) {
+                        listener.onGoogleAdLoaded(p0, isOnExit)
                     }
-                    val yandexAdId = getYandexAdId(indexId)
-                    com.yandex.mobile.ads.interstitial.InterstitialAd(app).apply {
-                        setAdUnitId(yandexAdId)
-                        loadAd(yandexAdRequest)
-                        setInterstitialAdEventListener(object : InterstitialAdEventListener {
-                            override fun onAdLoaded() {
-                                listener.onYandexAdLoaded(this@apply, isOnExit)
-                            }
+                    override fun onAdFailedToLoad(p0: LoadAdError) {
+                        if (BuildConfig.DEBUG) {
+                            Exception(p0.message).printStackTrace()
+                        }
+                        val yandexAdId = getYandexAdId(indexId)
+                        com.yandex.mobile.ads.interstitial.InterstitialAd(app).apply {
+                            setAdUnitId(yandexAdId)
+                            loadAd(yandexAdRequest)
+                            setInterstitialAdEventListener(object : InterstitialAdEventListener {
+                                override fun onAdLoaded() {
+                                    listener.onYandexAdLoaded(this@apply, isOnExit)
+                                }
 
-                            override fun onAdFailedToLoad(p0: AdRequestError) {}
+                                override fun onAdFailedToLoad(p0: AdRequestError) {
+                                    listener.onYandexAdFailed(p0)
+                                }
 
-                            override fun onAdShown() {}
+                                override fun onAdShown() {}
 
-                            override fun onAdDismissed() {}
+                                override fun onAdDismissed() {}
 
-                            override fun onAdClicked() {}
+                                override fun onAdClicked() {}
 
-                            override fun onLeftApplication() {}
+                                override fun onLeftApplication() {}
 
-                            override fun onReturnedToApplication() {}
+                                override fun onReturnedToApplication() {}
 
-                            override fun onImpression(p0: ImpressionData?) {}
-                        })
+                                override fun onImpression(p0: ImpressionData?) {}
+                            })
+                        }
                     }
-                }
-            })
-        }
-        else {
-            val yandexAdId = getYandexAdId(indexId)
-            com.yandex.mobile.ads.interstitial.InterstitialAd(app).apply {
-                setAdUnitId(yandexAdId)
-                loadAd(yandexAdRequest)
-                setInterstitialAdEventListener(object : InterstitialAdEventListener {
-                    override fun onAdLoaded() {
-                        listener.onYandexAdLoaded(this@apply, isOnExit)
-                    }
-
-                    override fun onAdFailedToLoad(p0: AdRequestError) {}
-
-                    override fun onAdShown() {}
-
-                    override fun onAdDismissed() {}
-
-                    override fun onAdClicked() {}
-
-                    override fun onLeftApplication() {}
-
-                    override fun onReturnedToApplication() {}
-
-                    override fun onImpression(p0: ImpressionData?) {}
                 })
             }
+            else {
+                val yandexAdId = getYandexAdId(indexId)
+                com.yandex.mobile.ads.interstitial.InterstitialAd(app).apply {
+                    setAdUnitId(yandexAdId)
+                    loadAd(yandexAdRequest)
+                    setInterstitialAdEventListener(object : InterstitialAdEventListener {
+                        override fun onAdLoaded() {
+                            listener.onYandexAdLoaded(this@apply, isOnExit)
+                        }
+
+                        override fun onAdFailedToLoad(p0: AdRequestError) {
+                            listener.onYandexAdFailed(p0)
+                        }
+
+                        override fun onAdShown() {}
+
+                        override fun onAdDismissed() {}
+
+                        override fun onAdClicked() {}
+
+                        override fun onLeftApplication() {}
+
+                        override fun onReturnedToApplication() {}
+
+                        override fun onImpression(p0: ImpressionData?) {}
+                    })
+                }
+            }
+        } else {
+            listener.onAdDisabled()
         }
     }
 
@@ -159,6 +173,9 @@ class AdViewModel @Inject constructor(private val app: Application) : AndroidVie
     interface Listener {
         fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean)
         fun onYandexAdLoaded(ad: com.yandex.mobile.ads.interstitial.InterstitialAd, isOnExit: Boolean)
+        fun onGoogleAdFailed(error: LoadAdError)
+        fun onYandexAdFailed(error: AdRequestError)
+        fun onAdDisabled()
     }
 
 

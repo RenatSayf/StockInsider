@@ -12,6 +12,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -167,27 +168,6 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
 
-//        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-//            if (this@MainFragment.isNetworkAvailable())
-//            {
-//                MainActivity.interstitialAd?.let {
-//                    it.show(requireActivity())
-//                    it.fullScreenContentCallback = object : FullScreenContentCallback() {
-//                        override fun onAdDismissedFullScreenContent() {
-//                            requireActivity().finish()
-//                        }
-//                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-//                            if (BuildConfig.DEBUG) {
-//                                Exception(p0.message).printStackTrace()
-//                            }
-//                            requireActivity().finish()
-//                        }
-//                    }
-//                } ?: run { requireActivity().finish() }
-//            }
-//            else requireActivity().finish()
-//        }
-
         binding.toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
 
@@ -320,6 +300,18 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
 
             override fun onImpression(p0: ImpressionData?) {}
         })
+    }
+
+    override fun onGoogleAdFailed(error: LoadAdError) {
+        requireActivity().finish()
+    }
+
+    override fun onYandexAdFailed(error: AdRequestError) {
+        requireActivity().finish()
+    }
+
+    override fun onAdDisabled() {
+        requireActivity().finish()
     }
 
 

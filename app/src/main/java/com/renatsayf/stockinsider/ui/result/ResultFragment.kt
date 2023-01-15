@@ -14,6 +14,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.gms.ads.FullScreenContentCallback
+import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -372,6 +373,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
             override fun onImpression(p0: ImpressionData?) {}
         })
+    }
+
+    override fun onGoogleAdFailed(error: LoadAdError) {
+        findNavController().popBackStack()
+    }
+
+    override fun onYandexAdFailed(error: AdRequestError) {
+        findNavController().popBackStack()
+    }
+
+    override fun onAdDisabled() {
+        findNavController().popBackStack()
     }
 
 

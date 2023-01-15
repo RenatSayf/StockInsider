@@ -429,6 +429,18 @@ class MainActivity : AppCompatActivity(), AdViewModel.Listener {
         })
     }
 
+    override fun onGoogleAdFailed(error: LoadAdError) {
+        finish()
+    }
+
+    override fun onYandexAdFailed(error: AdRequestError) {
+        finish()
+    }
+
+    override fun onAdDisabled() {
+        finish()
+    }
+
 }
 
 
