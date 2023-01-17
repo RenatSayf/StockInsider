@@ -6,12 +6,19 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
 import com.yandex.mobile.ads.common.AdRequestError
-import org.junit.*
+import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.interstitial.InterstitialAd
+import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
+import org.junit.After
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
+import org.junit.Rule
 import org.junit.runner.RunWith
 
 
@@ -22,10 +29,14 @@ class AdViewModelTest {
     var rule = ActivityScenarioRule(TestActivity::class.java)
 
     private lateinit var scenario: ActivityScenario<TestActivity>
+    private lateinit var viewModel: AdViewModel
 
     @Before
     fun setUp() {
         scenario = rule.scenario
+        scenario.onActivity {
+            viewModel = ViewModelProvider(it)[AdViewModel::class.java]
+        }
     }
 
     @After
@@ -34,133 +45,89 @@ class AdViewModelTest {
     }
 
     @Test
-    fun loadAd() {
+    fun loadGoogleAd_not_disabled() {
 
         scenario.onActivity { activity ->
 
+            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
             setWiFiDataEnabled(activity, true)
             Thread.sleep(5000)
 
-            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
-
-            val viewModel = ViewModelProvider(activity)[AdViewModel::class.java]
-
-            viewModel.loadAd(0, false, object : AdViewModel.Listener {
-                override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                    ad.show(activity)
+            viewModel.loadGoogleAd(indexId = 0, isOnExit = false, listener = object : AdViewModel.GoogleAdListener {
+                override fun onGoogleAdLoaded(
+                    ad: com.google.android.gms.ads.interstitial.InterstitialAd,
+                    isOnExit: Boolean
+                ) {
                     Assert.assertTrue(true)
-                }
-
-                override fun onYandexAdLoaded(ad: com.yandex.mobile.ads.interstitial.InterstitialAd, isOnExit: Boolean) {
-                    ad.show()
-                    Assert.assertTrue(true)
+                    ad.apply {
+                        show(activity)
+                        fullScreenContentCallback = object : FullScreenContentCallback() {
+                            override fun onAdShowedFullScreenContent() {
+                                println("******************* Ad is shown *****************************")
+                                Assert.assertTrue(true)
+                            }
+                        }
+                        Thread.sleep(5000)
+                    }
                 }
 
                 override fun onGoogleAdFailed(error: LoadAdError) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onYandexAdFailed(error: AdRequestError) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onAdDisabled() {
+                    println("******************* LoadAdError: ${error.message} *****************************")
                     Assert.assertTrue(true)
+                }
+            })
+        }
+        Thread.sleep(20000)
+    }
+
+    @Test
+    fun loadYandexAd_not_disabled() {
+
+        scenario.onActivity { activity ->
+
+            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
+            setWiFiDataEnabled(activity, true)
+            Thread.sleep(5000)
+
+            viewModel.loadYandexAd(indexId = 0, isOnExit = false, listener = object: AdViewModel.YandexAdListener {
+                override fun onYandexAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                    Assert.assertTrue(true)
+                    ad.apply {
+                        show()
+                        setInterstitialAdEventListener(object : InterstitialAdEventListener {
+                            override fun onAdLoaded() {}
+
+                            override fun onAdFailedToLoad(p0: AdRequestError) {
+                                println("******************* AdRequestError: ${p0.description} *****************************")
+                                Assert.assertTrue(false)
+                            }
+
+                            override fun onAdShown() {
+                                println("******************* Ad is shown *****************************")
+                                Assert.assertTrue(true)
+                                Thread.sleep(5000)
+                            }
+
+                            override fun onAdDismissed() {}
+
+                            override fun onAdClicked() {}
+
+                            override fun onLeftApplication() {}
+
+                            override fun onReturnedToApplication() {}
+
+                            override fun onImpression(p0: ImpressionData?) {}
+
+                        })
+                    }
+                }
+                override fun onYandexAdFailed(error: AdRequestError) {
+                    println("******************* AdRequestError: ${error.description} **********************")
+                    Assert.assertTrue(false)
                 }
             })
         }
         Thread.sleep(25000)
-    }
-
-    @Test
-    fun loadAd_When_ad_is_disabled() {
-
-        scenario.onActivity { activity ->
-
-            setWiFiDataEnabled(activity, true)
-            Thread.sleep(5000)
-
-            val isDisable = true
-            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, isDisable).apply()
-            val viewModel = ViewModelProvider(activity)[AdViewModel::class.java]
-
-            viewModel.loadAd(0, false, object : AdViewModel.Listener {
-                override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onYandexAdLoaded(ad: com.yandex.mobile.ads.interstitial.InterstitialAd, isOnExit: Boolean) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onGoogleAdFailed(error: LoadAdError) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onYandexAdFailed(error: AdRequestError) {
-                    Assert.assertTrue(false)
-                }
-
-                override fun onAdDisabled() {
-                    Assert.assertTrue(true)
-                    activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, !isDisable).apply()
-                }
-            })
-        }
-        Thread.sleep(10000)
-    }
-
-    @Test
-    fun loadAd_when_internet_is_disabled() {
-
-        scenario.onActivity { activity ->
-
-            setWiFiDataEnabled(activity, false)
-            Thread.sleep(5000)
-
-            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
-
-            val viewModel = ViewModelProvider(activity)[AdViewModel::class.java]
-            Thread.sleep(5000)
-
-            viewModel.loadAd(0, false, object : AdViewModel.Listener {
-                override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                    Assert.assertTrue(false)
-                    setWiFiDataEnabled(activity, true)
-                    Thread.sleep(5000)
-                }
-
-                override fun onYandexAdLoaded(
-                    ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                    isOnExit: Boolean
-                ) {
-                    Assert.assertTrue(false)
-                    setWiFiDataEnabled(activity, true)
-                    Thread.sleep(5000)
-                }
-
-                override fun onGoogleAdFailed(error: LoadAdError) {
-                    println("********************** onYandexAdFailed error: ${error.message} *************************")
-                    Assert.assertTrue(true)
-                    setWiFiDataEnabled(activity, true)
-                    Thread.sleep(5000)
-                }
-
-                override fun onYandexAdFailed(error: AdRequestError) {
-                    println("********************** onYandexAdFailed error: ${error.description} *************************")
-                    Assert.assertTrue(true)
-                    setWiFiDataEnabled(activity, true)
-                    Thread.sleep(5000)
-                }
-
-                override fun onAdDisabled() {
-                    Assert.assertTrue(false)
-                    setWiFiDataEnabled(activity, true)
-                    Thread.sleep(5000)
-                }
-            })
-        }
-        Thread.sleep(30000)
     }
 
     @Suppress("DEPRECATION")

@@ -11,7 +11,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
-import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
@@ -19,6 +18,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
@@ -26,17 +26,13 @@ import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.appPref
-import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.setAlarm
+import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
+class MainFragment : Fragment(R.layout.fragment_home) {
 
     private lateinit var binding: FragmentHomeBinding
     private val mainVM : MainViewModel by lazy {
@@ -55,7 +51,9 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
         TickersListAdapter(requireContext())
     }
 
-    private val adVM: AdViewModel by activityViewModels()
+    private val adVMNew: AdViewModel by activityViewModels()
+    private var googleAd1: InterstitialAd? = null
+    private var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,6 +67,45 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentHomeBinding.bind(view)
+
+        if (savedInstanceState == null) {
+
+            if (this.currentCountryCode != CountryCode.RU.name) {
+                adVMNew.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
+                    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                        googleAd1 = ad
+                    }
+                    override fun onGoogleAdFailed(error: LoadAdError) {
+                        googleAd1 = null
+                        adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                            override fun onYandexAdLoaded(
+                                ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                                isOnExit: Boolean
+                            ) {
+                                yandexAd1 = ad
+                            }
+                            override fun onYandexAdFailed(error: AdRequestError) {
+                                yandexAd1 = null
+                            }
+                        })
+                    }
+                })
+            }
+            else {
+                googleAd1 = null
+                adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                    override fun onYandexAdLoaded(
+                        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                        isOnExit: Boolean
+                    ) {
+                        yandexAd1= ad
+                    }
+                    override fun onYandexAdFailed(error: AdRequestError) {
+                        yandexAd1 = null
+                    }
+                })
+            }
+        }
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
@@ -227,7 +264,9 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
                         }
                     }
                 }
-                adVM.loadAd(indexId = 0, isOnExit = true, this@MainFragment)
+                showAd(googleAd1, yandexAd1) {
+                    requireActivity().finish()
+                }
             }
         })
     }
@@ -261,57 +300,6 @@ class MainFragment : Fragment(R.layout.fragment_home), AdViewModel.Listener {
                 sorting.sortSpinner.selectedItemPosition
             )
         }
-    }
-
-    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-        ad.show(requireActivity())
-        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-            override fun onAdDismissedFullScreenContent() {
-                if (isOnExit) {
-                    requireActivity().finish()
-                }
-            }
-        }
-    }
-
-    override fun onYandexAdLoaded(
-        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-        isOnExit: Boolean
-    ) {
-        ad.show()
-        ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
-            override fun onAdLoaded() {}
-
-            override fun onAdFailedToLoad(p0: AdRequestError) {}
-
-            override fun onAdShown() {}
-
-            override fun onAdDismissed() {
-                if (isOnExit) {
-                    requireActivity().finish()
-                }
-            }
-
-            override fun onAdClicked() {}
-
-            override fun onLeftApplication() {}
-
-            override fun onReturnedToApplication() {}
-
-            override fun onImpression(p0: ImpressionData?) {}
-        })
-    }
-
-    override fun onGoogleAdFailed(error: LoadAdError) {
-        requireActivity().finish()
-    }
-
-    override fun onYandexAdFailed(error: AdRequestError) {
-        requireActivity().finish()
-    }
-
-    override fun onAdDisabled() {
-        requireActivity().finish()
     }
 
 

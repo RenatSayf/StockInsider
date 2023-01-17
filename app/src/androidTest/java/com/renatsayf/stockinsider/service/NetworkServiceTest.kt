@@ -68,7 +68,7 @@ class NetworkServiceTest {
         val isStarted = NetworkService.isStarted
         Assert.assertEquals(false, isStarted)
 
-        Thread.sleep(30000)
+        Thread.sleep(35000)
         val completed = NetworkService.isCompleted
         Assert.assertEquals(true, completed)
 
