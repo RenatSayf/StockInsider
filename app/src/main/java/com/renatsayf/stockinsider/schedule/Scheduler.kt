@@ -32,7 +32,7 @@ class Scheduler @Inject constructor(
             this.action = action
             putExtra(SET_NAME, intentName)
         }
-        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_UPDATE_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
         return pendingIntent
     }
 
