@@ -29,7 +29,6 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.CountryCode
-import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -186,9 +185,11 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        setAlarm(
-                                            scheduler = Scheduler(this@MainActivity.applicationContext)
-                                        )
+                                        val isTask = this@MainActivity.haveWorkTask()
+                                        if (!isTask) {
+                                            val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+                                            startOneTimeBackgroundWork(nextTime)
+                                        }
                                     }
                                 }
                             }

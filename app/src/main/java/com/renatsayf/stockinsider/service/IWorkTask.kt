@@ -6,7 +6,7 @@ import androidx.work.PeriodicWorkRequest
 
 interface IWorkTask {
 
-    fun createOneTimeTask(context: Context, name: String, initialDelay: Long): OneTimeWorkRequest
+    fun createOneTimeTask(context: Context, name: String, startTime: Long): OneTimeWorkRequest
 
     fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest
 

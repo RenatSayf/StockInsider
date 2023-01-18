@@ -9,6 +9,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.Source
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -18,8 +19,8 @@ class FireBaseViewModel @Inject constructor() : ViewModel() {
 
     companion object {
         var userAgent = Firebase.remoteConfig.getString("user_agent")
-        var workerPeriod = if(BuildConfig.DEBUG) 15L else Firebase.remoteConfig.getLong("worker_period")
-        var workerHoursPeriod = if (BuildConfig.DEBUG) 1L else Firebase.remoteConfig.getLong("worker_period_in_hours")
+        var workerPeriod = if(BuildConfig.DEBUG && BuildConfig.DATA_SOURCE == Source.LOCALHOST.name) 20L
+        else Firebase.remoteConfig.getLong("worker_period")
         var requestsCount = if(BuildConfig.DEBUG) 3 else Firebase.remoteConfig.getLong("requests_count").toInt()
     }
 

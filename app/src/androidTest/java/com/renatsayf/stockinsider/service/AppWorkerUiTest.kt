@@ -3,9 +3,6 @@ package com.renatsayf.stockinsider.service
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.work.Operation
-import androidx.work.await
-import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
@@ -13,6 +10,7 @@ import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.network.MockApi
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.checkTestPort
 import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import kotlinx.coroutines.runBlocking
@@ -72,14 +70,8 @@ class AppWorkerUiTest {
 
                 val function = ServiceNotification.notify
                 AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-                val operation = activity.startOneTimeBackgroundWork()
-                val state = operation.state
-                state.observe(activity) { s ->
-                    println("************* state = $s ********************")
-                }
-                val result = operation.result
-                val success = result.await()
-                Assert.assertEquals(Operation.SUCCESS, success)
+                val actualResult = activity.startOneTimeBackgroundWork()
+                Assert.assertEquals(true, actualResult)
             }
         }
         Thread.sleep(3000)

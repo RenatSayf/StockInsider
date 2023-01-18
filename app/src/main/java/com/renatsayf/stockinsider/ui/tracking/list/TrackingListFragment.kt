@@ -16,13 +16,15 @@ import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.cancelBackgroundWork
+import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showInfoDialog
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -30,11 +32,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
-
-    companion object {
-        val TASK_NAME = "${this::class.java.name}.TASK"
-        val WORK_NAME = "${this::class.java.name}.WORK"
-    }
 
     private lateinit var binding: TrackingListFragmentBinding
 
@@ -172,12 +169,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
-                                Scheduler(requireContext()).apply {
-                                    val pendingIntent = isAlarmSetup(Scheduler.SET_NAME, false)
-                                    if (pendingIntent != null) {
-                                        this.cancel(pendingIntent)
-                                    }
-                                }
+                                this.cancelBackgroundWork()
                             }
                         }
                     }

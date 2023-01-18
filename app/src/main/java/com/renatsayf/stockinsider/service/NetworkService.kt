@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.service
 
+import android.app.Notification
 import android.app.Service
 import android.content.ComponentName
 import android.content.Context
@@ -55,6 +56,12 @@ class NetworkService : Service() {
         return null
     }
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+
+
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onCreate() {
         super.onCreate()
 
@@ -64,7 +71,6 @@ class NetworkService : Service() {
         if (BuildConfig.DEBUG) println("******************** Start background work ********************")
 
         val notification = RequestNotification(this@NetworkService)
-        startForeground(serviceID, notification.create())
 
         try {
             job = CoroutineScope(Dispatchers.IO).launch {
@@ -96,7 +102,9 @@ class NetworkService : Service() {
                 isCompleted = true
                 isStarted = false
                 stopSelf()
+                stopForeground(true)
             }
+            startForeground(serviceID, notification.create())
 
         } catch (e: Exception) {
             if (BuildConfig.DEBUG) {

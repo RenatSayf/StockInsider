@@ -19,23 +19,18 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
-import androidx.work.ExistingPeriodicWorkPolicy
-import androidx.work.ExistingWorkPolicy
-import androidx.work.Operation
-import androidx.work.WorkManager
+import androidx.work.*
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
-import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.models.Source
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
-import com.renatsayf.stockinsider.ui.tracking.list.TrackingListFragment
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
 
@@ -125,56 +120,45 @@ inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? 
     }
 }
 
-fun Activity.startBackgroundPeriodicWork() {
-
-    val workRequest = WorkTask().createPeriodicTask(this, TrackingListFragment.TASK_NAME)
-    WorkManager.getInstance(this).enqueueUniquePeriodicWork(
-        TrackingListFragment.WORK_NAME,
-        ExistingPeriodicWorkPolicy.KEEP,
-        workRequest
-    )
+fun Context.haveWorkTask(): Boolean {
+    val workManager = WorkManager.getInstance(this)
+    val workInfos = workManager.getWorkInfosByTag(WorkTask.TAG)
+    val infoList = workInfos.get().orEmpty()
+    if (BuildConfig.DEBUG) println("*************** workList: $infoList ***************************")
+    return infoList.isNotEmpty()
 }
 
-fun Context.startOneTimeBackgroundWork(): Operation {
-    val formattedString = System.currentTimeMillis().timeToFormattedString()
-    val workRequest = WorkTask().createOneTimeTask(
-        context = this,
-        name = "Task $formattedString",
-        initialDelay = 0
-    )
-    val operation = WorkManager.getInstance(this)
-        .enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
-    return operation
+fun Fragment.haveWorkTask(): Boolean {
+    return requireContext().haveWorkTask()
 }
 
-fun Activity.cancelBackgroundWork() {
-    WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
-}
+fun Context.startOneTimeBackgroundWork(startTime: Long = 0): Boolean {
 
-fun Fragment.startBackgroundPeriodicWork() {
-    requireActivity().startBackgroundPeriodicWork()
-}
-
-fun Fragment.cancelBackgroundWork() {
-    requireActivity().cancelBackgroundWork()
-}
-
-fun Activity.getInterstitialAdId(index: Int = 0): String {
-    return if (BuildConfig.DEBUG) {
-        this.getString(R.string.test_interstitial_ads_id)
-    } else {
-        val array = this.resources.getStringArray(R.array.interstitial_ads)
-        try {
-            array[index]
-        } catch (e: IndexOutOfBoundsException) {
-            if (BuildConfig.DEBUG) e.printStackTrace()
-            ""
-        }
+    val workManager = WorkManager.getInstance(this)
+    return run {
+        val formattedString = System.currentTimeMillis().timeToFormattedString()
+        val workRequest = WorkTask().createOneTimeTask(
+            context = this,
+            name = "Task $formattedString",
+            startTime = startTime
+        )
+        workManager.enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
+        true
     }
 }
 
-fun Fragment.getInterstitialAdId(index: Int = 0): String {
-    return requireActivity().getInterstitialAdId(index)
+fun Fragment.startOneTimeBackgroundWork(startTime: Long = 0): Boolean {
+    return requireContext().startOneTimeBackgroundWork(startTime)
+}
+
+fun Context.cancelBackgroundWork(): Boolean {
+    val operation = WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
+    val result = operation.result
+    return result.isCancelled
+}
+
+fun Fragment.cancelBackgroundWork(): Boolean {
+    return requireActivity().cancelBackgroundWork()
 }
 
 fun Activity.doShare()
@@ -307,25 +291,8 @@ fun Long.timeToFormattedString(): String =
 
 @Throws(Exception::class)
 fun checkTestPort(): Boolean {
-    return if (BuildConfig.DATA_SOURCE == "LOCALHOST") true
+    return if (BuildConfig.DATA_SOURCE == Source.LOCALHOST.name) true
     else throw Exception("****************** Не тестовый порт. Выберите в меню Build Variants localhostDebug *************************")
-}
-
-fun Activity.setAlarm(scheduler: Scheduler): Boolean {
-    val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-    return if (pendingIntent == null) {
-        val nextFillingTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
-        val formattedString = nextFillingTime.timeToFormattedString()
-        if (BuildConfig.DEBUG) println("*************** Alarm time will be in $formattedString *********************")
-        scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
-    }
-    else {
-        false
-    }
-}
-
-fun Fragment.setAlarm(scheduler: Scheduler): Boolean {
-    return requireActivity().setAlarm(scheduler)
 }
 
 

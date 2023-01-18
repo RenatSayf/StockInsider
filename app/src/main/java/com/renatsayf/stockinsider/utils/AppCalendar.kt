@@ -3,22 +3,23 @@ package com.renatsayf.stockinsider.utils
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import androidx.annotation.VisibleForTesting
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import java.util.concurrent.TimeUnit
 
 object AppCalendar {
 
     val workerPeriod = try {
-        FireBaseViewModel.workerHoursPeriod
+        FireBaseViewModel.workerPeriod
     }
     catch (e: ExceptionInInitializerError) {
-        1L
+        60L
     }
     catch (e: NoClassDefFoundError) {
-        1L
+        60L
     }
     catch (e: Exception) {
-        1L
+        60L
     }
     private const val START_FILLING_HOUR: Int = 6
     private const val END_FILLING_HOUR: Int = 23
@@ -41,6 +42,13 @@ object AppCalendar {
         return calendar.timeInMillis
     }
 
+    val currentTimeByDefaultTimeZone: Long
+        get() {
+            val time = System.currentTimeMillis() + TimeZone.getDefault().rawOffset
+            if (BuildConfig.DEBUG) println("************************ timeByDefaultTimeZone: ${time.timeToFormattedString()} ************************")
+            return time
+        }
+
     val isWeekEnd: Boolean
         get() {
             return calendar.isWeekend
@@ -54,7 +62,8 @@ object AppCalendar {
         }
 
     fun getNextFillingTime(): Long {
-        val nextTime = calendar.timeInMillis + (TimeUnit.HOURS.toMillis(workerPeriod))
+        workerPeriod
+        val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(workerPeriod))
         val newCalendar = Calendar.getInstance(timeZone).apply {
             timeInMillis = nextTime
         }
@@ -74,4 +83,27 @@ object AppCalendar {
         val defaultOffset = TimeZone.getDefault().rawOffset
         return getNextFillingTime() - utcOffset + defaultOffset
     }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

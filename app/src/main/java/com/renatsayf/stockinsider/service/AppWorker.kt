@@ -13,6 +13,9 @@ import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.cancelBackgroundWork
+import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -87,6 +90,14 @@ class AppWorker (
             }.build()
             if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
             Result.failure(errorData)
+        }
+        finally {
+
+            if (!searchSets.isNullOrEmpty()) {
+                val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+                context.startOneTimeBackgroundWork(nextTimeLong)
+            }
+            else context.cancelBackgroundWork()
         }
     }
 

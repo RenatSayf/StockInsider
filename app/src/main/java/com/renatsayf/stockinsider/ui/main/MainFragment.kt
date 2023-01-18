@@ -19,7 +19,6 @@ import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.CountryCode
-import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
@@ -258,9 +257,11 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            setAlarm(
-                                scheduler = Scheduler(requireActivity().applicationContext)
-                            )
+                            val isTask = this@MainFragment.haveWorkTask()
+                            if (!isTask) {
+                                val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+                                startOneTimeBackgroundWork(nextTime)
+                            }
                         }
                     }
                 }

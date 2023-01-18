@@ -202,12 +202,22 @@ class AppCalendarTest {
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
         val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
-        val actualResult = diffInHours - AppCalendar.workerPeriod
+        val actualResult = diffInHours - TimeUnit.MINUTES.toHours(AppCalendar.workerPeriod)
 
         val defaultHourOffset = TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().rawOffset.toLong())
         val appHourOffset = TimeUnit.MILLISECONDS.toHours(AppCalendar.timeZone.rawOffset.toLong())
         val expectedResult = abs(defaultHourOffset) + abs(appHourOffset)
 
         Assert.assertEquals(expectedResult, actualResult)
+    }
+
+    @Test
+    fun currentTimeByDefaultTimeZone() {
+
+        val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+        val nextTimeStr = nextTimeLong.timeToFormattedString()
+        val nextDelayLong = nextTimeLong - AppCalendar.currentTimeByDefaultTimeZone
+        val nextDelayStr = nextDelayLong.timeToFormattedString()
+        nextDelayStr
     }
 }
