@@ -10,7 +10,7 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
@@ -99,7 +99,7 @@ class AppWorker (
             if (!isRunInTest) {
                 if (!searchSets.isNullOrEmpty()) {
                     val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                        workerPeriod = FireBaseViewModel.workerPeriod
+                        workerPeriod = FireBaseConfig.workerPeriod
                     )
                     context.startOneTimeBackgroundWork(nextTimeLong)
                 }

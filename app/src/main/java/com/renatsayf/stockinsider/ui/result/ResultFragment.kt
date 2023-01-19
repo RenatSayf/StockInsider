@@ -19,7 +19,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
@@ -299,7 +299,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         set?.let { s ->
             trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
                 count?.let { c ->
-                    if (c < FireBaseViewModel.requestsCount) {
+                    if (c < FireBaseConfig.requestsCount) {
                         s.isTracked = true
                         mainViewModel.addNewSearchSet(s).observe(viewLifecycleOwner) { res ->
                             when(res) {

@@ -2,7 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
@@ -22,7 +22,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     private var searchTicker : String = ""
 
     private val userAgent = try {
-        FireBaseViewModel.userAgent
+        FireBaseConfig.userAgent
     }
     catch (e: ExceptionInInitializerError) {
         okhttp3.internal.userAgent

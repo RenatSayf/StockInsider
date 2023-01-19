@@ -18,7 +18,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
@@ -261,7 +261,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                             val isTask = this@MainFragment.haveWorkTask()
                             if (!isTask) {
                                 val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                                    workerPeriod = FireBaseViewModel.workerPeriod
+                                    workerPeriod = FireBaseConfig.workerPeriod
                                 )
                                 startOneTimeBackgroundWork(nextTime)
                             }

@@ -44,9 +44,13 @@ class AppWorkerUiTest {
         isTracked = true
     }
 
+    init {
+        checkTestPort()
+    }
+
     @Before
     fun setUp() {
-        checkTestPort()
+
         scenario = rule.scenario
         scenario.onActivity { activity ->
             dao = RoomDataBaseModule.provideRoomDataBase(activity)
@@ -93,5 +97,32 @@ class AppWorkerUiTest {
         }
 
         Thread.sleep(15000)
+    }
+
+    @Test
+    fun startOneTimeBackgroundWork_setup_and_run() {
+
+        scenario.onActivity { activity ->
+
+            val function = ServiceNotification.notify
+            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
+
+            val startTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(0)
+            activity.startOneTimeBackgroundWork(startTime)
+
+            Thread.sleep(2000)
+
+            val actualResult = activity.haveWorkTask()
+            Assert.assertEquals(false, actualResult)
+        }
+
+        Thread.sleep(20000)
+
+        scenario.onActivity { activity ->
+            val actualResult = activity.haveWorkTask()
+            Assert.assertEquals(true, actualResult)
+        }
+
+        Thread.sleep(2000)
     }
 }

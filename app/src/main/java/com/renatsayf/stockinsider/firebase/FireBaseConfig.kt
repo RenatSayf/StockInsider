@@ -2,7 +2,6 @@
 
 package com.renatsayf.stockinsider.firebase
 
-import androidx.lifecycle.ViewModel
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -10,19 +9,14 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Source
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 
-@HiltViewModel
-class FireBaseViewModel @Inject constructor() : ViewModel() {
+object FireBaseConfig {
 
-    companion object {
-        var userAgent = Firebase.remoteConfig.getString("user_agent")
-        var workerPeriod = if(BuildConfig.DEBUG && BuildConfig.DATA_SOURCE == Source.LOCALHOST.name) 60L
-        else Firebase.remoteConfig.getLong("worker_period")
-        var requestsCount = if(BuildConfig.DEBUG) 3 else Firebase.remoteConfig.getLong("requests_count").toInt()
-    }
+    var userAgent = Firebase.remoteConfig.getString("user_agent")
+    var workerPeriod = if(BuildConfig.DEBUG && BuildConfig.DATA_SOURCE == Source.LOCALHOST.name) 60L
+    else Firebase.remoteConfig.getLong("worker_period")
+    var requestsCount = if(BuildConfig.DEBUG) 3 else Firebase.remoteConfig.getLong("requests_count").toInt()
 
     private val configSettings = remoteConfigSettings {
         minimumFetchIntervalInSeconds = 3600

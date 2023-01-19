@@ -9,6 +9,7 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import com.renatsayf.stockinsider.utils.appPref
@@ -144,6 +145,7 @@ class MainViewModel @Inject constructor(
 
     init {
 
+        FireBaseConfig
         val isAgree = app?.appPref?.getBoolean(MainActivity.KEY_IS_AGREE, false) ?: true
         if (!isAgree) {
 
