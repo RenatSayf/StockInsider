@@ -3,26 +3,12 @@ package com.renatsayf.stockinsider.service
 import android.content.Context
 import androidx.work.*
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.utils.timeToFormattedString
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class WorkTask(
-    private val timePeriod: Long = try {
-        FireBaseViewModel.workerPeriod
-    }
-    catch (e: ExceptionInInitializerError) {
-        20L
-    }
-    catch (e: NoClassDefFoundError) {
-        20L
-    }
-    catch (e: Exception) {
-        20L
-    }
-): IWorkTask {
+class WorkTask : IWorkTask {
 
     companion object {
         const val TAG = "TAG555555555"
@@ -56,7 +42,11 @@ class WorkTask(
         return request
     }
 
-    override fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest {
+    override fun createPeriodicTask(
+        context: Context,
+        name: String,
+        timePeriod: Long
+    ): PeriodicWorkRequest {
 
         val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
             val data = Data.Builder().apply {

@@ -17,10 +17,10 @@ class AppCalendarTest {
 
     @get:Rule
     val archRule = InstantTaskExecutorRule() //выполнение всех операций архитектурных компонентов в главном потоке
+    private val workerPeriod: Long = 60L
 
     @Before
     fun setUp() {
-
     }
 
     @After
@@ -118,7 +118,7 @@ class AppCalendarTest {
         var isFillingTime = AppCalendar.isFillingTime
         Assert.assertEquals(false, isFillingTime)
 
-        val nextFillingTime = AppCalendar.getNextFillingTime()
+        val nextFillingTime = AppCalendar.getNextFillingTime(workerPeriod)
         val nextFillingTimeStr = nextFillingTime.timeToFormattedString()
 
         calendar.timeInMillis = nextFillingTime
@@ -130,7 +130,7 @@ class AppCalendarTest {
         isFillingTime = AppCalendar.isFillingTime
         Assert.assertEquals(true, isFillingTime)
 
-        val nextFillingTime1 = AppCalendar.getNextFillingTime()
+        val nextFillingTime1 = AppCalendar.getNextFillingTime(workerPeriod)
         calendar.timeInMillis = nextFillingTime1
         AppCalendar.setCalendar(calendar)
 
@@ -157,7 +157,7 @@ class AppCalendarTest {
         AppCalendar.setCalendar(calendar)
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
-        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
+        val actualTime = AppCalendar.getNextFillingTime(workerPeriod).timeToFormattedString()
         Assert.assertEquals("2023-01-04T08:00:00", actualTime)
     }
 
@@ -176,7 +176,7 @@ class AppCalendarTest {
         AppCalendar.setCalendar(calendar)
         val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
-        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
+        val actualTime = AppCalendar.getNextFillingTime(workerPeriod).timeToFormattedString()
         Assert.assertEquals("2023-01-04T23:00:00", actualTime)
     }
 
@@ -197,12 +197,12 @@ class AppCalendarTest {
         }
         val defaultCurrentTime = defaultCalendar.timeInMillis.timeToFormattedString()
 
-        val nextTimeNewYork = AppCalendar.getNextFillingTime()
-        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+        val nextTimeNewYork = AppCalendar.getNextFillingTime(workerPeriod)
+        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone(workerPeriod)
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
         val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
-        val actualResult = diffInHours - TimeUnit.MINUTES.toHours(AppCalendar.workerPeriod)
+        val actualResult = diffInHours - TimeUnit.MINUTES.toHours(workerPeriod)
 
         val defaultHourOffset = TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().rawOffset.toLong())
         val appHourOffset = TimeUnit.MILLISECONDS.toHours(AppCalendar.timeZone.rawOffset.toLong())
@@ -211,13 +211,4 @@ class AppCalendarTest {
         Assert.assertEquals(expectedResult, actualResult)
     }
 
-    @Test
-    fun currentTimeByDefaultTimeZone() {
-
-        val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone()
-        val nextTimeStr = nextTimeLong.timeToFormattedString()
-        val nextDelayLong = nextTimeLong - AppCalendar.currentTimeByDefaultTimeZone
-        val nextDelayStr = nextDelayLong.timeToFormattedString()
-        nextDelayStr
-    }
 }

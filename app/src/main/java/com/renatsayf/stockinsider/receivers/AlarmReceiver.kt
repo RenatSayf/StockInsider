@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.NetworkService
 import com.renatsayf.stockinsider.utils.AppCalendar
@@ -27,7 +28,9 @@ open class AlarmReceiver : BroadcastReceiver() {
             val scheduler = Scheduler(context.applicationContext)
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {
 
-                val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+                val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                    workerPeriod = FireBaseViewModel.workerPeriod
+                )
                 scheduler.scheduleOne(nextTime, 0, Scheduler.SET_NAME)
 
                 val networkService = NetworkService()

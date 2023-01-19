@@ -11,9 +11,7 @@ import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.network.MockApi
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.testing.TestActivity
-import com.renatsayf.stockinsider.utils.checkTestPort
-import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
-import kotlinx.coroutines.runBlocking
+import com.renatsayf.stockinsider.utils.*
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -53,27 +51,47 @@ class AppWorkerUiTest {
         scenario.onActivity { activity ->
             dao = RoomDataBaseModule.provideRoomDataBase(activity)
             repository = NetRepositoryModule.provideSearchRequest(MockApi(activity))
+            activity.cancelBackgroundWork()
         }
     }
 
     @After
     fun tearDown() {
+        rule.scenario.onActivity { activity ->
+            activity.cancelBackgroundWork()
+        }
         rule.scenario.close()
     }
 
     @Test
-    fun startOneTimeBackgroundWork() {
+    fun startOneTimeBackgroundWork_setup_and_cancel_work() {
 
         scenario.onActivity { activity ->
 
-            runBlocking {
+            val function = ServiceNotification.notify
+            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
 
-                val function = ServiceNotification.notify
-                AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-                val actualResult = activity.startOneTimeBackgroundWork()
-                Assert.assertEquals(true, actualResult)
+            val startTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(60L)
+            val operation = activity.startOneTimeBackgroundWork(startTime)
+            val done = operation.result.isDone
+            Assert.assertEquals(false, done)
+
+            Thread.sleep(2000)
+
+            var actualResult = activity.haveWorkTask()
+            Assert.assertEquals(true, actualResult)
+
+            val state = activity.cancelBackgroundWork()
+            state.observe(activity) { s ->
+                println("************************* state: $s *************************")
+                Assert.assertEquals("SUCCESS", s.toString())
             }
+            Thread.sleep(2000)
+
+            actualResult = activity.haveWorkTask()
+            Assert.assertEquals(false, actualResult)
         }
-        Thread.sleep(3000)
+
+        Thread.sleep(15000)
     }
 }

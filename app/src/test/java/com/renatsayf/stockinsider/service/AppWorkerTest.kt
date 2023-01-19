@@ -89,6 +89,7 @@ class AppWorkerTest {
 
         val worker = TestListenableWorkerBuilder<AppWorker>(context).build()
 
+        AppWorker.isRunInTest = true
         AppWorker.injectDependenciesToTest(
             dao,
             network,

@@ -10,6 +10,7 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
+import com.renatsayf.stockinsider.firebase.FireBaseViewModel
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
@@ -27,6 +28,8 @@ class AppWorker (
     companion object {
         val TAG = this::class.java.simpleName.plus(".Tag")
         val SEARCH_SET_KEY = this::class.java.simpleName.plus(".SearchSetKey")
+
+        var isRunInTest = false
 
         private lateinit var db: AppDao
         private lateinit var net: INetRepository
@@ -93,11 +96,15 @@ class AppWorker (
         }
         finally {
 
-            if (!searchSets.isNullOrEmpty()) {
-                val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone()
-                context.startOneTimeBackgroundWork(nextTimeLong)
+            if (!isRunInTest) {
+                if (!searchSets.isNullOrEmpty()) {
+                    val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                        workerPeriod = FireBaseViewModel.workerPeriod
+                    )
+                    context.startOneTimeBackgroundWork(nextTimeLong)
+                }
+                else context.cancelBackgroundWork()
             }
-            else context.cancelBackgroundWork()
         }
     }
 

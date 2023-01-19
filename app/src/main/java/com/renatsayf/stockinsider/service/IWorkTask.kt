@@ -8,7 +8,7 @@ interface IWorkTask {
 
     fun createOneTimeTask(context: Context, name: String, startTime: Long): OneTimeWorkRequest
 
-    fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest
+    fun createPeriodicTask(context: Context, name: String, timePeriod: Long): PeriodicWorkRequest
 
     fun addPeriodicTask(task: PeriodicWorkRequest): IWorkTask
 

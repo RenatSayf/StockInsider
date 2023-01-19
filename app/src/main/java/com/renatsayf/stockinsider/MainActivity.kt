@@ -187,7 +187,9 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         val isTask = this@MainActivity.haveWorkTask()
                                         if (!isTask) {
-                                            val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+                                            val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                                                workerPeriod = FireBaseViewModel.workerPeriod
+                                            )
                                             startOneTimeBackgroundWork(nextTime)
                                         }
                                     }

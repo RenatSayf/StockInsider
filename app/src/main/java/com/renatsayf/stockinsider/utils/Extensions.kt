@@ -19,6 +19,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.google.android.material.snackbar.Snackbar
 import com.renatsayf.stockinsider.BuildConfig
@@ -125,39 +126,40 @@ fun Context.haveWorkTask(): Boolean {
     val workInfos = workManager.getWorkInfosByTag(WorkTask.TAG)
     val infoList = workInfos.get().orEmpty()
     if (BuildConfig.DEBUG) println("*************** workList: $infoList ***************************")
-    return infoList.isNotEmpty()
+    return infoList.any {
+        it.state.name == "ENQUEUED"
+    }
 }
 
 fun Fragment.haveWorkTask(): Boolean {
     return requireContext().haveWorkTask()
 }
 
-fun Context.startOneTimeBackgroundWork(startTime: Long = 0): Boolean {
+fun Context.startOneTimeBackgroundWork(startTime: Long): Operation {
 
     val workManager = WorkManager.getInstance(this)
     return run {
         val formattedString = System.currentTimeMillis().timeToFormattedString()
         val workRequest = WorkTask().createOneTimeTask(
             context = this,
-            name = "Task $formattedString",
+            name = "${this.packageName}.Task",
             startTime = startTime
         )
         workManager.enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
-        true
     }
 }
 
-fun Fragment.startOneTimeBackgroundWork(startTime: Long = 0): Boolean {
+fun Fragment.startOneTimeBackgroundWork(startTime: Long): Operation {
     return requireContext().startOneTimeBackgroundWork(startTime)
 }
 
-fun Context.cancelBackgroundWork(): Boolean {
+fun Context.cancelBackgroundWork(): LiveData<Operation.State> {
     val operation = WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
-    val result = operation.result
-    return result.isCancelled
+    val result = operation.state
+    return operation.state
 }
 
-fun Fragment.cancelBackgroundWork(): Boolean {
+fun Fragment.cancelBackgroundWork(): LiveData<Operation.State> {
     return requireActivity().cancelBackgroundWork()
 }
 
