@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -260,8 +261,11 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             val isTask = this@MainFragment.haveWorkTask()
                             if (!isTask) {
-                                val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                                    workerPeriod = FireBaseConfig.workerPeriod
+                                val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                                    workerPeriod = FireBaseConfig.workerPeriod,
+                                    withWeekend = false
+                                ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                                    workerPeriod = FireBaseConfig.workerPeriod,
                                 )
                                 startOneTimeBackgroundWork(nextTime)
                             }

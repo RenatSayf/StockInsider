@@ -19,6 +19,7 @@ object AppCalendar {
     private var calendar = Calendar.getInstance(timeZone).apply {
         timeInMillis = System.currentTimeMillis() + timeZone.rawOffset
     }
+    private var withWeekend = true
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun setCalendar(calendar: Calendar) {
@@ -53,8 +54,10 @@ object AppCalendar {
         val newCalendar = Calendar.getInstance(timeZone).apply {
             timeInMillis = nextTime
         }
-        while (newCalendar.isWeekend) {
-            newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+        if (withWeekend) {
+            while (newCalendar.isWeekend) {
+                newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+            }
         }
         setCalendar(newCalendar)
         while (!this.isFillingTime) {
@@ -64,7 +67,8 @@ object AppCalendar {
         return this.calendar.timeInMillis
     }
 
-    fun getNextFillingTimeByDefaultTimeZone(workerPeriod: Long): Long {
+    fun getNextFillingTimeByDefaultTimeZone(workerPeriod: Long, withWeekend: Boolean = true): Long {
+        this.withWeekend = withWeekend
         val utcOffset = timeZone.rawOffset
         val defaultOffset = TimeZone.getDefault().rawOffset
         return getNextFillingTime(workerPeriod) - utcOffset + defaultOffset
