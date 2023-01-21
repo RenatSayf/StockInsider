@@ -19,6 +19,8 @@ object AppCalendar {
     private var calendar = Calendar.getInstance(timeZone).apply {
         timeInMillis = System.currentTimeMillis() + timeZone.rawOffset
     }
+    private var withWeekend = true
+    private var withFillingTime = true
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     fun setCalendar(calendar: Calendar) {
@@ -48,23 +50,45 @@ object AppCalendar {
             return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
         }
 
+    private fun checkFillingTime(calendar: Calendar): Boolean {
+        val hourOffset = TimeUnit.MILLISECONDS.toHours(timeZone.rawOffset.toLong()).toInt()
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY) - hourOffset
+        return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
+    }
+
     fun getNextFillingTime(workerPeriod: Long): Long {
         val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(workerPeriod))
         val newCalendar = Calendar.getInstance(timeZone).apply {
             timeInMillis = nextTime
         }
-        while (newCalendar.isWeekend) {
-            newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+        if (withWeekend) {
+            while (newCalendar.isWeekend) {
+                newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+                val postWeekendTime = newCalendar.timeInMillis.timeToFormattedString()
+                println("**************** postWeekendTime: $postWeekendTime ***********************")
+            }
         }
-        setCalendar(newCalendar)
-        while (!this.isFillingTime) {
-            newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+        if (withFillingTime) {
+            while (!checkFillingTime(newCalendar)) {
+                newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
+                val nextFillingTime = newCalendar.timeInMillis.timeToFormattedString()
+                println("******************* nextFillingTime: $nextFillingTime *********************")
+            }
         }
-
-        return this.calendar.timeInMillis
+        return newCalendar.timeInMillis
     }
 
     fun getNextFillingTimeByDefaultTimeZone(workerPeriod: Long): Long {
+        withWeekend = true
+        withFillingTime = true
+        val utcOffset = timeZone.rawOffset
+        val defaultOffset = TimeZone.getDefault().rawOffset
+        return getNextFillingTime(workerPeriod) - utcOffset + defaultOffset
+    }
+
+    fun getNextTestTimeByDefaultTimeZone(workerPeriod: Long): Long {
+        withWeekend = false
+        withFillingTime = false
         val utcOffset = timeZone.rawOffset
         val defaultOffset = TimeZone.getDefault().rawOffset
         return getNextFillingTime(workerPeriod) - utcOffset + defaultOffset

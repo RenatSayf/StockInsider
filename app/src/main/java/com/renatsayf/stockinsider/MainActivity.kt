@@ -85,6 +85,7 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
 
+            FireBaseConfig
             if (this.currentCountryCode != CountryCode.RU.name) {
                 adVMNew.loadGoogleAd(0, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
@@ -181,8 +182,10 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         val isTask = this@MainActivity.haveWorkTask()
                                         if (!isTask) {
-                                            val nextTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                                            val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
                                                 workerPeriod = FireBaseConfig.workerPeriod
+                                            ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                                                workerPeriod = FireBaseConfig.workerPeriod,
                                             )
                                             startOneTimeBackgroundWork(nextTime)
                                         }

@@ -61,10 +61,14 @@ class AppWorkerUiTest {
 
     @After
     fun tearDown() {
-        rule.scenario.onActivity { activity ->
-            activity.cancelBackgroundWork()
+        try {
+            rule.scenario.onActivity { activity ->
+                activity.cancelBackgroundWork()
+            }
+            rule.scenario.close()
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        rule.scenario.close()
     }
 
     @Test
@@ -75,7 +79,7 @@ class AppWorkerUiTest {
             val function = ServiceNotification.notify
             AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
 
-            val startTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(60L)
+            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 120000
             val operation = activity.startOneTimeBackgroundWork(startTime)
             val done = operation.result.isDone
             Assert.assertEquals(false, done)
@@ -107,7 +111,7 @@ class AppWorkerUiTest {
             val function = ServiceNotification.notify
             AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
 
-            val startTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(0)
+            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 2000
             activity.startOneTimeBackgroundWork(startTime)
 
             Thread.sleep(2000)
@@ -116,7 +120,7 @@ class AppWorkerUiTest {
             Assert.assertEquals(false, actualResult)
         }
 
-        Thread.sleep(20000)
+        Thread.sleep(25000)
 
         scenario.onActivity { activity ->
             val actualResult = activity.haveWorkTask()
@@ -124,5 +128,23 @@ class AppWorkerUiTest {
         }
 
         Thread.sleep(2000)
+    }
+
+    @Test
+    fun startOneTimeBackgroundWork_setup_and_finish_activity() {
+
+        scenario.onActivity { activity ->
+            val function = ServiceNotification.notify
+            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
+
+            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 2000
+            activity.startOneTimeBackgroundWork(startTime)
+
+            Thread.sleep(2000)
+
+            activity.finish()
+        }
+
+        Thread.sleep(30000)
     }
 }
