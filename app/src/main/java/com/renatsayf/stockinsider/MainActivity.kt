@@ -182,9 +182,8 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         val isTask = this@MainActivity.haveWorkTask()
                                         if (!isTask) {
-                                            val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                                                workerPeriod = FireBaseConfig.workerPeriod,
-                                                withWeekend = false
+                                            val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
+                                                workerPeriod = FireBaseConfig.workerPeriod
                                             ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
                                                 workerPeriod = FireBaseConfig.workerPeriod,
                                             )

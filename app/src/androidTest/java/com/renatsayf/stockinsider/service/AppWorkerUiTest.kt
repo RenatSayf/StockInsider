@@ -79,7 +79,7 @@ class AppWorkerUiTest {
             val function = ServiceNotification.notify
             AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
 
-            val startTime = AppCalendar.getNextFillingTimeByDefaultTimeZone(60L)
+            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 120000
             val operation = activity.startOneTimeBackgroundWork(startTime)
             val done = operation.result.isDone
             Assert.assertEquals(false, done)
@@ -145,6 +145,6 @@ class AppWorkerUiTest {
             activity.finish()
         }
 
-        Thread.sleep(28000)
+        Thread.sleep(30000)
     }
 }

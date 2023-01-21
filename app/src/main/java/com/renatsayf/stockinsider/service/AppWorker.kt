@@ -13,7 +13,6 @@ import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
-import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.cancelBackgroundWork
@@ -56,20 +55,11 @@ class AppWorker (
         net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
-    override suspend fun getForegroundInfo(): ForegroundInfo {
-
-        val notification = RequestNotification(context).create()
-        return ForegroundInfo(RequestNotification.NOTIFY_ID, notification!!)
-    }
-
     override suspend fun doWork(): Result
     {
         return try
         {
             if (BuildConfig.DEBUG) println("******************** Start background work ********************")
-
-            val foregroundInfo = getForegroundInfo()
-            setForeground(foregroundInfo)
 
             if (searchSets == null) searchSets = getTrackingSetsAsync().await()
             val array = searchSets?.map { set ->
@@ -108,8 +98,10 @@ class AppWorker (
 
             if (!isRunInTest) {
                 if (!searchSets.isNullOrEmpty()) {
-                    val nextTimeLong = AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                    val nextTimeLong = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
                         workerPeriod = FireBaseConfig.workerPeriod
+                    ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                        workerPeriod = FireBaseConfig.workerPeriod,
                     )
                     context.startOneTimeBackgroundWork(nextTimeLong)
                 }
