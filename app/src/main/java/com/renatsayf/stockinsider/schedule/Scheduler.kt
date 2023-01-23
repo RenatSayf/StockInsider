@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.utils.timeToFormattedString
 import javax.inject.Inject
 
 
@@ -32,16 +33,19 @@ class Scheduler @Inject constructor(
             this.action = action
             putExtra(SET_NAME, intentName)
         }
-        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+        val pendingIntent = PendingIntent.getBroadcast(context, requestCode, intent, PendingIntent.FLAG_IMMUTABLE)
         return pendingIntent
     }
 
 
     override fun scheduleOne(startTime: Long, overTime: Long, name: String): Boolean {
+        if (BuildConfig.DEBUG) {
+            println("******************* ${this.javaClass.simpleName}.scheduleOne: ${startTime.timeToFormattedString()} ****************")
+        }
         val pendingIntent = createPendingIntent(ONE_SHOOT_ACTION, name, ONE_SHOOT_CODE)
         return try {
             alarmManager.apply {
-                setExact(AlarmManager.RTC, startTime + overTime, pendingIntent)
+                setExact(AlarmManager.RTC_WAKEUP, startTime + overTime, pendingIntent)
             }
             true
         } catch (e: Exception) {

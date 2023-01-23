@@ -17,6 +17,7 @@ import android.view.View
 import android.widget.ExpandableListView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -29,6 +30,8 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.CountryCode
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -180,15 +183,10 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        val isTask = this@MainActivity.haveWorkTask()
-                                        if (!isTask) {
-                                            val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
-                                                workerPeriod = FireBaseConfig.workerPeriod
-                                            ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                                                workerPeriod = FireBaseConfig.workerPeriod,
-                                            )
-                                            startOneTimeBackgroundWork(nextTime)
-                                        }
+                                        setAlarm(
+                                            scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
+                                            periodInMinute = 3
+                                        )
                                     }
                                 }
                             }

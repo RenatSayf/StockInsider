@@ -17,13 +17,17 @@ import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import kotlinx.coroutines.*
 
 
-class NetIntentService : IntentService("NetIntentService") {
+class NetIntentService constructor(): IntentService("NetIntentService") {
 
     companion object {
 
-        private const val serviceID = 357895124
+        private const val serviceID = 2358975
+
         var isStarted = false
-        var isCompleted = true
+        private set
+
+        var isCompleted = false
+        private set
 
         private lateinit var db: AppDao
         private lateinit var net: INetRepository
@@ -38,33 +42,52 @@ class NetIntentService : IntentService("NetIntentService") {
         }
 
         @JvmStatic
-        fun start(context: Context) {
+        fun start(
+            context: Context,
+            db: AppDao = RoomDataBaseModule.provideRoomDataBase(context),
+            net: INetRepository = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
+        ) {
             val intent = Intent(context, NetIntentService::class.java).apply {
 
             }
             context.startService(intent)
+            this.db = db
+            this.net = net
         }
     }
 
-    override fun onStart(intent: Intent?, startId: Int) {
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        super.onStartCommand(intent, flags, startId)
 
+        isCompleted = false
+        isStarted = true
+        return START_STICKY
     }
 
     override fun onHandleIntent(intent: Intent?) {
-
-        db = RoomDataBaseModule.provideRoomDataBase(this)
-        net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(this))
+        super.onCreate()
 
         if (BuildConfig.DEBUG) println("******************** Start background work ********************")
 
         val notification = RequestNotification(this)
+        startForeground(serviceID, notification.create())
 
-        try {
-            CoroutineScope(Dispatchers.IO).launch {
-                if (searchSets == null) searchSets = getTrackingSetsAsync().await()
+        Thread.sleep(10000)
 
-                withContext(Dispatchers.Main) {
-                    searchSets?.flatMap { set ->
+        notification.cancel()
+        isCompleted = true
+        isStarted = false
+        if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
+    }
+
+    private suspend fun doWork(): Deferred<List<Deal>> {
+        return coroutineScope {
+            async {
+
+                try {
+                    if (searchSets == null) searchSets = getTrackingSetsAsync().await()
+
+                    val dealList = searchSets?.flatMap { set ->
                         val params = set.toSearchSet()
                         val deals = net.getDealsListAsync(params).await()
                         when {
@@ -83,28 +106,16 @@ class NetIntentService : IntentService("NetIntentService") {
                         delay(duration * 1000L)
                         deals
                     }
+                    if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
+                    dealList?: emptyList()
+
+                } catch (e: Exception) {
+                    if (BuildConfig.DEBUG) {
+                        println("********************** catch block - Background work failed *****************************")
+                        throw Exception(e.message, e.cause)
+                    }
+                    emptyList()
                 }
-                notification.cancel()
-                if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
-                isCompleted = true
-                isStarted = false
-            }
-            startForeground(serviceID, notification.create())
-
-        } catch (e: Exception) {
-            if (BuildConfig.DEBUG) {
-                if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
-                throw Exception(e.message, e.cause)
-            }
-            NetworkService.isStarted = false
-        }
-    }
-
-    private suspend fun doWork(): Deferred<List<Deal>> {
-        return coroutineScope {
-            async {
-
-                emptyList()
             }
         }
     }

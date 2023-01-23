@@ -98,9 +98,9 @@ class AppWorker (
 
             if (!isRunInTest) {
                 if (!searchSets.isNullOrEmpty()) {
-                    val nextTimeLong = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
+                    val nextTimeLong = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByUTCTimeZone(
                         workerPeriod = FireBaseConfig.workerPeriod
-                    ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
+                    ) else AppCalendar.getNextFillingTimeByUTCTimeZone(
                         workerPeriod = FireBaseConfig.workerPeriod,
                     )
                     context.startOneTimeBackgroundWork(nextTimeLong)

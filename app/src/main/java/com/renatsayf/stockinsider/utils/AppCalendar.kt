@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
+import android.os.SystemClock
 import androidx.annotation.VisibleForTesting
 import com.renatsayf.stockinsider.BuildConfig
 import java.util.concurrent.TimeUnit
@@ -58,6 +59,8 @@ object AppCalendar {
 
     fun getNextFillingTime(workerPeriod: Long): Long {
         val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(workerPeriod))
+        println("**************** workerPeriod: $workerPeriod *******************")
+        println("**************** nextTime: ${nextTime.timeToFormattedString()} *******************")
         val newCalendar = Calendar.getInstance(timeZone).apply {
             timeInMillis = nextTime
         }
@@ -75,23 +78,22 @@ object AppCalendar {
                 println("******************* nextFillingTime: $nextFillingTime *********************")
             }
         }
+        println("******************* newCalendar.time (UTC): ${newCalendar.timeInMillis.timeToFormattedString()} *********************")
         return newCalendar.timeInMillis
     }
 
-    fun getNextFillingTimeByDefaultTimeZone(workerPeriod: Long): Long {
+    fun getNextFillingTimeByUTCTimeZone(workerPeriod: Long): Long {
         withWeekend = true
         withFillingTime = true
         val utcOffset = timeZone.rawOffset
-        val defaultOffset = TimeZone.getDefault().rawOffset
-        return getNextFillingTime(workerPeriod) - utcOffset + defaultOffset
+        return getNextFillingTime(workerPeriod) - utcOffset
     }
 
-    fun getNextTestTimeByDefaultTimeZone(workerPeriod: Long): Long {
+    fun getNextTestTimeByUTCTimeZone(workerPeriod: Long): Long {
         withWeekend = false
         withFillingTime = false
         val utcOffset = timeZone.rawOffset
-        val defaultOffset = TimeZone.getDefault().rawOffset
-        return getNextFillingTime(workerPeriod) - utcOffset + defaultOffset
+        return getNextFillingTime(workerPeriod) - utcOffset
     }
 
 }

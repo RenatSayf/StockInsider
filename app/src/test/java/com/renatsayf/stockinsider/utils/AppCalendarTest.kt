@@ -198,7 +198,7 @@ class AppCalendarTest {
         val defaultCurrentTime = defaultCalendar.timeInMillis.timeToFormattedString()
 
         val nextTimeNewYork = AppCalendar.getNextFillingTime(workerPeriod)
-        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone(workerPeriod)
+        val nextTimeDefault = AppCalendar.getNextFillingTimeByUTCTimeZone(workerPeriod)
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
         val actualResult = TimeUnit.MILLISECONDS.toHours(diffInMillis)

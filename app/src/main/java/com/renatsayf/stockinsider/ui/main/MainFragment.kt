@@ -21,6 +21,8 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.CountryCode
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
@@ -259,15 +261,10 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            val isTask = this@MainFragment.haveWorkTask()
-                            if (!isTask) {
-                                val nextTime = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByDefaultTimeZone(
-                                    workerPeriod = FireBaseConfig.workerPeriod
-                                ) else AppCalendar.getNextFillingTimeByDefaultTimeZone(
-                                    workerPeriod = FireBaseConfig.workerPeriod,
-                                )
-                                startOneTimeBackgroundWork(nextTime)
-                            }
+                            setAlarm(
+                                scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
+                                periodInMinute = 3
+                            )
                         }
                     }
                 }
