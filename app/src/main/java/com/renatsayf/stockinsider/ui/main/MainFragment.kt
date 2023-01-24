@@ -13,13 +13,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
@@ -263,7 +261,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = 3
+                                periodInMinute = Scheduler.workPeriodInMinute
                             )
                         }
                     }

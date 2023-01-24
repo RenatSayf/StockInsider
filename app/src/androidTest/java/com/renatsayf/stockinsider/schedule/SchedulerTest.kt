@@ -43,21 +43,21 @@ class SchedulerTest {
     fun scheduleOne() {
 
         scenario.onActivity {
-            val result = scheduler.scheduleOne(System.currentTimeMillis() + 5000, 0, Scheduler.SET_NAME)
+            val result = scheduler.scheduleOne(System.currentTimeMillis() + 10000, 0, Scheduler.SET_NAME)
             Assert.assertTrue(result)
         }
 
         Thread.sleep(5000)
 
-        scenario.onActivity {
-            var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertTrue(pendingIntent is PendingIntent)
+        var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertTrue(pendingIntent is PendingIntent)
 
-            scheduler.cancel(pendingIntent!!)
-            pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertEquals(null, pendingIntent)
-        }
-        Thread.sleep(10000)
+        scheduler.cancel(pendingIntent!!)
+
+        Thread.sleep(7000)
+        pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertEquals(null, pendingIntent)
+        Thread.sleep(2000)
     }
 
 }

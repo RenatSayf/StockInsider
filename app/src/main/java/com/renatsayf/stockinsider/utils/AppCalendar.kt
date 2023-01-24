@@ -29,7 +29,7 @@ object AppCalendar {
     }
 
     fun getCurrentTime(): Long {
-        return calendar.timeInMillis
+        return System.currentTimeMillis() + timeZone.rawOffset
     }
 
     val currentTimeByDefaultTimeZone: Long
@@ -58,7 +58,9 @@ object AppCalendar {
     }
 
     fun getNextFillingTime(workerPeriod: Long): Long {
-        val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(workerPeriod))
+        val string = getCurrentTime().timeToFormattedString()
+        val string1 = calendar.timeInMillis.timeToFormattedString()
+        val nextTime = getCurrentTime() + (TimeUnit.MINUTES.toMillis(workerPeriod))
         println("**************** workerPeriod: $workerPeriod *******************")
         println("**************** nextTime: ${nextTime.timeToFormattedString()} *******************")
         val newCalendar = Calendar.getInstance(timeZone).apply {

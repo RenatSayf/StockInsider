@@ -10,13 +10,10 @@ import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
 import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
+import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.utils.AppCalendar
-import com.renatsayf.stockinsider.utils.cancelBackgroundWork
-import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -29,7 +26,13 @@ class AppWorker (
         val TAG = this::class.java.simpleName.plus(".Tag")
         val SEARCH_SET_KEY = this::class.java.simpleName.plus(".SearchSetKey")
 
-        var isRunInTest = false
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        var isStarted = false
+            private set
+
+        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        var isCompleted = false
+            private set
 
         private lateinit var db: AppDao
         private lateinit var net: INetRepository
@@ -38,15 +41,9 @@ class AppWorker (
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         fun injectDependenciesToTest(
-            db: AppDao,
-            networkRepository: INetRepository,
-            searchSets: List<RoomSearchSet>? = null,
-            function: ((Context, Int, RoomSearchSet) -> Unit)? = null
+            searchSets: List<RoomSearchSet>? = null
         ) {
-            this.db = db
-            this.net = networkRepository
             this.searchSets = searchSets
-            this.function = function
         }
     }
 
@@ -55,11 +52,21 @@ class AppWorker (
         net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+
+        val notification = RequestNotification(context).create()
+        return ForegroundInfo(RequestNotification.NOTIFY_ID, notification!!)
+    }
+
     override suspend fun doWork(): Result
     {
+        isStarted = true
+        isCompleted = false
         return try
         {
-            if (BuildConfig.DEBUG) println("******************** Start background work ********************")
+            if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Start background work ********************")
+
+            setForeground(getForegroundInfo())
 
             if (searchSets == null) searchSets = getTrackingSetsAsync().await()
             val array = searchSets?.map { set ->
@@ -81,7 +88,7 @@ class AppWorker (
             val data = Data.Builder().apply {
                 putBooleanArray("result", array)
             }.build()
-            if (BuildConfig.DEBUG) println("******************** Background work completed successfully ********************")
+            if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Background work completed successfully ********************")
             Result.success(data)
         }
         catch (e: Exception)
@@ -91,22 +98,12 @@ class AppWorker (
             val errorData = Data.Builder().apply {
                 putString("error", "*********** $message *************")
             }.build()
-            if (BuildConfig.DEBUG) println("********************** catch block - Background work failed *****************************")
+            if (BuildConfig.DEBUG) println("********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************")
             Result.failure(errorData)
         }
         finally {
-
-            if (!isRunInTest) {
-                if (!searchSets.isNullOrEmpty()) {
-                    val nextTimeLong = if (BuildConfig.DEBUG) AppCalendar.getNextTestTimeByUTCTimeZone(
-                        workerPeriod = FireBaseConfig.workerPeriod
-                    ) else AppCalendar.getNextFillingTimeByUTCTimeZone(
-                        workerPeriod = FireBaseConfig.workerPeriod,
-                    )
-                    context.startOneTimeBackgroundWork(nextTimeLong)
-                }
-                else context.cancelBackgroundWork()
-            }
+            isStarted = false
+            isCompleted = true
         }
     }
 

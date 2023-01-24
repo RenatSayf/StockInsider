@@ -1,6 +1,11 @@
 package com.renatsayf.stockinsider.utils
 
+import android.icu.text.DateFormat
+import android.icu.text.DateFormatSymbols
 import android.icu.text.SimpleDateFormat
+import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.models.DateFormats
+import java.time.format.DateTimeFormatter
 import java.util.*
 
 fun Date.getFormattedDateTime(mode: Int): String {
@@ -27,5 +32,16 @@ fun Date.getFormattedDateTime(mode: Int): String {
             val dateFormat = SimpleDateFormat(patternDateTime, Locale.getDefault())
             return dateFormat.format(time)
         }
+    }
+}
+
+fun String.formattedStringToLong(locale: Locale = Locale.US): Long {
+
+    val dateFormat = SimpleDateFormat(DateFormats.DEFAULT_FORMAT.format, locale)
+    return try {
+        dateFormat.parse(this).time
+    } catch (e: Exception) {
+        if (BuildConfig.DEBUG) e.printStackTrace()
+        -1
     }
 }

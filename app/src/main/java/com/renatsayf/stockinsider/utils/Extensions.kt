@@ -139,13 +139,12 @@ fun Context.startOneTimeBackgroundWork(startTime: Long): Operation {
 
     val workManager = WorkManager.getInstance(this)
     return run {
-        val formattedString = System.currentTimeMillis().timeToFormattedString()
         val workRequest = WorkTask().createOneTimeTask(
             context = this,
             name = "${this.packageName}.Task",
             startTime = startTime
         )
-        workManager.enqueueUniqueWork("Work $formattedString", ExistingWorkPolicy.KEEP, workRequest)
+        workManager.enqueueUniqueWork(WorkTask.TAG, ExistingWorkPolicy.KEEP, workRequest)
     }
 }
 
@@ -288,8 +287,10 @@ fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_
 
 fun Long.timeToFormattedString(): String =
     SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
-        timeZone = TimeZone.getTimeZone("UTC")
+        timeZone = TimeZone.getDefault()
     }.format(this)
+
+
 
 @Throws(Exception::class)
 fun checkTestPort(): Boolean {

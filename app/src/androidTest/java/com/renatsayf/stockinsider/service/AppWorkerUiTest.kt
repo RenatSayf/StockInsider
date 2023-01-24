@@ -3,13 +3,8 @@ package com.renatsayf.stockinsider.service
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
-import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.network.INetRepository
-import com.renatsayf.stockinsider.network.MockApi
-import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.*
 import org.junit.*
@@ -22,9 +17,7 @@ class AppWorkerUiTest {
     @get:Rule
     var rule = ActivityScenarioRule(TestActivity::class.java)
     private lateinit var scenario: ActivityScenario<TestActivity>
-
-    private lateinit var dao: AppDao
-    private lateinit var repository: INetRepository
+    private lateinit var scheduler: Scheduler
 
     private val testSet = RoomSearchSet(
         queryName = "Microsoft",
@@ -52,99 +45,67 @@ class AppWorkerUiTest {
     fun setUp() {
 
         scenario = rule.scenario
-        scenario.onActivity { activity ->
-            dao = RoomDataBaseModule.provideRoomDataBase(activity)
-            repository = NetRepositoryModule.provideSearchRequest(MockApi(activity))
-            activity.cancelBackgroundWork()
-        }
     }
 
     @After
     fun tearDown() {
-        try {
-            rule.scenario.onActivity { activity ->
-                activity.cancelBackgroundWork()
-            }
-            rule.scenario.close()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
+        rule.scenario.close()
     }
 
     @Test
-    fun startOneTimeBackgroundWork_setup_and_cancel_work() {
+    fun start_immediately() {
 
+        AppWorker.injectDependenciesToTest(listOf(testSet))
         scenario.onActivity { activity ->
-
-            val function = ServiceNotification.notify
-            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-
-            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 120000
-            val operation = activity.startOneTimeBackgroundWork(startTime)
-            val done = operation.result.isDone
-            Assert.assertEquals(false, done)
-
-            Thread.sleep(2000)
-
-            var actualResult = activity.haveWorkTask()
-            Assert.assertEquals(true, actualResult)
-
-            val state = activity.cancelBackgroundWork()
-            state.observe(activity) { s ->
-                println("************************* state: $s *************************")
-                Assert.assertEquals("SUCCESS", s.toString())
-            }
-            Thread.sleep(2000)
-
-            actualResult = activity.haveWorkTask()
-            Assert.assertEquals(false, actualResult)
+            activity.startOneTimeBackgroundWork(System.currentTimeMillis())
         }
 
-        Thread.sleep(15000)
+        Thread.sleep(5000)
+
+        var started = AppWorker.isStarted
+        var completed = AppWorker.isCompleted
+
+        Assert.assertEquals(true, started)
+        Assert.assertEquals(false, completed)
+
+        Thread.sleep(10000)
+
+        while (!AppWorker.isCompleted) {
+            Thread.sleep(2000)
+        }
+
+        started = AppWorker.isStarted
+        completed = AppWorker.isCompleted
+
+        Assert.assertEquals(false, started)
+        Assert.assertEquals(true, completed)
     }
 
     @Test
-    fun startOneTimeBackgroundWork_setup_and_run() {
+    fun start_by_scheduled_from_receiver() {
+
+        Scheduler.workPeriodInMinute = 1
 
         scenario.onActivity { activity ->
+            AppWorker.injectDependenciesToTest(listOf(testSet))
+            scheduler = Scheduler(activity)
 
-            val function = ServiceNotification.notify
-            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-
-            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 2000
-            activity.startOneTimeBackgroundWork(startTime)
-
+            val alarm = activity.setAlarm(
+                scheduler = scheduler,
+                periodInMinute = Scheduler.workPeriodInMinute
+            )
+            println("******************* ${this::class.java.simpleName} System time: ${System.currentTimeMillis().timeToFormattedString()} ******************")
+            Thread.sleep(1000)
+            Assert.assertEquals(true, alarm)
             Thread.sleep(2000)
-
-            val actualResult = activity.haveWorkTask()
-            Assert.assertEquals(false, actualResult)
-        }
-
-        Thread.sleep(25000)
-
-        scenario.onActivity { activity ->
-            val actualResult = activity.haveWorkTask()
-            Assert.assertEquals(true, actualResult)
-        }
-
-        Thread.sleep(2000)
-    }
-
-    @Test
-    fun startOneTimeBackgroundWork_setup_and_finish_activity() {
-
-        scenario.onActivity { activity ->
-            val function = ServiceNotification.notify
-            AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-
-            val startTime = AppCalendar.currentTimeByDefaultTimeZone + 2000
-            activity.startOneTimeBackgroundWork(startTime)
-
-            Thread.sleep(2000)
-
             activity.finish()
         }
 
-        Thread.sleep(30000)
+        while (!AppWorker.isCompleted) {
+            Thread.sleep(2000)
+        }
+        val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertTrue(pendingIntent != null)
+        pendingIntent?.cancel()
     }
 }

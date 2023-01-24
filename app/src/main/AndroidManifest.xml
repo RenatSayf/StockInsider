@@ -29,14 +29,6 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <service
-            android:name=".service.NetIntentService"
-            android:exported="false" >
-        </service>
-        <service
-            android:name=".service.NetworkService"
-            android:exported="false">
-        </service>
 
         <activity
             android:name=".ui.testing.TestActivity"

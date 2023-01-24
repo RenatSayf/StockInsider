@@ -17,7 +17,6 @@ import android.view.View
 import android.widget.ExpandableListView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -185,7 +184,7 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         setAlarm(
                                             scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = 3
+                                            periodInMinute = Scheduler.workPeriodInMinute
                                         )
                                     }
                                 }

@@ -6,14 +6,10 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.service.NetIntentService
-import com.renatsayf.stockinsider.service.NetworkService
-import com.renatsayf.stockinsider.service.notifications.RequestNotification
-import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
-import dagger.hilt.android.AndroidEntryPoint
+import com.renatsayf.stockinsider.utils.setAlarm
+import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
 
 
 open class AlarmReceiver : BroadcastReceiver() {
@@ -24,22 +20,20 @@ open class AlarmReceiver : BroadcastReceiver() {
 
     override fun onReceive(context: Context?, intent: Intent?) {
 
-        if (BuildConfig.DEBUG) {
-            println(" *********** ${this::class.java.simpleName}.onReceive has been triggered *******************")
-        }
-
         if (context != null && intent != null) {
 
+            if (BuildConfig.DEBUG) {
+                println(" *********** ${this::class.java.simpleName}.onReceive has been triggered *******************")
+            }
             val scheduler = Scheduler(context.applicationContext)
+            val nextFillingTime = getNextStartTime(Scheduler.workPeriodInMinute)
+            scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
+
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {
 
-                val nextTime = getNextStartTime(3)
-                scheduler.scheduleOne(nextTime, 0, Scheduler.SET_NAME)
-
-                NetIntentService.start(context)
+                context.startOneTimeBackgroundWork(System.currentTimeMillis())
             }
         }
     }
-
 
 }

@@ -14,14 +14,7 @@ class AppWorkerFactory(
     override fun createWorker(appContext: Context, workerClassName: String, workerParameters: WorkerParameters): AppWorker? {
         return when(workerClassName) {
             AppWorker::class.java.name -> {
-                val appWorker = AppWorker(appContext, workerParameters).apply {
-                    AppWorker.injectDependenciesToTest(
-                        db = RoomDataBaseModule.provideRoomDataBase(appContext),
-                        networkRepository = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(appContext)),
-                        null,
-                        callback
-                    )
-                }
+                val appWorker = AppWorker(appContext, workerParameters)
                 appWorker
             }
             else -> null
