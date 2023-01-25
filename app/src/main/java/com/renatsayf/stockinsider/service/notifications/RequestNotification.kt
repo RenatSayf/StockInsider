@@ -34,7 +34,6 @@ class RequestNotification(private val context: Context) {
         return try {
 
             val message = context.getString(R.string.text_search_is_going)
-            val title = context.getString(R.string.app_name)
 
             val bitmap = BitmapFactory.decodeResource(context.resources, R.drawable.icon_logo)
 
@@ -44,7 +43,6 @@ class RequestNotification(private val context: Context) {
                 .setSmallIcon(R.drawable.ic_stock_hause_gold)
                 .setLargeIcon(bitmap)
                 .setColor(context.getColor(R.color.colorPrimary))
-                .setContentTitle(title)
                 .setContentText(message)
                 .setProgress(0, 0, true)
                 .setChannelId(channelID)

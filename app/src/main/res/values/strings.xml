@@ -64,16 +64,10 @@
     <string name="text_0">0</string>
     <string name="text_results">Found</string>
     <string name="text_deal_details">Transaction Details</string>
-    <!--    <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>-->
-    <!--    <string name="text_searching_is_created">Поиск по расписанию был создан</string>-->
-    <!--    <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>-->
-    <!--    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>-->
-    <!--    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>-->
-    <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
+    <string name="discription_text_to_notification">Daily notifications about transactions that have occurred on American exchanges</string>
     <string name="text_title_home">Search for SEC Form 4</string>
     <string name="text_trading_strategy">Trading Strategy</string>
     <string name="text_exit">Exit</string>
-    <!--    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>-->
     <string name="text_title_trade_type">Type of transaction</string>
     <string name="text_title_price">Price, $</string>
     <string name="text_title_qty">Number of stocks in the transaction</string>

@@ -16,6 +16,7 @@ import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
+import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -169,7 +170,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
-                                this.cancelBackgroundWork()
+                                val scheduler = Scheduler(requireContext().applicationContext)
+                                val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+                                pendingIntent?.let {
+                                    scheduler.cancel(it)
+                                }
                             }
                         }
                     }
