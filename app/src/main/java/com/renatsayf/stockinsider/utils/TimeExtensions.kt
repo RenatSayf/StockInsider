@@ -1,11 +1,8 @@
 package com.renatsayf.stockinsider.utils
 
-import android.icu.text.DateFormat
-import android.icu.text.DateFormatSymbols
 import android.icu.text.SimpleDateFormat
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.models.DateFormats
-import java.time.format.DateTimeFormatter
 import java.util.*
 
 fun Date.getFormattedDateTime(mode: Int): String {

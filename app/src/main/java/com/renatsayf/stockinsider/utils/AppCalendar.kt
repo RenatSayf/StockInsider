@@ -2,79 +2,70 @@ package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
-import android.os.SystemClock
-import androidx.annotation.VisibleForTesting
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import java.util.concurrent.TimeUnit
 
-object AppCalendar {
+class AppCalendar(
+    private val initTime: Long = System.currentTimeMillis()
+) {
 
-    private const val START_FILLING_HOUR: Int = 6
-    private const val END_FILLING_HOUR: Int = 23
+    companion object {
+        private const val START_FILLING_HOUR: Int = 6
+        private const val END_FILLING_HOUR: Int = 23
+    }
 
-    val timeZone: TimeZone
+    val timeZoneNY: TimeZone
         get() {
             return TimeZone.getTimeZone("America/New_York")
         }
 
-    private var calendar = Calendar.getInstance(timeZone).apply {
-        timeInMillis = System.currentTimeMillis() + timeZone.rawOffset
-    }
+    private var calendar = Calendar.getInstance()
     private var withWeekend = true
     private var withFillingTime = true
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    fun setCalendar(calendar: Calendar) {
-        this.calendar = calendar
+    init {
+        val defaultOffset = TimeZone.getDefault().rawOffset
+        val newYorkOffset = timeZoneNY.rawOffset
+        calendar.apply {
+            timeInMillis = initTime - defaultOffset + newYorkOffset
+        }
     }
 
     fun getCurrentTime(): Long {
-        return System.currentTimeMillis() + timeZone.rawOffset
+        return calendar.timeInMillis
     }
-
-    val currentTimeByDefaultTimeZone: Long
-        get() {
-            val time = System.currentTimeMillis() + TimeZone.getDefault().rawOffset
-            if (BuildConfig.DEBUG) println("************************ timeByDefaultTimeZone: ${time.timeToFormattedString()} ************************")
-            return time
-        }
 
     val isWeekEnd: Boolean
         get() {
+            calendar.timeInMillis.timeToFormattedString()
             return calendar.isWeekend
         }
 
     val isFillingTime: Boolean
         get() {
-            val hourOffset = TimeUnit.MILLISECONDS.toHours(timeZone.rawOffset.toLong()).toInt()
-            val currentHour = calendar.get(Calendar.HOUR_OF_DAY) - hourOffset
+            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
             return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
         }
 
-    private fun checkFillingTime(calendar: Calendar): Boolean {
-        val hourOffset = TimeUnit.MILLISECONDS.toHours(timeZone.rawOffset.toLong()).toInt()
-        val currentHour = calendar.get(Calendar.HOUR_OF_DAY) - hourOffset
-        return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
-    }
+    fun getNextFillingTime(periodInMinute: Long): Long {
 
-    fun getNextFillingTime(workerPeriod: Long): Long {
-        val string = getCurrentTime().timeToFormattedString()
-        val string1 = calendar.timeInMillis.timeToFormattedString()
-        val nextTime = getCurrentTime() + (TimeUnit.MINUTES.toMillis(workerPeriod))
-        println("**************** workerPeriod: $workerPeriod *******************")
+        val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(periodInMinute))
+        println("**************** workerPeriod: $periodInMinute *******************")
         println("**************** nextTime: ${nextTime.timeToFormattedString()} *******************")
-        val newCalendar = Calendar.getInstance(timeZone).apply {
-            timeInMillis = nextTime
-        }
+
+        val newCalendar = calendar
+        newCalendar.timeInMillis = nextTime
+
         if (withWeekend) {
-            while (newCalendar.isWeekend) {
+            while (isWeekEnd) {
                 newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
                 val postWeekendTime = newCalendar.timeInMillis.timeToFormattedString()
                 println("**************** postWeekendTime: $postWeekendTime ***********************")
             }
         }
         if (withFillingTime) {
-            while (!checkFillingTime(newCalendar)) {
+            while (!isFillingTime) {
                 newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
                 val nextFillingTime = newCalendar.timeInMillis.timeToFormattedString()
                 println("******************* nextFillingTime: $nextFillingTime *********************")
@@ -84,20 +75,37 @@ object AppCalendar {
         return newCalendar.timeInMillis
     }
 
-    fun getNextFillingTimeByUTCTimeZone(workerPeriod: Long): Long {
+    fun getNextFillingTimeByDefaultTimeZone(periodInMinute: Long): Long {
         withWeekend = true
         withFillingTime = true
-        val utcOffset = timeZone.rawOffset
-        return getNextFillingTime(workerPeriod) - utcOffset
+        val utcOffset = timeZoneNY.rawOffset
+        val defaultOffset = TimeZone.getDefault().rawOffset
+        return getNextFillingTime(periodInMinute) - utcOffset + defaultOffset
     }
 
-    fun getNextTestTimeByUTCTimeZone(workerPeriod: Long): Long {
+    fun getNextTestTimeByDefaultTimeZone(periodInMinute: Long): Long {
         withWeekend = false
         withFillingTime = false
-        val utcOffset = timeZone.rawOffset
-        return getNextFillingTime(workerPeriod) - utcOffset
+        val utcOffset = timeZoneNY.rawOffset
+        val defaultOffset = TimeZone.getDefault().rawOffset
+        return getNextFillingTime(periodInMinute) - utcOffset + defaultOffset
     }
 
+}
+
+fun AppCalendar.getNextStartTime(periodInMinute: Long = 0L): Long {
+
+    return if (BuildConfig.DEBUG && periodInMinute == 0L) {
+        this.getNextTestTimeByDefaultTimeZone(
+            periodInMinute = FireBaseConfig.workerPeriod
+        )
+    }
+    else if (BuildConfig.DEBUG && periodInMinute > 0L) {
+        this.getNextTestTimeByDefaultTimeZone(periodInMinute)
+    }
+    else this.getNextFillingTimeByDefaultTimeZone(
+        periodInMinute = FireBaseConfig.workerPeriod,
+    )
 }
 
 
