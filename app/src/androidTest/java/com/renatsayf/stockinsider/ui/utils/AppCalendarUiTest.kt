@@ -4,6 +4,7 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.ui.testing.TestActivity
+import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
 import com.renatsayf.stockinsider.utils.timeToFormattedString
 import org.junit.After
@@ -17,7 +18,7 @@ import java.util.TimeZone
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class BackgroundWorkExtensionsKtTest {
+class AppCalendarUiTest {
 
     @get:Rule
     var rule = ActivityScenarioRule(TestActivity::class.java)
@@ -41,12 +42,13 @@ class BackgroundWorkExtensionsKtTest {
     @Test
     fun getNextStartTime_period_0() {
 
-        val startTime = getNextStartTime(0)
-        val stringTime = startTime.timeToFormattedString()
-        println("****************** getNextStartTime(0): $stringTime *******************")
-        println("****************** systemTime: ${systemTime.timeToFormattedString()} *******************")
+        val periodInMinute = 0L
+        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute)
+        val startTimeStr = startTimeLong.timeToFormattedString()
+        println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")
+        println("****************** systemTime: ${System.currentTimeMillis().timeToFormattedString()} *******************")
 
-        val offset = startTime - systemTime
+        val offset = startTimeLong - System.currentTimeMillis()
         val offsetInMinute = offset / 1000 / 60
         println("****************** offset: $offsetInMinute *******************")
 
@@ -59,17 +61,17 @@ class BackgroundWorkExtensionsKtTest {
     @Test
     fun getNextStartTime_period_not_0() {
 
-        val periodInMinute = 1L
-        val startTime = getNextStartTime(periodInMinute)
-        val stringTime = startTime.timeToFormattedString()
-        println("****************** getNextStartTime(0): $stringTime *******************")
-        println("****************** systemTime: ${systemTime.timeToFormattedString()} *******************")
+        val periodInMinute = 30L
+        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute)
+        val startTimeStr = startTimeLong.timeToFormattedString()
+        println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")
+        println("****************** systemTime: ${System.currentTimeMillis().timeToFormattedString()} *******************")
 
-        val offset = startTime - systemTime
+        val offset = startTimeLong - System.currentTimeMillis()
         val offsetInMinute = offset / 1000 / 60
         println("****************** offset: $offsetInMinute *******************")
 
-        val actualResult = offsetInMinute in 1..2
+        val actualResult = offsetInMinute in 28..31
         Assert.assertEquals(true, actualResult)
 
         Thread.sleep(5000)
