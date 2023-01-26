@@ -52,7 +52,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         TickersListAdapter(requireContext())
     }
 
-    private val adVMNew: AdViewModel by activityViewModels()
+    private val adVM: AdViewModel by activityViewModels()
     private var googleAd1: InterstitialAd? = null
     private var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
@@ -72,13 +72,13 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         if (savedInstanceState == null) {
 
             if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVMNew.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
+                adVM.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd1 = ad
                     }
                     override fun onGoogleAdFailed(error: LoadAdError) {
                         googleAd1 = null
-                        adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                             override fun onYandexAdLoaded(
                                 ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                                 isOnExit: Boolean
@@ -94,7 +94,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
             else {
                 googleAd1 = null
-                adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                     override fun onYandexAdLoaded(
                         ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                         isOnExit: Boolean

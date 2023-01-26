@@ -64,7 +64,7 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
-    private val adVMNew: AdViewModel by viewModels()
+    private val adVM: AdViewModel by viewModels()
     private var googleAd0: InterstitialAd? = null
     private var yandexAd0: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
@@ -78,23 +78,19 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host_fragment)
         binding.navView.apply {
             setupWithNavController(navController)
-            setNavigationItemSelectedListener {
-                finish()
-                true
-            }
         }
 
         if (savedInstanceState == null) {
 
             FireBaseConfig
             if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVMNew.loadGoogleAd(0, false, object : AdViewModel.GoogleAdListener {
+                adVM.loadGoogleAd(0, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd0 = ad
                     }
                     override fun onGoogleAdFailed(error: LoadAdError) {
                         googleAd0 = null
-                        adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                             override fun onYandexAdLoaded(
                                 ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                                 isOnExit: Boolean
@@ -110,7 +106,7 @@ class MainActivity : AppCompatActivity() {
             }
             else {
                 googleAd0 = null
-                adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                     override fun onYandexAdLoaded(
                         ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                         isOnExit: Boolean
