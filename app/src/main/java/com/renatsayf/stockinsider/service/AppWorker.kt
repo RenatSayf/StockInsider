@@ -27,12 +27,8 @@ class AppWorker (
         val SEARCH_SET_KEY = this::class.java.simpleName.plus(".SearchSetKey")
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        var isStarted = false
-            private set
-
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        var isCompleted = false
-            private set
+        var state: State = State.Initial
+        private set
 
         private lateinit var db: AppDao
         private lateinit var net: INetRepository
@@ -60,8 +56,7 @@ class AppWorker (
 
     override suspend fun doWork(): Result
     {
-        isStarted = true
-        isCompleted = false
+        state = State.Started
         return try
         {
             if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Start background work ********************")
@@ -89,6 +84,7 @@ class AppWorker (
                 putBooleanArray("result", array)
             }.build()
             if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Background work completed successfully ********************")
+            state = State.Completed
             Result.success(data)
         }
         catch (e: Exception)
@@ -99,11 +95,8 @@ class AppWorker (
                 putString("error", "*********** $message *************")
             }.build()
             if (BuildConfig.DEBUG) println("********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************")
+            state = State.Failed
             Result.failure(errorData)
-        }
-        finally {
-            isStarted = false
-            isCompleted = true
         }
     }
 
@@ -111,6 +104,13 @@ class AppWorker (
         async {
             db.getTrackedSets(target = Target.Tracking, isTracked = 1)
         }
+    }
+
+    sealed class State {
+        object Initial: State()
+        object Started: State()
+        object Completed: State()
+        object Failed: State()
     }
 
 }

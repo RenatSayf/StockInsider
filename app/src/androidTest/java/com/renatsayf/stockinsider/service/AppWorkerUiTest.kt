@@ -62,23 +62,17 @@ class AppWorkerUiTest {
 
         Thread.sleep(5000)
 
-        var started = AppWorker.isStarted
-        var completed = AppWorker.isCompleted
-
-        Assert.assertEquals(true, started)
-        Assert.assertEquals(false, completed)
+        var state = AppWorker.state
+        Assert.assertEquals(AppWorker.State.Started, state)
 
         Thread.sleep(10000)
 
-        while (!AppWorker.isCompleted) {
+        while (state == AppWorker.State.Started) {
             Thread.sleep(2000)
+            state = AppWorker.state
         }
 
-        started = AppWorker.isStarted
-        completed = AppWorker.isCompleted
-
-        Assert.assertEquals(false, started)
-        Assert.assertEquals(true, completed)
+        Assert.assertEquals(AppWorker.State.Completed, state)
     }
 
     @Test
@@ -101,8 +95,10 @@ class AppWorkerUiTest {
             activity.finish()
         }
 
-        while (!AppWorker.isCompleted) {
+        var state = AppWorker.state
+        while (state != AppWorker.State.Completed && state != AppWorker.State.Failed) {
             Thread.sleep(2000)
+            state = AppWorker.state
         }
         val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
         Assert.assertTrue(pendingIntent != null)
