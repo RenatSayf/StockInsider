@@ -21,4 +21,18 @@
     <value>5</value>
   </entry>
 
+  <entry>
+    <key>sanctions_list</key>
+    <value>
+      [
+        "RU",
+        "BY",
+        "IR",
+        "CU",
+        "KP",
+        "SY"
+      ]
+    </value>
+  </entry>
+
 </defaults>

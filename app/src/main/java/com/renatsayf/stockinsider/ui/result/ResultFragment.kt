@@ -20,7 +20,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
@@ -81,7 +80,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         if (savedInstanceState == null) {
 
-            if (this.currentCountryCode != CountryCode.RU.name) {
+            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
                 adVMNew.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd2 = ad

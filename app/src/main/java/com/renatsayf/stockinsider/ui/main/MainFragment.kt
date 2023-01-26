@@ -18,7 +18,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.CountryCode
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
@@ -71,7 +71,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         if (savedInstanceState == null) {
 
-            if (this.currentCountryCode != CountryCode.RU.name) {
+            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
                 adVMNew.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd1 = ad

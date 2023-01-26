@@ -28,7 +28,6 @@ import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.models.CountryCode
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
@@ -88,7 +87,7 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
 
             FireBaseConfig
-            if (this.currentCountryCode != CountryCode.RU.name) {
+            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
                 adVMNew.loadGoogleAd(0, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd0 = ad
