@@ -33,6 +33,7 @@ class TrackingAdapter(
         fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int)
         fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int)
+        fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -72,9 +73,6 @@ class TrackingAdapter(
 
                 binding.dealType.text = dealType
 
-//                if (set.isDefault) editButton.setVisible(false)
-//                if (set.isDefault) deleteButton.setVisible(false)
-
                 trackingSwitcher.isChecked = set.isTracked
 
                 editButton.setOnClickListener {
@@ -93,6 +91,10 @@ class TrackingAdapter(
 
                 btnVisibility.setOnClickListener {
                     listener?.onTrackingAdapterVisibilityButtonClick(set, position)
+                }
+
+                btnInfo.setOnClickListener {
+                    listener?.onTrackingAdapterInfoButtonClick(set)
                 }
             }
         }

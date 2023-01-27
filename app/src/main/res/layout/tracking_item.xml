@@ -50,6 +50,20 @@
             tools:ignore="TouchTargetSizeCheck" />
 
         <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btn_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            style="@style/Widget.AppCompat.ButtonBar.AlertDialog"
+            android:background="@drawable/bg_ripple_round_transparent"
+            app:layout_constraintTop_toTopOf="@+id/trackingSwitcher"
+            app:layout_constraintBottom_toBottomOf="@+id/trackingSwitcher"
+            app:layout_constraintStart_toEndOf="@+id/trackingSwitcher"
+            android:layout_marginStart="24dp"
+            android:src="@drawable/ic_info_blue"
+            android:contentDescription="@string/app_name"
+            />
+
+        <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/editButton"
             style="@style/Widget.AppCompat.ButtonBar.AlertDialog"
             android:layout_width="wrap_content"
@@ -57,7 +71,7 @@
             android:layout_marginStart="32dp"
             android:src="@drawable/ic_edit"
             app:layout_constraintBottom_toBottomOf="@+id/trackingSwitcher"
-            app:layout_constraintStart_toEndOf="@+id/trackingSwitcher"
+            app:layout_constraintStart_toEndOf="@+id/btn_info"
             app:layout_constraintTop_toTopOf="@+id/trackingSwitcher"
             tools:ignore="SpeakableTextPresentCheck"
             android:background="@drawable/bg_ripple_round_transparent"/>
@@ -72,7 +86,9 @@
             app:layout_constraintTop_toTopOf="@+id/editButton"
             app:layout_constraintBottom_toBottomOf="@+id/editButton"
             android:src="@drawable/ic_visibility"
-            android:background="@drawable/bg_ripple_round_transparent"/>
+            android:background="@drawable/bg_ripple_round_transparent"
+            android:contentDescription="@string/app_name"
+            />
 
         <androidx.appcompat.widget.AppCompatImageButton
             android:id="@+id/deleteButton"
@@ -84,7 +100,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:ignore="TouchTargetSizeCheck,SpeakableTextPresentCheck"
-            android:background="@drawable/bg_ripple_round_transparent"/>
+            android:background="@drawable/bg_ripple_round_transparent"
+            android:contentDescription="@string/app_name"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

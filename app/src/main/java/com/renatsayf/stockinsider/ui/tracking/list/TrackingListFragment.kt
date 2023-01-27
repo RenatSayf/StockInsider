@@ -22,7 +22,6 @@ import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.cancelBackgroundWork
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
@@ -189,6 +188,14 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             putString(TrackingFragment.ARG_TITLE, getString(R.string.text_tracking_viewing))
             putBoolean(TrackingFragment.ARG_IS_EDIT, false)
         })
+    }
+
+    override fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet) {
+        val queryName = set.queryName
+        val infoText = "${getString(R.string.text_tracking_description)} $queryName"
+        InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO).let { dialog ->
+            dialog.show(requireActivity().supportFragmentManager, dialog.tag)
+        }
     }
 
     override fun onResume() {
