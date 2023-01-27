@@ -26,6 +26,7 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
@@ -261,7 +262,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = Scheduler.workPeriodInMinute
+                                periodInMinute = Constants.workPeriodInMinute
                             )
                         }
                     }

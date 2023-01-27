@@ -78,7 +78,7 @@ class AppWorkerUiTest {
     @Test
     fun start_by_scheduled_from_receiver() {
 
-        Scheduler.workPeriodInMinute = 1
+        val workPeriodInMinute: Long = 1
 
         scenario.onActivity { activity ->
             AppWorker.injectDependenciesToTest(listOf(testSet))
@@ -86,7 +86,7 @@ class AppWorkerUiTest {
 
             val alarm = activity.setAlarm(
                 scheduler = scheduler,
-                periodInMinute = Scheduler.workPeriodInMinute
+                periodInMinute = workPeriodInMinute
             )
             println("******************* ${this::class.java.simpleName} System time: ${System.currentTimeMillis().timeToFormattedString()} ******************")
             Thread.sleep(1000)

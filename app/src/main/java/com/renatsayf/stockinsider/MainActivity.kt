@@ -35,6 +35,7 @@ import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
@@ -179,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         setAlarm(
                                             scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = Scheduler.workPeriodInMinute
+                                            periodInMinute = Constants.workPeriodInMinute
                                         )
                                     }
                                 }

@@ -60,7 +60,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         DealListAdapter(this)
     }
 
-    private val adVMNew: AdViewModel by activityViewModels()
+    private val adVM: AdViewModel by activityViewModels()
     private var googleAd2: InterstitialAd? = null
     private var yandexAd2: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
@@ -81,13 +81,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         if (savedInstanceState == null) {
 
             if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVMNew.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
+                adVM.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
                     override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                         googleAd2 = ad
                     }
                     override fun onGoogleAdFailed(error: LoadAdError) {
                         googleAd2 = null
-                        adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                             override fun onYandexAdLoaded(
                                 ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                                 isOnExit: Boolean
@@ -103,7 +103,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             }
             else {
                 googleAd2 = null
-                adVMNew.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
                     override fun onYandexAdLoaded(
                         ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
                         isOnExit: Boolean
