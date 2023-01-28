@@ -6,18 +6,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.icu.util.Calendar
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.navigation.NavDeepLinkBuilder
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.utils.getFormattedDateTime
 import javax.inject.Inject
 
 
@@ -30,10 +27,6 @@ class ServiceNotification @Inject constructor() : Notification()
         val ARG_ID = "${this::class.java.simpleName}.ARG_ID"
 
         val notify: (Context, String, RoomSearchSet?) -> Unit = { context: Context, message: String, set ->
-
-//            val time = Calendar.getInstance().time.getFormattedDateTime(0)
-//            val message = "According to the ${set?.queryName} search query, $message results were found \n" +
-//                    if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
 
             val setId = set?.id?.toInt() ?: 0
             val notificationId = 5555 + setId
