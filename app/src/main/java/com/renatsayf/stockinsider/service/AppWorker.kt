@@ -75,9 +75,9 @@ class AppWorker (
                 val deals = net.getDealsListAsync(params).await()
 
                 val nextFillingTime = AppCalendar().getNextStartTime(Constants.WORK_PERIOD_IN_MINUTE).timeToFormattedStringWithoutSeconds()
-                val message = "According to the ${set.queryName} search query, ${deals.size} results were found \n" +
-                        "The next check will be at $nextFillingTime"
-
+                val message = context.getString(com.renatsayf.stockinsider.R.string.text_by_search) +
+                            " ${set.queryName}, ${deals.size} ${context.getString(com.renatsayf.stockinsider.R.string.text_results_were_found)}\n" +
+                            "${context.getString(com.renatsayf.stockinsider.R.string.text_next_check_will_be_at)} $nextFillingTime"
                 when {
                     BuildConfig.DEBUG -> {
                         function?.invoke(context, message, set)

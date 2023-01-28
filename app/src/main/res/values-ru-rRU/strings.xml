@@ -240,5 +240,8 @@
     <string name="text_error">Ошибка</string>
     <string name="text_search_is_going">Идет поиск новых сделок по SEC Form 4…</string>
     <string name="text_tracking_description">Если Отслеживание включено, тогда ежедневно, с 6 до 22 часов по Вашингтонскому времени, в фоновом режиме будет выполнятся поиск новых сделок по поисковому запросу</string>
+    <string name="text_by_search">По поиску</string>
+    <string name="text_results_were_found">результатов было найдено</string>
+    <string name="text_next_check_will_be_at">Следующая проверка будет выполнена в</string>
 
 </resources>
