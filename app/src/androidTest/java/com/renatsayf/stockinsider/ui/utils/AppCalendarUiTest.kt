@@ -43,7 +43,7 @@ class AppCalendarUiTest {
     fun getNextStartTime_period_0() {
 
         val periodInMinute = 0L
-        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute)
+        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute, isTestMode = true)
         val startTimeStr = startTimeLong.timeToFormattedString()
         println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")
         println("****************** systemTime: ${System.currentTimeMillis().timeToFormattedString()} *******************")
@@ -62,7 +62,7 @@ class AppCalendarUiTest {
     fun getNextStartTime_period_not_0() {
 
         val periodInMinute = 30L
-        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute)
+        val startTimeLong = AppCalendar().getNextStartTime(periodInMinute, isTestMode = true)
         val startTimeStr = startTimeLong.timeToFormattedString()
         println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")
         println("****************** systemTime: ${System.currentTimeMillis().timeToFormattedString()} *******************")

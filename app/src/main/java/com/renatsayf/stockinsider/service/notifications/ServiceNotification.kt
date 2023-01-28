@@ -29,11 +29,11 @@ class ServiceNotification @Inject constructor() : Notification()
         const val NOTIFICATION_ID : Int = 15917
         val ARG_ID = "${this::class.java.simpleName}.ARG_ID"
 
-        val notify: (Context, Int, RoomSearchSet?) -> Unit = { context: Context, count: Int, set ->
+        val notify: (Context, String, RoomSearchSet?) -> Unit = { context: Context, message: String, set ->
 
-            val time = Calendar.getInstance().time.getFormattedDateTime(0)
-            val message = "According to the ${set?.queryName} search query, $count results were found \n" +
-                    if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
+//            val time = Calendar.getInstance().time.getFormattedDateTime(0)
+//            val message = "According to the ${set?.queryName} search query, $message results were found \n" +
+//                    if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
 
             val setId = set?.id?.toInt() ?: 0
             val notificationId = 5555 + setId

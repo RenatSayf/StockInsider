@@ -180,7 +180,7 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         setAlarm(
                                             scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = Constants.workPeriodInMinute
+                                            periodInMinute = Constants.WORK_PERIOD_IN_MINUTE
                                         )
                                     }
                                 }

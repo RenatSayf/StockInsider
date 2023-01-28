@@ -26,6 +26,7 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
+import com.renatsayf.stockinsider.models.DateFormats
 import com.renatsayf.stockinsider.models.Source
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -286,11 +287,9 @@ fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_
 }
 
 fun Long.timeToFormattedString(): String =
-    SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", Locale.getDefault()).apply {
+    SimpleDateFormat(DateFormats.DEFAULT_FORMAT.format, Locale.getDefault()).apply {
         timeZone = TimeZone.getDefault()
-    }.format(this)
-
-
+    }.format(this).replace("T", " ")
 
 @Throws(Exception::class)
 fun checkTestPort(): Boolean {

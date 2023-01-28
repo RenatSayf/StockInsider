@@ -42,3 +42,7 @@ fun String.formattedStringToLong(locale: Locale = Locale.US): Long {
         -1
     }
 }
+
+fun Long.timeToFormattedStringWithoutSeconds(): String =
+    SimpleDateFormat(DateFormats.DATE_TIME_YY_MM_FORMAT.format, Locale.getDefault())
+        .format(this).replace("T", " ")

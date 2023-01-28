@@ -17,6 +17,7 @@ import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
+import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -36,7 +37,7 @@ class AppWorker (
         private lateinit var db: AppDao
         private lateinit var net: INetRepository
         private var searchSets: List<RoomSearchSet>? = null
-        private var function: ((Context, Int, RoomSearchSet) -> Unit)? = ServiceNotification.notify
+        private var function: ((Context, String, RoomSearchSet) -> Unit)? = ServiceNotification.notify
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         fun injectDependenciesToTest(
@@ -72,14 +73,18 @@ class AppWorker (
                 delay(duration * 1000L)
                 val params = set.toSearchSet()
                 val deals = net.getDealsListAsync(params).await()
+
+                val nextFillingTime = AppCalendar().getNextStartTime(Constants.WORK_PERIOD_IN_MINUTE).timeToFormattedStringWithoutSeconds()
+                val message = "According to the ${set.queryName} search query, ${deals.size} results were found \n" +
+                        "The next check will be at $nextFillingTime"
+
                 when {
                     BuildConfig.DEBUG -> {
-                        val nextFillingTime = AppCalendar().getNextStartTime(Constants.workPeriodInMinute)
-                        function?.invoke(context, deals.size, set)
+                        function?.invoke(context, message, set)
                     }
                     else -> {
                         if (deals.isNotEmpty()) {
-                            function?.invoke(context, deals.size, set)
+                            function?.invoke(context, message, set)
                         }
                     }
                 }

@@ -262,7 +262,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = Constants.workPeriodInMinute
+                                periodInMinute = Constants.WORK_PERIOD_IN_MINUTE
                             )
                         }
                     }

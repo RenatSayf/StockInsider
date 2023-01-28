@@ -27,7 +27,7 @@ open class AlarmReceiver : BroadcastReceiver() {
                 println(" *********** ${this::class.java.simpleName}.onReceive has been triggered *******************")
             }
             val scheduler = Scheduler(context.applicationContext)
-            val nextFillingTime = AppCalendar().getNextStartTime(Constants.workPeriodInMinute)
+            val nextFillingTime = AppCalendar().getNextStartTime(Constants.WORK_PERIOD_IN_MINUTE)
             scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
 
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {

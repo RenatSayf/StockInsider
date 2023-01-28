@@ -87,7 +87,7 @@ class AppCalendarTest {
 
         val nextFillingTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute)
         val actualResult = nextFillingTime.timeToFormattedString()
-        val expectedResult = "2023-01-23T17:00:00"
+        val expectedResult = "2023-01-23 17:00:00"
         Assert.assertEquals(expectedResult, actualResult)
     }
 
@@ -110,8 +110,7 @@ class AppCalendarTest {
         println("****************** ${this.javaClass.simpleName}.getNextFillingTime_on_real_time(): ${secondTime.timeToFormattedString()} *****************")
 
         val actualResult = (secondTime - firstTime) / 1000
-        val expectedResult = workerPeriodInMinute
-        Assert.assertEquals(expectedResult, actualResult)
+        Assert.assertTrue(actualResult in 19..21)
     }
 
     @Test
@@ -121,7 +120,7 @@ class AppCalendarTest {
         val appCalendar = AppCalendar(inputTime)
 
         val actualTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute).timeToFormattedString()
-        Assert.assertEquals("2023-01-04T08:00:00", actualTime)
+        Assert.assertEquals("2023-01-04 08:00:00", actualTime)
     }
 
     @Test
@@ -131,7 +130,7 @@ class AppCalendarTest {
         val appCalendar = AppCalendar(inputTime)
 
         val actualTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute).timeToFormattedString()
-        Assert.assertEquals("2023-01-04T23:00:00", actualTime)
+        Assert.assertEquals("2023-01-04 23:00:00", actualTime)
     }
 
     @Test

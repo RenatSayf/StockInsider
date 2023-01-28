@@ -2,8 +2,8 @@ package com.renatsayf.stockinsider.utils
 
 import android.icu.util.Calendar
 import android.icu.util.TimeZone
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
+import com.renatsayf.stockinsider.ui.settings.Constants
 import java.util.concurrent.TimeUnit
 
 class AppCalendar(
@@ -71,7 +71,7 @@ class AppCalendar(
                 println("******************* nextFillingTime: $nextFillingTime *********************")
             }
         }
-        println("******************* newCalendar.time (UTC): ${newCalendar.timeInMillis.timeToFormattedString()} *********************")
+        println("******************* newCalendar.time (America/New_York): ${newCalendar.timeInMillis.timeToFormattedString()} *********************")
         return newCalendar.timeInMillis
     }
 
@@ -93,14 +93,17 @@ class AppCalendar(
 
 }
 
-fun AppCalendar.getNextStartTime(periodInMinute: Long = 0L): Long {
+fun AppCalendar.getNextStartTime(
+    periodInMinute: Long = 0L,
+    isTestMode: Boolean = Constants.TEST_MODE
+): Long {
 
-    return if (BuildConfig.DEBUG && periodInMinute == 0L) {
+    return if (isTestMode && periodInMinute == 0L) {
         this.getNextTestTimeByDefaultTimeZone(
             periodInMinute = FireBaseConfig.workerPeriod
         )
     }
-    else if (BuildConfig.DEBUG && periodInMinute > 0L) {
+    else if (isTestMode && periodInMinute > 0L) {
         this.getNextTestTimeByDefaultTimeZone(periodInMinute)
     }
     else this.getNextFillingTimeByDefaultTimeZone(
