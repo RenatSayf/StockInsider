@@ -238,6 +238,6 @@
     <string name="text_info">Information</string>
     <string name="text_error">Error</string>
     <string name="text_search_is_going">There is a search for new deals on SEC Form 4…</string>
-    <string name="text_tracking_description">If Tracking is enabled, then every day, from 6 to 22 o\'clock Washington time, a search for new deals will be performed in the background by the search query</string>
+    <string name="text_tracking_description">If Observe is enabled, then every day, from 6 to 22 o\'clock Washington time, a search for new deals will be performed in the background by the search query</string>
 
 </resources>

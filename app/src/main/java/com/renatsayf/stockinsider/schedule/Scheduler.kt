@@ -18,7 +18,6 @@ class Scheduler @Inject constructor(
 ) : IScheduler {
 
     companion object {
-        var workPeriodInMinute = 10L
         private const val ONE_SHOOT_CODE = 2455563
         private const val REPEAT_SHOOT_CODE = 2455564
         const val ONE_SHOOT_ACTION = "$ONE_SHOOT_CODE.one_shoot_action"

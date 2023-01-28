@@ -14,6 +14,9 @@ import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.settings.Constants
+import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.getNextStartTime
 import kotlinx.coroutines.*
 import java.util.*
 
@@ -70,7 +73,10 @@ class AppWorker (
                 val params = set.toSearchSet()
                 val deals = net.getDealsListAsync(params).await()
                 when {
-                    BuildConfig.DEBUG -> function?.invoke(context, deals.size, set)
+                    BuildConfig.DEBUG -> {
+                        val nextFillingTime = AppCalendar().getNextStartTime(Constants.workPeriodInMinute)
+                        function?.invoke(context, deals.size, set)
+                    }
                     else -> {
                         if (deals.isNotEmpty()) {
                             function?.invoke(context, deals.size, set)
