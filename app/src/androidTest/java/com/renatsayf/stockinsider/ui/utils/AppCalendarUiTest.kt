@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.ui.utils
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
@@ -52,7 +53,8 @@ class AppCalendarUiTest {
         val offsetInMinute = offset / 1000 / 60
         println("****************** offset: $offsetInMinute *******************")
 
-        val actualResult = offsetInMinute in 58..61
+        val workerPeriod = FireBaseConfig.workerPeriod
+        val actualResult = offsetInMinute in (workerPeriod - 1)..(workerPeriod + 1)
         Assert.assertEquals(true, actualResult)
 
         Thread.sleep(5000)

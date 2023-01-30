@@ -279,6 +279,7 @@ fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_
     startActivity(Intent().apply {
         this.action = action
         data = Uri.fromParts("package", this@openAppSystemSettings.packageName, null)
+        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     })
 }
 

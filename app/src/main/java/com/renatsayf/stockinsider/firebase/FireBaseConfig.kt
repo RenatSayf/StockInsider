@@ -1,4 +1,4 @@
-@file:Suppress("ObjectLiteralToLambda")
+@file:Suppress("ObjectLiteralToLambda", "UnnecessaryVariable")
 
 package com.renatsayf.stockinsider.firebase
 
@@ -9,7 +9,6 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
-import com.renatsayf.stockinsider.models.Source
 
 
 object FireBaseConfig {
@@ -22,8 +21,7 @@ object FireBaseConfig {
     val workerPeriod: Long
         get() {
             val value = Firebase.remoteConfig.getLong("worker_period")
-            return if (value == 0L || (BuildConfig.DEBUG && BuildConfig.DATA_SOURCE == Source.LOCALHOST.name)) 60L
-            else value
+            return value
         }
     val requestsCount: Int
         get() {

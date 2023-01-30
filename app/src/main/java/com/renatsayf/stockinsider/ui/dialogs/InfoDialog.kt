@@ -16,6 +16,7 @@ class InfoDialog private constructor() : DialogFragment() {
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
+        const val KEY_NOT_SHOW_AGAN = "KEY_NOT_SHOW_AGAN5555222"
 
         private var title: String = ""
         private var message: String = ""
@@ -40,6 +41,7 @@ class InfoDialog private constructor() : DialogFragment() {
                 DialogStatus.INFO -> setIcon(R.drawable.ic_info_blue)
                 DialogStatus.ERROR -> setIcon(R.drawable.ic_error_red)
                 DialogStatus.WARNING -> setIcon(R.drawable.ic_warning_yellow)
+                DialogStatus.EXTENDED_WARNING -> setIcon(R.drawable.ic_warning_yellow)
             }
             if (title.isNotEmpty()) {
                 setTitle(title)
@@ -49,10 +51,22 @@ class InfoDialog private constructor() : DialogFragment() {
             }
             setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    listener?.onInfoDialogPositiveClick()
+                    listener?.onInfoDialogButtonClick(1)
                     dismiss()
                 }
             })
+            if (status == DialogStatus.EXTENDED_WARNING) {
+                setNeutralButton(getString(R.string.text_not_show_again), object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        listener?.onInfoDialogButtonClick(0)
+                    }
+                })
+                setNegativeButton(getString(R.string.text_cancel), object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        dismiss()
+                    }
+                })
+            }
         }.create().apply {
             window?.setBackgroundDrawableResource(R.drawable.bg_dialog_white)
         }
@@ -63,10 +77,10 @@ class InfoDialog private constructor() : DialogFragment() {
     }
 
     enum class DialogStatus {
-        SUCCESS, INFO, WARNING, ERROR
+        SUCCESS, INFO, WARNING, ERROR, EXTENDED_WARNING
     }
 
     interface Listener {
-        fun onInfoDialogPositiveClick()
+        fun onInfoDialogButtonClick(result: Int = 1)
     }
 }
