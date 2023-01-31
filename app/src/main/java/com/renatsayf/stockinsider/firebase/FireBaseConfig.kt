@@ -37,6 +37,14 @@ object FireBaseConfig {
             }
             else arrayOf("RU","BY","IR","CU","KP","SY")
         }
+    val problemDevices: Array<String>
+        get() {
+            val value = Firebase.remoteConfig.getString("problem_devices")
+            return if (value.isNotEmpty()) {
+                Gson().fromJson(value, Array<String>::class.java)
+            }
+            else arrayOf("XIAOMI","HUAWEI")
+        }
 
     private val configSettings = remoteConfigSettings {
         minimumFetchIntervalInSeconds = 3600

@@ -16,7 +16,6 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.models.ProblemDevices
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
@@ -214,8 +213,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     private fun showWarningDialog() {
         val isNotShow = appPref.getBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, false)
         val manufacturer = Build.MANUFACTURER.uppercase()
-        val devices = ProblemDevices.values().map {
-            it.name
+        val devices = FireBaseConfig.problemDevices.map {
+            it.uppercase()
         }
         if (devices.contains(manufacturer) && !isNotShow) {
             val message = "${getString(R.string.text_manufacturer_of_devices)} $manufacturer, ${getString(R.string.text_battery_restrictions_message)}"

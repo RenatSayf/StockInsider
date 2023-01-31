@@ -35,4 +35,14 @@
     </value>
   </entry>
 
+  <entry>
+    <key>problem_devices</key>
+    <value>
+      [
+        "XIAOMI",
+        "HUAWEI"
+      ]
+    </value>
+  </entry>
+
 </defaults>
