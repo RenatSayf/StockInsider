@@ -90,7 +90,7 @@ class SortingViewModel @Inject constructor() : ViewModel() {
     data class Sorting(
         var groupingBy: GroupingBy = GroupingBy.FILLING_DATE,
         var sortingBy: SortingBy = SortingBy.FILLING_DATE,
-        var orderBy: OrderBy = OrderBy.ASC
+        var orderBy: OrderBy = OrderBy.DESC
     ) : Serializable {
 
         enum class GroupingBy {
