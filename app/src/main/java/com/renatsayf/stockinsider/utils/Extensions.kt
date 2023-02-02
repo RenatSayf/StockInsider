@@ -253,18 +253,20 @@ fun String.convertDefaultWithoutTime(): String? {
 fun AppCompatActivity.showInfoDialog(
     title: String = "",
     message: String = "",
-    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO,
+    callback: (Int) -> Unit = {}
 ) {
-    val dialog = InfoDialog.newInstance(title, message, status)
+    val dialog = InfoDialog.newInstance(title, message, status, callback)
     dialog.show(this.supportFragmentManager, InfoDialog.TAG)
 }
 
 fun Fragment.showInfoDialog(
     title: String = "",
     message: String = "",
-    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO
+    status: InfoDialog.DialogStatus = InfoDialog.DialogStatus.INFO,
+    callback: (Int) -> Unit = {}
 ) {
-    (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status)
+    (requireActivity() as AppCompatActivity).showInfoDialog(title, message, status, callback)
 }
 
 fun <V, T> Map<V, List<T>>.getValuesSize(): Int {

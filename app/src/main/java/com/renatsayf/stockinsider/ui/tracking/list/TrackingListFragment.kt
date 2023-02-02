@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.tracking.list
 
+import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -163,7 +164,28 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 when (checked) {
                     true -> {
                         showSnackBar(getString(R.string.text_tracking_enabled))
-                        showWarningDialog()
+                        requireActivity().showOrNotInfoDialog {
+                            showInfoDialog(
+                                title = getString(R.string.text_warning),
+                                message = "\"${getString(R.string.text_manufacturer_of_devices)} ${Build.MANUFACTURER}, ${
+                                    getString(
+                                        R.string.text_battery_restrictions_message
+                                    )
+                                }\"",
+                                status = InfoDialog.DialogStatus.EXTENDED_WARNING,
+                                callback = {
+                                    when(it) {
+                                        1 -> {
+                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                            this@TrackingListFragment.openAppSystemSettings()
+                                        }
+                                        0 -> {
+                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
@@ -210,30 +232,18 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onDestroyView()
     }
 
-    private fun showWarningDialog() {
-        val isNotShow = appPref.getBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, false)
-        val manufacturer = Build.MANUFACTURER.uppercase()
-        val devices = FireBaseConfig.problemDevices.map {
-            it.uppercase()
-        }
-        if (devices.contains(manufacturer) && !isNotShow) {
-            val message = "${getString(R.string.text_manufacturer_of_devices)} $manufacturer, ${getString(R.string.text_battery_restrictions_message)}"
-            InfoDialog.newInstance(title = getString(R.string.text_warning), message, InfoDialog.DialogStatus.EXTENDED_WARNING).apply {
-                this.setOnPositiveClickListener(object : InfoDialog.Listener {
-                    override fun onInfoDialogButtonClick(result: Int) {
-                        when(result) {
-                            1 -> {
-                                appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
-                                this@TrackingListFragment.openAppSystemSettings()
-                            }
-                            0 -> {
-                                appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
-                            }
-                        }
-                    }
-                })
-            }.show(childFragmentManager, InfoDialog.TAG)
-        }
-    }
+}
 
+fun Activity.showOrNotInfoDialog(
+    isNotShow: Boolean = appPref.getBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, false),
+    manufacturer: String = Build.MANUFACTURER,
+    callback: () -> Unit
+) {
+
+    val devices = FireBaseConfig.problemDevices.map {
+        it.uppercase()
+    }
+    if (devices.contains(manufacturer.uppercase()) && !isNotShow) {
+        callback.invoke()
+    }
 }

@@ -21,17 +21,22 @@ class InfoDialog private constructor() : DialogFragment() {
         private var title: String = ""
         private var message: String = ""
         private var status: DialogStatus = DialogStatus.INFO
+        private var callback: (Int) -> Unit = {}
         private var instance: InfoDialog? = null
 
-        fun newInstance(title: String = "", message: String, status: DialogStatus): InfoDialog {
+        fun newInstance(
+            title: String = "",
+            message: String,
+            status: DialogStatus,
+            callback: (Int) -> Unit = {}
+        ): InfoDialog {
             this.title = title
             this.message = message
             this.status = status
-            return if (instance == null ) InfoDialog() else instance!!
+            this.callback = callback
+            return if (instance == null) InfoDialog() else instance!!
         }
     }
-
-    private var listener: Listener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -51,18 +56,20 @@ class InfoDialog private constructor() : DialogFragment() {
             }
             setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    listener?.onInfoDialogButtonClick(1)
+                    callback.invoke(1)
                     dismiss()
                 }
             })
             if (status == DialogStatus.EXTENDED_WARNING) {
                 setNeutralButton(getString(R.string.text_not_show_again), object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
-                        listener?.onInfoDialogButtonClick(0)
+                        callback.invoke(0)
+                        dismiss()
                     }
                 })
                 setNegativeButton(getString(R.string.text_cancel), object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
+                        callback.invoke(-1)
                         dismiss()
                     }
                 })
@@ -72,15 +79,8 @@ class InfoDialog private constructor() : DialogFragment() {
         }
     }
 
-    fun setOnPositiveClickListener(listener: Listener) {
-        this.listener = listener
-    }
-
     enum class DialogStatus {
         SUCCESS, INFO, WARNING, ERROR, EXTENDED_WARNING
     }
 
-    interface Listener {
-        fun onInfoDialogButtonClick(result: Int = 1)
-    }
 }
