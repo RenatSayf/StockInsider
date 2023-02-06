@@ -10,7 +10,7 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
+import androidx.navigation.fragment.findNavController
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
@@ -132,7 +132,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    hideKeyBoard(binding.general.tickerET)
+                    hideKeyBoard(binding.root)
                     binding.general.tickerET.clearFocus()
                     binding.searchButton.requestFocus()
                 }
@@ -145,7 +145,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
             binding.general.tickerET.setAdapter(tickersAdapter)
             binding.general.tickerET.clearFocus()
-            hideKeyBoard(binding.general.tickerET)
+            //hideKeyBoard(binding.root)
         }
 
         var tickerText = ""
@@ -183,14 +183,13 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         binding.searchButton.setOnClickListener {
 
             val set = scanScreen()
-
-            (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
+            (requireActivity() as MainActivity).hideKeyBoard(it)
 
             val bundle = Bundle().apply {
                 putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
             }
-            binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
+            findNavController().navigate(R.id.nav_result, bundle)
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener =

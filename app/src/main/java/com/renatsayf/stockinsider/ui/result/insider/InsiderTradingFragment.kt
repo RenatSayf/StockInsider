@@ -113,6 +113,9 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             btnAddToTracking.setOnClickListener {
 
             }
+            noResult.backButton.setOnClickListener {
+                findNavController().popBackStack()
+            }
         }
 
     }

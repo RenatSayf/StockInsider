@@ -115,6 +115,9 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
             btnAddToTracking.setOnClickListener {
 
             }
+            noResult.backButton.setOnClickListener {
+                findNavController().popBackStack()
+            }
 
         }
 
