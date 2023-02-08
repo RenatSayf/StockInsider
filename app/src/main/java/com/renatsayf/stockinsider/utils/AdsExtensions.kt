@@ -3,10 +3,9 @@ package com.renatsayf.stockinsider.utils
 import android.app.Activity
 import android.app.Application
 import androidx.fragment.app.Fragment
-import androidx.navigation.fragment.findNavController
 import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.renatsayf.stockinsider.di.App
+import com.renatsayf.stockinsider.BuildConfig
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
@@ -37,40 +36,38 @@ val Fragment.currentCountryCode: String
 fun Activity.showAd(
     googleAd: InterstitialAd?,
     yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
-    function: () -> Unit
+    callback: () -> Unit
     ) {
     googleAd?.let { ad ->
-        ad.show(this)
         ad.fullScreenContentCallback = object : FullScreenContentCallback() {
             override fun onAdDismissedFullScreenContent() {
-                function.invoke()
+                callback.invoke()
             }
         }
+        ad.show(this)
     }?: run {
         yandexAd?.let { ad ->
-            ad.show()
             ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
                 override fun onAdLoaded() {}
-
-                override fun onAdFailedToLoad(p0: AdRequestError) {}
-
-                override fun onAdShown() {}
-
-                override fun onAdDismissed() {
-                    function.invoke()
+                override fun onAdFailedToLoad(error: AdRequestError) {
+                    if (BuildConfig.DEBUG) {
+                        val exception = Exception("**************** ${error.description} *******************")
+                        exception.printStackTrace()
+                    }
+                    callback.invoke()
                 }
-
+                override fun onAdShown() {}
+                override fun onAdDismissed() {
+                    callback.invoke()
+                }
                 override fun onAdClicked() {}
-
                 override fun onLeftApplication() {}
-
                 override fun onReturnedToApplication() {}
-
                 override fun onImpression(p0: ImpressionData?) {}
-
             })
+            ad.show()
         }?: run {
-            function.invoke()
+            callback.invoke()
         }
     }
 }
@@ -78,9 +75,9 @@ fun Activity.showAd(
 fun Fragment.showAd(
     googleAd: InterstitialAd?,
     yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
-    function: () -> Unit
+    callback: () -> Unit
 ) {
-    requireActivity().showAd(googleAd, yandexAd, function)
+    requireActivity().showAd(googleAd, yandexAd, callback)
 }
 
 

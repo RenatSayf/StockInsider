@@ -8,28 +8,26 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.*
-import com.yandex.mobile.ads.common.AdRequestError
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.hideKeyBoard
+import com.renatsayf.stockinsider.utils.setAlarm
+import com.renatsayf.stockinsider.utils.showAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -53,9 +51,12 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         TickersListAdapter(requireContext())
     }
 
-    private val adVM: AdViewModel by activityViewModels()
-    private var googleAd1: InterstitialAd? = null
-    private var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+    private val googleAd1: InterstitialAd? by lazy {
+        (activity as? MainActivity)?.googleAd1
+    }
+    private val yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
+        (activity as? MainActivity)?.yandexAd1
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -69,45 +70,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentHomeBinding.bind(view)
-
-        if (savedInstanceState == null) {
-
-            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVM.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
-                    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                        googleAd1 = ad
-                    }
-                    override fun onGoogleAdFailed(error: LoadAdError) {
-                        googleAd1 = null
-                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                            override fun onYandexAdLoaded(
-                                ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                                isOnExit: Boolean
-                            ) {
-                                yandexAd1 = ad
-                            }
-                            override fun onYandexAdFailed(error: AdRequestError) {
-                                yandexAd1 = null
-                            }
-                        })
-                    }
-                })
-            }
-            else {
-                googleAd1 = null
-                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                    override fun onYandexAdLoaded(
-                        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                        isOnExit: Boolean
-                    ) {
-                        yandexAd1= ad
-                    }
-                    override fun onYandexAdFailed(error: AdRequestError) {
-                        yandexAd1 = null
-                    }
-                })
-            }
-        }
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)

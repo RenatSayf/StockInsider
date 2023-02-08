@@ -68,6 +68,8 @@ class MainActivity : AppCompatActivity() {
     private val adVM: AdViewModel by viewModels()
     private var googleAd0: InterstitialAd? = null
     private var yandexAd0: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+    var googleAd1: InterstitialAd? = null
+    var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,40 +86,63 @@ class MainActivity : AppCompatActivity() {
         if (savedInstanceState == null) {
 
             FireBaseConfig
-            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVM.loadGoogleAd(0, false, object : AdViewModel.GoogleAdListener {
-                    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                        googleAd0 = ad
-                    }
-                    override fun onGoogleAdFailed(error: LoadAdError) {
-                        googleAd0 = null
-                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                            override fun onYandexAdLoaded(
-                                ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                                isOnExit: Boolean
-                            ) {
-                                yandexAd0 = ad
+            repeat(2){ index ->
+                if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
+                    adVM.loadGoogleAd(index, false, object : AdViewModel.GoogleAdListener {
+                        override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                            when(index) {
+                                0 -> googleAd0 = ad
+                                else -> googleAd1 = ad
                             }
-                            override fun onYandexAdFailed(error: AdRequestError) {
-                                yandexAd0 = null
+                        }
+                        override fun onGoogleAdFailed(error: LoadAdError) {
+                            when(index) {
+                                0 -> googleAd0 = null
+                                else -> googleAd1 = null
                             }
-                        })
+                            adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
+                                override fun onYandexAdLoaded(
+                                    ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                                    isOnExit: Boolean
+                                ) {
+                                    when(index) {
+                                        0 -> yandexAd0 = ad
+                                        else -> yandexAd1 = ad
+                                    }
+                                }
+
+                                override fun onYandexAdFailed(error: AdRequestError) {
+                                    when(index) {
+                                        0 -> yandexAd0 = null
+                                        else -> yandexAd1 = null
+                                    }
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    when(index) {
+                        0 -> googleAd0 = null
+                        else -> googleAd1 = null
                     }
-                })
-            }
-            else {
-                googleAd0 = null
-                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                    override fun onYandexAdLoaded(
-                        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                        isOnExit: Boolean
-                    ) {
-                        yandexAd0 = ad
-                    }
-                    override fun onYandexAdFailed(error: AdRequestError) {
-                        yandexAd0 = null
-                    }
-                })
+                    adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
+                        override fun onYandexAdLoaded(
+                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                            isOnExit: Boolean
+                        ) {
+                            when(index){
+                                0 -> yandexAd0 = ad
+                                else -> yandexAd1 = ad
+                            }
+                        }
+                        override fun onYandexAdFailed(error: AdRequestError) {
+                            when(index) {
+                                0 -> yandexAd0 = null
+                                else -> yandexAd1 = null
+                            }
+                        }
+                    })
+                }
             }
         }
 
@@ -185,7 +210,7 @@ class MainActivity : AppCompatActivity() {
                                     }
                                 }
                             }
-                            showAd(googleAd0, yandexAd0) {
+                            showAd(googleAd1, yandexAd1) {
                                 finish()
                             }
                         }
