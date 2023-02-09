@@ -1,8 +1,9 @@
-@file:Suppress("ObjectLiteralToLambda")
+@file:Suppress("ObjectLiteralToLambda", "MoveVariableDeclarationIntoWhen")
 
 package com.renatsayf.stockinsider.ui.result
 
 import android.animation.ValueAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -288,19 +289,19 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        val set = roomSearchSet?.apply {
+        val newSet = roomSearchSet?.apply {
             queryName = searchName
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
             isDefault = false
         }
-        set?.let { s ->
+        newSet?.let { set ->
             trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
                 count?.let { c ->
                     if (c < FireBaseConfig.requestsCount) {
-                        s.isTracked = true
-                        mainViewModel.addNewSearchSet(s).observe(viewLifecycleOwner) { res ->
+                        set.isTracked = !FireBaseConfig.problemDevices.contains(Build.MANUFACTURER.uppercase())
+                        mainViewModel.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
@@ -329,7 +330,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         }
                     }
                     else {
-                        s.let {
+                        set.let {
                             it.target = null
                             it.isTracked = false
                             mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->

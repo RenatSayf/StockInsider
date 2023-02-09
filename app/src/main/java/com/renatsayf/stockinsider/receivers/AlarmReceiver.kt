@@ -6,9 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
 import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork

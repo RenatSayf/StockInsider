@@ -101,9 +101,7 @@ fun AppCalendar.getNextStartTime(
     return if (isTestMode) {
         this.getNextTestTimeByDefaultTimeZone(periodInMinute)
     }
-    else this.getNextFillingTimeByDefaultTimeZone(
-        periodInMinute = periodInMinute
-    )
+    else this.getNextFillingTimeByDefaultTimeZone(periodInMinute)
 }
 
 
