@@ -84,13 +84,14 @@ class AppWorkerUiTest {
             AppWorker.injectDependenciesToTest(listOf(testSet))
             scheduler = Scheduler(activity)
 
-            val alarm = activity.setAlarm(
+            val nextTime = activity.setAlarm(
                 scheduler = scheduler,
-                periodInMinute = workPeriodInMinute
+                periodInMinute = workPeriodInMinute,
+                isTest = true
             )
             println("******************* ${this::class.java.simpleName} System time: ${System.currentTimeMillis().timeToFormattedString()} ******************")
             Thread.sleep(1000)
-            Assert.assertEquals(true, alarm)
+            Assert.assertTrue(nextTime != null)
             Thread.sleep(2000)
             activity.finish()
         }

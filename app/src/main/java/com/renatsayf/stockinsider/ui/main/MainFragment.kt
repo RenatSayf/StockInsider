@@ -18,16 +18,14 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.appPref
-import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.setAlarm
-import com.renatsayf.stockinsider.utils.showAd
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -221,10 +219,14 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            setAlarm(
+                            val nextTime = setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
                                 periodInMinute = Constants.WORK_PERIOD_IN_MINUTE
                             )
+                            if (nextTime != null) {
+                                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                                ServiceNotification.notify(requireContext(), message, null)
+                            }
                         }
                     }
                 }
