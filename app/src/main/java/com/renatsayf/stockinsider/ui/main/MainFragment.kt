@@ -16,6 +16,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
@@ -221,7 +222,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             val nextTime = setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = Constants.WORK_PERIOD_IN_MINUTE
+                                periodInMinute = FireBaseConfig.workerPeriod
                             )
                             if (nextTime != null) {
                                 val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"

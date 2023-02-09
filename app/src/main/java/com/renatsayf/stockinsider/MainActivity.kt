@@ -205,7 +205,7 @@ class MainActivity : AppCompatActivity() {
                                     if (it > 0) {
                                         setAlarm(
                                             scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = Constants.WORK_PERIOD_IN_MINUTE
+                                            periodInMinute = FireBaseConfig.workerPeriod
                                         )
                                     }
                                 }

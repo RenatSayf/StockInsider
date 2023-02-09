@@ -9,6 +9,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.google.gson.Gson
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.ui.settings.Constants
 
 
 object FireBaseConfig {
@@ -16,11 +17,11 @@ object FireBaseConfig {
     val userAgent: String
         get() {
             val value = Firebase.remoteConfig.getString("user_agent")
-            return value.ifEmpty { "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36" }
+            return value.ifEmpty { "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" }
         }
     val workerPeriod: Long
         get() {
-            val value = Firebase.remoteConfig.getLong("worker_period")
+            val value = if (!Constants.TEST_MODE) Firebase.remoteConfig.getLong("worker_period") else Constants.WORK_PERIOD_IN_MINUTE
             return value
         }
     val requestsCount: Int

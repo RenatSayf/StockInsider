@@ -94,20 +94,15 @@ class AppCalendar(
 }
 
 fun AppCalendar.getNextStartTime(
-    periodInMinute: Long = 0L,
+    periodInMinute: Long = FireBaseConfig.workerPeriod,
     isTestMode: Boolean = Constants.TEST_MODE
 ): Long {
 
-    return if (isTestMode && periodInMinute == 0L) {
-        this.getNextTestTimeByDefaultTimeZone(
-            periodInMinute = FireBaseConfig.workerPeriod
-        )
-    }
-    else if (isTestMode && periodInMinute > 0L) {
+    return if (isTestMode) {
         this.getNextTestTimeByDefaultTimeZone(periodInMinute)
     }
     else this.getNextFillingTimeByDefaultTimeZone(
-        periodInMinute = FireBaseConfig.workerPeriod,
+        periodInMinute = periodInMinute
     )
 }
 

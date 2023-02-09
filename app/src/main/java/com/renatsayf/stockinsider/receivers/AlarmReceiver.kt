@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.AppCalendar
@@ -27,7 +28,7 @@ open class AlarmReceiver : BroadcastReceiver() {
                 println(" *********** ${this::class.java.simpleName}.onReceive has been triggered *******************")
             }
             val scheduler = Scheduler(context.applicationContext)
-            val nextFillingTime = AppCalendar().getNextStartTime(Constants.WORK_PERIOD_IN_MINUTE)
+            val nextFillingTime = AppCalendar().getNextStartTime()
             scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
 
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {

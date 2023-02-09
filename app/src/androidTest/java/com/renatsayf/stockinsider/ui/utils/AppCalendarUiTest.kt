@@ -43,7 +43,7 @@ class AppCalendarUiTest {
     @Test
     fun getNextStartTime_period_0() {
 
-        val periodInMinute = 0L
+        val periodInMinute = FireBaseConfig.workerPeriod
         val startTimeLong = AppCalendar().getNextStartTime(periodInMinute, isTestMode = true)
         val startTimeStr = startTimeLong.timeToFormattedString()
         println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")

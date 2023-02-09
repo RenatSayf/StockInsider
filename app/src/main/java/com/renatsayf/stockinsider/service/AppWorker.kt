@@ -14,7 +14,6 @@ import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
@@ -38,12 +37,18 @@ class AppWorker (
         private lateinit var net: INetRepository
         private var searchSets: List<RoomSearchSet>? = null
         private var function: ((Context, String, RoomSearchSet) -> Unit)? = ServiceNotification.notify
+        private var workerPeriodInMinutes: Long = Long.MAX_VALUE
+        private var isTestMode: Boolean = false
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         fun injectDependenciesToTest(
-            searchSets: List<RoomSearchSet>? = null
+            searchSets: List<RoomSearchSet>? = null,
+            workerPeriodInMinutes: Long,
+            isTestMode: Boolean
         ) {
             this.searchSets = searchSets
+            this.workerPeriodInMinutes = workerPeriodInMinutes
+            this.isTestMode = isTestMode
         }
     }
 
@@ -74,7 +79,7 @@ class AppWorker (
                 val params = set.toSearchSet()
                 val deals = net.getDealsListAsync(params).await()
 
-                val nextFillingTime = AppCalendar().getNextStartTime(Constants.WORK_PERIOD_IN_MINUTE).timeToFormattedStringWithoutSeconds()
+                val nextFillingTime = AppCalendar().getNextStartTime(workerPeriodInMinutes, isTestMode).timeToFormattedStringWithoutSeconds()
                 val message = context.getString(com.renatsayf.stockinsider.R.string.text_by_search) +
                             " ${set.queryName}, ${deals.size} ${context.getString(com.renatsayf.stockinsider.R.string.text_results_were_found)}\n" +
                             "${context.getString(com.renatsayf.stockinsider.R.string.text_next_check_will_be_at)} $nextFillingTime"
