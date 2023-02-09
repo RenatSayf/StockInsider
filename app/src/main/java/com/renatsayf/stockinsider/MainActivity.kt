@@ -30,6 +30,7 @@ import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -156,10 +157,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onGroupClick(
                     p0: ExpandableListView?,
                     p1: View?,
-                    p2: Int,
+                    item: Int,
                     p3: Long
                 ): Boolean {
-                    when (p2) {
+                    when (item) {
                         0 -> {
                             navController.navigate(R.id.nav_home)
                             drawerLayout.closeDrawer(GravityCompat.START)
@@ -202,10 +203,14 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        setAlarm(
+                                        val nextTime = setAlarm(
                                             scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
                                             periodInMinute = FireBaseConfig.trackingPeriod
                                         )
+                                        if (nextTime != null) {
+                                            val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                                            ServiceNotification.notify(this@MainActivity, message, null)
+                                        }
                                     }
                                 }
                             }
@@ -221,12 +226,12 @@ class MainActivity : AppCompatActivity() {
                 override fun onChildClick(
                     p0: ExpandableListView?,
                     p1: View?,
-                    p2: Int,
-                    p3: Int,
+                    item: Int,
+                    subItem: Int,
                     p4: Long
                 ): Boolean {
                     when {
-                        p2 == 1 && p3 == 0 -> {
+                        item == 1 && subItem == 0 -> {
                             mainVM.getSearchSetByName("pur_more1_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -238,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 1 && p3 == 1 -> {
+                        item == 1 && subItem == 1 -> {
                             mainVM.getSearchSetByName("pur_more5_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -250,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 1 && p3 == 2 -> {
+                        item == 1 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sale_more1_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -263,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                         }
-                        p2 == 1 && p3 == 3 -> {
+                        item == 1 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sale_more5_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -275,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 2 && p3 == 0 -> {
+                        item == 2 && subItem == 0 -> {
                             mainVM.getSearchSetByName("purchases_more_1")
                                 .observe(this@MainActivity) {
                                     val bundle = Bundle().apply {
@@ -288,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                                     navController.navigate(R.id.nav_result, bundle)
                                 }
                         }
-                        p2 == 2 && p3 == 1 -> {
+                        item == 2 && subItem == 1 -> {
                             mainVM.getSearchSetByName("purchases_more_5")
                                 .observe(this@MainActivity) {
                                     val bundle = Bundle().apply {
@@ -301,7 +306,7 @@ class MainActivity : AppCompatActivity() {
                                     navController.navigate(R.id.nav_result, bundle)
                                 }
                         }
-                        p2 == 2 && p3 == 2 -> {
+                        item == 2 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sales_more_1").observe(this@MainActivity) {
                                 Bundle().apply {
                                     putString(
@@ -312,7 +317,7 @@ class MainActivity : AppCompatActivity() {
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             }
                         }
-                        p2 == 2 && p3 == 3 -> {
+                        item == 2 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sales_more_5").observe(this@MainActivity) {
                                 Bundle().apply {
                                     putString(
@@ -323,7 +328,7 @@ class MainActivity : AppCompatActivity() {
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             }
                         }
-                        p2 == 3 && p3 == 0 -> {
+                        item == 3 && subItem == 0 -> {
                             mainVM.getSearchSetByName("pur_more1_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -335,7 +340,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 1 -> {
+                        item == 3 && subItem == 1 -> {
                             mainVM.getSearchSetByName("pur_more5_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -347,7 +352,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 2 -> {
+                        item == 3 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sale_more1_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -359,7 +364,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 3 -> {
+                        item == 3 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sale_more5_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -371,13 +376,13 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 6 && p3 == 0 -> {
+                        item == 6 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
                                 DonateDialog.getInstance()
                                     .show(supportFragmentManager, DonateDialog.TAG)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
-                        p2 == 6 && p3 == 1 -> {
+                        item == 6 && subItem == 1 -> {
                             showAd(googleAd0, yandexAd0) {}
                         }
                     }
