@@ -24,7 +24,6 @@ import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -222,7 +221,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         if (it > 0) {
                             val nextTime = setAlarm(
                                 scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = FireBaseConfig.workerPeriod
+                                periodInMinute = FireBaseConfig.trackingPeriod
                             )
                             if (nextTime != null) {
                                 val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"

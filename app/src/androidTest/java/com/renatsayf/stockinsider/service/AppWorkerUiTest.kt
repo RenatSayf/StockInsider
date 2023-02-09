@@ -55,7 +55,7 @@ class AppWorkerUiTest {
     @Test
     fun start_immediately() {
 
-        AppWorker.injectDependenciesToTest(listOf(testSet), workerPeriodInMinutes = 0, isTestMode = true)
+        AppWorker.injectDependenciesToTest(listOf(testSet), trackingPeriodInMinutes = 0, isTestMode = true)
         scenario.onActivity { activity ->
             activity.startOneTimeBackgroundWork(System.currentTimeMillis())
         }
@@ -81,7 +81,7 @@ class AppWorkerUiTest {
         val workPeriodInMinute: Long = 1
 
         scenario.onActivity { activity ->
-            AppWorker.injectDependenciesToTest(listOf(testSet), workerPeriodInMinutes = workPeriodInMinute, isTestMode = true)
+            AppWorker.injectDependenciesToTest(listOf(testSet), trackingPeriodInMinutes = workPeriodInMinute, isTestMode = true)
             scheduler = Scheduler(activity)
 
             val nextTime = activity.setAlarm(

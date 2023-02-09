@@ -43,7 +43,7 @@ class AppCalendarUiTest {
     @Test
     fun getNextStartTime_period_0() {
 
-        val periodInMinute = FireBaseConfig.workerPeriod
+        val periodInMinute = FireBaseConfig.trackingPeriod
         val startTimeLong = AppCalendar().getNextStartTime(periodInMinute, isTestMode = true)
         val startTimeStr = startTimeLong.timeToFormattedString()
         println("****************** getNextStartTime($periodInMinute): $startTimeStr *******************")
@@ -53,7 +53,7 @@ class AppCalendarUiTest {
         val offsetInMinute = offset / 1000 / 60
         println("****************** offset: $offsetInMinute *******************")
 
-        val workerPeriod = FireBaseConfig.workerPeriod
+        val workerPeriod = FireBaseConfig.trackingPeriod
         val actualResult = offsetInMinute in (workerPeriod - 1)..(workerPeriod + 1)
         Assert.assertEquals(true, actualResult)
 

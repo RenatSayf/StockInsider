@@ -94,7 +94,7 @@ class AppCalendar(
 }
 
 fun AppCalendar.getNextStartTime(
-    periodInMinute: Long = FireBaseConfig.workerPeriod,
+    periodInMinute: Long = FireBaseConfig.trackingPeriod,
     isTestMode: Boolean = Constants.TEST_MODE
 ): Long {
 

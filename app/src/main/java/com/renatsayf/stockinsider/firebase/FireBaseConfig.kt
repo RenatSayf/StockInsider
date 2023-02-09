@@ -19,9 +19,9 @@ object FireBaseConfig {
             val value = Firebase.remoteConfig.getString("user_agent")
             return value.ifEmpty { "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 Safari/537.36" }
         }
-    val workerPeriod: Long
+    val trackingPeriod: Long
         get() {
-            val value = if (!Constants.TEST_MODE) Firebase.remoteConfig.getLong("worker_period") else Constants.WORK_PERIOD_IN_MINUTE
+            val value = if (!Constants.TEST_MODE) Firebase.remoteConfig.getLong("tracking_period") else Constants.TEST_TRACKING_PERIOD_IN_MINUTES
             return value
         }
     val requestsCount: Int
