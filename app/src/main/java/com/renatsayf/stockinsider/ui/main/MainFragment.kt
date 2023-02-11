@@ -229,9 +229,9 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                             }
                         }
                     }
-                }
-                showAd(googleAd1, yandexAd1) {
-                    requireActivity().finish()
+                    showAd(googleAd1, yandexAd1) {
+                        requireActivity().finish()
+                    }
                 }
             }
         })

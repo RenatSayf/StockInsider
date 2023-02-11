@@ -213,9 +213,9 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     }
                                 }
-                            }
-                            showAd(googleAd1, yandexAd1) {
-                                finish()
+                                showAd(googleAd1, yandexAd1) {
+                                    finish()
+                                }
                             }
                         }
                     }
