@@ -234,7 +234,8 @@ internal class DataRepositoryImplTest {
             repository.insertCompanies(companies)
 
             val actualList = repository.getCompaniesFromDbAsync()
-            Assert.assertTrue(actualList?.size == 3)
+            val expectedResult = 3
+            Assert.assertEquals(expectedResult, actualList?.size)
 
             var actualSimilar = repository.getAllSimilar(pattern1)
             val actualTicker1 = actualSimilar[0].ticker

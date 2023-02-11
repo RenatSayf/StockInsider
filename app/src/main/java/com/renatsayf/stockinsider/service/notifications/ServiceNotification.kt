@@ -28,21 +28,26 @@ class ServiceNotification @Inject constructor() : Notification()
 
         val notify: (Context, String, RoomSearchSet?) -> Unit = { context: Context, message: String, set ->
 
-            val setId = set?.id?.toInt() ?: 0
-            val notificationId = 5555 + setId
-            val pendingIntent = NavDeepLinkBuilder(context)
-                .setComponentName(MainActivity::class.java)
-                .setGraph(R.navigation.mobile_navigation)
-                .setDestination(R.id.nav_result)
-                .setArguments(Bundle().apply {
-                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
-                    putInt(ARG_ID, notificationId)
-                })
-                .createPendingIntent()
-
-            ServiceNotification()
-                .createNotification(context = context, pendingIntent = pendingIntent, text = message)
-                .show(notificationId)
+            val setId = set?.id?.toInt()
+            setId?.let { id ->
+                val notificationId = 5555 + id
+                val pendingIntent = NavDeepLinkBuilder(context)
+                    .setComponentName(MainActivity::class.java)
+                    .setGraph(R.navigation.mobile_navigation)
+                    .setDestination(R.id.nav_result)
+                    .setArguments(Bundle().apply {
+                        putSerializable(ResultFragment.ARG_SEARCH_SET, set)
+                        putInt(ARG_ID, notificationId)
+                    })
+                    .createPendingIntent()
+                ServiceNotification()
+                    .createNotification(context = context, pendingIntent = pendingIntent, text = message)
+                    .show(notificationId)
+            }?: run {
+                ServiceNotification()
+                    .createNotification(context = context, pendingIntent = null, text = message)
+                    .show(3333)
+            }
         }
 
         fun cancelNotifications(context : Context, id: Int)
