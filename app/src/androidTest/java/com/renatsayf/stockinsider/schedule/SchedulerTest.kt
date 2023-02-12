@@ -4,8 +4,8 @@ import android.app.PendingIntent
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import com.renatsayf.stockinsider.TestActivity
-import com.renatsayf.stockinsider.receivers.TestReceiver
+import com.renatsayf.stockinsider.ui.testing.TestActivity
+import com.renatsayf.stockinsider.ui.testing.TestReceiver
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -43,21 +43,21 @@ class SchedulerTest {
     fun scheduleOne() {
 
         scenario.onActivity {
-            val result = scheduler.scheduleOne(System.currentTimeMillis() + 5000, 0, Scheduler.SET_NAME)
+            val result = scheduler.scheduleOne(System.currentTimeMillis() + 10000, 0, Scheduler.SET_NAME)
             Assert.assertTrue(result)
         }
 
         Thread.sleep(5000)
 
-        scenario.onActivity {
-            var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertTrue(pendingIntent is PendingIntent)
+        var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertTrue(pendingIntent is PendingIntent)
 
-            scheduler.cancel(pendingIntent!!)
-            pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
-            Assert.assertEquals(null, pendingIntent)
-        }
-        Thread.sleep(10000)
+        scheduler.cancel(pendingIntent!!)
+
+        Thread.sleep(7000)
+        pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertEquals(null, pendingIntent)
+        Thread.sleep(2000)
     }
 
 }

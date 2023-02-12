@@ -17,6 +17,14 @@
     </string-array>
 
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
+
+    <string-array name="yandex_ads">
+        <item>R-M-711877-1</item>
+        <item>R-M-711877-2</item>
+        <item>R-M-711877-3</item>
+    </string-array>
+    <string name="yandex_demo_ad_id">demo-interstitial-yandex</string>
+
     <string name="text_default_set_name">default_set</string>
     <string name="text_current_set_name">current_set</string>
 
@@ -57,16 +65,10 @@
     <string name="text_0">0</string>
     <string name="text_results">Найдено</string>
     <string name="text_deal_details">Детали сделки</string>
-<!--    <string name="text_confirm_search">Вы желаете получать ежедневные уведомления по вашим поисковым параметрам?</string>-->
-<!--    <string name="text_searching_is_created">Поиск по расписанию был создан</string>-->
-<!--    <string name="text_not_memory">Недостаточно памяти. Приложение будет закрыто</string>-->
-<!--    <string name="text_cancel_search">Вы хотите отменить эти поисковые уведомления?</string>-->
-<!--    <string name="text_search_is_disabled">Поисковые уведомления отключены</string>-->
     <string name="discription_text_to_notification">Ежедневные уведомления о транзакциях, произошедших на американских биржах</string>
     <string name="text_title_home">Поиск SEC Form 4</string>
     <string name="text_trading_strategy">Торговая стратегия</string>
     <string name="text_exit">Выход</string>
-<!--    <string name="base_notification_text">Каждый день с 6 до 22 часов по вашингтонскому времени мы будем проверять новые сделки</string>-->
     <string name="text_title_trade_type">Тип сделки</string>
     <string name="text_title_price">Цена, $</string>
     <string name="text_title_qty">Количество акций в сделке</string>
@@ -79,6 +81,8 @@
     <string name="text_data_not_avalible">Данные недоступны, пожалуйста, попробуйте позже</string>
     <string name="text_cancel">Отмена</string>
     <string name="text_ok">OK</string>
+    <string name="text_yes">Да</string>
+    <string name="text_no">Нет</string>
     <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
     <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
     <string name="text_select_sum">Выберете сумму:</string>
@@ -236,5 +240,14 @@
     <string name="text_success">Успешно</string>
     <string name="text_info">Информация</string>
     <string name="text_error">Ошибка</string>
+    <string name="text_search_is_going">Идет поиск новых сделок по SEC Form 4…</string>
+    <string name="text_tracking_description">Если Отслеживание включено, тогда ежедневно, с 6 до 22 часов по Вашингтонскому времени, в фоновом режиме будет выполнятся поиск новых сделок по поисковому запросу</string>
+    <string name="text_by_search">По поиску</string>
+    <string name="text_results_were_found">результатов было найдено</string>
+    <string name="text_next_check_will_be_at">Следующая проверка будет выполнена в</string>
+    <string name="text_manufacturer_of_devices">Производитель устройств</string>
+    <string name="text_battery_restrictions_message">дополнительно ограничивает работу приложений в фоновом режиме.
+        Для стабильной работы функции отслеживания, необходимо в настройках приложения снять ограничения по использованию батареи(Контроль активности).
+        Перейти в настройки приложения?</string>
 
 </resources>

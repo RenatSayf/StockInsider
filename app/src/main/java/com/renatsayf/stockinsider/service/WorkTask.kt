@@ -2,25 +2,13 @@ package com.renatsayf.stockinsider.service
 
 import android.content.Context
 import androidx.work.*
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.utils.timeToFormattedString
+import java.util.*
 import java.util.concurrent.TimeUnit
 
 
-class WorkTask(
-    private val timePeriod: Long = try {
-        FireBaseViewModel.workerPeriod
-    }
-    catch (e: ExceptionInInitializerError) {
-        1L
-    }
-    catch (e: NoClassDefFoundError) {
-        1L
-    }
-    catch (e: Exception) {
-        1L
-    }
-): IWorkTask {
+class WorkTask : IWorkTask {
 
     companion object {
         const val TAG = "TAG555555555"
@@ -32,18 +20,33 @@ class WorkTask(
         setRequiredNetworkType(NetworkType.CONNECTED)
     }.build()
 
-    override fun createOneTimeTask(context: Context, name: String, initialDelay: Long): OneTimeWorkRequest {
+    override fun createOneTimeTask(context: Context, name: String, startTime: Long): OneTimeWorkRequest {
+
+        val currentTimeInMillis = Calendar.getInstance().apply {
+            timeInMillis += TimeZone.getDefault().rawOffset
+        }.timeInMillis
+        val delay = TimeUnit.MILLISECONDS.toMinutes(startTime - currentTimeInMillis)
 
         val request = OneTimeWorkRequest.Builder(AppWorker::class.java).apply {
-            setInitialDelay(initialDelay, TimeUnit.MINUTES)
+            setInitialDelay(delay, TimeUnit.MINUTES)
             setConstraints(constraints)
-            addTag(TAG.plus("_").plus(System.currentTimeMillis().timeToFormattedString()))
+            addTag(TAG)
         }.build()
+
+        if (BuildConfig.DEBUG) {
+            println("******************** ${this::class.java.simpleName}.createOneTimeTask() currentTime: ${currentTimeInMillis.timeToFormattedString()} ***********************")
+            println("******************** ${this::class.java.simpleName}.createOneTimeTask() startTime: ${startTime.timeToFormattedString()} ***********************")
+            println("******************** ${this::class.java.simpleName}.createOneTimeTask() delay : $delay *********************")
+        }
 
         return request
     }
 
-    override fun createPeriodicTask(context: Context, name: String): PeriodicWorkRequest {
+    override fun createPeriodicTask(
+        context: Context,
+        name: String,
+        timePeriod: Long
+    ): PeriodicWorkRequest {
 
         val request =  PeriodicWorkRequest.Builder(AppWorker::class.java, timePeriod, TimeUnit.MINUTES).apply {
             val data = Data.Builder().apply {

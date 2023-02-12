@@ -1,8 +1,9 @@
-@file:Suppress("ObjectLiteralToLambda")
+@file:Suppress("ObjectLiteralToLambda", "MoveVariableDeclarationIntoWhen")
 
 package com.renatsayf.stockinsider.ui.result
 
 import android.animation.ValueAnimator
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -10,24 +11,21 @@ import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.FullScreenContentCallback
 import com.google.android.gms.ads.LoadAdError
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -37,6 +35,7 @@ import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
+import com.yandex.mobile.ads.common.AdRequestError
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -62,25 +61,9 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         DealListAdapter(this)
     }
 
-    private var ad:InterstitialAd? = null
-    private val isAdEnabled = true
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        val adRequest = AdRequest.Builder().build()
-        val adUnitId = this.getInterstitialAdId(index = 1)
-        InterstitialAd.load(requireContext(), adUnitId, adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdLoaded(p0: InterstitialAd) {
-                ad = p0
-            }
-            override fun onAdFailedToLoad(p0: LoadAdError) {
-                if (BuildConfig.DEBUG) {
-                    Exception(p0.message).printStackTrace()
-                }
-            }
-        })
-    }
+    private val adVM: AdViewModel by activityViewModels()
+    private var googleAd2: InterstitialAd? = null
+    private var yandexAd2: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,8 +79,44 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         binding = FragmentResultBinding.bind(view)
 
-        if (savedInstanceState == null)
-        {
+        if (savedInstanceState == null) {
+
+            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
+                adVM.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
+                    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                        googleAd2 = ad
+                    }
+                    override fun onGoogleAdFailed(error: LoadAdError) {
+                        googleAd2 = null
+                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                            override fun onYandexAdLoaded(
+                                ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                                isOnExit: Boolean
+                            ) {
+                                yandexAd2 = ad
+                            }
+                            override fun onYandexAdFailed(error: AdRequestError) {
+                                yandexAd2 = null
+                            }
+                        })
+                    }
+                })
+            }
+            else {
+                googleAd2 = null
+                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
+                    override fun onYandexAdLoaded(
+                        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                        isOnExit: Boolean
+                    ) {
+                        yandexAd2= ad
+                    }
+                    override fun onYandexAdFailed(error: AdRequestError) {
+                        yandexAd2 = null
+                    }
+                })
+            }
+
             val title = arguments?.getString(ARG_TITLE)
             binding.toolBar.title = title
 
@@ -244,13 +263,16 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            showAdOnBackPressed(isAdEnabled)
+            showAd(googleAd2, yandexAd2) {
+                findNavController().popBackStack()
+            }
         }
 
         binding.toolBar.setNavigationOnClickListener {
-            showAdOnBackPressed(isAdEnabled)
+            showAd(googleAd2, yandexAd2) {
+                findNavController().popBackStack()
+            }
         }
-
     }
 
     override fun onDestroyView() {
@@ -267,19 +289,19 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        val set = roomSearchSet?.apply {
+        val newSet = roomSearchSet?.apply {
             queryName = searchName
             target = Target.Tracking
             filingPeriod = 1
             tradePeriod = 3
             isDefault = false
         }
-        set?.let { s ->
+        newSet?.let { set ->
             trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
                 count?.let { c ->
-                    if (c < FireBaseViewModel.requestsCount) {
-                        s.isTracked = true
-                        mainViewModel.addNewSearchSet(s).observe(viewLifecycleOwner) { res ->
+                    if (c < FireBaseConfig.requestsCount) {
+                        set.isTracked = !FireBaseConfig.problemDevices.contains(Build.MANUFACTURER.uppercase())
+                        mainViewModel.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
@@ -308,7 +330,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         }
                     }
                     else {
-                        s.let {
+                        set.let {
                             it.target = null
                             it.isTracked = false
                             mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
@@ -345,26 +367,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     }
 
-    private fun showAdOnBackPressed(flag: Boolean) {
-        if (flag) {
-            ad?.let {
-                it.show(requireActivity())
-                it.fullScreenContentCallback = object : FullScreenContentCallback() {
-                    override fun onAdDismissedFullScreenContent() {
-                        findNavController().popBackStack()
-                    }
-                    override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                        if (BuildConfig.DEBUG) {
-                            Exception(p0.message).printStackTrace()
-                        }
-                        findNavController().popBackStack()
-                    }
-                }
-            } ?: run { findNavController().popBackStack() }
-        }
-        else findNavController().popBackStack()
-    }
-
     override fun onSortingDialogButtonClick(sorting: SortingViewModel.Sorting) {
         val currentList = dealsAdapter.getDeals()
         if (currentList.isNotEmpty()) {
@@ -372,6 +374,5 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             resultVM.setState(ResultViewModel.State.DataSorted(sortedMap))
         }
     }
-
 
 }

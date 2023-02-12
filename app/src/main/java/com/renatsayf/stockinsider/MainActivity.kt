@@ -15,6 +15,7 @@ import android.text.style.RelativeSizeSpan
 import android.text.style.UnderlineSpan
 import android.view.View
 import android.widget.ExpandableListView
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
 import androidx.core.view.GravityCompat
@@ -25,10 +26,12 @@ import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
 import com.google.android.gms.ads.interstitial.InterstitialAd
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -36,17 +39,17 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
+import com.yandex.mobile.ads.common.AdRequestError
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
+
     companion object {
         val APP_SETTINGS = "${this::class.java.`package`}.app_settings"
         val KEY_NO_SHOW_AGAIN = this::class.java.simpleName.plus("_key_no_show_again")
         val KEY_IS_AGREE = this::class.java.simpleName.plus("_key_is_agree")
-
-        var interstitialAd: InterstitialAd? = null
     }
 
     private lateinit var binding: ActivityMainBinding
@@ -58,13 +61,15 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[MainViewModel::class.java]
     }
 
-    private val firebaseVM: FireBaseViewModel by lazy {
-        ViewModelProvider(this)[FireBaseViewModel::class.java]
-    }
-
     private val trackedVM: TrackingListViewModel by lazy {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
+
+    private val adVM: AdViewModel by viewModels()
+    private var googleAd0: InterstitialAd? = null
+    private var yandexAd0: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+    var googleAd1: InterstitialAd? = null
+    var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,27 +81,70 @@ class MainActivity : AppCompatActivity() {
         navController = findNavController(R.id.nav_host_fragment)
         binding.navView.apply {
             setupWithNavController(navController)
-            setNavigationItemSelectedListener {
-                finish()
-                true
-            }
         }
 
-        firebaseVM
+        if (savedInstanceState == null) {
 
-        MobileAds.initialize(this)
-        val adRequest = AdRequest.Builder().build()
-        val adUnitId = this.getInterstitialAdId(index = 0)
-        InterstitialAd.load(this@MainActivity, adUnitId, adRequest, object : InterstitialAdLoadCallback() {
-            override fun onAdLoaded(p0: InterstitialAd) {
-                interstitialAd = p0
-            }
-            override fun onAdFailedToLoad(p0: LoadAdError) {
-                if (BuildConfig.DEBUG) {
-                    Exception(p0.message).printStackTrace()
+            FireBaseConfig
+            repeat(2){ index ->
+                if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
+                    adVM.loadGoogleAd(index, false, object : AdViewModel.GoogleAdListener {
+                        override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                            when(index) {
+                                0 -> googleAd0 = ad
+                                else -> googleAd1 = ad
+                            }
+                        }
+                        override fun onGoogleAdFailed(error: LoadAdError) {
+                            when(index) {
+                                0 -> googleAd0 = null
+                                else -> googleAd1 = null
+                            }
+                            adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
+                                override fun onYandexAdLoaded(
+                                    ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                                    isOnExit: Boolean
+                                ) {
+                                    when(index) {
+                                        0 -> yandexAd0 = ad
+                                        else -> yandexAd1 = ad
+                                    }
+                                }
+
+                                override fun onYandexAdFailed(error: AdRequestError) {
+                                    when(index) {
+                                        0 -> yandexAd0 = null
+                                        else -> yandexAd1 = null
+                                    }
+                                }
+                            })
+                        }
+                    })
+                } else {
+                    when(index) {
+                        0 -> googleAd0 = null
+                        else -> googleAd1 = null
+                    }
+                    adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
+                        override fun onYandexAdLoaded(
+                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                            isOnExit: Boolean
+                        ) {
+                            when(index){
+                                0 -> yandexAd0 = ad
+                                else -> yandexAd1 = ad
+                            }
+                        }
+                        override fun onYandexAdFailed(error: AdRequestError) {
+                            when(index) {
+                                0 -> yandexAd0 = null
+                                else -> yandexAd1 = null
+                            }
+                        }
+                    })
                 }
             }
-        })
+        }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
 
@@ -109,10 +157,10 @@ class MainActivity : AppCompatActivity() {
                 override fun onGroupClick(
                     p0: ExpandableListView?,
                     p1: View?,
-                    p2: Int,
+                    item: Int,
                     p3: Long
                 ): Boolean {
-                    when (p2) {
+                    when (item) {
                         0 -> {
                             navController.navigate(R.id.nav_home)
                             drawerLayout.closeDrawer(GravityCompat.START)
@@ -155,26 +203,18 @@ class MainActivity : AppCompatActivity() {
                             trackedVM.trackedCount().observe(this@MainActivity) { count ->
                                 count?.let {
                                     if (it > 0) {
-                                        setAlarm(
-                                            scheduler = Scheduler(this@MainActivity.applicationContext)
+                                        val nextTime = setAlarm(
+                                            scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
+                                            periodInMinute = FireBaseConfig.trackingPeriod
                                         )
+                                        if (nextTime != null) {
+                                            val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                                            ServiceNotification.notify(this@MainActivity, message, null)
+                                        }
                                     }
-                                    interstitialAd?.let { ad ->
-                                        ad.show(this@MainActivity)
-                                        ad.fullScreenContentCallback =
-                                            object : FullScreenContentCallback() {
-                                                override fun onAdDismissedFullScreenContent() {
-                                                    finish()
-                                                }
-
-                                                override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                                                    if (BuildConfig.DEBUG) {
-                                                        Exception(p0.message).printStackTrace()
-                                                    }
-                                                    finish()
-                                                }
-                                            }
-                                    } ?: run { finish() }
+                                }
+                                showAd(googleAd1, yandexAd1) {
+                                    finish()
                                 }
                             }
                         }
@@ -186,12 +226,12 @@ class MainActivity : AppCompatActivity() {
                 override fun onChildClick(
                     p0: ExpandableListView?,
                     p1: View?,
-                    p2: Int,
-                    p3: Int,
+                    item: Int,
+                    subItem: Int,
                     p4: Long
                 ): Boolean {
                     when {
-                        p2 == 1 && p3 == 0 -> {
+                        item == 1 && subItem == 0 -> {
                             mainVM.getSearchSetByName("pur_more1_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -203,7 +243,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 1 && p3 == 1 -> {
+                        item == 1 && subItem == 1 -> {
                             mainVM.getSearchSetByName("pur_more5_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -215,7 +255,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 1 && p3 == 2 -> {
+                        item == 1 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sale_more1_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -228,7 +268,7 @@ class MainActivity : AppCompatActivity() {
                                 }
 
                         }
-                        p2 == 1 && p3 == 3 -> {
+                        item == 1 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sale_more5_for_3")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -240,7 +280,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 2 && p3 == 0 -> {
+                        item == 2 && subItem == 0 -> {
                             mainVM.getSearchSetByName("purchases_more_1")
                                 .observe(this@MainActivity) {
                                     val bundle = Bundle().apply {
@@ -253,7 +293,7 @@ class MainActivity : AppCompatActivity() {
                                     navController.navigate(R.id.nav_result, bundle)
                                 }
                         }
-                        p2 == 2 && p3 == 1 -> {
+                        item == 2 && subItem == 1 -> {
                             mainVM.getSearchSetByName("purchases_more_5")
                                 .observe(this@MainActivity) {
                                     val bundle = Bundle().apply {
@@ -266,7 +306,7 @@ class MainActivity : AppCompatActivity() {
                                     navController.navigate(R.id.nav_result, bundle)
                                 }
                         }
-                        p2 == 2 && p3 == 2 -> {
+                        item == 2 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sales_more_1").observe(this@MainActivity) {
                                 Bundle().apply {
                                     putString(
@@ -277,7 +317,7 @@ class MainActivity : AppCompatActivity() {
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             }
                         }
-                        p2 == 2 && p3 == 3 -> {
+                        item == 2 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sales_more_5").observe(this@MainActivity) {
                                 Bundle().apply {
                                     putString(
@@ -288,7 +328,7 @@ class MainActivity : AppCompatActivity() {
                                 }.run { navController.navigate(R.id.nav_result, this) }
                             }
                         }
-                        p2 == 3 && p3 == 0 -> {
+                        item == 3 && subItem == 0 -> {
                             mainVM.getSearchSetByName("pur_more1_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -300,7 +340,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 1 -> {
+                        item == 3 && subItem == 1 -> {
                             mainVM.getSearchSetByName("pur_more5_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -312,7 +352,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 2 -> {
+                        item == 3 && subItem == 2 -> {
                             mainVM.getSearchSetByName("sale_more1_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -324,7 +364,7 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 3 && p3 == 3 -> {
+                        item == 3 && subItem == 3 -> {
                             mainVM.getSearchSetByName("sale_more5_for_14")
                                 .observe(this@MainActivity) {
                                     Bundle().apply {
@@ -336,24 +376,14 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        p2 == 6 && p3 == 0 -> {
+                        item == 6 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
                                 DonateDialog.getInstance()
                                     .show(supportFragmentManager, DonateDialog.TAG)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
-                        p2 == 6 && p3 == 1 -> {
-                            val adId = this@MainActivity.getInterstitialAdId(index = 2)
-                            InterstitialAd.load(this@MainActivity, adId, adRequest, object : InterstitialAdLoadCallback() {
-                                override fun onAdLoaded(ad: InterstitialAd) {
-                                    ad.show(this@MainActivity)
-                                }
-                                override fun onAdFailedToLoad(p0: LoadAdError) {
-                                    if (BuildConfig.DEBUG) {
-                                        Exception(p0.message).printStackTrace()
-                                    }
-                                }
-                            })
+                        item == 6 && subItem == 1 -> {
+                            showAd(googleAd0, yandexAd0) {}
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)

@@ -1,11 +1,10 @@
 package com.renatsayf.stockinsider.di.modules
 
-import com.renatsayf.stockinsider.service.ServiceNotification
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
 @Module

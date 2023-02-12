@@ -81,10 +81,12 @@ class DonateDialog : DialogFragment()
         }
 
         binding.btnDoDonate.setOnClickListener {
-            val selectedPrice = binding.sumSpinnerView.selectedItem.toString()
-            viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
-                if (params != null) {
-                    viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+            val selectedPrice = binding.sumSpinnerView.selectedItem as? String
+            if (selectedPrice != null) {
+                viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
+                    if (params != null) {
+                        viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+                    }
                 }
             }
         }

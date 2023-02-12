@@ -14,7 +14,7 @@
         android:layout_weight="1"
         android:padding="5dp"
         android:contentDescription="@string/app_name"
-        android:src="@drawable/ic_stock_hause_cold"/>
+        android:src="@drawable/ic_stock_hause_gold"/>
 
     <TextView
         android:id="@+id/titleView"

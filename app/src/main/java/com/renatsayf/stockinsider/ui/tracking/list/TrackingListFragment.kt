@@ -1,5 +1,7 @@
 package com.renatsayf.stockinsider.ui.tracking.list
 
+import android.app.Activity
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -14,7 +16,7 @@ import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
@@ -30,11 +32,6 @@ import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
-
-    companion object {
-        val TASK_NAME = "${this::class.java.name}.TASK"
-        val WORK_NAME = "${this::class.java.name}.WORK"
-    }
 
     private lateinit var binding: TrackingListFragmentBinding
 
@@ -92,7 +89,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
             trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
                 count?.let {
-                    if (it < FireBaseViewModel.requestsCount) {
+                    if (it < FireBaseConfig.requestsCount) {
                         val set = RoomSearchSet(
                             queryName = "",
                             companyName = "",
@@ -167,16 +164,37 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 when (checked) {
                     true -> {
                         showSnackBar(getString(R.string.text_tracking_enabled))
+                        requireActivity().showOrNotInfoDialog {
+                            showInfoDialog(
+                                title = getString(R.string.text_warning),
+                                message = "\"${getString(R.string.text_manufacturer_of_devices)} ${Build.MANUFACTURER}, ${
+                                    getString(
+                                        R.string.text_battery_restrictions_message
+                                    )
+                                }\"",
+                                status = InfoDialog.DialogStatus.EXTENDED_WARNING,
+                                callback = {
+                                    when(it) {
+                                        1 -> {
+                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                            this@TrackingListFragment.openAppSystemSettings()
+                                        }
+                                        0 -> {
+                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                        }
+                                    }
+                                }
+                            )
+                        }
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
-                                Scheduler(requireContext()).apply {
-                                    val pendingIntent = isAlarmSetup(Scheduler.SET_NAME, false)
-                                    if (pendingIntent != null) {
-                                        this.cancel(pendingIntent)
-                                    }
+                                val scheduler = Scheduler(requireContext().applicationContext)
+                                val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+                                pendingIntent?.let {
+                                    scheduler.cancel(it)
                                 }
                             }
                         }
@@ -194,6 +212,14 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         })
     }
 
+    override fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet) {
+        val queryName = set.queryName
+        val infoText = "${getString(R.string.text_tracking_description)} $queryName"
+        InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO).let { dialog ->
+            dialog.show(requireActivity().supportFragmentManager, dialog.tag)
+        }
+    }
+
     override fun onResume() {
 
         (activity as MainActivity).supportActionBar?.hide()
@@ -206,4 +232,18 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onDestroyView()
     }
 
+}
+
+fun Activity.showOrNotInfoDialog(
+    isNotShow: Boolean = appPref.getBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, false),
+    manufacturer: String = Build.MANUFACTURER,
+    callback: () -> Unit
+) {
+
+    val devices = FireBaseConfig.problemDevices.map {
+        it.uppercase()
+    }
+    if (devices.contains(manufacturer.uppercase()) && !isNotShow) {
+        callback.invoke()
+    }
 }

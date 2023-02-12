@@ -16,21 +16,27 @@ class InfoDialog private constructor() : DialogFragment() {
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
+        const val KEY_NOT_SHOW_AGAN = "KEY_NOT_SHOW_AGAN5555222"
 
         private var title: String = ""
         private var message: String = ""
         private var status: DialogStatus = DialogStatus.INFO
+        private var callback: (Int) -> Unit = {}
         private var instance: InfoDialog? = null
 
-        fun newInstance(title: String = "", message: String, status: DialogStatus): InfoDialog {
+        fun newInstance(
+            title: String = "",
+            message: String,
+            status: DialogStatus,
+            callback: (Int) -> Unit = {}
+        ): InfoDialog {
             this.title = title
             this.message = message
             this.status = status
-            return if (instance == null ) InfoDialog() else instance!!
+            this.callback = callback
+            return if (instance == null) InfoDialog() else instance!!
         }
     }
-
-    private var listener: Listener? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
 
@@ -40,6 +46,7 @@ class InfoDialog private constructor() : DialogFragment() {
                 DialogStatus.INFO -> setIcon(R.drawable.ic_info_blue)
                 DialogStatus.ERROR -> setIcon(R.drawable.ic_error_red)
                 DialogStatus.WARNING -> setIcon(R.drawable.ic_warning_yellow)
+                DialogStatus.EXTENDED_WARNING -> setIcon(R.drawable.ic_warning_yellow)
             }
             if (title.isNotEmpty()) {
                 setTitle(title)
@@ -49,24 +56,31 @@ class InfoDialog private constructor() : DialogFragment() {
             }
             setPositiveButton(getString(R.string.text_ok), object : DialogInterface.OnClickListener {
                 override fun onClick(dialog: DialogInterface?, which: Int) {
-                    listener?.onInfoDialogPositiveClick()
+                    callback.invoke(1)
                     dismiss()
                 }
             })
+            if (status == DialogStatus.EXTENDED_WARNING) {
+                setNeutralButton(getString(R.string.text_not_show_again), object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        callback.invoke(0)
+                        dismiss()
+                    }
+                })
+                setNegativeButton(getString(R.string.text_cancel), object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        callback.invoke(-1)
+                        dismiss()
+                    }
+                })
+            }
         }.create().apply {
             window?.setBackgroundDrawableResource(R.drawable.bg_dialog_white)
         }
     }
 
-    fun setOnPositiveClickListener(listener: Listener) {
-        this.listener = listener
-    }
-
     enum class DialogStatus {
-        SUCCESS, INFO, WARNING, ERROR
+        SUCCESS, INFO, WARNING, ERROR, EXTENDED_WARNING
     }
 
-    interface Listener {
-        fun onInfoDialogPositiveClick()
-    }
 }

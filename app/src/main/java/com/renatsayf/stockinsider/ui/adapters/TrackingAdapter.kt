@@ -3,7 +3,6 @@
 package com.renatsayf.stockinsider.ui.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import android.widget.CompoundButton
 import androidx.recyclerview.widget.DiffUtil
@@ -12,7 +11,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TrackingItemBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.utils.setVisible
 
 
 class TrackingAdapter(
@@ -33,6 +31,7 @@ class TrackingAdapter(
         fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int)
         fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int)
+        fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -72,9 +71,6 @@ class TrackingAdapter(
 
                 binding.dealType.text = dealType
 
-//                if (set.isDefault) editButton.setVisible(false)
-//                if (set.isDefault) deleteButton.setVisible(false)
-
                 trackingSwitcher.isChecked = set.isTracked
 
                 editButton.setOnClickListener {
@@ -93,6 +89,10 @@ class TrackingAdapter(
 
                 btnVisibility.setOnClickListener {
                     listener?.onTrackingAdapterVisibilityButtonClick(set, position)
+                }
+
+                btnInfo.setOnClickListener {
+                    listener?.onTrackingAdapterInfoButtonClick(set)
                 }
             }
         }

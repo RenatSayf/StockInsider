@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.utils
 
-import android.icu.util.Calendar
 import android.icu.util.TimeZone
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import org.junit.*
@@ -18,9 +17,10 @@ class AppCalendarTest {
     @get:Rule
     val archRule = InstantTaskExecutorRule() //выполнение всех операций архитектурных компонентов в главном потоке
 
+    private val periodInMinute: Long = 60L
+
     @Before
     fun setUp() {
-
     }
 
     @After
@@ -30,184 +30,126 @@ class AppCalendarTest {
     @Test
     fun getCurrentTime() {
 
-        val ekbZoneId = "Asia/Yekaterinburg"
-        val chicagoZoneId = "America/Chicago"
-        val washingtonZoneId = "America/Washington"
+        //val ekbZoneId = "Asia/Yekaterinburg"
+        //val chicagoZoneId = "America/Chicago"
+        //val washingtonZoneId = "America/Washington"
 
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val newYorkZoneOffset = newYorkTimeZone.rawOffset
-        val newYorkCalendar = Calendar.getInstance(newYorkTimeZone).apply {
-            timeInMillis = System.currentTimeMillis() + newYorkZoneOffset
-        }
-        AppCalendar.setCalendar(newYorkCalendar)
-        val actualTime = AppCalendar.getCurrentTime()
-        val actualOffset = (actualTime - System.currentTimeMillis()) / 3600 / 1000
+        val appCalendar = AppCalendar()
+        val actualTime = appCalendar.getCurrentTime()
+        val utcTime = System.currentTimeMillis() - TimeZone.getDefault().rawOffset
+
+        val actualOffset = (actualTime - utcTime) / 3600 / 1000
         Assert.assertEquals(-5, actualOffset)
     }
 
     @Test
     fun isWeekEnd() {
 
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2022)
-            set(Calendar.MONTH, 11)
-            set(Calendar.DAY_OF_MONTH, 24)
-            set(Calendar.HOUR_OF_DAY, 6)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
-        var actualResult = AppCalendar.isWeekEnd
+        var inputTime = "2023-01-22T06:00:00".formattedStringToLong()
+
+        var appCalendar = AppCalendar(inputTime)
+        var actualResult = appCalendar.isWeekEnd
         Assert.assertEquals(true, actualResult)
 
-        calendar.set(Calendar.DAY_OF_MONTH, 26)
-        AppCalendar.setCalendar(calendar)
-        actualResult = AppCalendar.isWeekEnd
+        inputTime = "2023-01-24T06:00:00".formattedStringToLong()
+        appCalendar = AppCalendar(inputTime)
+        actualResult = appCalendar.isWeekEnd
         Assert.assertEquals(false, actualResult)
     }
 
     @Test
     fun isFillingTime() {
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2022)
-            set(Calendar.MONTH, 11)
-            set(Calendar.DAY_OF_MONTH, 26)
-            set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
-        var actualResult = AppCalendar.isFillingTime
+
+        var inputTime = "2023-01-26T17:00:00".formattedStringToLong()
+        var appCalendar = AppCalendar(inputTime)
+        var actualResult = appCalendar.isFillingTime
         Assert.assertEquals(true, actualResult)
 
-        calendar.apply {
-            set(Calendar.HOUR_OF_DAY, 2)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        actualResult = AppCalendar.isFillingTime
+        inputTime = "2023-01-26T10:00:00".formattedStringToLong()
+        appCalendar = AppCalendar(inputTime)
+        actualResult = appCalendar.isFillingTime
         Assert.assertEquals(false, actualResult)
     }
 
+    @Suppress("UnnecessaryVariable")
     @Test
     fun getNextFillingTime_on_the_weekend() {
 
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2022)
-            set(Calendar.MONTH, 11)
-            set(Calendar.DAY_OF_MONTH, 24)
-            set(Calendar.HOUR_OF_DAY, 8)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
+        val inputTime = "2023-01-22T10:00:00".formattedStringToLong()
 
-        var isWeekEnd = AppCalendar.isWeekEnd
+        val appCalendar = AppCalendar(inputTime)
+
+        val isWeekEnd = appCalendar.isWeekEnd
         Assert.assertEquals(true, isWeekEnd)
 
-        var isFillingTime = AppCalendar.isFillingTime
+        val isFillingTime = appCalendar.isFillingTime
         Assert.assertEquals(false, isFillingTime)
 
-        val nextFillingTime = AppCalendar.getNextFillingTime()
-        val nextFillingTimeStr = nextFillingTime.timeToFormattedString()
+        val nextFillingTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute)
+        val actualResult = nextFillingTime.timeToFormattedString()
+        val expectedResult = "2023-01-23 17:00:00"
+        Assert.assertEquals(expectedResult, actualResult)
+    }
 
-        calendar.timeInMillis = nextFillingTime
-        AppCalendar.setCalendar(calendar)
+    @Suppress("UnnecessaryVariable")
+    @Test
+    fun getNextFillingTime_on_real_time() {
 
-        isWeekEnd = AppCalendar.isWeekEnd
-        Assert.assertEquals(false, isWeekEnd)
+        val workerPeriodInMinute: Long = 20
 
-        isFillingTime = AppCalendar.isFillingTime
-        Assert.assertEquals(true, isFillingTime)
+        var appCalendar = AppCalendar()
 
-        val nextFillingTime1 = AppCalendar.getNextFillingTime()
-        calendar.timeInMillis = nextFillingTime1
-        AppCalendar.setCalendar(calendar)
+        val firstTime = appCalendar.getNextFillingTime(workerPeriodInMinute)
+        println("****************** ${this.javaClass.simpleName}.getNextFillingTime_on_real_time(): ${firstTime.timeToFormattedString()} *****************")
+        println("****************** delay $workerPeriodInMinute sec *******************************")
+        
+        Thread.sleep(workerPeriodInMinute * 1000)
 
-        isWeekEnd = AppCalendar.isWeekEnd
-        Assert.assertEquals(false, isWeekEnd)
+        appCalendar = AppCalendar()
+        val secondTime = appCalendar.getNextFillingTime(workerPeriodInMinute)
+        println("****************** ${this.javaClass.simpleName}.getNextFillingTime_on_real_time(): ${secondTime.timeToFormattedString()} *****************")
 
-        isFillingTime = AppCalendar.isFillingTime
-        Assert.assertEquals(true, isFillingTime)
-
+        val actualResult = (secondTime - firstTime) / 1000
+        Assert.assertTrue(actualResult in 19..21)
     }
 
     @Test
     fun getNextFillingTime_on_the_same_day() {
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2023)
-            set(Calendar.MONTH, 0)
-            set(Calendar.DAY_OF_MONTH, 4)
-            set(Calendar.HOUR_OF_DAY, 7)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
-        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
-        Assert.assertEquals("2023-01-04T08:00:00", actualTime)
+        val inputTime = "2023-01-04T07:00:00".formattedStringToLong()
+        val appCalendar = AppCalendar(inputTime)
+
+        val actualTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute).timeToFormattedString()
+        Assert.assertEquals("2023-01-04 08:00:00", actualTime)
     }
 
     @Test
     fun getNextFillingTime_on_the_end_filling_day() {
-        val newYorkZoneId = "America/New_York"
-        val newYorkTimeZone = TimeZone.getTimeZone(newYorkZoneId)
-        val calendar = Calendar.getInstance(newYorkTimeZone).apply {
-            set(Calendar.YEAR, 2023)
-            set(Calendar.MONTH, 0)
-            set(Calendar.DAY_OF_MONTH, 4)
-            set(Calendar.HOUR_OF_DAY, 22)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += newYorkTimeZone.rawOffset
-        }
-        AppCalendar.setCalendar(calendar)
-        val currentTimeStr = AppCalendar.getCurrentTime().timeToFormattedString()
 
-        val actualTime = AppCalendar.getNextFillingTime().timeToFormattedString()
-        Assert.assertEquals("2023-01-04T23:00:00", actualTime)
+        val inputTime = "2023-01-04T22:00:00".formattedStringToLong()
+        val appCalendar = AppCalendar(inputTime)
+
+        val actualTime = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute).timeToFormattedString()
+        Assert.assertEquals("2023-01-04 23:00:00", actualTime)
     }
 
     @Test
     fun getNextFillingTimeByDefaultTimeZone() {
 
-        val currentNewYorkTime = AppCalendar.getCurrentTime().timeToFormattedString()
+        val inputTime = "2023-01-04T07:00:00".formattedStringToLong()
+        val appCalendar = AppCalendar(inputTime)
 
-        val ekbZoneId = "Asia/Yekaterinburg"
-        val defaultZone = TimeZone.getTimeZone(ekbZoneId)
-        val defaultCalendar = Calendar.getInstance(defaultZone).apply {
-            set(Calendar.YEAR, 2023)
-            set(Calendar.MONTH, 0)
-            set(Calendar.DAY_OF_MONTH, 4)
-            set(Calendar.HOUR_OF_DAY, 7)
-            set(Calendar.MINUTE, 0)
-            timeInMillis += defaultZone.rawOffset
-        }
-        val defaultCurrentTime = defaultCalendar.timeInMillis.timeToFormattedString()
-
-        val nextTimeNewYork = AppCalendar.getNextFillingTime()
-        val nextTimeDefault = AppCalendar.getNextFillingTimeByDefaultTimeZone()
+        val nextTimeNewYork = appCalendar.getNextFillingTime(periodInMinute)
+        val nextTimeDefault = appCalendar.getNextFillingTimeByDefaultTimeZone(periodInMinute)
 
         val diffInMillis = abs(nextTimeNewYork - nextTimeDefault)
-        val diffInHours = TimeUnit.MILLISECONDS.toHours(diffInMillis)
-        val actualResult = diffInHours - AppCalendar.workerPeriod
+        val actualResult = TimeUnit.MILLISECONDS.toHours(diffInMillis) - TimeUnit.MINUTES.toHours(periodInMinute)
 
         val defaultHourOffset = TimeUnit.MILLISECONDS.toHours(TimeZone.getDefault().rawOffset.toLong())
-        val appHourOffset = TimeUnit.MILLISECONDS.toHours(AppCalendar.timeZone.rawOffset.toLong())
+        val appHourOffset = TimeUnit.MILLISECONDS.toHours(appCalendar.timeZoneNY.rawOffset.toLong())
         val expectedResult = abs(defaultHourOffset) + abs(appHourOffset)
 
         Assert.assertEquals(expectedResult, actualResult)
     }
+
 }

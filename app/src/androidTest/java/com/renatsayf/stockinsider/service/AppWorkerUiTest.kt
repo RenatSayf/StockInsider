@@ -3,18 +3,10 @@ package com.renatsayf.stockinsider.service
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
-import androidx.work.Operation
-import androidx.work.await
-import com.renatsayf.stockinsider.TestActivity
-import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.di.modules.NetRepositoryModule
-import com.renatsayf.stockinsider.di.modules.RoomDataBaseModule
-import com.renatsayf.stockinsider.network.INetRepository
-import com.renatsayf.stockinsider.network.MockApi
-import com.renatsayf.stockinsider.utils.checkTestPort
-import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
-import kotlinx.coroutines.runBlocking
+import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.ui.testing.TestActivity
+import com.renatsayf.stockinsider.utils.*
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -25,9 +17,7 @@ class AppWorkerUiTest {
     @get:Rule
     var rule = ActivityScenarioRule(TestActivity::class.java)
     private lateinit var scenario: ActivityScenario<TestActivity>
-
-    private lateinit var dao: AppDao
-    private lateinit var repository: INetRepository
+    private lateinit var scheduler: Scheduler
 
     private val testSet = RoomSearchSet(
         queryName = "Microsoft",
@@ -47,14 +37,14 @@ class AppWorkerUiTest {
         isTracked = true
     }
 
+    init {
+        checkTestPort()
+    }
+
     @Before
     fun setUp() {
-        checkTestPort()
+
         scenario = rule.scenario
-        scenario.onActivity { activity ->
-            dao = RoomDataBaseModule.provideRoomDataBase(activity)
-            repository = NetRepositoryModule.provideSearchRequest(MockApi(activity))
-        }
     }
 
     @After
@@ -63,24 +53,56 @@ class AppWorkerUiTest {
     }
 
     @Test
-    fun startOneTimeBackgroundWork() {
+    fun start_immediately() {
+
+        AppWorker.injectDependenciesToTest(listOf(testSet), trackingPeriodInMinutes = 0, isTestMode = true)
+        scenario.onActivity { activity ->
+            activity.startOneTimeBackgroundWork(System.currentTimeMillis())
+        }
+
+        Thread.sleep(5000)
+
+        var state = AppWorker.state
+        Assert.assertEquals(AppWorker.State.Started, state)
+
+        Thread.sleep(10000)
+
+        while (state == AppWorker.State.Started) {
+            Thread.sleep(2000)
+            state = AppWorker.state
+        }
+
+        Assert.assertEquals(AppWorker.State.Completed, state)
+    }
+
+    @Test
+    fun start_by_scheduled_from_receiver() {
+
+        val workPeriodInMinute: Long = 1
 
         scenario.onActivity { activity ->
+            AppWorker.injectDependenciesToTest(listOf(testSet), trackingPeriodInMinutes = workPeriodInMinute, isTestMode = true)
+            scheduler = Scheduler(activity)
 
-            runBlocking {
-
-                val function = ServiceNotification.notify
-                AppWorker.injectDependenciesToTest(dao, repository, listOf(testSet), function)
-                val operation = activity.startOneTimeBackgroundWork()
-                val state = operation.state
-                state.observe(activity) { s ->
-                    println("************* state = $s ********************")
-                }
-                val result = operation.result
-                val success = result.await()
-                Assert.assertEquals(Operation.SUCCESS, success)
-            }
+            val nextTime = activity.setAlarm(
+                scheduler = scheduler,
+                periodInMinute = workPeriodInMinute,
+                isTest = true
+            )
+            println("******************* ${this::class.java.simpleName} System time: ${System.currentTimeMillis().timeToFormattedString()} ******************")
+            Thread.sleep(1000)
+            Assert.assertTrue(nextTime != null)
+            Thread.sleep(2000)
+            activity.finish()
         }
-        Thread.sleep(3000)
+
+        var state = AppWorker.state
+        while (state != AppWorker.State.Completed && state != AppWorker.State.Failed) {
+            Thread.sleep(2000)
+            state = AppWorker.state
+        }
+        val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Assert.assertTrue(pendingIntent != null)
+        pendingIntent?.cancel()
     }
 }

@@ -9,7 +9,9 @@
     android:paddingStart="10dp"
     android:paddingTop="30dp"
     android:paddingEnd="10dp"
-    android:paddingBottom="10dp">
+    android:paddingBottom="10dp"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
 
     <TextView
         android:id="@+id/section_title"
@@ -41,7 +43,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="48dp"
-        android:autofillHints="XXXXX"
         android:completionThreshold="1"
         android:inputType="textAutoComplete|textMultiLine"
         android:hint="@string/text_all_tickers"

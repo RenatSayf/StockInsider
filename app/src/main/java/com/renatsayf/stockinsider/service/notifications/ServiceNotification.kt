@@ -1,4 +1,4 @@
-package com.renatsayf.stockinsider.service
+package com.renatsayf.stockinsider.service.notifications
 
 import android.app.Notification
 import android.app.NotificationChannel
@@ -6,18 +6,15 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.graphics.BitmapFactory
-import android.icu.util.Calendar
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
 import android.os.Bundle
 import androidx.core.app.NotificationCompat
 import androidx.navigation.NavDeepLinkBuilder
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.utils.Utils
 import javax.inject.Inject
 
 
@@ -29,27 +26,28 @@ class ServiceNotification @Inject constructor() : Notification()
         const val NOTIFICATION_ID : Int = 15917
         val ARG_ID = "${this::class.java.simpleName}.ARG_ID"
 
-        val notify: (Context, Int, RoomSearchSet?) -> Unit = { context: Context, count: Int, set ->
+        val notify: (Context, String, RoomSearchSet?) -> Unit = { context: Context, message: String, set ->
 
-            val time = Utils().getFormattedDateTime(0, Calendar.getInstance().time)
-            val message = "According to the ${set?.queryName} search query, $count results were found \n" +
-                    if (BuildConfig.DEBUG) time.plus(" (в.мест)") else ""
-
-            val setId = set?.id?.toInt() ?: 0
-            val notificationId = 5555 + setId
-            val pendingIntent = NavDeepLinkBuilder(context)
-                .setComponentName(MainActivity::class.java)
-                .setGraph(R.navigation.mobile_navigation)
-                .setDestination(R.id.nav_result)
-                .setArguments(Bundle().apply {
-                    putSerializable(ResultFragment.ARG_SEARCH_SET, set)
-                    putInt(ARG_ID, notificationId)
-                })
-                .createPendingIntent()
-
-            ServiceNotification()
-                .createNotification(context = context, pendingIntent = pendingIntent, text = message)
-                .show(notificationId)
+            val setId = set?.id?.toInt()
+            setId?.let { id ->
+                val notificationId = 5555 + id
+                val pendingIntent = NavDeepLinkBuilder(context)
+                    .setComponentName(MainActivity::class.java)
+                    .setGraph(R.navigation.mobile_navigation)
+                    .setDestination(R.id.nav_result)
+                    .setArguments(Bundle().apply {
+                        putSerializable(ResultFragment.ARG_SEARCH_SET, set)
+                        putInt(ARG_ID, notificationId)
+                    })
+                    .createPendingIntent()
+                ServiceNotification()
+                    .createNotification(context = context, pendingIntent = pendingIntent, text = message)
+                    .show(notificationId)
+            }?: run {
+                ServiceNotification()
+                    .createNotification(context = context, pendingIntent = null, text = message)
+                    .show(3333)
+            }
         }
 
         fun cancelNotifications(context : Context, id: Int)
@@ -66,8 +64,8 @@ class ServiceNotification @Inject constructor() : Notification()
     fun createNotification(context : Context,
                            pendingIntent : PendingIntent?,
                            text : String,
-                           smallIconRes: Int = R.drawable.ic_stock_hause_cold,
-                           largeIconRes: Int = R.drawable.ic_notification_logo
+                           smallIconRes: Int = R.drawable.ic_stock_hause_gold,
+                           largeIconRes: Int = R.drawable.icon_logo
                            ) : ServiceNotification
     {
         this.context = context

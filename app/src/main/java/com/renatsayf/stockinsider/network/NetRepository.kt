@@ -2,7 +2,7 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseViewModel
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import io.reactivex.Single
@@ -22,7 +22,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     private var searchTicker : String = ""
 
     private val userAgent = try {
-        FireBaseViewModel.userAgent
+        FireBaseConfig.userAgent
     }
     catch (e: ExceptionInInitializerError) {
         okhttp3.internal.userAgent
@@ -108,15 +108,18 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                     deal.filingDateRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.attr("href")
                     deal.tradeDate = element?.select("tr:nth-child($trIndex) > td:nth-child(3) > div")?.text()
                     deal.ticker = element?.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a")?.text()
-                    val tdIndex = when
-                    {
-                        searchTicker.isNotEmpty() && !searchTicker.contains("+") ->
-                        {
+                    val tdIndex = when {
+                        searchTicker.isNotEmpty() && !searchTicker.contains("+") -> {
                             -1
                         }
                         else -> 0
                     }
-                    deal.company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
+                    var company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
+                    if (company.isNullOrEmpty()) {
+                        company = document.select("#tablewrapper > div.h1title > h1").text()
+                        company = company?.substringAfter(" - ", "")?.substringBefore(" - ", "")
+                    }
+                    deal.company = company
                     deal.insiderName = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.text()
                     deal.insiderNameRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 6}) > a")?.attr("href")
                     deal.insiderTitle = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 7})")?.text()
@@ -179,7 +182,8 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                     filingDateRefer = element.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a").attr("href")
                     tradeDate = element.select("tr:nth-child($trIndex) > td:nth-child(3) > div").text()
                     ticker = element.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
-                    company = ""
+                    company = (if (tagId == "#tablewrapper") document.select("$tagId > div.h1title > h1").text() else "")
+                        .substringAfter(" - ", "").substringBefore(" - ", "")
                     insiderName = element.select("tr:nth-child($trIndex) > td:nth-child(5) > a").text()
                     insiderNameRefer = element.select("tr:nth-child($trIndex) > td:nth-child(5) > a").attr("href")
                     insiderTitle = element.select("tr:nth-child($trIndex) > td:nth-child(6)").text()

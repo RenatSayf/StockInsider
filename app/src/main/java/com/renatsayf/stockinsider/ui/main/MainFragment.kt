@@ -4,31 +4,28 @@ import android.os.Bundle
 import android.view.*
 import android.widget.AdapterView
 import androidx.activity.OnBackPressedCallback
-import androidx.activity.addCallback
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.findNavController
-import com.google.android.gms.ads.AdError
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.renatsayf.stockinsider.BuildConfig
+import androidx.navigation.fragment.findNavController
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
+import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.appPref
-import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.isNetworkAvailable
-import com.renatsayf.stockinsider.utils.setAlarm
+import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -50,6 +47,13 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
+    }
+
+    private val googleAd1: InterstitialAd? by lazy {
+        (activity as? MainActivity)?.googleAd1
+    }
+    private val yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
+        (activity as? MainActivity)?.yandexAd1
     }
 
     override fun onCreateView(
@@ -88,7 +92,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                         sorting.groupSpinner.setSelection(set.groupBy)
                         sorting.sortSpinner.setSelection(set.sortBy)
                     }
-                    hideKeyBoard(binding.general.tickerET)
+                    hideKeyBoard(binding.root)
                     binding.general.tickerET.clearFocus()
                     binding.searchButton.requestFocus()
                 }
@@ -101,7 +105,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
             binding.general.tickerET.setAdapter(tickersAdapter)
             binding.general.tickerET.clearFocus()
-            hideKeyBoard(binding.general.tickerET)
+            //hideKeyBoard(binding.root)
         }
 
         var tickerText = ""
@@ -139,14 +143,13 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         binding.searchButton.setOnClickListener {
 
             val set = scanScreen()
-
-            (requireActivity() as MainActivity).hideKeyBoard(binding.general.tickerET)
+            (requireActivity() as MainActivity).hideKeyBoard(it)
 
             val bundle = Bundle().apply {
                 putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
             }
-            binding.searchButton.findNavController().navigate(R.id.nav_result, bundle)
+            findNavController().navigate(R.id.nav_result, bundle)
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener =
@@ -162,27 +165,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 }
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
             }
-
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            if (this@MainFragment.isNetworkAvailable())
-            {
-                MainActivity.interstitialAd?.let {
-                    it.show(requireActivity())
-                    it.fullScreenContentCallback = object : FullScreenContentCallback() {
-                        override fun onAdDismissedFullScreenContent() {
-                            requireActivity().finish()
-                        }
-                        override fun onAdFailedToShowFullScreenContent(p0: AdError) {
-                            if (BuildConfig.DEBUG) {
-                                Exception(p0.message).printStackTrace()
-                            }
-                            requireActivity().finish()
-                        }
-                    }
-                } ?: run { requireActivity().finish() }
-            }
-            else requireActivity().finish()
-        }
 
         binding.toolbar.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
@@ -237,10 +219,17 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                 trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
                     count?.let {
                         if (it > 0) {
-                            setAlarm(
-                                scheduler = Scheduler(requireActivity().applicationContext)
+                            val nextTime = setAlarm(
+                                scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
+                                periodInMinute = FireBaseConfig.trackingPeriod
                             )
+                            if (nextTime != null) {
+                                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                                ServiceNotification.notify(requireContext(), message, null)
+                            }
                         }
+                    }
+                    showAd(googleAd1, yandexAd1) {
                         requireActivity().finish()
                     }
                 }
