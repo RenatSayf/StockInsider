@@ -37,6 +37,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         val TAG = "${this::class.java.simpleName}.Tag"
         val ARG_DEAL = "${this::class.java.simpleName}.deal"
         val ARG_TITLE = "${this::class.java.simpleName}.title"
+
+        private const val MARKET_WATCH_URL = "https://www.marketwatch.com/investing/stock/"
     }
 
     private lateinit var viewModel: DealViewModel
@@ -117,6 +119,11 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                                     startBrowserSearch(url)
                                     dismiss()
                                 }
+                                R.id.market_watch -> {
+                                    val ticker = binding.tickerTV.text.toString().lowercase().trim()
+                                    val url = "$MARKET_WATCH_URL$ticker"
+                                    startBrowserSearch(url)
+                                }
                             }
                             true
                         }
@@ -175,6 +182,12 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
         viewModel.chart.observe(viewLifecycleOwner) {
             binding.chartImagView.setImageDrawable(it)
+        }
+
+        binding.layoutMarketWatch.setOnClickListener {
+            val ticker = binding.tickerTV.text.toString().lowercase().trim()
+            val url = "$MARKET_WATCH_URL$ticker"
+            startBrowserSearch(url)
         }
 
         binding.toolBar.setNavigationOnClickListener {

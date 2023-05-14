@@ -248,5 +248,6 @@
     <string name="text_battery_restrictions_message">devices, additionally restricts the operation of applications in the background.
         For stable operation of the tracking function, it is necessary to remove battery usage restrictions in the application settings(Battery saver).
         Go to the app settings?</string>
+    <string name="marketwatch">MarketWatch</string>
 
 </resources>

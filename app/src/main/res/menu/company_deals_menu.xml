@@ -9,4 +9,7 @@
         android:id="@+id/search_info"
         android:title="@string/text_company_info"/>
 
+    <item android:id="@+id/market_watch"
+        android:title="@string/marketwatch"/>
+
 </menu>
