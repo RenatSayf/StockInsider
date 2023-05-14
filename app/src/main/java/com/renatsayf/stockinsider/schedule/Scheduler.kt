@@ -2,6 +2,7 @@
 
 package com.renatsayf.stockinsider.schedule
 
+import android.annotation.SuppressLint
 import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
@@ -67,6 +68,7 @@ class Scheduler @Inject constructor(
         }
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     override fun isAlarmSetup(name: String, isRepeat: Boolean): PendingIntent? {
         val intent = Intent(context, receiverClass).let {
             it.action = when(isRepeat) {
