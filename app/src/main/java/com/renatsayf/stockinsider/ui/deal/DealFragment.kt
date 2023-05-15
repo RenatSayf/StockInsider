@@ -81,7 +81,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             target: Target<Drawable>?,
                             isFirstResource: Boolean
                         ): Boolean {
-                            binding.imgLoadProgBar.visibility = View.GONE
+                            binding.imgLoadProgBar.setVisible(false)
+                            binding.layoutMarketWatch.setVisible(true)
                             return false
                         }
 
@@ -93,7 +94,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             isFirstResource: Boolean
                         ): Boolean {
                             resource?.let { viewModel.setChart(it) }
-                            binding.imgLoadProgBar.visibility = View.GONE
+                            binding.imgLoadProgBar.setVisible(false)
+                            binding.layoutMarketWatch.setVisible(true)
                             return false
                         }
                     }).into(binding.chartImagView)
