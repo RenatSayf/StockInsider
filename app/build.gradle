@@ -11,7 +11,7 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 13 // TODO before release requires change the version code
+        versionCode 18 // TODO before release requires change the version code
         versionName '2.1.0'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -24,13 +24,11 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
-            shrinkResources true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
             minifyEnabled false
-            shrinkResources false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
@@ -49,13 +47,13 @@ android {
     }
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
 
-    kotlinOptions {
-        jvmTarget = "1.8"
-    }
+//    kotlinOptions {
+//        jvmTarget = "1.8"
+//    }
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0-beta04"
@@ -98,9 +96,6 @@ dependencies {
 
     //jsoup
     implementation 'org.jsoup:jsoup:1.15.2'
-
-    //OkHttpProfiler
-    implementation 'com.localebro:okhttpprofiler:1.0.8'
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
