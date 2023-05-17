@@ -4,6 +4,8 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.models.Deal
 import org.junit.Assert
 import org.junit.Test
+import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 
 class ExtensionsKtTest {
@@ -91,6 +93,13 @@ class ExtensionsKtTest {
         val emptyMap = emptyMap<String, List<Deal>>()
         val actualSize = emptyMap.getValuesSize()
         Assert.assertEquals(0, actualSize)
+    }
+
+    @Test
+    fun minutesToMillis() {
+        val randomLong = Random.nextLong(0, 12)
+        val actual = TimeUnit.MINUTES.toMillis(12)
+        Assert.assertEquals(720000, actual)
     }
 
 }
