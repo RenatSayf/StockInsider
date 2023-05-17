@@ -31,7 +31,7 @@ class SchedulerTest {
     @After
     fun tearDown() {
         scenario.onActivity {
-            val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+            val pendingIntent = scheduler.isAlarmSetup(false)
             pendingIntent?.let {
                 scheduler.cancel(it)
             }
@@ -43,19 +43,20 @@ class SchedulerTest {
     fun scheduleOne() {
 
         scenario.onActivity {
-            val result = scheduler.scheduleOne(System.currentTimeMillis() + 10000, 0, Scheduler.SET_NAME)
+            val result = scheduler.scheduleOne(System.currentTimeMillis() + 10000, 0)
             Assert.assertTrue(result)
         }
 
         Thread.sleep(5000)
 
-        var pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        var pendingIntent = scheduler.isAlarmSetup(false)
         Assert.assertTrue(pendingIntent is PendingIntent)
 
+        Thread.sleep(4000)
         scheduler.cancel(pendingIntent!!)
 
-        Thread.sleep(7000)
-        pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        Thread.sleep(2000)
+        pendingIntent = scheduler.isAlarmSetup(false)
         Assert.assertEquals(null, pendingIntent)
         Thread.sleep(2000)
     }

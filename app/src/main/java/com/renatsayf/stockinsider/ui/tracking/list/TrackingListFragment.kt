@@ -192,7 +192,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
                             if (count == 0) {
                                 val scheduler = Scheduler(requireContext().applicationContext)
-                                val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+                                val pendingIntent = scheduler.isAlarmSetup(false)
                                 pendingIntent?.let {
                                     scheduler.cancel(it)
                                 }

@@ -10,6 +10,8 @@ import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
 import com.renatsayf.stockinsider.utils.startOneTimeBackgroundWork
+import java.util.concurrent.TimeUnit
+import kotlin.random.Random
 
 
 open class AlarmReceiver : BroadcastReceiver() {
@@ -25,12 +27,13 @@ open class AlarmReceiver : BroadcastReceiver() {
             if (BuildConfig.DEBUG) {
                 println(" *********** ${this::class.java.simpleName}.onReceive has been triggered *******************")
             }
-            val scheduler = Scheduler(context.applicationContext)
-            val nextFillingTime = AppCalendar().getNextStartTime()
-            scheduler.scheduleOne(nextFillingTime, 0, Scheduler.SET_NAME)
 
             if (intent.action == Scheduler.ONE_SHOOT_ACTION || intent.action == Scheduler.REPEAT_SHOOT_ACTION) {
 
+                val scheduler = Scheduler(context.applicationContext)
+                val nextFillingTime = AppCalendar().getNextStartTime()
+                val randomOverTime = TimeUnit.MINUTES.toMillis(Random.nextLong(0, 12))
+                scheduler.scheduleOne(nextFillingTime, randomOverTime)
                 context.startOneTimeBackgroundWork(System.currentTimeMillis())
             }
         }

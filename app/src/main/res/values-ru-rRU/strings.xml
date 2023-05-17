@@ -244,7 +244,7 @@
     <string name="text_tracking_description">Если Отслеживание включено, тогда ежедневно, с 6 до 22 часов по Вашингтонскому времени, в фоновом режиме будет выполнятся поиск новых сделок по поисковому запросу</string>
     <string name="text_by_search">По поиску</string>
     <string name="text_results_were_found">результатов было найдено</string>
-    <string name="text_next_check_will_be_at">Следующая проверка будет выполнена в</string>
+    <string name="text_next_check_will_be_at">Следующая проверка будет выполнена после</string>
     <string name="text_manufacturer_of_devices">Производитель устройств</string>
     <string name="text_battery_restrictions_message">дополнительно ограничивает работу приложений в фоновом режиме.
         Для стабильной работы функции отслеживания, необходимо в настройках приложения снять ограничения по использованию батареи(Контроль активности).

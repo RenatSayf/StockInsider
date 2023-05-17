@@ -101,7 +101,7 @@ class AppWorkerUiTest {
             Thread.sleep(2000)
             state = AppWorker.state
         }
-        val pendingIntent = scheduler.isAlarmSetup(Scheduler.SET_NAME, false)
+        val pendingIntent = scheduler.isAlarmSetup(false)
         Assert.assertTrue(pendingIntent != null)
         pendingIntent?.cancel()
     }
