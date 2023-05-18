@@ -11,7 +11,7 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 19 // TODO before release requires change the version code
+        versionCode 20 // TODO before release requires change the version code
         versionName '2.1.0'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
@@ -50,10 +50,6 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-
-//    kotlinOptions {
-//        jvmTarget = "1.8"
-//    }
 
     composeOptions {
         kotlinCompilerExtensionVersion = "1.1.0-beta04"
