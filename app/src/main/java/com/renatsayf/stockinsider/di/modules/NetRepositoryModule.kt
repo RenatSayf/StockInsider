@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.di.modules
 
 import android.content.Context
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.network.*
 import dagger.Module
 import dagger.Provides
@@ -37,7 +38,7 @@ object NetRepositoryModule {
         val retrofit = Retrofit.Builder()
             .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(DocumAdapter.FACTORY)
-            .baseUrl("http://openinsider.com/")
+            .baseUrl(context.getString(R.string.base_url))
             .client(okHttpClient).build()
 
         return when (BuildConfig.DATA_SOURCE) {

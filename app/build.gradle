@@ -177,6 +177,7 @@ dependencies {
     //Yandex ads
     implementation 'com.yandex.android:mobileads:5.7.0'
 
-
+    //Splashscreen
+    implementation "androidx.core:core-splashscreen:1.0.0"
 
 }
