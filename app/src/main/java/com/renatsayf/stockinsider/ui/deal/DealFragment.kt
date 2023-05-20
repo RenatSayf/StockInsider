@@ -82,7 +82,6 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             isFirstResource: Boolean
                         ): Boolean {
                             binding.imgLoadProgBar.setVisible(false)
-                            binding.layoutMarketWatch.setVisible(true)
                             return false
                         }
 
@@ -95,7 +94,6 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                         ): Boolean {
                             resource?.let { viewModel.setChart(it) }
                             binding.imgLoadProgBar.setVisible(false)
-                            binding.layoutMarketWatch.setVisible(true)
                             return false
                         }
                     }).into(binding.chartImagView)
