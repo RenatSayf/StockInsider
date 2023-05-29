@@ -11,8 +11,8 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 33
-        versionCode 21 // TODO before release requires change the version code
-        versionName '2.1.0'
+        versionCode 22 // TODO before release requires change the version code
+        versionName '2.1.1'
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -175,5 +175,8 @@ dependencies {
 
     //Splashscreen
     implementation "androidx.core:core-splashscreen:1.0.0"
+
+    // AppMetrica SDK.
+    implementation 'com.yandex.android:mobmetricalib:5.3.0'
 
 }
