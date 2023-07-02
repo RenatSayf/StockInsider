@@ -5,6 +5,7 @@
    * DI: Hilt
    * Navigation: Jetpak Navigation component
    * Network: Retrofit
+   * Backend: Firebase remote config
    * Local store: Room database
    * Background work: Workmanager
    * Asynchrony: Coroutines, RXJava
