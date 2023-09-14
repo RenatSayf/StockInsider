@@ -20,6 +20,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         return network.getTradingScreen(set)
     }
 
+    override suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<List<Deal>> {
+        return coroutineScope {
+            async {
+                network.getTradingListAsync(set).await()
+            }
+        }
+    }
+
     override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
     {
         return network.getInsiderTrading(insider)

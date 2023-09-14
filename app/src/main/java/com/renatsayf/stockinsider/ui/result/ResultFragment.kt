@@ -173,7 +173,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     binding.includedProgress.setVisible(true)
                     binding.btnAddToTracking.setVisible(false)
                     roomSearchSet?.let {
-                        resultVM.getDealList(it.toSearchSet())
+                        //resultVM.getDealList(it.toSearchSet())
+                        resultVM.getDealListFromNet(it.toSearchSet())
                     }
                 }
                 is ResultViewModel.State.DataReceived -> {

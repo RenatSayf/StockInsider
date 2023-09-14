@@ -76,6 +76,38 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         }
     }
 
+    override suspend fun getTradingListAsync(set: SearchSet): Deferred<ArrayList<Deal>> {
+        return coroutineScope {
+            async {
+                try {
+                    val dealsListAsync = api.getDealsListAsync(
+                        set.ticker,
+                        set.filingPeriod,
+                        set.tradePeriod,
+                        set.isPurchase,
+                        set.isSale,
+                        set.excludeDerivRelated,
+                        set.tradedMin,
+                        set.tradedMax,
+                        set.isOfficer,
+                        set.isDirector,
+                        set.isTenPercent,
+                        set.groupBy,
+                        set.sortBy,
+                        agent = userAgent
+                    )
+                    val document = dealsListAsync.body()
+                    if (document != null) {
+                        doMainParsing(document)
+                    }
+                    else arrayListOf()
+                } catch (e: Exception) {
+                    arrayListOf()
+                }
+            }
+        }
+    }
+
     fun doMainParsing(document : Document) : ArrayList<Deal>
     {
         val listDeal : ArrayList<Deal> = arrayListOf()

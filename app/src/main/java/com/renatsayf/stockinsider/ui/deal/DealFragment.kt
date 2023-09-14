@@ -1,3 +1,5 @@
+@file:Suppress("RedundantSamConstructor")
+
 package com.renatsayf.stockinsider.ui.deal
 
 import android.content.Intent
@@ -41,11 +43,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         private const val MARKET_WATCH_URL = "https://www.marketwatch.com/investing/stock/"
     }
 
-    private lateinit var viewModel: DealViewModel
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        viewModel = ViewModelProvider(this)[DealViewModel::class.java]
+    private val viewModel: DealViewModel by lazy {
+        ViewModelProvider(this)[DealViewModel::class.java]
     }
 
     override fun onCreateView(
@@ -82,7 +81,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             isFirstResource: Boolean
                         ): Boolean {
                             binding.imgLoadProgBar.setVisible(false)
-                            return false
+                            return true
                         }
 
                         override fun onResourceReady(
@@ -94,7 +93,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                         ): Boolean {
                             resource?.let { viewModel.setChart(it) }
                             binding.imgLoadProgBar.setVisible(false)
-                            return false
+                            return true
                         }
                     }).into(binding.chartImagView)
 
@@ -133,8 +132,6 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                 tickerTV.setOnClickListener {
                     value?.let { d -> transitionToCompanyDeals(d) }
                 }
-
-
 
                 filingDateTV.text = value.filingDate
                 filingDateTV.setOnClickListener {

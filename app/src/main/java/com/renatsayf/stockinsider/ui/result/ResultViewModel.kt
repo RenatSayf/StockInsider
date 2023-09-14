@@ -20,7 +20,7 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
 
     sealed class State {
         object Initial : State()
-        data class DataReceived(val deals: ArrayList<Deal>) : State()
+        data class DataReceived(val deals: List<Deal>) : State()
         data class DataSorted(val dealsMap: Map<String, List<Deal>>) : State()
         data class DataError(val throwable: Throwable) : State()
     }
@@ -54,6 +54,26 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
                     _state.value = State.DataError(t)
                 })
         )
+    }
+
+    fun getDealListFromNet(set: SearchSet) {
+        viewModelScope.launch {
+            try {
+                val dealList = repositoryImpl.getTradingListFromNetAsync(set).await()
+                _state.value = State.DataReceived(dealList)
+                val companies = dealList.filter { deal ->
+                    deal.ticker != null && deal.company != null
+                }.map { deal ->
+                    Company(ticker = deal.ticker!!, company = deal.company!!)
+                }
+                viewModelScope.launch {
+                    repositoryImpl.insertCompanies(companies)
+                }
+            }
+            catch (e: Exception) {
+                _state.value = State.DataError(e)
+            }
+        }
     }
 
     override fun onCleared() {
