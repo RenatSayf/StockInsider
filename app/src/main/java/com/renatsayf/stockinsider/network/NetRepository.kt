@@ -33,49 +33,6 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     catch (e: Exception) {
         okhttp3.internal.userAgent
     }
-
-    override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
-    {
-        return io.reactivex.Observable.create {emitter ->
-            var dealList: ArrayList<Deal> = arrayListOf()
-            searchTicker = set.ticker
-            val subscriber = api.getTradingScreen(
-                set.ticker,
-                set.filingPeriod,
-                set.tradePeriod,
-                set.isPurchase,
-                set.isSale,
-                set.excludeDerivRelated,
-                set.tradedMin,
-                set.tradedMax,
-                set.isOfficer,
-                set.isDirector,
-                set.isTenPercent,
-                set.groupBy,
-                set.sortBy,
-                agent = userAgent
-            )
-                .map { document ->
-                    dealList = doMainParsing(document)
-                }
-                .subscribe({
-                    if (!emitter.isDisposed) {
-                        emitter.onNext(dealList)
-                    }
-                }, { error: Throwable ->
-
-                    if (!emitter.isDisposed) {
-                        emitter.onError(error)
-                    }
-                }, {
-                    if (!emitter.isDisposed) {
-                        emitter.onComplete()
-                    }
-                })
-            composite.add(subscriber)
-        }
-    }
-
     override suspend fun getTradingListAsync(set: SearchSet): Deferred<ArrayList<Deal>> {
         return coroutineScope {
             async {
@@ -197,6 +154,30 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                     }
                 })
             composite.add(subscribe)
+        }
+    }
+
+    override suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                try {
+                    val response = api.getInsiderTradingAsync(insider, userAgent)
+                    if (response.isSuccessful) {
+                        response.body()?.let { doc ->
+                            val deals = doAdditionalParsing(doc, "#subjectDetails")
+                            Result.success(deals.toList())
+                        }?: run {
+                            Result.success(emptyList())
+                        }
+                    }
+                    else {
+                        Result.failure(Throwable(response.message()))
+                    }
+                }
+                catch (e: Throwable) {
+                    Result.failure(e)
+                }
+            }
         }
     }
 

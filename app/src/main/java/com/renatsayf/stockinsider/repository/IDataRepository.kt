@@ -12,10 +12,10 @@ import kotlin.jvm.Throws
 
 interface IDataRepository
 {
-    fun getTradingScreenFromNetAsync(set: SearchSet) : Observable<ArrayList<Deal>>
     suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<List<Deal>>
 
     fun getInsiderTradingFromNetAsync(insider: String) : Single<ArrayList<Deal>>
+    suspend fun getInsiderTradingFromNetAsync2(insider: String): Deferred<Result<List<Deal>>>
 
     fun getAllCompaniesName() : Single<List<Company>>
 

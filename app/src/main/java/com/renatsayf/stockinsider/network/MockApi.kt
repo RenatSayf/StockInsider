@@ -42,6 +42,15 @@ class MockApi(private val context: Context): IApi {
         }
     }
 
+    override suspend fun getInsiderTradingAsync(
+        insiderName: String,
+        agent: String
+    ): Response<Document> {
+        val stringFromFile = context.getStringFromFile("test-data/deals_by_insider.txt")
+        val document = Jsoup.parse(stringFromFile)
+        return Response.success(document)
+    }
+
     override fun getTradingByTicker(ticker: String, agent: String): Single<Document> {
         return Single.create {
             val stringFromFile = context.getStringFromFile("test-data/deals_by_tiker.txt")

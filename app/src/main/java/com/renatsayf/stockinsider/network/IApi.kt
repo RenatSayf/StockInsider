@@ -36,6 +36,12 @@ interface IApi
         @Header("User-Agent") agent: String
     ): Single<Document>
 
+    @GET("{insiderName}")
+    suspend fun getInsiderTradingAsync(
+        @Path("insiderName", encoded = true) insiderName: String,
+        @Header("User-Agent") agent: String
+    ): Response<Document>
+
     @GET("{ticker}")
     fun getTradingByTicker(
         @Path("ticker", encoded = true) ticker: String,

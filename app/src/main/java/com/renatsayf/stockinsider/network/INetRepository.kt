@@ -8,10 +8,10 @@ import io.reactivex.Single
 import kotlinx.coroutines.Deferred
 
 interface INetRepository {
-    fun getTradingScreen(set: SearchSet) : Observable<ArrayList<Deal>>
     suspend fun getTradingListAsync(set: SearchSet): Deferred<ArrayList<Deal>>
 
     fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
+    suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>>
 
     fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>
 

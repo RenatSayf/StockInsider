@@ -35,27 +35,6 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
         _state.value = state
     }
 
-    fun getDealList(set: SearchSet) {
-        composite.add(
-            repositoryImpl.getTradingScreenFromNetAsync(set)
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ list ->
-                    _state.value = State.DataReceived(list)
-                    val companies = list.filter { deal ->
-                        deal.ticker != null && deal.company != null
-                    }.map { deal ->
-                        Company(ticker = deal.ticker!!, company = deal.company!!)
-                    }
-                    viewModelScope.launch {
-                        repositoryImpl.insertCompanies(companies)
-                    }
-                }, { t ->
-                    _state.value = State.DataError(t)
-                })
-        )
-    }
-
     fun getDealListFromNet(set: SearchSet) {
         viewModelScope.launch {
             try {

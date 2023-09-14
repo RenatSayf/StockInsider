@@ -149,13 +149,10 @@ class NetRepositoryTest {
             }
             this.enqueue(response)
         }
-        val testObserver = TestObserver<ArrayList<Deal>>()
-
-        val observable = repository.getTradingScreen(testSet.toSearchSet())
-        observable.subscribe(testObserver)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        val actualList = testObserver.values()[0]
-        Assert.assertTrue(actualList.isNotEmpty())
+        runBlocking {
+            val actualList = repository.getDealsListAsync(testSet.toSearchSet()).await()
+            Assert.assertTrue(actualList.isNotEmpty())
+        }
     }
 
     @Test

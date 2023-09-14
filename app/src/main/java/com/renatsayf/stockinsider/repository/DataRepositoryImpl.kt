@@ -15,11 +15,6 @@ import javax.inject.Inject
 
 open class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
 {
-    override fun getTradingScreenFromNetAsync(set: SearchSet): Observable<ArrayList<Deal>>
-    {
-        return network.getTradingScreen(set)
-    }
-
     override suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<List<Deal>> {
         return coroutineScope {
             async {
@@ -31,6 +26,14 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
     {
         return network.getInsiderTrading(insider)
+    }
+
+    override suspend fun getInsiderTradingFromNetAsync2(insider: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                network.getInsiderTradingAsync(insider).await()
+            }
+        }
     }
 
     override fun getAllCompaniesName(): Single<List<Company>> {
