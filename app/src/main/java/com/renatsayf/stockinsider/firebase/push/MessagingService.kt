@@ -10,6 +10,7 @@ class MessagingService: FirebaseMessagingService() {
     }
 
     override fun onMessageReceived(message: RemoteMessage) {
-
+        val data = message.data
+        data
     }
 }
