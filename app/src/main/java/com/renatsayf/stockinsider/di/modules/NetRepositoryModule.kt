@@ -12,7 +12,6 @@ import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import java.util.concurrent.TimeUnit
 
 @InstallIn(SingletonComponent::class)
@@ -36,7 +35,6 @@ object NetRepositoryModule {
             .build()
 
         val retrofit = Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(DocumAdapter.FACTORY)
             .baseUrl(context.getString(R.string.base_url))
             .client(okHttpClient).build()

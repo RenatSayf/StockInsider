@@ -13,9 +13,6 @@ import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import com.renatsayf.stockinsider.utils.appPref
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +29,6 @@ class MainViewModel @Inject constructor(
         data class Initial(val set: RoomSearchSet) : State()
     }
 
-    private val composite = CompositeDisposable()
     private var _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
     fun setState(state: State) {
@@ -133,38 +129,24 @@ class MainViewModel @Inject constructor(
         repository.getCompaniesFromDbAsync()
     }
 
-    override fun onCleared() {
-        repository.destructor()
-        composite.apply {
-            dispose()
-            clear()
-        }
-        super.onCleared()
-    }
-
     init {
 
         val isAgree = app?.appPref?.getBoolean(MainActivity.KEY_IS_AGREE, false) ?: true
         if (!isAgree) {
 
-            val subscribe = repository.getAllCompaniesName()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({ list ->
-                    if (list.isNotEmpty()) {
-                        viewModelScope.launch {
-                            repository.insertCompanies(list)
-                            val companies = repository.getCompaniesFromDbAsync()
-                            companies?.let { list ->
-                                _companies.postValue(list)
-                            }
-                        }
+            viewModelScope.launch {
+                val result = repository.getAllCompanies().await()
+                result.onSuccess { list ->
+                    repository.insertCompanies(list)
+                    val companies = repository.getCompaniesFromDbAsync()
+                    companies?.let {
+                        _companies.postValue(it)
                     }
-                }, { t ->
-                    if (BuildConfig.DEBUG) t.printStackTrace()
-                })
-
-            composite.add(subscribe)
+                }
+                result.onFailure { exception ->
+                    if (BuildConfig.DEBUG) exception.printStackTrace()
+                }
+            }
         }
     }
 

@@ -9,7 +9,6 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -31,8 +30,6 @@ class DealViewModel @Inject constructor(
     fun setState(state: State) {
         _state.value = state
     }
-
-    private var composite = CompositeDisposable()
 
     fun getInsiderDeals(insider: String) {
         viewModelScope.launch {
@@ -60,28 +57,18 @@ class DealViewModel @Inject constructor(
         _chart.value = chart
     }
 
-    fun getTradingByTicker(ticker: String): LiveData<ArrayList<Deal>> {
-        _state.value = State.OnLoad
-        val deals = MutableLiveData<ArrayList<Deal>>()
-        composite.add(repositoryImpl.getTradingByTickerAsync(ticker)
-            .subscribe({ list ->
-                deals.value = list
+    fun getDealsByTicker(ticker: String) {
+        viewModelScope.launch {
+            _state.value = State.OnLoad
+            val result = repositoryImpl.getDealsByTicker(ticker).await()
+            result.onSuccess { list ->
                 _state.value = State.OnData(list)
-            }, { t ->
-                if (BuildConfig.DEBUG) t.printStackTrace()
-                deals.value = arrayListOf()
-                _state.value = State.OnError(t.message ?: "Unknown error")
-            })
-        )
-        return deals
+            }
+            result.onFailure { exception ->
+                if (BuildConfig.DEBUG) exception.printStackTrace()
+                _state.value = State.OnError(exception.message ?: "Unknown error")
+            }
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        composite.apply {
-            dispose()
-            clear()
-        }
-        repositoryImpl.destructor()
-    }
 }

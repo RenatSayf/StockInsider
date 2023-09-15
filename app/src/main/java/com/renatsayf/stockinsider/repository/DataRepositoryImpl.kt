@@ -6,9 +6,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.INetRepository
-import com.renatsayf.stockinsider.network.NetRepository
 import com.renatsayf.stockinsider.utils.sortByAnotherList
-import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
@@ -28,9 +26,12 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
             }
         }
     }
-
-    override fun getAllCompaniesName(): Single<List<Company>> {
-        return network.getAllCompaniesName()
+    override suspend fun getAllCompanies(): Deferred<Result<List<Company>>> {
+        return coroutineScope {
+            async {
+                network.getAllCompaniesNameAsync().await()
+            }
+        }
     }
 
     override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
@@ -39,9 +40,12 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
-    override fun getTradingByTickerAsync(ticker: String): Single<ArrayList<Deal>>
-    {
-        return network.getTradingByTicker(ticker)
+    override suspend fun getDealsByTicker(ticker: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                network.getDealsByTicker(ticker).await()
+            }
+        }
     }
 
     override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
@@ -145,16 +149,6 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         return coroutineScope {
             async {
                 db.updateSearchSetTicker(setName, value)
-            }
-        }
-    }
-
-    override fun destructor()
-    {
-        if (network is NetRepository) {
-            network.composite.apply {
-                dispose()
-                clear()
             }
         }
     }

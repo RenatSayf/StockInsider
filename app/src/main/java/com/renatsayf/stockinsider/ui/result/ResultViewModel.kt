@@ -9,7 +9,6 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.disposables.CompositeDisposable
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -22,8 +21,6 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
         data class DataSorted(val dealsMap: Map<String, List<Deal>>) : State()
         data class DataError(val throwable: Throwable) : State()
     }
-
-    private val composite = CompositeDisposable()
 
     private var _state = MutableLiveData<State>().apply {
         value = State.Initial
@@ -58,11 +55,4 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
         }
     }
 
-    override fun onCleared() {
-        composite.apply {
-            dispose()
-            clear()
-        }
-        super.onCleared()
-    }
 }
