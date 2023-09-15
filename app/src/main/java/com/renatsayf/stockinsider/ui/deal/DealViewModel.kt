@@ -34,23 +34,7 @@ class DealViewModel @Inject constructor(
 
     private var composite = CompositeDisposable()
 
-    fun getInsiderDeals(insider: String): LiveData<ArrayList<Deal>> {
-        _state.value = State.OnLoad
-        val deals = MutableLiveData<ArrayList<Deal>>()
-        composite.add(repositoryImpl.getInsiderTradingFromNetAsync(insider)
-            .subscribe({ list ->
-                deals.value = list
-                _state.value = State.OnData(list)
-            }, { t ->
-                if (BuildConfig.DEBUG) t.printStackTrace()
-                deals.value = arrayListOf()
-                _state.value = State.OnError(t.message ?: "Unknown error")
-            })
-        )
-        return deals
-    }
-
-    fun getInsiderDeals2(insider: String) {
+    fun getInsiderDeals(insider: String) {
         viewModelScope.launch {
             _state.value = State.OnLoad
             val result = repositoryImpl.getInsiderTradingFromNetAsync2(insider).await()

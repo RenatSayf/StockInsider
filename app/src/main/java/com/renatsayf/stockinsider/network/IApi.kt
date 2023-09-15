@@ -31,12 +31,6 @@ interface IApi
                          ): Observable<Document>
 
     @GET("{insiderName}")
-    fun getInsiderTrading(
-        @Path("insiderName", encoded = true) insiderName: String,
-        @Header("User-Agent") agent: String
-    ): Single<Document>
-
-    @GET("{insiderName}")
     suspend fun getInsiderTradingAsync(
         @Path("insiderName", encoded = true) insiderName: String,
         @Header("User-Agent") agent: String

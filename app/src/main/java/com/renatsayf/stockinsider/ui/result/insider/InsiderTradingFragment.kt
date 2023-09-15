@@ -74,8 +74,7 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
             noResult.root.setVisible(false)
 
             if (savedInstanceState == null && insiderName != null) {
-                //dealVM.getInsiderDeals(insiderName)
-                dealVM.getInsiderDeals2(insiderName)
+                dealVM.getInsiderDeals(insiderName)
             }
 
             dealVM.state.observe(viewLifecycleOwner) { state ->

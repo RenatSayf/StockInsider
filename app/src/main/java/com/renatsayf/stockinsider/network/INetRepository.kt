@@ -8,9 +8,8 @@ import io.reactivex.Single
 import kotlinx.coroutines.Deferred
 
 interface INetRepository {
-    suspend fun getTradingListAsync(set: SearchSet): Deferred<ArrayList<Deal>>
+    suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>>
 
-    fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
     suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>>
 
     fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>>

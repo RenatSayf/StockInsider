@@ -33,11 +33,11 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     catch (e: Exception) {
         okhttp3.internal.userAgent
     }
-    override suspend fun getTradingListAsync(set: SearchSet): Deferred<ArrayList<Deal>> {
+    override suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
         return coroutineScope {
             async {
                 try {
-                    val dealsListAsync = api.getDealsListAsync(
+                    val response = api.getDealsListAsync(
                         set.ticker,
                         set.filingPeriod,
                         set.tradePeriod,
@@ -53,13 +53,20 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                         set.sortBy,
                         agent = userAgent
                     )
-                    val document = dealsListAsync.body()
-                    if (document != null) {
-                        doMainParsing(document)
+                    if (response.isSuccessful) {
+                        val document = response.body()
+                        document?.let {
+                            val list = doMainParsing(document).toList()
+                            Result.success(list)
+                        }?: run {
+                            Result.success(emptyList())
+                        }
                     }
-                    else arrayListOf()
+                    else {
+                        Result.failure(Throwable(response.message()))
+                    }
                 } catch (e: Exception) {
-                    arrayListOf()
+                    Result.failure(e)
                 }
             }
         }
@@ -70,23 +77,23 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
         val bodyText = body.text()
-        if (bodyText != null && bodyText.contains("ERROR:"))
+        if (bodyText.contains("ERROR:"))
         {
             val deal = Deal("")
             deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
-        val error = body?.select("#tablewrapper")?.text()
-        if (error != null && error.contains("ERROR:"))
+        val error = body.select("#tablewrapper").text()
+        if (error.contains("ERROR:"))
         {
             val deal = Deal("")
             deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
-        val tableBody = body?.select("#tablewrapper > table > tbody")
-        tableBody?.let { it ->
+        val tableBody = body.select("#tablewrapper > table > tbody")
+        tableBody.let {
             if (it.size > 0)
             {
                 val table = it[0]
@@ -133,30 +140,6 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
             }
         }
     }
-
-    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
-    {
-        return Single.create { emitter ->
-            var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getInsiderTrading(insider, userAgent)
-                .map { doc ->
-                    dealList = doAdditionalParsing(doc, "#subjectDetails")
-                }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (!emitter.isDisposed) {
-                        emitter.onSuccess(dealList)
-                    }
-                }, {
-                    if (!emitter.isDisposed) {
-                        emitter.onError(it)
-                    }
-                })
-            composite.add(subscribe)
-        }
-    }
-
     override suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>> {
         return coroutineScope {
             async {

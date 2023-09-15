@@ -8,26 +8,19 @@ import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.network.NetRepository
 import com.renatsayf.stockinsider.utils.sortByAnotherList
-import io.reactivex.Observable
 import io.reactivex.Single
 import kotlinx.coroutines.*
 import javax.inject.Inject
 
 open class DataRepositoryImpl @Inject constructor(private val network: INetRepository, private val db: AppDao) : IDataRepository
 {
-    override suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<List<Deal>> {
+    override suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
         return coroutineScope {
             async {
                 network.getTradingListAsync(set).await()
             }
         }
     }
-
-    override fun getInsiderTradingFromNetAsync(insider: String): Single<ArrayList<Deal>>
-    {
-        return network.getInsiderTrading(insider)
-    }
-
     override suspend fun getInsiderTradingFromNetAsync2(insider: String): Deferred<Result<List<Deal>>> {
         return coroutineScope {
             async {

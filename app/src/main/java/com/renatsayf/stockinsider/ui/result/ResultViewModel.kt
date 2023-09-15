@@ -9,9 +9,7 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -38,15 +36,20 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     fun getDealListFromNet(set: SearchSet) {
         viewModelScope.launch {
             try {
-                val dealList = repositoryImpl.getTradingListFromNetAsync(set).await()
-                _state.value = State.DataReceived(dealList)
-                val companies = dealList.filter { deal ->
-                    deal.ticker != null && deal.company != null
-                }.map { deal ->
-                    Company(ticker = deal.ticker!!, company = deal.company!!)
+                val result = repositoryImpl.getTradingListFromNetAsync(set).await()
+                result.onSuccess { list ->
+                    _state.value = State.DataReceived(list)
+                    val companies = list.filter { deal ->
+                        deal.ticker != null && deal.company != null
+                    }.map { deal ->
+                        Company(ticker = deal.ticker!!, company = deal.company!!)
+                    }
+                    viewModelScope.launch {
+                        repositoryImpl.insertCompanies(companies)
+                    }
                 }
-                viewModelScope.launch {
-                    repositoryImpl.insertCompanies(companies)
+                result.onFailure { exception ->
+                    _state.value = State.DataError(exception)
                 }
             }
             catch (e: Exception) {
