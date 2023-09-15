@@ -5,8 +5,8 @@ apply plugin: 'dagger.hilt.android.plugin' //Hint Hilt step 2
 apply plugin: 'com.google.gms.google-services'
 
 android {
-    compileSdkVersion 34
-    buildToolsVersion "30.0.3"
+    compileSdk 34
+    buildToolsVersion = "30.0.3"
     defaultConfig {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
@@ -32,7 +32,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-    flavorDimensions "data_source"
+    flavorDimensions = ["data_source"]
     productFlavors {
         network {
             buildConfigField 'String', 'DATA_SOURCE', '\"NETWORK\"'
@@ -121,7 +121,7 @@ dependencies {
     implementation 'com.android.billingclient:billing-ktx:5.1.0'
 
     //AdMob
-    implementation 'com.google.android.gms:play-services-ads:21.4.0'
+    //implementation 'com.google.android.gms:play-services-ads:21.4.0'
 
     //Firebase platform
     implementation platform('com.google.firebase:firebase-bom:31.1.1')

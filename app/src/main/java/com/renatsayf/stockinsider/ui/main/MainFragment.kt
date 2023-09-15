@@ -10,7 +10,6 @@ import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -49,9 +48,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         TickersListAdapter(requireContext())
     }
 
-    private val googleAd1: InterstitialAd? by lazy {
-        (activity as? MainActivity)?.googleAd1
-    }
     private val yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
         (activity as? MainActivity)?.yandexAd1
     }
@@ -229,7 +225,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                             }
                         }
                     }
-                    showAd(googleAd1, yandexAd1) {
+                    showInterstitialAd(yandexAd1) {
                         requireActivity().finish()
                     }
                 }

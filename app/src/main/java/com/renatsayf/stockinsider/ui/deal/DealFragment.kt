@@ -9,7 +9,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
@@ -17,15 +19,22 @@ import com.bumptech.glide.load.DataSource
 import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
+import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.utils.getParcelableCompat
 import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.startBrowserSearch
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.impl.kv
+import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -46,6 +55,9 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
     private val viewModel: DealViewModel by lazy {
         ViewModelProvider(this)[DealViewModel::class.java]
     }
+    private val adVM: AdViewModel by viewModels()
+
+    private var interstitialAd: InterstitialAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -57,6 +69,18 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentDealBinding.bind(view)
+
+        if (savedInstanceState == null) {
+            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.YandexAdListener {
+                override fun onYandexAdLoaded(ad: kv, isOnExit: Boolean) {
+                    interstitialAd = ad as InterstitialAd
+                }
+
+                override fun onYandexAdFailed(error: AdRequestError) {
+                    if (BuildConfig.DEBUG) println("************** ${error.description} *******************")
+                }
+            })
+        }
 
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
         if (savedInstanceState == null) {
@@ -113,7 +137,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                                         "RegExpRedundantNestedCharacterClass",
                                         "RegExpDuplicateCharacterInClass"
                                     )
-                                    val name = value.company?.replace(Regex("[[:punct:]]"), "")
+                                    val name = value.company?.replace(Regex("[:punct:]"), "")
                                     val url = "https://www.google.com/search?q=$name"
                                     startBrowserSearch(url)
                                     dismiss()
@@ -155,7 +179,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                                         "RegExpRedundantNestedCharacterClass",
                                         "RegExpDuplicateCharacterInClass"
                                     )
-                                    val name = value.insiderName?.replace(Regex("[[:punct:]]"), "")
+                                    val name = value.insiderName?.replace(Regex("[:punct:]"), "")
                                     val url = "https://www.google.com/search?q=$name"
                                     startBrowserSearch(url)
                                     dismiss()
@@ -187,10 +211,21 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             startBrowserSearch(url)
         }
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         binding.toolBar.setNavigationOnClickListener {
+            showInterstitialAd(interstitialAd) {}
             findNavController().popBackStack()
         }
-
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showInterstitialAd(interstitialAd) {}
+                findNavController().popBackStack()
+            }
+        })
     }
 
     private fun transitionToCompanyDeals(deal: Deal) {

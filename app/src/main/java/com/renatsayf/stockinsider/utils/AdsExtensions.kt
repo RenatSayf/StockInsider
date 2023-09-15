@@ -1,26 +1,15 @@
 package com.renatsayf.stockinsider.utils
 
 import android.app.Activity
-import android.app.Application
 import androidx.fragment.app.Fragment
-import com.google.android.gms.ads.FullScreenContentCallback
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.BuildConfig
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
-import java.util.*
+import com.yandex.mobile.ads.rewarded.Reward
+import com.yandex.mobile.ads.rewarded.RewardedAd
+import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
 
-
-fun Application.getCurrentLocale(): Locale {
-
-    return this.resources.configuration.locales[0]
-}
-
-val Application.currentCountryCode: String
-    get() {
-        return getCurrentLocale().country
-    }
 
 val Activity.currentCountryCode: String
     get() {
@@ -33,51 +22,79 @@ val Fragment.currentCountryCode: String
         return requireActivity().currentCountryCode
     }
 
-fun Activity.showAd(
-    googleAd: InterstitialAd?,
+fun Activity.showInterstitialAd(
     yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
     callback: () -> Unit
     ) {
-    googleAd?.let { ad ->
-        ad.fullScreenContentCallback = object : FullScreenContentCallback() {
-            override fun onAdDismissedFullScreenContent() {
+    yandexAd?.let { ad ->
+        ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
+            override fun onAdLoaded() {}
+            override fun onAdFailedToLoad(error: AdRequestError) {
+                if (BuildConfig.DEBUG) {
+                    val exception = Exception("**************** ${error.description} *******************")
+                    exception.printStackTrace()
+                }
                 callback.invoke()
             }
-        }
-        ad.show(this)
+            override fun onAdShown() {}
+            override fun onAdDismissed() {
+                callback.invoke()
+            }
+            override fun onAdClicked() {}
+            override fun onLeftApplication() {}
+            override fun onReturnedToApplication() {}
+            override fun onImpression(p0: ImpressionData?) {}
+        })
+        ad.show()
     }?: run {
-        yandexAd?.let { ad ->
-            ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
-                override fun onAdLoaded() {}
-                override fun onAdFailedToLoad(error: AdRequestError) {
-                    if (BuildConfig.DEBUG) {
-                        val exception = Exception("**************** ${error.description} *******************")
-                        exception.printStackTrace()
-                    }
-                    callback.invoke()
-                }
-                override fun onAdShown() {}
-                override fun onAdDismissed() {
-                    callback.invoke()
-                }
-                override fun onAdClicked() {}
-                override fun onLeftApplication() {}
-                override fun onReturnedToApplication() {}
-                override fun onImpression(p0: ImpressionData?) {}
-            })
-            ad.show()
-        }?: run {
-            callback.invoke()
-        }
+        callback.invoke()
     }
 }
 
-fun Fragment.showAd(
-    googleAd: InterstitialAd?,
+fun Fragment.showInterstitialAd(
     yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
     callback: () -> Unit
 ) {
-    requireActivity().showAd(googleAd, yandexAd, callback)
+    requireActivity().showInterstitialAd(yandexAd, callback)
+}
+
+fun Activity.showRewardedAd(
+    ad: RewardedAd?,
+    onShown: () -> Unit = {},
+    onDismissed: () -> Unit = {}
+) {
+    ad?.setRewardedAdEventListener(object : RewardedAdEventListener {
+        override fun onAdLoaded() {}
+
+        override fun onAdFailedToLoad(p0: AdRequestError) {}
+
+        override fun onAdShown() {
+            onShown.invoke()
+        }
+
+        override fun onAdDismissed() {
+            onDismissed.invoke()
+        }
+
+        override fun onAdClicked() {}
+
+        override fun onLeftApplication() {}
+
+        override fun onReturnedToApplication() {}
+
+        override fun onImpression(p0: ImpressionData?) {}
+
+        override fun onRewarded(p0: Reward) {}
+    })
+    ad?.show()
+}
+
+fun Fragment.showRewardedAd(
+    ad: RewardedAd?,
+    onShown: () -> Unit = {},
+    onDismissed: () -> Unit = {}
+) {
+    requireActivity().showRewardedAd(ad, onShown, onDismissed)
 }
 
 

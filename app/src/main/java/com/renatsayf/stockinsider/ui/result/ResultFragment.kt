@@ -14,8 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.ads.LoadAdError
-import com.google.android.gms.ads.interstitial.InterstitialAd
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -26,6 +25,7 @@ import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
+import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
@@ -36,6 +36,8 @@ import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.impl.kv
+import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -62,8 +64,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     }
 
     private val adVM: AdViewModel by activityViewModels()
-    private var googleAd2: InterstitialAd? = null
-    private var yandexAd2: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+    private var yandexAd2: InterstitialAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -80,42 +81,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding = FragmentResultBinding.bind(view)
 
         if (savedInstanceState == null) {
-
-            if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                adVM.loadGoogleAd(1, false, object : AdViewModel.GoogleAdListener {
-                    override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                        googleAd2 = ad
-                    }
-                    override fun onGoogleAdFailed(error: LoadAdError) {
-                        googleAd2 = null
-                        adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                            override fun onYandexAdLoaded(
-                                ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                                isOnExit: Boolean
-                            ) {
-                                yandexAd2 = ad
-                            }
-                            override fun onYandexAdFailed(error: AdRequestError) {
-                                yandexAd2 = null
-                            }
-                        })
-                    }
-                })
-            }
-            else {
-                googleAd2 = null
-                adVM.loadYandexAd(0, false, object : AdViewModel.YandexAdListener {
-                    override fun onYandexAdLoaded(
-                        ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                        isOnExit: Boolean
-                    ) {
-                        yandexAd2= ad
-                    }
-                    override fun onYandexAdFailed(error: AdRequestError) {
-                        yandexAd2 = null
-                    }
-                })
-            }
+            val interstitialAdId: AdsId = if (BuildConfig.DEBUG) AdsId.TEST_INTERSTITIAL_AD_ID else AdsId.INTERSTITIAL_2
+            adVM.loadInterstitialAd(adId = interstitialAdId, false, object : AdViewModel.YandexAdListener {
+                override fun onYandexAdLoaded(
+                    ad: kv,
+                    isOnExit: Boolean
+                ) {
+                    yandexAd2= ad as InterstitialAd
+                }
+                override fun onYandexAdFailed(error: AdRequestError) {
+                    yandexAd2 = null
+                }
+            })
 
             val title = arguments?.getString(ARG_TITLE)
             binding.toolBar.title = title
@@ -173,7 +150,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     binding.includedProgress.setVisible(true)
                     binding.btnAddToTracking.setVisible(false)
                     roomSearchSet?.let {
-                        //resultVM.getDealList(it.toSearchSet())
                         resultVM.getDealListFromNet(it.toSearchSet())
                     }
                 }
@@ -182,7 +158,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         binding.noResult.noResultLayout.setVisible(false)
                         binding.includedProgress.setVisible(false)
                         when {
-                            list.size > 0 && list[0].error!!.isEmpty() -> {
+                            list.isNotEmpty() && list[0].error!!.isEmpty() -> {
                                 binding.resultTV.text = list.size.toString()
                                 binding.tradeListRV.apply {
                                     val sorting = sortingVM.sorting
@@ -264,13 +240,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            showAd(googleAd2, yandexAd2) {
+            showInterstitialAd(yandexAd2) {
                 findNavController().popBackStack()
             }
         }
 
         binding.toolBar.setNavigationOnClickListener {
-            showAd(googleAd2, yandexAd2) {
+            showInterstitialAd(yandexAd2) {
                 findNavController().popBackStack()
             }
         }
