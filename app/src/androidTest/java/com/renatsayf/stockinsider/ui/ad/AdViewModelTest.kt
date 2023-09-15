@@ -10,6 +10,7 @@ import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import org.junit.After
@@ -53,9 +54,9 @@ class AdViewModelTest {
             Thread.sleep(5000)
 
             viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                override fun onYandexAdLoaded(ad: kv, isOnExit: Boolean) {
                     Assert.assertTrue(true)
-                    ad.apply {
+                    (ad as InterstitialAd).apply {
                         show()
                         setInterstitialAdEventListener(object : InterstitialAdEventListener {
                             override fun onAdLoaded() {}
