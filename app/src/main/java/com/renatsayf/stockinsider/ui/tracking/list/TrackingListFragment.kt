@@ -285,6 +285,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                             }
                         )
                     }
+                    else {
+                        onGranted.invoke()
+                    }
                 }
                 else {
                     onGranted.invoke()

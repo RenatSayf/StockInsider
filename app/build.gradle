@@ -24,7 +24,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled true
+            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
@@ -101,7 +101,6 @@ dependencies {
     implementation 'androidx.room:room-runtime:2.5.0-rc01'
     implementation 'androidx.room:room-ktx:2.5.0-rc01'
     kapt 'androidx.room:room-compiler:2.5.0-rc01'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.20"
     testImplementation "android.arch.persistence.room:testing:1.1.1"
 
     //WorkManager library
