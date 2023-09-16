@@ -251,5 +251,6 @@
         Перейти в настройки приложения?</string>
     <string name="marketwatch">MarketWatch</string>
     <string name="base_url">http://openinsider.com/</string>
+    <string name="text_for_notification_permission">Для того чтобы уведомить Вас о новых сделках, Вы должны разрешить приложению показывать уведомления. Перейти в настройки?</string>
 
 </resources>
