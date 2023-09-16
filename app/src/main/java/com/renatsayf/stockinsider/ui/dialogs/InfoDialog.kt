@@ -60,16 +60,18 @@ class InfoDialog private constructor() : DialogFragment() {
                     dismiss()
                 }
             })
+            if (status == DialogStatus.WARNING || status == DialogStatus.EXTENDED_WARNING) {
+                setNegativeButton(getString(R.string.text_cancel), object : DialogInterface.OnClickListener {
+                    override fun onClick(dialog: DialogInterface?, which: Int) {
+                        callback.invoke(-1)
+                        dismiss()
+                    }
+                })
+            }
             if (status == DialogStatus.EXTENDED_WARNING) {
                 setNeutralButton(getString(R.string.text_not_show_again), object : DialogInterface.OnClickListener {
                     override fun onClick(dialog: DialogInterface?, which: Int) {
                         callback.invoke(0)
-                        dismiss()
-                    }
-                })
-                setNegativeButton(getString(R.string.text_cancel), object : DialogInterface.OnClickListener {
-                    override fun onClick(dialog: DialogInterface?, which: Int) {
-                        callback.invoke(-1)
                         dismiss()
                     }
                 })
