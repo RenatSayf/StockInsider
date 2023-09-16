@@ -256,7 +256,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         super.onDestroyView()
     }
 
-    fun checkNotificationPermission(onGranted: () -> Unit) {
+    fun checkNotificationPermission(
+        onGranted: () -> Unit
+    ) {
         val count = trackingVM.trackedCount().value
         count?.let {
             if (it > 0) {
@@ -271,6 +273,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                 callback = {i ->
                                     if (i > 0) {
                                         permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                    }
+                                    else {
+                                        onGranted.invoke()
                                     }
                                 }
                             ).show(parentFragmentManager, InfoDialog.TAG)
