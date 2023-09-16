@@ -269,7 +269,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                 InfoDialog.newInstance(
                                     title = getString(R.string.text_warning),
                                     message = getString(R.string.text_for_notification_permission),
-                                    status = InfoDialog.DialogStatus.WARNING,
+                                    status = InfoDialog.DialogStatus.EXTENDED_WARNING,
                                     callback = {i ->
                                         if (i > 0) {
                                             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
