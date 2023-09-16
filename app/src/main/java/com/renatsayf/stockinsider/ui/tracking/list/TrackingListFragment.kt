@@ -259,31 +259,32 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     fun checkNotificationPermission(
         onGranted: () -> Unit
     ) {
-        val count = trackingVM.trackedCount().value
-        count?.let {
-            if (it > 0) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                    askForPermission(
-                        Manifest.permission.POST_NOTIFICATIONS,
-                        onInit = {
-                            InfoDialog.newInstance(
-                                title = getString(R.string.text_warning),
-                                message = getString(R.string.text_for_notification_permission),
-                                status = InfoDialog.DialogStatus.WARNING,
-                                callback = {i ->
-                                    if (i > 0) {
-                                        permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
+            count?.let {
+                if (it > 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        askForPermission(
+                            Manifest.permission.POST_NOTIFICATIONS,
+                            onInit = {
+                                InfoDialog.newInstance(
+                                    title = getString(R.string.text_warning),
+                                    message = getString(R.string.text_for_notification_permission),
+                                    status = InfoDialog.DialogStatus.WARNING,
+                                    callback = {i ->
+                                        if (i > 0) {
+                                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        }
+                                        else {
+                                            onGranted.invoke()
+                                        }
                                     }
-                                    else {
-                                        onGranted.invoke()
-                                    }
-                                }
-                            ).show(parentFragmentManager, InfoDialog.TAG)
-                        },
-                        onGranted = {
-                            onGranted.invoke()
-                        }
-                    )
+                                ).show(parentFragmentManager, InfoDialog.TAG)
+                            },
+                            onGranted = {
+                                onGranted.invoke()
+                            }
+                        )
+                    }
                 }
             }
         }
