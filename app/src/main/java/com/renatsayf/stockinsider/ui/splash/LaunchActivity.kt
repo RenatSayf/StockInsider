@@ -2,13 +2,13 @@ package com.renatsayf.stockinsider.ui.splash
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.net.Uri
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.ui.settings.KEY_APP_STORE_LINK
+import com.renatsayf.stockinsider.utils.goToAppStore
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -21,9 +21,7 @@ class LaunchActivity : AppCompatActivity() {
         val extras = intent.extras
         val appStoreLink = extras?.getString(KEY_APP_STORE_LINK)
         if (!appStoreLink.isNullOrEmpty()) {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(getString(R.string.app_link).plus(this.packageName))
-            startActivity(intent)
+            goToAppStore()
             finish()
         }
 

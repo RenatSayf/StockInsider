@@ -300,6 +300,12 @@ fun checkTestPort(): Boolean {
     else throw Exception("****************** Не тестовый порт. Выберите в меню Build Variants localhostDebug *************************")
 }
 
+fun Context.goToAppStore() {
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = Uri.parse(this.getString(R.string.app_link).plus(this.packageName))
+    startActivity(intent)
+}
+
 
 
 
