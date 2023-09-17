@@ -3,13 +3,9 @@ package com.renatsayf.stockinsider.network
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import com.renatsayf.stockinsider.db.Company
+import androidx.work.testing.TestScheduler
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.utils.getStringFromFile
-import io.reactivex.observers.TestObserver
-import io.reactivex.plugins.RxJavaPlugins
-import io.reactivex.schedulers.TestScheduler
 import kotlinx.coroutines.runBlocking
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -17,14 +13,10 @@ import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.jsoup.Jsoup
 import org.junit.*
-
-import org.junit.Assert
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 import retrofit2.Retrofit
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
-import java.util.concurrent.TimeUnit
 
 
 @RunWith(RobolectricTestRunner::class)
@@ -67,20 +59,15 @@ class NetRepositoryTest {
 
     @Before
     fun setUp() {
-        testScheduler = TestScheduler()
-        RxJavaPlugins.setComputationSchedulerHandler {
-            testScheduler
-        }
+        testScheduler = TestScheduler(context)
     }
 
     @After
     fun tearDown() {
-        RxJavaPlugins.setComputationSchedulerHandler { null }
     }
 
     private fun createRetrofit(): IApi {
         return Retrofit.Builder()
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
             .addConverterFactory(DocumAdapter.FACTORY)
             .baseUrl(server.url("/"))
             .client(okHttpClient)
@@ -119,14 +106,16 @@ class NetRepositoryTest {
             }
             this.enqueue(response)
         }
-        val testObserver = TestObserver<List<Company>>()
 
-        val single = repository.getAllCompaniesName()
-        single.subscribe(testObserver)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        val actualList = testObserver.values()[0]
-
-        Assert.assertTrue(actualList.isNotEmpty() && actualList.size > 50)
+        runBlocking {
+            val result = repository.getAllCompaniesNameAsync().await()
+            result.onSuccess { lict ->
+                Assert.assertTrue(lict.isNotEmpty() && lict.size > 50)
+            }
+            result.onFailure {
+                Assert.assertTrue(false)
+            }
+        }
     }
 
     @Test
@@ -149,13 +138,10 @@ class NetRepositoryTest {
             }
             this.enqueue(response)
         }
-        val testObserver = TestObserver<ArrayList<Deal>>()
-
-        val observable = repository.getTradingScreen(testSet.toSearchSet())
-        observable.subscribe(testObserver)
-        testScheduler.advanceTimeBy(1, TimeUnit.SECONDS)
-        val actualList = testObserver.values()[0]
-        Assert.assertTrue(actualList.isNotEmpty())
+        runBlocking {
+            val actualList = repository.getDealsListAsync(testSet.toSearchSet()).await()
+            Assert.assertTrue(actualList.isNotEmpty())
+        }
     }
 
     @Test

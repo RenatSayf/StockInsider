@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.AboutAppFragmentBinding
+import com.renatsayf.stockinsider.utils.goToAppStore
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -41,14 +42,11 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
         binding.versionNameView.text = versionName
 
         binding.btnEvaluate.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW)
-            intent.data = Uri.parse(getString(R.string.app_link).plus(packageInfo.packageName))
-            startActivity(intent)
+            requireContext().goToAppStore()
         }
 
         binding.privacyPolicyLinkView.setOnClickListener {
-            val intent =
-                Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
             startActivity(intent)
         }
 

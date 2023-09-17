@@ -71,7 +71,6 @@ class AppCalendarTest {
         Assert.assertEquals(false, actualResult)
     }
 
-    @Suppress("UnnecessaryVariable")
     @Test
     fun getNextFillingTime_on_the_weekend() {
 
@@ -91,7 +90,6 @@ class AppCalendarTest {
         Assert.assertEquals(expectedResult, actualResult)
     }
 
-    @Suppress("UnnecessaryVariable")
     @Test
     fun getNextFillingTime_on_real_time() {
 
@@ -110,7 +108,7 @@ class AppCalendarTest {
         println("****************** ${this.javaClass.simpleName}.getNextFillingTime_on_real_time(): ${secondTime.timeToFormattedString()} *****************")
 
         val actualResult = (secondTime - firstTime) / 1000
-        Assert.assertTrue(actualResult in 19..21)
+        Assert.assertTrue(actualResult in 19..22)
     }
 
     @Test

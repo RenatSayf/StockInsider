@@ -1,16 +1,19 @@
 package com.renatsayf.stockinsider.ui.tracking.list
 
+import android.Manifest
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.asFlow
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -23,6 +26,7 @@ import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.settings.askForPermission
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
 import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
@@ -45,6 +49,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     private val trackingAdapter: TrackingAdapter by lazy {
         TrackingAdapter(listener = this)
     }
+    private val permissionLauncher: ActivityResultLauncher<String> by lazy {
+        this.registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -57,12 +64,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.includedToolBar.appToolbar.apply {
-            title = getString(R.string.text_tracking_list)
-            setNavigationOnClickListener {
-                requireActivity().findNavController(R.id.nav_host_fragment).popBackStack()
-            }
-        }
+        permissionLauncher
 
         binding.trackersRV.apply {
             setHasFixedSize(true)
@@ -221,15 +223,77 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     override fun onResume() {
-
-        (activity as MainActivity).supportActionBar?.hide()
         super.onResume()
+        (activity as MainActivity).supportActionBar?.hide()
+
+        binding.includedToolBar.appToolbar.apply {
+            title = getString(R.string.text_tracking_list)
+            setNavigationOnClickListener {
+                checkNotificationPermission(
+                    onChecked = {
+                        parentFragmentManager.popBackStack()
+                    }
+                )
+            }
+        }
+
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                checkNotificationPermission(
+                    onChecked = {
+                        parentFragmentManager.popBackStack()
+                    }
+                )
+            }
+        })
     }
 
     override fun onDestroyView() {
 
         (activity as MainActivity).supportActionBar?.show()
         super.onDestroyView()
+    }
+
+    fun checkNotificationPermission(
+        onChecked: () -> Unit
+    ) {
+        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
+            count?.let {
+                if (it > 0) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        askForPermission(
+                            Manifest.permission.POST_NOTIFICATIONS,
+                            onInit = {
+                                InfoDialog.newInstance(
+                                    title = getString(R.string.text_warning),
+                                    message = getString(R.string.text_for_notification_permission),
+                                    status = InfoDialog.DialogStatus.WARNING,
+                                    callback = {i ->
+                                        if (i > 0) {
+                                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                        }
+                                        else {
+                                            onChecked.invoke()
+                                        }
+                                    }
+                                ).show(parentFragmentManager, InfoDialog.TAG)
+                            },
+                            onGranted = {
+                                onChecked.invoke()
+                            }
+                        )
+                    }
+                    else {
+                        onChecked.invoke()
+                    }
+                }
+                else {
+                    onChecked.invoke()
+                }
+            }
+        }
     }
 
 }

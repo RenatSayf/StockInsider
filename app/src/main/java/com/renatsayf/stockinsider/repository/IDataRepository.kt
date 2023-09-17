@@ -4,23 +4,19 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Deferred
-import java.lang.Exception
-import kotlin.jvm.Throws
 
 interface IDataRepository
 {
-    fun getTradingScreenFromNetAsync(set: SearchSet) : Observable<ArrayList<Deal>>
+    suspend fun getTradingListFromNetAsync(set: SearchSet): Deferred<Result<List<Deal>>>
 
-    fun getInsiderTradingFromNetAsync(insider: String) : Single<ArrayList<Deal>>
+    suspend fun getInsiderTradingFromNetAsync2(insider: String): Deferred<Result<List<Deal>>>
 
-    fun getAllCompaniesName() : Single<List<Company>>
+    suspend fun getAllCompanies(): Deferred<Result<List<Company>>>
 
     suspend fun getAllSearchSetsFromDbAsync() : List<RoomSearchSet>
 
-    fun getTradingByTickerAsync(ticker: String) : Single<ArrayList<Deal>>
+    suspend fun getDealsByTicker(ticker: String): Deferred<Result<List<Deal>>>
 
     suspend fun getUserSearchSetsFromDbAsync() : List<RoomSearchSet>
 
@@ -52,6 +48,4 @@ interface IDataRepository
     suspend fun insertCompanies(list : List<Company>)
 
     suspend fun updateSearchSetTickerAsync(setName: String, value: String) : Deferred<Int>
-
-    fun destructor()
 }

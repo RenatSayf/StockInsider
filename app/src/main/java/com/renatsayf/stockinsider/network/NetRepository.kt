@@ -5,10 +5,6 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import io.reactivex.Single
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.CompositeDisposable
-import io.reactivex.schedulers.Schedulers
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
@@ -18,7 +14,6 @@ import javax.inject.Inject
 
 class NetRepository @Inject constructor(private val api: IApi) : INetRepository
 {
-    var composite = CompositeDisposable()
     private var searchTicker : String = ""
 
     private val userAgent = try {
@@ -33,46 +28,42 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
     catch (e: Exception) {
         okhttp3.internal.userAgent
     }
-
-    override fun getTradingScreen(set: SearchSet) : io.reactivex.Observable<ArrayList<Deal>>
-    {
-        return io.reactivex.Observable.create {emitter ->
-            var dealList: ArrayList<Deal> = arrayListOf()
-            searchTicker = set.ticker
-            val subscriber = api.getTradingScreen(
-                set.ticker,
-                set.filingPeriod,
-                set.tradePeriod,
-                set.isPurchase,
-                set.isSale,
-                set.excludeDerivRelated,
-                set.tradedMin,
-                set.tradedMax,
-                set.isOfficer,
-                set.isDirector,
-                set.isTenPercent,
-                set.groupBy,
-                set.sortBy,
-                agent = userAgent
-            )
-                .map { document ->
-                    dealList = doMainParsing(document)
+    override suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                try {
+                    val response = api.getDealsListAsync(
+                        set.ticker,
+                        set.filingPeriod,
+                        set.tradePeriod,
+                        set.isPurchase,
+                        set.isSale,
+                        set.excludeDerivRelated,
+                        set.tradedMin,
+                        set.tradedMax,
+                        set.isOfficer,
+                        set.isDirector,
+                        set.isTenPercent,
+                        set.groupBy,
+                        set.sortBy,
+                        agent = userAgent
+                    )
+                    if (response.isSuccessful) {
+                        val document = response.body()
+                        document?.let {
+                            val list = doMainParsing(document).toList()
+                            Result.success(list)
+                        }?: run {
+                            Result.success(emptyList())
+                        }
+                    }
+                    else {
+                        Result.failure(Throwable(response.message()))
+                    }
+                } catch (e: Exception) {
+                    Result.failure(e)
                 }
-                .subscribe({
-                    if (!emitter.isDisposed) {
-                        emitter.onNext(dealList)
-                    }
-                }, { error: Throwable ->
-
-                    if (!emitter.isDisposed) {
-                        emitter.onError(error)
-                    }
-                }, {
-                    if (!emitter.isDisposed) {
-                        emitter.onComplete()
-                    }
-                })
-            composite.add(subscriber)
+            }
         }
     }
 
@@ -81,23 +72,23 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         val listDeal : ArrayList<Deal> = arrayListOf()
         val body = document.body()
         val bodyText = body.text()
-        if (bodyText != null && bodyText.contains("ERROR:"))
+        if (bodyText.contains("ERROR:"))
         {
             val deal = Deal("")
             deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
-        val error = body?.select("#tablewrapper")?.text()
-        if (error != null && error.contains("ERROR:"))
+        val error = body.select("#tablewrapper").text()
+        if (error.contains("ERROR:"))
         {
             val deal = Deal("")
             deal.error = "ERROR:"
             listDeal.add(deal)
             return listDeal
         }
-        val tableBody = body?.select("#tablewrapper > table > tbody")
-        tableBody?.let { it ->
+        val tableBody = body.select("#tablewrapper > table > tbody")
+        tableBody.let {
             if (it.size > 0)
             {
                 val table = it[0]
@@ -144,27 +135,27 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
             }
         }
     }
-
-    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>>
-    {
-        return Single.create { emitter ->
-            var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getInsiderTrading(insider, userAgent)
-                .map { doc ->
-                    dealList = doAdditionalParsing(doc, "#subjectDetails")
+    override suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                try {
+                    val response = api.getInsiderTradingAsync(insider, userAgent)
+                    if (response.isSuccessful) {
+                        response.body()?.let { doc ->
+                            val deals = doAdditionalParsing(doc, "#subjectDetails")
+                            Result.success(deals.toList())
+                        }?: run {
+                            Result.success(emptyList())
+                        }
+                    }
+                    else {
+                        Result.failure(Throwable(response.message()))
+                    }
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (!emitter.isDisposed) {
-                        emitter.onSuccess(dealList)
-                    }
-                }, {
-                    if (!emitter.isDisposed) {
-                        emitter.onError(it)
-                    }
-                })
-            composite.add(subscribe)
+                catch (e: Throwable) {
+                    Result.failure(e)
+                }
+            }
         }
     }
 
@@ -200,32 +191,26 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         }
         return listDeal
     }
-
-    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
-
-        return Single.create { emitter ->
-            var dealList: ArrayList<Deal> = arrayListOf()
-            val subscribe = api.getTradingByTicker(ticker, userAgent)
-                .map { doc ->
-                    dealList = doAdditionalParsing(doc, "#tablewrapper")
+    override suspend fun getDealsByTicker(ticker: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                val response = api.getDealsByTicker(ticker, userAgent)
+                if (response.isSuccessful) {
+                    response.body()?.let { doc ->
+                        val list = doAdditionalParsing(doc, "#tablewrapper").toList()
+                        Result.success(list)
+                    }?: run {
+                        Result.success(emptyList())
+                    }
                 }
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe({
-                    if (!emitter.isDisposed) {
-                        emitter.onSuccess(dealList)
-                    }
-                }, {
-                    if (!emitter.isDisposed) {
-                        emitter.onError(it)
-                    }
-                })
-            composite.add(subscribe)
+                else {
+                    Result.failure(Throwable(response.message()))
+                }
+            }
         }
     }
 
-    override fun getAllCompaniesName(): Single<List<Company>> {
-
+    override suspend fun getAllCompaniesNameAsync(): Deferred<Result<List<Company>>> {
         val set = RoomSearchSet(
             queryName = "",
             companyName = "",
@@ -242,37 +227,41 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
             groupBy = 0,
             sortBy = 3
         ).toSearchSet()
-
-        return Single.create { emitter ->
-            val subscribe = api.getTradingScreen(
-                set.ticker,
-                set.filingPeriod,
-                set.tradePeriod,
-                set.isPurchase,
-                set.isSale,
-                set.excludeDerivRelated,
-                set.tradedMin,
-                set.tradedMax,
-                set.isOfficer,
-                set.isDirector,
-                set.isTenPercent,
-                set.groupBy,
-                set.sortBy,
-                agent = userAgent
-            )
-                .map { document ->
-                doAllCompanyNameParsing(document)
+        return coroutineScope {
+            async {
+                try {
+                    val response = api.getDealsListAsync(
+                        set.ticker,
+                        set.filingPeriod,
+                        set.tradePeriod,
+                        set.isPurchase,
+                        set.isSale,
+                        set.excludeDerivRelated,
+                        set.tradedMin,
+                        set.tradedMax,
+                        set.isOfficer,
+                        set.isDirector,
+                        set.isTenPercent,
+                        set.groupBy,
+                        set.sortBy,
+                        agent = userAgent
+                    )
+                    if (response.isSuccessful) {
+                        response.body()?.let { doc ->
+                            val companySet = doAllCompanyNameParsing(doc)
+                            Result.success(companySet.toList())
+                        }?: run {
+                            Result.success(emptyList())
+                        }
+                    }
+                    else {
+                        Result.failure(Exception(response.message()))
+                    }
+                }
+                catch (e: Exception) {
+                    Result.failure(e)
+                }
             }
-                .subscribe({ set ->
-                    if (!emitter.isDisposed) {
-                        emitter.onSuccess(set.toList())
-                    }
-                }, { t ->
-                    if (!emitter.isDisposed) {
-                        emitter.onError(t)
-                    }
-                })
-            composite.add(subscribe)
         }
     }
 

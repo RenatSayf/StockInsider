@@ -13,8 +13,7 @@ private const val DB_VERSION = 19
 @Database(
     entities = [RoomSearchSet::class, Company::class],
     version = DB_VERSION,
-    exportSchema = true,
-    autoMigrations = [AutoMigration(from = DB_VERSION - 1, to = DB_VERSION)]
+    exportSchema = true
 )
 abstract class AppDataBase : RoomDatabase() {
     abstract fun appDao(): AppDao

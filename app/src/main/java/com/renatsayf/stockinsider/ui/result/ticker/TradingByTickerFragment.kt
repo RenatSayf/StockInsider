@@ -75,7 +75,7 @@ class TradingByTickerFragment : Fragment(R.layout.fragment_result), DealListAdap
             val ticker = arguments?.getString(ARG_TICKER)
 
             if (savedInstanceState == null && ticker != null) {
-                dealVM.getTradingByTicker(ticker)
+                dealVM.getDealsByTicker(ticker)
             }
 
             dealVM.state.observe(viewLifecycleOwner) { state ->

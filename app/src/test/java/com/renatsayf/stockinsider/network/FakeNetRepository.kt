@@ -3,40 +3,71 @@ package com.renatsayf.stockinsider.network
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
-import io.reactivex.Observable
-import io.reactivex.Single
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
 class FakeNetRepository : INetRepository {
 
-    private var result: Any? = null
+    private var result: Result<Any?> = Result.failure(Exception(""))
 
-    fun<T> setExpectedResult(result: T) {
-        this.result = result
+    fun<T> setExpectedResult(result: Result<T>) {
+        this.result = if (result.isSuccess) {
+            Result.success(result.getOrNull())
+        }
+        else {
+            Result.failure(result.getOrThrow() as Throwable)
+        }
     }
 
-    override fun getTradingScreen(set: SearchSet): Observable<ArrayList<Deal>> {
-        return result as Observable<ArrayList<Deal>>
+    override suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                if (result.isSuccess) {
+                    result.getOrNull() as Result<List<Deal>>
+                } else {
+                    Result.failure(result.getOrThrow() as Throwable)
+                }
+            }
+        }
     }
 
-    override fun getInsiderTrading(insider: String): Single<ArrayList<Deal>> {
-        return Single.just(ArrayList())
+    override suspend fun getInsiderTradingAsync(insider: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                if (result.isSuccess) {
+                    result.getOrNull() as Result<List<Deal>>
+                } else {
+                    Result.failure(result.getOrThrow() as Throwable)
+                }
+            }
+        }
     }
 
-    override fun getTradingByTicker(ticker: String): Single<ArrayList<Deal>> {
-        return Single.just(ArrayList())
+    override suspend fun getDealsByTicker(ticker: String): Deferred<Result<List<Deal>>> {
+        return coroutineScope {
+            async {
+                if (result.isSuccess) {
+                    result.getOrNull() as Result<List<Deal>>
+                } else {
+                    Result.failure(result.getOrThrow() as Throwable)
+                }
+            }
+        }
     }
 
-    override fun getAllCompaniesName(): Single<List<Company>> {
-        return Single.just(listOf())
+    override suspend fun getAllCompaniesNameAsync(): Deferred<Result<List<Company>>> {
+        return coroutineScope {
+            async {
+                Result.success(result as List<Company>)
+            }
+        }
     }
 
     override suspend fun getDealsListAsync(set: SearchSet): Deferred<List<Deal>> {
         return coroutineScope {
             async {
-                listOf()
+                result as List<Deal>
             }
         }
     }

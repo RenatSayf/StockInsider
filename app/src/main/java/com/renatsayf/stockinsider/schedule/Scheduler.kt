@@ -52,7 +52,14 @@ class Scheduler @Inject constructor(
                 setExact(AlarmManager.RTC_WAKEUP, startTime + overTime, pendingIntent)
             }
             true
-        } catch (e: Exception) {
+        }
+        catch (e: SecurityException) {
+            alarmManager.apply {
+                set(AlarmManager.RTC_WAKEUP, startTime + overTime, pendingIntent)
+            }
+            true
+        }
+        catch (e: Exception) {
             if (BuildConfig.DEBUG) e.printStackTrace()
             false
         }

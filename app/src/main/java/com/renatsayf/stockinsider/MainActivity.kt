@@ -25,13 +25,13 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
-import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
+import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -40,6 +40,8 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.interstitial.InterstitialAd
+import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -66,10 +68,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val adVM: AdViewModel by viewModels()
-    private var googleAd0: InterstitialAd? = null
-    private var yandexAd0: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
-    var googleAd1: InterstitialAd? = null
-    var yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+    private var yandexAd0: RewardedAd? = null
+    var yandexAd1: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -84,66 +84,32 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-
             FireBaseConfig
-            repeat(2){ index ->
-                if (!FireBaseConfig.sanctionsArray.contains(this.currentCountryCode)) {
-                    adVM.loadGoogleAd(index, false, object : AdViewModel.GoogleAdListener {
-                        override fun onGoogleAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                            when(index) {
-                                0 -> googleAd0 = ad
-                                else -> googleAd1 = ad
-                            }
-                        }
-                        override fun onGoogleAdFailed(error: LoadAdError) {
-                            when(index) {
-                                0 -> googleAd0 = null
-                                else -> googleAd1 = null
-                            }
-                            adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
-                                override fun onYandexAdLoaded(
-                                    ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                                    isOnExit: Boolean
-                                ) {
-                                    when(index) {
-                                        0 -> yandexAd0 = ad
-                                        else -> yandexAd1 = ad
-                                    }
-                                }
-
-                                override fun onYandexAdFailed(error: AdRequestError) {
-                                    when(index) {
-                                        0 -> yandexAd0 = null
-                                        else -> yandexAd1 = null
-                                    }
-                                }
-                            })
-                        }
-                    })
-                } else {
-                    when(index) {
-                        0 -> googleAd0 = null
-                        else -> googleAd1 = null
-                    }
-                    adVM.loadYandexAd(index, false, object : AdViewModel.YandexAdListener {
-                        override fun onYandexAdLoaded(
-                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                            isOnExit: Boolean
-                        ) {
-                            when(index){
-                                0 -> yandexAd0 = ad
-                                else -> yandexAd1 = ad
-                            }
-                        }
-                        override fun onYandexAdFailed(error: AdRequestError) {
-                            when(index) {
-                                0 -> yandexAd0 = null
-                                else -> yandexAd1 = null
-                            }
-                        }
-                    })
+            adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
+                override fun onRewardedAdLoaded(
+                    ad: RewardedAd,
+                    isOnExit: Boolean
+                ) {
+                    yandexAd0 = ad
                 }
-            }
+                override fun onAdFailed(error: AdRequestError) {
+                    yandexAd0 = null
+                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+                }
+            })
+
+            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(
+                    ad: InterstitialAd,
+                    isOnExit: Boolean
+                ) {
+                    yandexAd1 = ad
+                }
+                override fun onAdFailed(error: AdRequestError) {
+                    yandexAd1 = null
+                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+                }
+            })
         }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
@@ -213,7 +179,7 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     }
                                 }
-                                showAd(googleAd1, yandexAd1) {
+                                showInterstitialAd(yandexAd1) {
                                     finish()
                                 }
                             }
@@ -383,7 +349,7 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {
-                            showAd(googleAd0, yandexAd0) {}
+                            showRewardedAd(yandexAd0)
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
