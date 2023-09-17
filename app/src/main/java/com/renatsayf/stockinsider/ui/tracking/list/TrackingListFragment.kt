@@ -230,7 +230,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             title = getString(R.string.text_tracking_list)
             setNavigationOnClickListener {
                 checkNotificationPermission(
-                    onGranted = {
+                    onChecked = {
                         parentFragmentManager.popBackStack()
                     }
                 )
@@ -242,7 +242,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 checkNotificationPermission(
-                    onGranted = {
+                    onChecked = {
                         parentFragmentManager.popBackStack()
                     }
                 )
@@ -257,7 +257,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     fun checkNotificationPermission(
-        onGranted: () -> Unit
+        onChecked: () -> Unit
     ) {
         trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
             count?.let {
@@ -275,22 +275,22 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                             permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                         }
                                         else {
-                                            onGranted.invoke()
+                                            onChecked.invoke()
                                         }
                                     }
                                 ).show(parentFragmentManager, InfoDialog.TAG)
                             },
                             onGranted = {
-                                onGranted.invoke()
+                                onChecked.invoke()
                             }
                         )
                     }
                     else {
-                        onGranted.invoke()
+                        onChecked.invoke()
                     }
                 }
                 else {
-                    onGranted.invoke()
+                    onChecked.invoke()
                 }
             }
         }
