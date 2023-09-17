@@ -71,12 +71,12 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         binding = FragmentDealBinding.bind(view)
 
         if (savedInstanceState == null) {
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(ad: kv, isOnExit: Boolean) {
-                    interstitialAd = ad as InterstitialAd
+            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                    interstitialAd = ad
                 }
 
-                override fun onYandexAdFailed(error: AdRequestError) {
+                override fun onAdFailed(error: AdRequestError) {
                     if (BuildConfig.DEBUG) println("************** ${error.description} *******************")
                 }
             })
@@ -101,7 +101,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                         override fun onLoadFailed(
                             e: GlideException?,
                             model: Any?,
-                            target: Target<Drawable>?,
+                            target: Target<Drawable>,
                             isFirstResource: Boolean
                         ): Boolean {
                             binding.imgLoadProgBar.setVisible(false)
@@ -109,16 +109,17 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                         }
 
                         override fun onResourceReady(
-                            resource: Drawable?,
-                            model: Any?,
+                            resource: Drawable,
+                            model: Any,
                             target: Target<Drawable>?,
-                            dataSource: DataSource?,
+                            dataSource: DataSource,
                             isFirstResource: Boolean
                         ): Boolean {
-                            resource?.let { viewModel.setChart(it) }
+                            viewModel.setChart(resource)
                             binding.imgLoadProgBar.setVisible(false)
                             return true
                         }
+
                     }).into(binding.chartImagView)
 
                 value?.let { mainDealLayout.setBackgroundColor(it.color) }

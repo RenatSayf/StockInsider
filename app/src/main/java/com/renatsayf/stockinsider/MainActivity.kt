@@ -40,7 +40,6 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
@@ -86,27 +85,27 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             FireBaseConfig
-            adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(
-                    ad: kv,
+            adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
+                override fun onRewardedAdLoaded(
+                    ad: RewardedAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd0 = ad as RewardedAd
+                    yandexAd0 = ad
                 }
-                override fun onYandexAdFailed(error: AdRequestError) {
+                override fun onAdFailed(error: AdRequestError) {
                     yandexAd0 = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }
             })
 
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(
-                    ad: kv,
+            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(
+                    ad: InterstitialAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd1 = ad as InterstitialAd
+                    yandexAd1 = ad
                 }
-                override fun onYandexAdFailed(error: AdRequestError) {
+                override fun onAdFailed(error: AdRequestError) {
                     yandexAd1 = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }

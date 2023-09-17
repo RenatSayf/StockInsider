@@ -34,9 +34,15 @@ import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.dp
+import com.renatsayf.stockinsider.utils.getSerializableCompat
+import com.renatsayf.stockinsider.utils.getValuesSize
+import com.renatsayf.stockinsider.utils.isNetworkAvailable
+import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showInfoDialog
+import com.renatsayf.stockinsider.utils.showInterstitialAd
+import com.renatsayf.stockinsider.utils.showSnackBar
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -82,14 +88,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         if (savedInstanceState == null) {
             val interstitialAdId: AdsId = if (BuildConfig.DEBUG) AdsId.TEST_INTERSTITIAL_AD_ID else AdsId.INTERSTITIAL_2
-            adVM.loadInterstitialAd(adId = interstitialAdId, false, object : AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(
-                    ad: kv,
+            adVM.loadInterstitialAd(adId = interstitialAdId, false, object : AdViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(
+                    ad: InterstitialAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd2= ad as InterstitialAd
+                    yandexAd2= ad
                 }
-                override fun onYandexAdFailed(error: AdRequestError) {
+                override fun onAdFailed(error: AdRequestError) {
                     yandexAd2 = null
                 }
             })

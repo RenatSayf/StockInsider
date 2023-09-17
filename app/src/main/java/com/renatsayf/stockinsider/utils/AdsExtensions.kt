@@ -3,8 +3,9 @@ package com.renatsayf.stockinsider.utils
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.renatsayf.stockinsider.BuildConfig
-import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.ImpressionData
+import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import com.yandex.mobile.ads.rewarded.Reward
 import com.yandex.mobile.ads.rewarded.RewardedAd
@@ -23,36 +24,38 @@ val Fragment.currentCountryCode: String
     }
 
 fun Activity.showInterstitialAd(
-    yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
+    yandexAd: InterstitialAd?,
     callback: () -> Unit
     ) {
     yandexAd?.let { ad ->
-        ad.setInterstitialAdEventListener(object : InterstitialAdEventListener {
-            override fun onAdLoaded() {}
-            override fun onAdFailedToLoad(error: AdRequestError) {
+        ad.setAdEventListener(object : InterstitialAdEventListener {
+            override fun onAdShown() {}
+
+            override fun onAdFailedToShow(p0: AdError) {
                 if (BuildConfig.DEBUG) {
-                    val exception = Exception("**************** ${error.description} *******************")
+                    val exception = Exception("**************** ${p0.description} *******************")
                     exception.printStackTrace()
                 }
                 callback.invoke()
             }
-            override fun onAdShown() {}
+
             override fun onAdDismissed() {
                 callback.invoke()
             }
+
             override fun onAdClicked() {}
-            override fun onLeftApplication() {}
-            override fun onReturnedToApplication() {}
-            override fun onImpression(p0: ImpressionData?) {}
+
+            override fun onAdImpression(p0: ImpressionData?) {}
+
         })
-        ad.show()
+        ad.show(this)
     }?: run {
         callback.invoke()
     }
 }
 
 fun Fragment.showInterstitialAd(
-    yandexAd: com.yandex.mobile.ads.interstitial.InterstitialAd?,
+    yandexAd: InterstitialAd?,
     callback: () -> Unit
 ) {
     requireActivity().showInterstitialAd(yandexAd, callback)
@@ -63,12 +66,12 @@ fun Activity.showRewardedAd(
     onShown: () -> Unit = {},
     onDismissed: () -> Unit = {}
 ) {
-    ad?.setRewardedAdEventListener(object : RewardedAdEventListener {
-        override fun onAdLoaded() {}
-
-        override fun onAdFailedToLoad(p0: AdRequestError) {}
-
+    ad?.setAdEventListener(object : RewardedAdEventListener {
         override fun onAdShown() {
+            onShown.invoke()
+        }
+
+        override fun onAdFailedToShow(p0: AdError) {
             onShown.invoke()
         }
 
@@ -78,15 +81,11 @@ fun Activity.showRewardedAd(
 
         override fun onAdClicked() {}
 
-        override fun onLeftApplication() {}
-
-        override fun onReturnedToApplication() {}
-
-        override fun onImpression(p0: ImpressionData?) {}
+        override fun onAdImpression(p0: ImpressionData?) {}
 
         override fun onRewarded(p0: Reward) {}
     })
-    ad?.show()
+    ad?.show(this)
 }
 
 fun Fragment.showRewardedAd(

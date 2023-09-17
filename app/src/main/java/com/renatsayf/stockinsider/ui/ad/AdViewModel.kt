@@ -6,15 +6,16 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.utils.appPref
+import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.common.InitializationListener
 import com.yandex.mobile.ads.common.MobileAds
-import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
-import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
-import com.yandex.mobile.ads.rewarded.Reward
-import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
+import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener
+import com.yandex.mobile.ads.interstitial.InterstitialAdLoader
+import com.yandex.mobile.ads.rewarded.RewardedAd
+import com.yandex.mobile.ads.rewarded.RewardedAdLoadListener
+import com.yandex.mobile.ads.rewarded.RewardedAdLoader
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -28,7 +29,6 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
 
     private var yandexInitStatus: Boolean = false
     private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
-    private val yandexAdRequest = com.yandex.mobile.ads.common.AdRequest.Builder().build()
 
     fun init(){
         MobileAds.initialize(app, object : InitializationListener {
@@ -39,90 +39,71 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
         })
     }
 
-    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, isOnExit: Boolean = false, listener: YandexAdListener) {
+    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, isOnExit: Boolean = false, listener: InterstitialAdListener) {
         if (!isDisabled) {
 
-            InterstitialAd(app).apply {
-                if (BuildConfig.DEBUG) {
-                    setAdUnitId(AdsId.TEST_INTERSTITIAL_AD_ID.value)
+            InterstitialAdLoader(app).apply {
+                val id = if (BuildConfig.DEBUG) {
+                    AdsId.TEST_INTERSTITIAL_AD_ID.value
+                } else {
+                    adId.value
                 }
-                else {
-                    setAdUnitId(adId.value)
-                }
-                loadAd(yandexAdRequest)
-                setInterstitialAdEventListener(object : InterstitialAdEventListener {
-                    override fun onAdLoaded() {
-                        listener.onYandexAdLoaded(this@apply, isOnExit)
+                val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
+                loadAd(adRequestConfiguration)
+                setAdLoadListener(object : InterstitialAdLoadListener {
+                    override fun onAdLoaded(p0: InterstitialAd) {
+                        listener.onInterstitialAdLoaded(p0, isOnExit)
                     }
 
-                    override fun onAdFailedToLoad(error: AdRequestError) {
-                        listener.onYandexAdFailed(error)
-                        if (BuildConfig.DEBUG) println("*************** loadInterstitialAd() ${error.description} ***************")
+                    override fun onAdFailedToLoad(p0: AdRequestError) {
+                        listener.onAdFailed(p0)
+                        if (BuildConfig.DEBUG) println("*************** loadInterstitialAd() ${p0.description} ***************")
                     }
 
-                    override fun onAdShown() {}
-
-                    override fun onAdDismissed() {}
-
-                    override fun onAdClicked() {}
-
-                    override fun onLeftApplication() {}
-
-                    override fun onReturnedToApplication() {}
-
-                    override fun onImpression(p0: ImpressionData?) {}
                 })
             }
         }
         else {
-            listener.onYandexAdFailed(AdRequestError(-1, "Ads are disabled"))
+            listener.onAdFailed(AdRequestError(-1, "Ads are disabled"))
         }
     }
 
-    fun loadRewardedAd(adId: AdsId, isOnExit: Boolean = false, listener: YandexAdListener) {
+    fun loadRewardedAd(adId: AdsId, isOnExit: Boolean = false, listener: RewardedAdListener) {
         if (!isDisabled) {
-            com.yandex.mobile.ads.rewarded.RewardedAd(app).apply {
-                if (BuildConfig.DEBUG) {
-                    setAdUnitId(AdsId.TEST_REWARDED_AD_ID.value)
+            RewardedAdLoader(app).apply {
+                val id = if (BuildConfig.DEBUG) {
+                    AdsId.TEST_REWARDED_AD_ID.value
+                } else {
+                    adId.value
                 }
-                else {
-                    setAdUnitId(adId.value)
-                }
-                loadAd(yandexAdRequest)
-                setRewardedAdEventListener(object : RewardedAdEventListener {
-                    override fun onAdLoaded() {
-                        listener.onYandexAdLoaded(this@apply, isOnExit)
+                val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
+                loadAd(adRequestConfiguration)
+                setAdLoadListener(object : RewardedAdLoadListener {
+                    override fun onAdLoaded(p0: RewardedAd) {
+                        listener.onRewardedAdLoaded(p0, isOnExit)
                     }
 
-                    override fun onAdFailedToLoad(error: AdRequestError) {
-                        listener.onYandexAdFailed(error)
-                        if (BuildConfig.DEBUG) println("*************** loadRewardedAd() ${error.description} ***************")
+                    override fun onAdFailedToLoad(p0: AdRequestError) {
+                        listener.onAdFailed(p0)
+                        if (BuildConfig.DEBUG) println("*************** loadRewardedAd() ${p0.description} ***************")
                     }
 
-                    override fun onAdShown() {}
-
-                    override fun onAdDismissed() {}
-
-                    override fun onAdClicked() {}
-
-                    override fun onLeftApplication() {}
-
-                    override fun onReturnedToApplication() {}
-
-                    override fun onImpression(p0: ImpressionData?) {}
-
-                    override fun onRewarded(p0: Reward) {}
                 })
             }
         }
         else {
-            listener.onYandexAdFailed(AdRequestError(-1, "Ads are disabled"))
+            listener.onAdFailed(AdRequestError(-1, "Ads are disabled"))
         }
     }
 
-    interface YandexAdListener {
-        fun onYandexAdLoaded(ad: kv, isOnExit: Boolean)
-        fun onYandexAdFailed(error: AdRequestError)
+    interface InterstitialAdListener {
+        fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean)
+        fun onAdFailed(error: AdRequestError)
+    }
+
+    interface RewardedAdListener {
+        fun onRewardedAdLoaded(ad: RewardedAd, isOnExit: Boolean)
+        fun onAdFailed(error: AdRequestError)
     }
 
 }

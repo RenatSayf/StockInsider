@@ -8,9 +8,9 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
+import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import org.junit.After
@@ -53,23 +53,21 @@ class AdViewModelTest {
             activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
             Thread.sleep(5000)
 
-            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: AdViewModel.YandexAdListener {
-                override fun onYandexAdLoaded(ad: kv, isOnExit: Boolean) {
+            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: AdViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                     Assert.assertTrue(true)
-                    (ad as InterstitialAd).apply {
-                        show()
-                        setInterstitialAdEventListener(object : InterstitialAdEventListener {
-                            override fun onAdLoaded() {}
-
-                            override fun onAdFailedToLoad(p0: AdRequestError) {
-                                println("******************* AdRequestError: ${p0.description} *****************************")
-                                Assert.assertTrue(false)
-                                isRunning = false
-                            }
-
+                    ad.apply {
+                        show(activity)
+                        setAdEventListener(object : InterstitialAdEventListener {
                             override fun onAdShown() {
                                 println("******************* Ad is shown *****************************")
                                 Assert.assertTrue(true)
+                                isRunning = false
+                            }
+
+                            override fun onAdFailedToShow(p0: AdError) {
+                                println("******************* AdRequestError: ${p0.description} *****************************")
+                                Assert.assertTrue(false)
                                 isRunning = false
                             }
 
@@ -77,16 +75,11 @@ class AdViewModelTest {
 
                             override fun onAdClicked() {}
 
-                            override fun onLeftApplication() {}
-
-                            override fun onReturnedToApplication() {}
-
-                            override fun onImpression(p0: ImpressionData?) {}
-
+                            override fun onAdImpression(p0: ImpressionData?) {}
                         })
                     }
                 }
-                override fun onYandexAdFailed(error: AdRequestError) {
+                override fun onAdFailed(error: AdRequestError) {
                     println("******************* AdRequestError: ${error.description} **********************")
                     Assert.assertTrue(false)
                     isRunning = false
