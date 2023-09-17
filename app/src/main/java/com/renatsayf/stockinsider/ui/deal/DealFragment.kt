@@ -33,7 +33,6 @@ import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.startBrowserSearch
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.impl.kv
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
