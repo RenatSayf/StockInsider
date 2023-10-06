@@ -22,23 +22,16 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.receivers.AlarmReceiver
-import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInterstitialAd
-import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
@@ -57,10 +50,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
     }
     private val adVM: AdViewModel by activityViewModels()
     var interstitialAd: InterstitialAd? = null
-
-    private val trackedVM: TrackingListViewModel by lazy {
-        ViewModelProvider(this)[TrackingListViewModel::class.java]
-    }
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
@@ -244,21 +233,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
-                    count?.let {
-                        if (it > 0) {
-                            val nextTime = setAlarm(
-                                scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = FireBaseConfig.trackingPeriod
-                            )
-                            if (nextTime != null) {
-                                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
-                                ServiceNotification.notify(requireContext(), message, null)
-                            }
-                        }
-                        requireActivity().finish()
-                    }
-                }
+                requireActivity().finish()
             }
         })
     }

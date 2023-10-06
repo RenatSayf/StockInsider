@@ -151,21 +151,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         9 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            trackedVM.trackedCount().observe(this@MainActivity) { count ->
-                                count?.let {
-                                    if (it > 0) {
-                                        val nextTime = setAlarm(
-                                            scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = FireBaseConfig.trackingPeriod
-                                        )
-                                        if (nextTime != null) {
-                                            val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
-                                            ServiceNotification.notify(this@MainActivity, message, null)
-                                        }
-                                    }
-                                    finish()
-                                }
-                            }
+                            finish()
                         }
                     }
                     return false
@@ -404,6 +390,23 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
+    }
+
+    override fun onStop() {
+
+        val count = trackedVM.getTrackedCountSync()
+        if (count > 0) {
+            val nextTime = setAlarm(
+                scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
+                periodInMinute = FireBaseConfig.trackingPeriod
+            )
+            if (nextTime != null) {
+                val message =
+                    "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                ServiceNotification.notify(this@MainActivity, message, null)
+            }
+        }
+        super.onStop()
     }
 
 }

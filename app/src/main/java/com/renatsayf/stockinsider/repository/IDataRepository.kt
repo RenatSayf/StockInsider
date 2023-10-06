@@ -38,6 +38,8 @@ interface IDataRepository
 
     suspend fun getTrackedCountAsync() : Deferred<Int>
 
+    fun getTrackedCountSync(): Int
+
     suspend fun getTargetCountAsync() : Deferred<Int>
 
     suspend fun getCompanyByTicker(list: List<String>) : List<Company>

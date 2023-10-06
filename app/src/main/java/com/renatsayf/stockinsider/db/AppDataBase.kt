@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.db
 
 import android.content.Context
-import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -35,8 +34,8 @@ abstract class AppDataBase : RoomDatabase() {
         private fun buildDataBase(context: Context): AppDataBase {
 
             val migration = object : Migration(18, DB_VERSION) {
-                override fun migrate(database: SupportSQLiteDatabase) {
-                    val version = database.version
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    val version = db.version
                     if (version < 19) {
                         context.deleteDatabase(DATABASE)
                     }
@@ -44,10 +43,9 @@ abstract class AppDataBase : RoomDatabase() {
             }
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE).apply {
                 addMigrations(migration)
-            }
-                .createFromAsset("database/$DATABASE")
-                .allowMainThreadQueries()
-                .build()
+                createFromAsset("database/$DATABASE")
+                allowMainThreadQueries()
+            }.build()
         }
     }
 

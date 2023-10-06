@@ -24,10 +24,15 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
         _state.value = state
     }
 
-    fun trackedCount(): LiveData<Int?> {
-        val result: MutableLiveData<Int?> = MutableLiveData(null)
+    fun getTrackedCount(): LiveData<Result<Int>> {
+        val result: MutableLiveData<Result<Int>> = MutableLiveData()
         viewModelScope.launch {
-            result.value = repository.getTrackedCountAsync().await()
+            try {
+                val count = repository.getTrackedCountAsync().await()
+                result.postValue(Result.success(count))
+            } catch (e: Exception) {
+                result.postValue(Result.failure(e))
+            }
         }
         return result
     }
@@ -38,6 +43,10 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
             result.value = repository.getTargetCountAsync().await()
         }
         return result
+    }
+
+    fun getTrackedCountSync(): Int {
+        return repository.getTrackedCountSync()
     }
 
 
