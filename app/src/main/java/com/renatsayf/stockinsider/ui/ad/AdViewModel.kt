@@ -8,8 +8,6 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.utils.appPref
 import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.InitializationListener
-import com.yandex.mobile.ads.common.MobileAds
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoader
@@ -27,17 +25,7 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
         const val KEY_IS_AD_DISABLED = "KEY_IS_AD_DISABLED"
     }
 
-    private var yandexInitStatus: Boolean = false
     private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
-
-    fun init(){
-        MobileAds.initialize(app, object : InitializationListener {
-            override fun onInitializationCompleted() {
-                this@AdViewModel.yandexInitStatus = true
-                if (BuildConfig.DEBUG) println("*************** Yandex mobile ads has been initialized *****************")
-            }
-        })
-    }
 
     fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, isOnExit: Boolean = false, listener: InterstitialAdListener) {
         if (!isDisabled) {
@@ -59,7 +47,6 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
                         listener.onAdFailed(p0)
                         if (BuildConfig.DEBUG) println("*************** loadInterstitialAd() ${p0.description} ***************")
                     }
-
                 })
             }
         }

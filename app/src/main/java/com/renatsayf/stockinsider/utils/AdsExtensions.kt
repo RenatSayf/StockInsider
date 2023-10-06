@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.utils
 import android.app.Activity
 import androidx.fragment.app.Fragment
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.R
 import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.interstitial.InterstitialAd
@@ -24,41 +25,53 @@ val Fragment.currentCountryCode: String
     }
 
 fun Activity.showInterstitialAd(
-    yandexAd: InterstitialAd?,
-    callback: () -> Unit
-    ) {
-    yandexAd?.let { ad ->
-        ad.setAdEventListener(object : InterstitialAdEventListener {
-            override fun onAdShown() {}
+    ad: InterstitialAd?,
+    onShown: () -> Unit = {},
+    onDismissed: () -> Unit = {},
+    onFailed: (String) -> Unit = {}
+) {
+    ad?.apply {
+        setAdEventListener(object : InterstitialAdEventListener {
+            override fun onAdShown() {
+
+            }
 
             override fun onAdFailedToShow(p0: AdError) {
                 if (BuildConfig.DEBUG) {
                     val exception = Exception("**************** ${p0.description} *******************")
                     exception.printStackTrace()
                 }
-                callback.invoke()
+                onFailed.invoke(p0.description)
             }
 
             override fun onAdDismissed() {
-                callback.invoke()
+                onDismissed.invoke()
             }
 
             override fun onAdClicked() {}
 
-            override fun onAdImpression(p0: ImpressionData?) {}
+            override fun onAdImpression(p0: ImpressionData?) {
+                onShown.invoke()
+            }
 
         })
-        ad.show(this)
+        show(this@showInterstitialAd)
     }?: run {
-        callback.invoke()
+        val exception = Exception("**************** Ad is NULL *******************")
+        if (BuildConfig.DEBUG) {
+            exception.printStackTrace()
+        }
+        onFailed.invoke(exception.message?: this.getString(R.string.unknown_error))
     }
 }
 
 fun Fragment.showInterstitialAd(
-    yandexAd: InterstitialAd?,
-    callback: () -> Unit
+    ad: InterstitialAd?,
+    onShown: () -> Unit = {},
+    onDismissed: () -> Unit = {},
+    onFailed: (String) -> Unit = {}
 ) {
-    requireActivity().showInterstitialAd(yandexAd, callback)
+    requireActivity().showInterstitialAd(ad, onShown, onDismissed, onFailed)
 }
 
 fun Activity.showRewardedAd(

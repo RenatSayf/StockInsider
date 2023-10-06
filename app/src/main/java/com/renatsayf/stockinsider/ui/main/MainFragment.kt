@@ -48,9 +48,9 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         TickersListAdapter(requireContext())
     }
 
-    private val yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
-        (activity as? MainActivity)?.yandexAd1
-    }
+//    private val interstitialAd: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
+//        (activity as? MainActivity)?.interstitialAd
+//    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -225,10 +225,16 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                             }
                         }
                     }
-                    showInterstitialAd(yandexAd1) {
+                }
+                showInterstitialAd(
+                    (requireActivity() as MainActivity).interstitialAd,
+                    onDismissed = {
+                        requireActivity().finish()
+                    },
+                    onFailed = {
                         requireActivity().finish()
                     }
-                }
+                )
             }
         })
     }

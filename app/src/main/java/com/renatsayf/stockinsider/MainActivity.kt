@@ -68,8 +68,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val adVM: AdViewModel by viewModels()
-    private var yandexAd0: RewardedAd? = null
-    var yandexAd1: InterstitialAd? = null
+    private var rewardedAd: RewardedAd? = null
+    var interstitialAd: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,10 +90,10 @@ class MainActivity : AppCompatActivity() {
                     ad: RewardedAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd0 = ad
+                    rewardedAd = ad
                 }
                 override fun onAdFailed(error: AdRequestError) {
-                    yandexAd0 = null
+                    rewardedAd = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }
             })
@@ -103,10 +103,10 @@ class MainActivity : AppCompatActivity() {
                     ad: InterstitialAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd1 = ad
+                    interstitialAd = ad
                 }
                 override fun onAdFailed(error: AdRequestError) {
-                    yandexAd1 = null
+                    interstitialAd = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }
             })
@@ -179,10 +179,16 @@ class MainActivity : AppCompatActivity() {
                                         }
                                     }
                                 }
-                                showInterstitialAd(yandexAd1) {
+                            }
+                            showInterstitialAd(
+                                interstitialAd,
+                                onDismissed = {
+                                    finish()
+                                },
+                                onFailed = {
                                     finish()
                                 }
-                            }
+                            )
                         }
                     }
                     return false
@@ -349,7 +355,7 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {
-                            showRewardedAd(yandexAd0)
+                            showRewardedAd(rewardedAd)
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)

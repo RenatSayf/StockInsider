@@ -217,12 +217,12 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         super.onResume()
 
         binding.toolBar.setNavigationOnClickListener {
-            showInterstitialAd(interstitialAd) {}
+            showInterstitialAd(interstitialAd)
             findNavController().popBackStack()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showInterstitialAd(interstitialAd) {}
+                showInterstitialAd(interstitialAd)
                 findNavController().popBackStack()
             }
         })

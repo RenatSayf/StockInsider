@@ -14,7 +14,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -87,8 +86,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding = FragmentResultBinding.bind(view)
 
         if (savedInstanceState == null) {
-            val interstitialAdId: AdsId = if (BuildConfig.DEBUG) AdsId.TEST_INTERSTITIAL_AD_ID else AdsId.INTERSTITIAL_2
-            adVM.loadInterstitialAd(adId = interstitialAdId, false, object : AdViewModel.InterstitialAdListener {
+            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, false, object : AdViewModel.InterstitialAdListener {
                 override fun onInterstitialAdLoaded(
                     ad: InterstitialAd,
                     isOnExit: Boolean
@@ -246,15 +244,19 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            showInterstitialAd(yandexAd2) {
-                findNavController().popBackStack()
-            }
+            showInterstitialAd(
+                yandexAd2,
+                onDismissed = { parentFragmentManager.popBackStack() },
+                onFailed = { parentFragmentManager.popBackStack() }
+            )
         }
 
         binding.toolBar.setNavigationOnClickListener {
-            showInterstitialAd(yandexAd2) {
-                findNavController().popBackStack()
-            }
+            showInterstitialAd(
+                yandexAd2,
+                onDismissed = { parentFragmentManager.popBackStack() },
+                onFailed = { parentFragmentManager.popBackStack() }
+            )
         }
     }
 
