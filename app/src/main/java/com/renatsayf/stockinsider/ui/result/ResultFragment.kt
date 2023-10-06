@@ -244,19 +244,11 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            showInterstitialAd(
-                yandexAd2,
-                onDismissed = { parentFragmentManager.popBackStack() },
-                onFailed = { parentFragmentManager.popBackStack() }
-            )
+            parentFragmentManager.popBackStack()
         }
 
         binding.toolBar.setNavigationOnClickListener {
-            showInterstitialAd(
-                yandexAd2,
-                onDismissed = { parentFragmentManager.popBackStack() },
-                onFailed = { parentFragmentManager.popBackStack() }
-            )
+            parentFragmentManager.popBackStack()
         }
     }
 

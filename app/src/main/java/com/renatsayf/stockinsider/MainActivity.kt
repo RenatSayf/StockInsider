@@ -40,7 +40,6 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -69,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
     private val adVM: AdViewModel by viewModels()
     private var rewardedAd: RewardedAd? = null
-    var interstitialAd: InterstitialAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -94,19 +92,6 @@ class MainActivity : AppCompatActivity() {
                 }
                 override fun onAdFailed(error: AdRequestError) {
                     rewardedAd = null
-                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
-                }
-            })
-
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(
-                    ad: InterstitialAd,
-                    isOnExit: Boolean
-                ) {
-                    interstitialAd = ad
-                }
-                override fun onAdFailed(error: AdRequestError) {
-                    interstitialAd = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }
             })
@@ -178,17 +163,9 @@ class MainActivity : AppCompatActivity() {
                                             ServiceNotification.notify(this@MainActivity, message, null)
                                         }
                                     }
+                                    finish()
                                 }
                             }
-                            showInterstitialAd(
-                                interstitialAd,
-                                onDismissed = {
-                                    finish()
-                                },
-                                onFailed = {
-                                    finish()
-                                }
-                            )
                         }
                     }
                     return false
