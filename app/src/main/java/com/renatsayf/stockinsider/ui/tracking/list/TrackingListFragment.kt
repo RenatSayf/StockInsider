@@ -191,12 +191,14 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
-                        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
-                            if (count == 0) {
-                                val scheduler = Scheduler(requireContext().applicationContext)
-                                val pendingIntent = scheduler.isAlarmSetup(false)
-                                pendingIntent?.let {
-                                    scheduler.cancel(it)
+                        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
+                            result.onSuccess { count ->
+                                if (count == 0) {
+                                    val scheduler = Scheduler(requireContext().applicationContext)
+                                    val pendingIntent = scheduler.isAlarmSetup(false)
+                                    pendingIntent?.let {
+                                        scheduler.cancel(it)
+                                    }
                                 }
                             }
                         }
@@ -259,9 +261,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     fun checkNotificationPermission(
         onChecked: () -> Unit
     ) {
-        trackingVM.trackedCount().observe(viewLifecycleOwner) { count ->
-            count?.let {
-                if (it > 0) {
+        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
+            result.onSuccess { count ->
+                if (count > 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         askForPermission(
                             Manifest.permission.POST_NOTIFICATIONS,
@@ -292,6 +294,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 else {
                     onChecked.invoke()
                 }
+            }
+            result.onFailure {
+                onChecked.invoke()
             }
         }
     }

@@ -40,7 +40,6 @@ import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -68,8 +67,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val adVM: AdViewModel by viewModels()
-    private var yandexAd0: RewardedAd? = null
-    var yandexAd1: InterstitialAd? = null
+    private var rewardedAd: RewardedAd? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -90,23 +88,10 @@ class MainActivity : AppCompatActivity() {
                     ad: RewardedAd,
                     isOnExit: Boolean
                 ) {
-                    yandexAd0 = ad
+                    rewardedAd = ad
                 }
                 override fun onAdFailed(error: AdRequestError) {
-                    yandexAd0 = null
-                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
-                }
-            })
-
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(
-                    ad: InterstitialAd,
-                    isOnExit: Boolean
-                ) {
-                    yandexAd1 = ad
-                }
-                override fun onAdFailed(error: AdRequestError) {
-                    yandexAd1 = null
+                    rewardedAd = null
                     if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
                 }
             })
@@ -166,23 +151,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         9 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            trackedVM.trackedCount().observe(this@MainActivity) { count ->
-                                count?.let {
-                                    if (it > 0) {
-                                        val nextTime = setAlarm(
-                                            scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                                            periodInMinute = FireBaseConfig.trackingPeriod
-                                        )
-                                        if (nextTime != null) {
-                                            val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
-                                            ServiceNotification.notify(this@MainActivity, message, null)
-                                        }
-                                    }
-                                }
-                                showInterstitialAd(yandexAd1) {
-                                    finish()
-                                }
-                            }
+                            finish()
                         }
                     }
                     return false
@@ -349,7 +318,7 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {
-                            showRewardedAd(yandexAd0)
+                            showRewardedAd(rewardedAd)
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -421,6 +390,23 @@ class MainActivity : AppCompatActivity() {
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment)
         return NavigationUI.navigateUp(navController, drawerLayout)
+    }
+
+    override fun onStop() {
+
+        val count = trackedVM.getTrackedCountSync()
+        if (count > 0) {
+            val nextTime = setAlarm(
+                scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
+                periodInMinute = FireBaseConfig.trackingPeriod
+            )
+            if (nextTime != null) {
+                val message =
+                    "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                ServiceNotification.notify(this@MainActivity, message, null)
+            }
+        }
+        super.onStop()
     }
 
 }

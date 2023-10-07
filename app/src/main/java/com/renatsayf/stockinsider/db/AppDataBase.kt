@@ -13,7 +13,8 @@ private const val DB_VERSION = 19
 @Database(
     entities = [RoomSearchSet::class, Company::class],
     version = DB_VERSION,
-    exportSchema = true
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 18, to = 19)]
 )
 abstract class AppDataBase : RoomDatabase() {
     abstract fun appDao(): AppDao
@@ -35,19 +36,18 @@ abstract class AppDataBase : RoomDatabase() {
         private fun buildDataBase(context: Context): AppDataBase {
 
             val migration = object : Migration(18, DB_VERSION) {
-                override fun migrate(database: SupportSQLiteDatabase) {
-                    val version = database.version
+                override fun migrate(db: SupportSQLiteDatabase) {
+                    val version = db.version
                     if (version < 19) {
                         context.deleteDatabase(DATABASE)
                     }
                 }
             }
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE).apply {
-                addMigrations(migration)
-            }
-                .createFromAsset("database/$DATABASE")
-                .allowMainThreadQueries()
-                .build()
+                //addMigrations(migration)
+                createFromAsset("database/$DATABASE")
+                allowMainThreadQueries()
+            }.build()
         }
     }
 

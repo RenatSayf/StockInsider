@@ -1,30 +1,39 @@
 package com.renatsayf.stockinsider.ui.main
 
 import android.os.Bundle
-import android.view.*
+import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.receivers.AlarmReceiver
-import com.renatsayf.stockinsider.schedule.Scheduler
-import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.ad.AdViewModel
+import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.hideKeyBoard
+import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showInterstitialAd
+import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -39,17 +48,11 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
         }
     }
-
-    private val trackedVM: TrackingListViewModel by lazy {
-        ViewModelProvider(this)[TrackingListViewModel::class.java]
-    }
+    private val adVM: AdViewModel by activityViewModels()
+    var interstitialAd: InterstitialAd? = null
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
-    }
-
-    private val yandexAd1: com.yandex.mobile.ads.interstitial.InterstitialAd? by lazy {
-        (activity as? MainActivity)?.yandexAd1
     }
 
     override fun onCreateView(
@@ -67,6 +70,22 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
+
+        binding.searchButton.setVisible(false)
+        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
+            override fun onInterstitialAdLoaded(
+                ad: InterstitialAd,
+                isOnExit: Boolean
+            ) {
+                interstitialAd = ad
+                binding.searchButton.setVisible(true)
+            }
+            override fun onAdFailed(error: AdRequestError) {
+                interstitialAd = null
+                binding.searchButton.setVisible(true)
+                if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+            }
+        })
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
@@ -137,6 +156,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         }
 
         binding.searchButton.setOnClickListener {
+
+            showInterstitialAd(interstitialAd)
 
             val set = scanScreen()
             (requireActivity() as MainActivity).hideKeyBoard(it)
@@ -212,23 +233,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                trackedVM.trackedCount().observe(viewLifecycleOwner) { count ->
-                    count?.let {
-                        if (it > 0) {
-                            val nextTime = setAlarm(
-                                scheduler = Scheduler(requireContext(), AlarmReceiver::class.java),
-                                periodInMinute = FireBaseConfig.trackingPeriod
-                            )
-                            if (nextTime != null) {
-                                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
-                                ServiceNotification.notify(requireContext(), message, null)
-                            }
-                        }
-                    }
-                    showInterstitialAd(yandexAd1) {
-                        requireActivity().finish()
-                    }
-                }
+                requireActivity().finish()
             }
         })
     }
