@@ -58,7 +58,7 @@
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_icon"
-            android:resource="@drawable/icon_logo" />
+            android:resource="@drawable/ic_stock_hause_gold" />
 
         <meta-data
             android:name="com.google.firebase.messaging.default_notification_color"

@@ -48,7 +48,7 @@ interface AppDao
     suspend fun getTrackedSets(target: String, isTracked: Int) : List<RoomSearchSet>
 
     @Query("SELECT count() FROM search_set WHERE target = 'tracking' AND is_tracked = 1")
-    fun getTrackedCount() : Int
+    suspend fun getTrackedCount() : Int
 
     @Query("SELECT count() FROM search_set WHERE target = 'tracking'")
     suspend fun getTargetCount() : Int

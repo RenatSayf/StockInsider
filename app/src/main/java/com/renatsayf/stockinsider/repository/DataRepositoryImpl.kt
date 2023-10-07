@@ -116,10 +116,6 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
         }
     }
 
-    override fun getTrackedCountSync(): Int {
-        return db.getTrackedCount()
-    }
-
     override suspend fun getTargetCountAsync(): Deferred<Int> {
         return coroutineScope {
             async {

@@ -37,7 +37,6 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
                     adId.value
                 }
                 val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
-                loadAd(adRequestConfiguration)
                 setAdLoadListener(object : InterstitialAdLoadListener {
                     override fun onAdLoaded(p0: InterstitialAd) {
                         listener.onInterstitialAdLoaded(p0, isOnExit)
@@ -48,6 +47,7 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
                         if (BuildConfig.DEBUG) println("*************** loadInterstitialAd() ${p0.description} ***************")
                     }
                 })
+                loadAd(adRequestConfiguration)
             }
         }
         else {
@@ -64,7 +64,6 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
                     adId.value
                 }
                 val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
-                loadAd(adRequestConfiguration)
                 setAdLoadListener(object : RewardedAdLoadListener {
                     override fun onAdLoaded(p0: RewardedAd) {
                         listener.onRewardedAdLoaded(p0, isOnExit)
@@ -76,6 +75,7 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
                     }
 
                 })
+                loadAd(adRequestConfiguration)
             }
         }
         else {
