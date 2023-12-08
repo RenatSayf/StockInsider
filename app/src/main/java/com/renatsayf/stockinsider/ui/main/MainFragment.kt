@@ -16,7 +16,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -30,6 +29,7 @@ import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
+import com.renatsayf.stockinsider.utils.printIfDebug
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.yandex.mobile.ads.common.AdRequestError
@@ -83,7 +83,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             override fun onAdFailed(error: AdRequestError) {
                 interstitialAd = null
                 binding.searchButton.setVisible(true)
-                if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+                "************* ${error.description} ****************".printIfDebug()
             }
         })
 

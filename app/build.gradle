@@ -4,6 +4,7 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin' //Hint Hilt step 2
 apply plugin: 'com.google.gms.google-services'
 apply plugin: 'com.google.devtools.ksp'
+apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdk 34
@@ -13,7 +14,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 34
         versionCode 27      //Hint The latest versionCode at store is 26
-        versionName '3.1'   //Hint The latest versionName at store is 3.1
+        versionName '3.2'   //Hint The latest versionName at store is 3.1
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -39,7 +40,7 @@ android {
     }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         debug {
