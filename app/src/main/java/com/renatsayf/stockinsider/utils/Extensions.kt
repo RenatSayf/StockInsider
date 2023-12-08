@@ -1,4 +1,4 @@
-@file:Suppress("UnnecessaryVariable")
+@file:Suppress("UnnecessaryVariable", "UNUSED_DESTRUCTURED_PARAMETER_ENTRY")
 
 package com.renatsayf.stockinsider.utils
 
@@ -304,6 +304,18 @@ fun Context.goToAppStore() {
     val intent = Intent(Intent.ACTION_VIEW)
     intent.data = Uri.parse(this.getString(R.string.app_link).plus(this.packageName))
     startActivity(intent)
+}
+
+fun String.printIfDebug() {
+    if (BuildConfig.DEBUG) {
+        println(this)
+    }
+}
+
+fun Exception.throwIfDebug() {
+    if (BuildConfig.DEBUG) {
+        throw this
+    }
 }
 
 

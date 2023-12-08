@@ -16,7 +16,7 @@ object FireBaseConfig {
     val userAgent: String
         get() {
             val value = Firebase.remoteConfig.getString("user_agent")
-            return value.ifEmpty { "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.5938.60 Mobile Safari/537.36" }
+            return value.ifEmpty { "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36" }
         }
     val trackingPeriod: Long
         get() {
