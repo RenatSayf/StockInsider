@@ -321,6 +321,12 @@ fun Exception.throwIfDebug() {
     }
 }
 
+fun Exception.printStackTraceIfDebug() {
+    if (BuildConfig.DEBUG) {
+        this.printStackTrace()
+    }
+}
+
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
 

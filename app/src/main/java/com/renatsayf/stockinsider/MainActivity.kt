@@ -21,6 +21,7 @@ import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
@@ -34,6 +35,7 @@ import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
+import com.renatsayf.stockinsider.ui.common.TimerViewModel
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
@@ -43,6 +45,7 @@ import com.renatsayf.stockinsider.utils.*
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -66,6 +69,8 @@ class MainActivity : AppCompatActivity() {
     private val trackedVM: TrackingListViewModel by lazy {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
+
+    private val timerVM: TimerViewModel by viewModels()
 
     private val hardwareReceiver: HardwareButtonsReceiver by lazy {
         HardwareButtonsReceiver()
@@ -351,9 +356,48 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
+    }
+
+    override fun onResume() {
+        super.onResume()
+
         registerHardWareReceiver(hardwareReceiver)
 
+        lifecycleScope.launch {
+            hardwareReceiver.isHomeClicked.collect { result ->
+                result.onSuccess {
+                    "************ Start timer *******************".printIfDebug()
+                    timerVM.startTimer()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            hardwareReceiver.isRecentClicked.collect { result ->
+                result.onSuccess {
+                    "************ App go to finish *******************".printIfDebug()
+                    finish()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            timerVM.timeIsUp.collect { result ->
+                result.onSuccess {
+                    "***************** App go to finish ****************".printIfDebug()
+                    finish()
+                }
+            }
+        }
+    }
 
+    override fun onPause() {
+
+        try {
+            unregisterReceiver(hardwareReceiver)
+        } catch (e: Exception) {
+            e.printStackTraceIfDebug()
+        }
+        super.onPause()
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -399,7 +443,7 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
 
         val count = trackedVM.getTrackedCountSync()
         if (count > 0) {
@@ -413,12 +457,6 @@ class MainActivity : AppCompatActivity() {
                 ServiceNotification.notify(this@MainActivity, message, null)
             }
         }
-        super.onStop()
-    }
-
-    override fun onDestroy() {
-
-        unregisterReceiver(hardwareReceiver)
         super.onDestroy()
     }
 
