@@ -28,6 +28,7 @@ import com.google.android.gms.ads.*
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
@@ -64,6 +65,10 @@ class MainActivity : AppCompatActivity() {
 
     private val trackedVM: TrackingListViewModel by lazy {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
+    }
+
+    private val hardwareReceiver: HardwareButtonsReceiver by lazy {
+        HardwareButtonsReceiver()
     }
 
     private val adVM: AdViewModel by viewModels()
@@ -346,6 +351,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        registerHardWareReceiver(hardwareReceiver)
+
 
     }
 
@@ -407,6 +414,12 @@ class MainActivity : AppCompatActivity() {
             }
         }
         super.onStop()
+    }
+
+    override fun onDestroy() {
+
+        unregisterReceiver(hardwareReceiver)
+        super.onDestroy()
     }
 
 }

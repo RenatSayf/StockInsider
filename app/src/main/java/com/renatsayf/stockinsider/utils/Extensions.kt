@@ -2,9 +2,11 @@
 
 package com.renatsayf.stockinsider.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.content.SharedPreferences
 import android.content.res.Resources
 import android.net.ConnectivityManager
@@ -28,6 +30,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.models.DateFormats
 import com.renatsayf.stockinsider.models.Source
+import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.service.WorkTask
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import java.io.Serializable
@@ -315,6 +318,18 @@ fun String.printIfDebug() {
 fun Exception.throwIfDebug() {
     if (BuildConfig.DEBUG) {
         throw this
+    }
+}
+
+@SuppressLint("UnspecifiedRegisterReceiverFlag")
+fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
+
+    val intentFilter = IntentFilter(Intent.ACTION_CLOSE_SYSTEM_DIALOGS)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        this.registerReceiver(receiver, intentFilter, Context.RECEIVER_NOT_EXPORTED)
+    }
+    else {
+        this.registerReceiver(receiver, intentFilter)
     }
 }
 
