@@ -103,7 +103,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             target: Target<Drawable>,
                             isFirstResource: Boolean
                         ): Boolean {
-                            binding.imgLoadProgBar.setVisible(false)
+                            imgLoadProgBar.setVisible(false)
                             return true
                         }
 
@@ -114,8 +114,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                             dataSource: DataSource,
                             isFirstResource: Boolean
                         ): Boolean {
-                            viewModel.setChart(resource)
-                            binding.imgLoadProgBar.setVisible(false)
+                            chartImagView.setImageDrawable(resource)
+                            imgLoadProgBar.setVisible(false)
                             return true
                         }
 
@@ -199,10 +199,6 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                 deltaOwnTV.text = value.deltaOwn
                 valueTV.text = NumberFormat.getInstance(Locale.getDefault()).format(value.volume)
             }
-        }
-
-        viewModel.chart.observe(viewLifecycleOwner) {
-            binding.chartImagView.setImageDrawable(it)
         }
 
         binding.layoutMarketWatch.setOnClickListener {
