@@ -3,7 +3,6 @@
 package com.renatsayf.stockinsider.ui.deal
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -14,11 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
@@ -32,6 +26,8 @@ import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.startBrowserSearch
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import com.yandex.mobile.ads.common.AdRequestError
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
@@ -87,39 +83,24 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         }
 
         binding.chartImagView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal?.tickerRefer))
-            activity?.startActivity(intent)
+            val ticker = binding.tickerTV.text.toString().lowercase().trim()
+            val url = "$MARKET_WATCH_URL$ticker"
+            startBrowserSearch(url)
         }
 
         viewModel.deal.observe(viewLifecycleOwner) { value ->
             with(binding) {
 
                 val uri = Uri.parse(value?.tickerRefer)
-                Glide.with(this@DealFragment).load(uri)
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            imgLoadProgBar.setVisible(false)
-                            return true
-                        }
+                Picasso.get().load(uri).into(binding.chartImagView, object : Callback {
+                    override fun onSuccess() {
+                        imgLoadProgBar.setVisible(false)
+                    }
 
-                        override fun onResourceReady(
-                            resource: Drawable,
-                            model: Any,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            chartImagView.setImageDrawable(resource)
-                            imgLoadProgBar.setVisible(false)
-                            return true
-                        }
-
-                    }).into(binding.chartImagView)
+                    override fun onError(e: Exception?) {
+                        imgLoadProgBar.setVisible(false)
+                    }
+                })
 
                 value?.let { mainDealLayout.setBackgroundColor(it.color) }
 

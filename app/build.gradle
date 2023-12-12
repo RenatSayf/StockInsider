@@ -126,8 +126,8 @@ dependencies {
     // optional - Test helpers
     testImplementation "androidx.work:work-testing:$work_version"
 
-    //Glide
-    implementation 'com.github.bumptech.glide:glide:4.16.0'
+    // Picasso
+    implementation 'com.squareup.picasso:picasso:2.8'
 
     //Google Play Billing Library
     implementation 'com.android.billingclient:billing-ktx:6.1.0'
