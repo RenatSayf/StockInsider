@@ -172,6 +172,9 @@ dependencies {
     // ...with Kotlin.
     kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.49'
 
+    // Google AdMob
+    implementation 'com.google.android.gms:play-services-ads:22.6.0'
+
     //Yandex ads
     implementation 'com.yandex.android:mobileads:6.2.0'
 
