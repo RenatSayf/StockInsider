@@ -9,6 +9,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.ui.settings.Constants
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 
 
 object FireBaseConfig {
@@ -20,23 +21,32 @@ object FireBaseConfig {
         }
     val trackingPeriod: Long
         get() {
-            val value = if (!Constants.TEST_MODE) Firebase.remoteConfig.getLong("tracking_period") else Constants.TEST_TRACKING_PERIOD_IN_MINUTES
-            return value
+            return try {
+                if (!Constants.TEST_MODE) Firebase.remoteConfig.getLong("tracking_period") else Constants.TEST_TRACKING_PERIOD_IN_MINUTES
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                240
+            }
         }
     val requestsCount: Int
         get() {
-            val value = Firebase.remoteConfig.getLong("requests_count").toInt()
-            return if (value == 0 || BuildConfig.DEBUG) 3
-            else value
+            return try {
+                if (!BuildConfig.DEBUG) Firebase.remoteConfig.getLong("requests_count").toInt() else 3
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                5
+            }
         }
     val problemDevices: Array<String>
         get() {
-            val value = Firebase.remoteConfig.getString("problem_devices")
-            return if (value.isNotEmpty()) {
-                val split = value.split(",")
-                split.toTypedArray()
+            val value = try {
+                Firebase.remoteConfig.getString("problem_devices")
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                "XIAOMI,HUAWEI"
             }
-            else arrayOf("XIAOMI","HUAWEI")
+            val split = value.split(",").map { it.trim() }
+            return split.toTypedArray()
         }
 
     private val configSettings = remoteConfigSettings {

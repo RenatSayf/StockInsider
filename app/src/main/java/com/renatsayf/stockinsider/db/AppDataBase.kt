@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.db
 
 import android.content.Context
+import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
@@ -12,8 +13,8 @@ private const val DB_VERSION = 19
 @Database(
     entities = [RoomSearchSet::class, Company::class],
     version = DB_VERSION,
-    exportSchema = false,
-    //autoMigrations = [AutoMigration(from = 18, to = 19)]
+    exportSchema = true,
+    autoMigrations = [AutoMigration(from = 18, to = 19)]
 )
 abstract class AppDataBase : RoomDatabase() {
     abstract fun appDao(): AppDao
@@ -43,7 +44,7 @@ abstract class AppDataBase : RoomDatabase() {
                 }
             }
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE).apply {
-                addMigrations(migration18to19)
+                //addMigrations(migration)
                 createFromAsset("database/$DATABASE")
                 allowMainThreadQueries()
             }.build()
