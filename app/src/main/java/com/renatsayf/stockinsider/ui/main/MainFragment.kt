@@ -49,6 +49,8 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         }
     }
     private val adVM: AdViewModel by activityViewModels()
+    private val netInfoVM by activityViewModels<NetInfoViewModel>()
+
     var interstitialAd: InterstitialAd? = null
 
     private val tickersAdapter: TickersListAdapter by lazy {
@@ -72,20 +74,26 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
 
         binding.searchButton.setVisible(false)
-        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
-            override fun onInterstitialAdLoaded(
-                ad: InterstitialAd,
-                isOnExit: Boolean
-            ) {
-                interstitialAd = ad
-                binding.searchButton.setVisible(true)
+
+        netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { value ->
+                value
+                adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
+                    override fun onInterstitialAdLoaded(
+                        ad: InterstitialAd,
+                        isOnExit: Boolean
+                    ) {
+                        interstitialAd = ad
+                        binding.searchButton.setVisible(true)
+                    }
+                    override fun onAdFailed(error: AdRequestError) {
+                        interstitialAd = null
+                        binding.searchButton.setVisible(true)
+                        "************* ${error.description} ****************".printIfDebug()
+                    }
+                })
             }
-            override fun onAdFailed(error: AdRequestError) {
-                interstitialAd = null
-                binding.searchButton.setVisible(true)
-                "************* ${error.description} ****************".printIfDebug()
-            }
-        })
+        }
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {

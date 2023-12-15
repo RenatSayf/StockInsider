@@ -17,13 +17,20 @@ import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.CancellationTokenSource
 import com.renatsayf.stockinsider.utils.printIfDebug
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.launch
 import java.util.Locale
+import kotlin.system.exitProcess
 
 class LocationWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
     companion object {
         val TAG = "${LocationWorker::class.simpleName}.5624885549"
-        val NAME = "${LocationWorker::class.simpleName}.SSDFDFJHDHD"
+        private val NAME = "${LocationWorker::class.simpleName}.SSDFDFJHDHD"
 
         private val constraints = Constraints.Builder().apply {
             setRequiredNetworkType(NetworkType.CONNECTED)
@@ -40,6 +47,9 @@ class LocationWorker(context: Context, params: WorkerParameters) : CoroutineWork
                 workRequest
             )
         }
+
+        private var _countryCode = MutableSharedFlow<kotlin.Result<String>>()
+        val countryCode: SharedFlow<kotlin.Result<String>> = _countryCode
     }
 
     private val locationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -47,7 +57,10 @@ class LocationWorker(context: Context, params: WorkerParameters) : CoroutineWork
 
     override suspend fun doWork(): Result {
 
-        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_DENIED) {
+        if (ActivityCompat.checkSelfPermission(applicationContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            CoroutineScope(Dispatchers.Default).launch {
+                _countryCode.emit(value = kotlin.Result.success(Locale.getDefault().country))
+            }
             return Result.failure()
         }
         locationClient.getCurrentLocation(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY, CancellationTokenSource().token)
@@ -61,11 +74,21 @@ class LocationWorker(context: Context, params: WorkerParameters) : CoroutineWork
                             longitude,
                             1
                         )
-                    val countryCode = addresses?.firstOrNull()?.countryCode
+                    val countryCode = addresses?.firstOrNull()?.countryCode?: Locale.getDefault().country
                     "********** ${LocationWorker::class.simpleName} countryCode == $countryCode ***************".printIfDebug()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        _countryCode.emit(value = kotlin.Result.success(countryCode))
+                    }
                 }?: run {
-                    "********** ${LocationWorker::class.simpleName} location == NULL ***************".printIfDebug()
+                    "********** ${LocationWorker::class.simpleName} location == NULL,  Country by default = ${Locale.getDefault().country}***************".printIfDebug()
+                    CoroutineScope(Dispatchers.Default).launch {
+                        _countryCode.emit(value = kotlin.Result.success(Locale.getDefault().country))
+                    }
                 }
+            }
+            .addOnFailureListener { ex ->
+                ex.printStackTraceIfDebug()
+                Result.failure()
             }
 
         return Result.success()

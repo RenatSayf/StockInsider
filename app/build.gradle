@@ -3,6 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'kotlin-kapt'
 apply plugin: 'dagger.hilt.android.plugin' //Hint Hilt step 2
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
@@ -183,5 +184,8 @@ dependencies {
 
     // AppMetrica SDK.
     implementation 'io.appmetrica.analytics:analytics:6.1.0'
+
+    //Kotlin Serialization
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.1'
 
 }

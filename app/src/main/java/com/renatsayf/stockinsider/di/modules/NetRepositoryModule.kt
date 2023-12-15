@@ -36,6 +36,7 @@ object NetRepositoryModule {
 
         val retrofit = Retrofit.Builder()
             .addConverterFactory(DocumAdapter.FACTORY)
+            .addConverterFactory(StringAdapter.FACTORY)
             .baseUrl(context.getString(R.string.base_url))
             .client(okHttpClient).build()
 

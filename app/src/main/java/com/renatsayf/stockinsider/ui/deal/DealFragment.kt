@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -19,6 +20,7 @@ import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.utils.getParcelableCompat
@@ -51,6 +53,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         ViewModelProvider(this)[DealViewModel::class.java]
     }
     private val adVM: AdViewModel by viewModels()
+    private val netInfoVM by activityViewModels<NetInfoViewModel>()
 
     private var interstitialAd: InterstitialAd? = null
 
@@ -66,15 +69,21 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         binding = FragmentDealBinding.bind(view)
 
         if (savedInstanceState == null) {
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                    interstitialAd = ad
-                }
 
-                override fun onAdFailed(error: AdRequestError) {
-                    if (BuildConfig.DEBUG) println("************** ${error.description} *******************")
+            netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
+                result.onSuccess { value ->
+                    value
+                    adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.InterstitialAdListener {
+                        override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+                            interstitialAd = ad
+                        }
+
+                        override fun onAdFailed(error: AdRequestError) {
+                            if (BuildConfig.DEBUG) println("************** ${error.description} *******************")
+                        }
+                    })
                 }
-            })
+            }
         }
 
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)

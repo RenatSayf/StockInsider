@@ -40,4 +40,7 @@ interface IApi
         @Header("User-Agent") agent: String,
     ): Response<Document>
 
+    @GET
+    suspend fun getNetworkInfo(@Url url: String = "http://ip-api.com/json/"): Response<String>
+
 }

@@ -38,6 +38,7 @@ import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.common.TimerViewModel
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
@@ -70,6 +71,10 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
+    private val netInfoVM: NetInfoViewModel by lazy {
+        ViewModelProvider(this)[NetInfoViewModel::class.java]
+    }
+
     private val timerVM: TimerViewModel by viewModels()
 
     private val hardwareReceiver: HardwareButtonsReceiver by lazy {
@@ -93,18 +98,25 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             FireBaseConfig
-            adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
-                override fun onRewardedAdLoaded(
-                    ad: RewardedAd,
-                    isOnExit: Boolean
-                ) {
-                    rewardedAd = ad
-                }
-                override fun onAdFailed(error: AdRequestError) {
-                    rewardedAd = null
-                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
-                }
-            })
+            netInfoVM.getCountryCode()
+        }
+
+        netInfoVM.countryCode.observe(this@MainActivity) { result ->
+            result.onSuccess { value ->
+                value
+                adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
+                    override fun onRewardedAdLoaded(
+                        ad: RewardedAd,
+                        isOnExit: Boolean
+                    ) {
+                        rewardedAd = ad
+                    }
+                    override fun onAdFailed(error: AdRequestError) {
+                        rewardedAd = null
+                        if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+                    }
+                })
+            }
         }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
