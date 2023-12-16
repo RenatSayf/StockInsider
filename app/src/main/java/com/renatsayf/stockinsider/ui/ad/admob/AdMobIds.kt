@@ -1,0 +1,11 @@
+package com.renatsayf.stockinsider.ui.ad.admob
+
+enum class AdMobIds(val value: String) {
+    INTERSTITIAL_1("ca-app-pub-1615119435047194/7629529654"),
+    INTERSTITIAL_2("ca-app-pub-1615119435047194/6049672910"),
+    INTERSTITIAL_3("ca-app-pub-1615119435047194/9457497746"),
+    REWARDED_1("ca-app-pub-1615119435047194/7225350918"),
+
+    TEST_INTERSTITIAL("ca-app-pub-3940256099942544/1033173712"),
+    TEST_REWARDED("ca-app-pub-3940256099942544/5224354917")
+}

@@ -6,3 +6,4 @@ object Constants {
 }
 
 const val KEY_APP_STORE_LINK = "link"
+const val KEY_IS_AD_DISABLED = "KEY_IS_AD_DISABLED"

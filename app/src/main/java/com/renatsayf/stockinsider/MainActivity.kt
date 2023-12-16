@@ -26,14 +26,16 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.common.TimerViewModel
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
@@ -81,8 +83,13 @@ class MainActivity : AppCompatActivity() {
         HardwareButtonsReceiver()
     }
 
-    private val adVM: AdViewModel by viewModels()
+    private val yandexVM: YandexAdsViewModel by viewModels()
     private var rewardedAd: RewardedAd? = null
+    private var yandexIntersAd: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+
+    private val adMobVM: AdMobViewModel by viewModels()
+    private var googleIntersAd: InterstitialAd? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -102,20 +109,27 @@ class MainActivity : AppCompatActivity() {
         }
 
         netInfoVM.countryCode.observe(this@MainActivity) { result ->
-            result.onSuccess { value ->
-                value
-                adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
-                    override fun onRewardedAdLoaded(
-                        ad: RewardedAd,
-                        isOnExit: Boolean
-                    ) {
-                        rewardedAd = ad
-                    }
-                    override fun onAdFailed(error: AdRequestError) {
-                        rewardedAd = null
-                        if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
-                    }
-                })
+            result.onSuccess { code ->
+                if (FireBaseConfig.sanctionsList.contains(code)) {
+                    yandexVM.yandexAdsInitialize()
+                    yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, listener = object : YandexAdsViewModel.InterstitialAdListener {
+                        override fun onInterstitialAdLoaded(
+                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
+                            isOnExit: Boolean
+                        ) {
+                            yandexIntersAd = ad
+                        }
+
+                        override fun onAdFailed(error: AdRequestError) {
+                            yandexIntersAd = null
+                            "************* ${error.description} ****************".printIfDebug()
+                        }
+                    })
+                }
+                else {
+                    adMobVM.googleAdsInitialize()
+                }
+
             }
         }
 
@@ -340,7 +354,12 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {
-                            showRewardedAd(rewardedAd)
+                            if (yandexIntersAd != null) {
+                                showInterstitialAd(yandexIntersAd!!)
+                            }
+                            else if (googleIntersAd != null) {
+                                googleIntersAd!!.show(this@MainActivity)
+                            }
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)

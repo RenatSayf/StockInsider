@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
+import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
 import com.yandex.mobile.ads.common.AdError
@@ -22,19 +23,19 @@ import org.junit.runner.RunWith
 
 
 @RunWith(AndroidJUnit4ClassRunner::class)
-class AdViewModelTest {
+class YandexAdsViewModelTest {
 
     @get:Rule
     var rule = ActivityScenarioRule(TestActivity::class.java)
 
     private lateinit var scenario: ActivityScenario<TestActivity>
-    private lateinit var viewModel: AdViewModel
+    private lateinit var viewModel: YandexAdsViewModel
 
     @Before
     fun setUp() {
         scenario = rule.scenario
         scenario.onActivity {
-            viewModel = ViewModelProvider(it)[AdViewModel::class.java]
+            viewModel = ViewModelProvider(it)[YandexAdsViewModel::class.java]
         }
     }
 
@@ -50,10 +51,10 @@ class AdViewModelTest {
 
         scenario.onActivity { activity ->
 
-            activity.appPref.edit().putBoolean(AdViewModel.KEY_IS_AD_DISABLED, false).apply()
+            activity.appPref.edit().putBoolean(KEY_IS_AD_DISABLED, false).apply()
             Thread.sleep(5000)
 
-            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: AdViewModel.InterstitialAdListener {
+            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: YandexAdsViewModel.InterstitialAdListener {
                 override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
                     Assert.assertTrue(true)
                     ad.apply {

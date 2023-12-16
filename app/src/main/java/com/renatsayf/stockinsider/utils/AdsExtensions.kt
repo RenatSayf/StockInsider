@@ -66,7 +66,7 @@ fun Activity.showInterstitialAd(
 }
 
 fun Fragment.showInterstitialAd(
-    ad: InterstitialAd?,
+    ad: InterstitialAd,
     onShown: () -> Unit = {},
     onDismissed: () -> Unit = {},
     onFailed: (String) -> Unit = {}
@@ -75,11 +75,11 @@ fun Fragment.showInterstitialAd(
 }
 
 fun Activity.showRewardedAd(
-    ad: RewardedAd?,
+    ad: RewardedAd,
     onShown: () -> Unit = {},
     onDismissed: () -> Unit = {}
 ) {
-    ad?.setAdEventListener(object : RewardedAdEventListener {
+    ad.setAdEventListener(object : RewardedAdEventListener {
         override fun onAdShown() {
             onShown.invoke()
         }
@@ -98,11 +98,11 @@ fun Activity.showRewardedAd(
 
         override fun onRewarded(p0: Reward) {}
     })
-    ad?.show(this)
+    ad.show(this)
 }
 
 fun Fragment.showRewardedAd(
-    ad: RewardedAd?,
+    ad: RewardedAd,
     onShown: () -> Unit = {},
     onDismissed: () -> Unit = {}
 ) {

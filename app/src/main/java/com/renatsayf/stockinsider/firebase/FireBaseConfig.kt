@@ -10,6 +10,7 @@ import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
+import kotlinx.serialization.json.Json
 
 
 object FireBaseConfig {
@@ -47,6 +48,19 @@ object FireBaseConfig {
             }
             val split = value.split(",").map { it.trim() }
             return split.toTypedArray()
+        }
+
+    val sanctionsList: Array<String>
+        get() {
+            val value = try {
+                val string = Firebase.remoteConfig.getString("sanctions_list")
+                val array = Json.decodeFromString<Array<String>>(string)
+                array
+            }
+            catch (e: Exception) {
+                arrayOf("RU","BY","IR","CU","KP","SY")
+            }
+            return value
         }
 
     private val configSettings = remoteConfigSettings {

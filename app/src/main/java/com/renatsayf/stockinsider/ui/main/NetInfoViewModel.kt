@@ -12,6 +12,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
+import retrofit2.Response
 import java.util.Locale
 import javax.inject.Inject
 
@@ -23,7 +24,11 @@ class NetInfoViewModel @Inject constructor(
     private suspend fun getNetInfoAsync(): Deferred<NetInfo?> {
         return coroutineScope {
             async {
-                val response = repository.getNetworkInfo()
+                val response = try {
+                    repository.getNetworkInfo()
+                } catch (e: Exception) {
+                    Response.success(null)
+                }
                 if (response.isSuccessful) {
                     val body = response.body()
                     val info = if (body != null) {

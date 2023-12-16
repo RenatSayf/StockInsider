@@ -5,6 +5,8 @@ package com.renatsayf.stockinsider.di
 import android.app.Application
 import android.util.Log
 import androidx.work.Configuration
+import com.google.android.gms.ads.initialization.InitializationStatus
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.utils.printIfDebug
 import com.yandex.mobile.ads.common.InitializationListener
@@ -25,11 +27,6 @@ class App : Application(), Configuration.Provider {
         AppMetrica.activate(this, config)
         AppMetrica.enableActivityAutoTracking(this)
 
-        MobileAds.initialize(this, object : InitializationListener {
-            override fun onInitializationCompleted() {
-                "*************** Yandex mobile ads has been initialized *****************".printIfDebug()
-            }
-        })
     }
 
     override val workManagerConfiguration: Configuration

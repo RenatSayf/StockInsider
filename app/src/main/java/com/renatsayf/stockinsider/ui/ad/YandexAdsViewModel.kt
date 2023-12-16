@@ -5,9 +5,13 @@ package com.renatsayf.stockinsider.ui.ad
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import com.renatsayf.stockinsider.BuildConfig
+import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
 import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.printIfDebug
 import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
+import com.yandex.mobile.ads.common.InitializationListener
+import com.yandex.mobile.ads.common.MobileAds
 import com.yandex.mobile.ads.interstitial.InterstitialAd
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoadListener
 import com.yandex.mobile.ads.interstitial.InterstitialAdLoader
@@ -19,18 +23,24 @@ import javax.inject.Inject
 
 
 @HiltViewModel
-class AdViewModel @Inject constructor(private val app: Application): AndroidViewModel(app) {
-
-    companion object {
-        const val KEY_IS_AD_DISABLED = "KEY_IS_AD_DISABLED"
-    }
+class YandexAdsViewModel @Inject constructor(
+    private val app: Application
+): AndroidViewModel(app) {
 
     private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
+
+    fun yandexAdsInitialize() {
+        MobileAds.initialize(app.applicationContext, object : InitializationListener {
+            override fun onInitializationCompleted() {
+                "*************** Yandex mobile ads has been initialized *****************".printIfDebug()
+            }
+        })
+    }
 
     fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, isOnExit: Boolean = false, listener: InterstitialAdListener) {
         if (!isDisabled) {
 
-            InterstitialAdLoader(app).apply {
+            InterstitialAdLoader(app.applicationContext).apply {
                 val id = if (BuildConfig.DEBUG) {
                     AdsId.TEST_INTERSTITIAL_AD_ID.value
                 } else {
@@ -44,7 +54,7 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
 
                     override fun onAdFailedToLoad(p0: AdRequestError) {
                         listener.onAdFailed(p0)
-                        if (BuildConfig.DEBUG) println("*************** loadInterstitialAd() ${p0.description} ***************")
+                        "*************** loadInterstitialAd() ${p0.description} ***************".printIfDebug()
                     }
                 })
                 loadAd(adRequestConfiguration)
@@ -57,7 +67,7 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
 
     fun loadRewardedAd(adId: AdsId, isOnExit: Boolean = false, listener: RewardedAdListener) {
         if (!isDisabled) {
-            RewardedAdLoader(app).apply {
+            RewardedAdLoader(app.applicationContext).apply {
                 val id = if (BuildConfig.DEBUG) {
                     AdsId.TEST_REWARDED_AD_ID.value
                 } else {
@@ -71,9 +81,8 @@ class AdViewModel @Inject constructor(private val app: Application): AndroidView
 
                     override fun onAdFailedToLoad(p0: AdRequestError) {
                         listener.onAdFailed(p0)
-                        if (BuildConfig.DEBUG) println("*************** loadRewardedAd() ${p0.description} ***************")
+                        "*************** loadRewardedAd() ${p0.description} ***************".printIfDebug()
                     }
-
                 })
                 loadAd(adRequestConfiguration)
             }
