@@ -54,8 +54,8 @@ class YandexAdsViewModelTest {
             activity.appPref.edit().putBoolean(KEY_IS_AD_DISABLED, false).apply()
             Thread.sleep(5000)
 
-            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, isOnExit = false, listener = object: YandexAdsViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
+            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, listener = object: YandexAdsViewModel.InterstitialAdListener {
+                override fun onInterstitialAdLoaded(ad: InterstitialAd) {
                     Assert.assertTrue(true)
                     ad.apply {
                         show(activity)

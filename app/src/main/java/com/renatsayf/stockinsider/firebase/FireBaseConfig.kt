@@ -58,7 +58,7 @@ object FireBaseConfig {
                 array
             }
             catch (e: Exception) {
-                arrayOf("RU","BY","IR","CU","KP","SY")
+                arrayOf("RU","BY","IR","CU","KP","SY","CN")
             }
             return value
         }

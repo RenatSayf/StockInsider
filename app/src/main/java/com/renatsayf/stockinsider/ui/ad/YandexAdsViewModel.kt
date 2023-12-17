@@ -37,7 +37,7 @@ class YandexAdsViewModel @Inject constructor(
         })
     }
 
-    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, isOnExit: Boolean = false, listener: InterstitialAdListener) {
+    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, listener: InterstitialAdListener) {
         if (!isDisabled) {
 
             InterstitialAdLoader(app.applicationContext).apply {
@@ -48,13 +48,13 @@ class YandexAdsViewModel @Inject constructor(
                 }
                 val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
                 setAdLoadListener(object : InterstitialAdLoadListener {
-                    override fun onAdLoaded(p0: InterstitialAd) {
-                        listener.onInterstitialAdLoaded(p0, isOnExit)
+                    override fun onAdLoaded(ad: InterstitialAd) {
+                        listener.onInterstitialAdLoaded(ad)
                     }
 
-                    override fun onAdFailedToLoad(p0: AdRequestError) {
-                        listener.onAdFailed(p0)
-                        "*************** loadInterstitialAd() ${p0.description} ***************".printIfDebug()
+                    override fun onAdFailedToLoad(error: AdRequestError) {
+                        listener.onAdFailed(error)
+                        "*************** loadInterstitialAd() ${error.description} ***************".printIfDebug()
                     }
                 })
                 loadAd(adRequestConfiguration)
@@ -93,7 +93,7 @@ class YandexAdsViewModel @Inject constructor(
     }
 
     interface InterstitialAdListener {
-        fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean)
+        fun onInterstitialAdLoaded(ad: InterstitialAd)
         fun onAdFailed(error: AdRequestError)
     }
 

@@ -35,6 +35,7 @@ import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.common.TimerViewModel
@@ -128,8 +129,14 @@ class MainActivity : AppCompatActivity() {
                 }
                 else {
                     adMobVM.googleAdsInitialize()
+                    adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_1)
                 }
+            }
+        }
 
+        adMobVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                googleIntersAd = ad
             }
         }
 

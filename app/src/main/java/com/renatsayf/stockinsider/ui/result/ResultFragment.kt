@@ -95,7 +95,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
                 result.onSuccess { code ->
                     if (FireBaseConfig.sanctionsList.contains(code)) {
-                        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, false, object : YandexAdsViewModel.InterstitialAdListener {
+                        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, object : YandexAdsViewModel.InterstitialAdListener {
                             override fun onInterstitialAdLoaded(
                                 ad: InterstitialAd,
                                 isOnExit: Boolean

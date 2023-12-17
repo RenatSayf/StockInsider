@@ -1,9 +1,8 @@
 package com.renatsayf.stockinsider.utils
 
 import android.app.Activity
+import android.content.Context
 import androidx.fragment.app.Fragment
-import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.R
 import com.yandex.mobile.ads.common.AdError
 import com.yandex.mobile.ads.common.ImpressionData
 import com.yandex.mobile.ads.interstitial.InterstitialAd
@@ -13,7 +12,7 @@ import com.yandex.mobile.ads.rewarded.RewardedAd
 import com.yandex.mobile.ads.rewarded.RewardedAdEventListener
 
 
-val Activity.currentCountryCode: String
+val Context.currentCountryCode: String
     get() {
         val locale = this.resources.configuration.locales[0]
         return locale.country
@@ -25,22 +24,20 @@ val Fragment.currentCountryCode: String
     }
 
 fun Activity.showInterstitialAd(
-    ad: InterstitialAd?,
+    ad: InterstitialAd,
     onShown: () -> Unit = {},
     onDismissed: () -> Unit = {},
     onFailed: (String) -> Unit = {}
 ) {
-    ad?.apply {
+    ad.apply {
         setAdEventListener(object : InterstitialAdEventListener {
             override fun onAdShown() {
 
             }
 
             override fun onAdFailedToShow(p0: AdError) {
-                if (BuildConfig.DEBUG) {
-                    val exception = Exception("**************** ${p0.description} *******************")
-                    exception.printStackTrace()
-                }
+                val exception = Exception("**************** ${p0.description} *******************")
+                exception.printStackTraceIfDebug()
                 onFailed.invoke(p0.description)
             }
 
@@ -56,12 +53,6 @@ fun Activity.showInterstitialAd(
 
         })
         show(this@showInterstitialAd)
-    }?: run {
-        val exception = Exception("**************** Ad is NULL *******************")
-        if (BuildConfig.DEBUG) {
-            exception.printStackTrace()
-        }
-        onFailed.invoke(exception.message?: this.getString(R.string.unknown_error))
     }
 }
 

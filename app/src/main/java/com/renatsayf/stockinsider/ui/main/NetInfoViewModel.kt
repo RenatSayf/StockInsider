@@ -1,11 +1,13 @@
 package com.renatsayf.stockinsider.ui.main
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.models.NetInfo
 import com.renatsayf.stockinsider.network.IApi
+import com.renatsayf.stockinsider.utils.currentCountryCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -13,13 +15,13 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import retrofit2.Response
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
 class NetInfoViewModel @Inject constructor(
+    private val app: Application,
     private  val repository: IApi
-): ViewModel() {
+): AndroidViewModel(app) {
 
     private suspend fun getNetInfoAsync(): Deferred<NetInfo?> {
         return coroutineScope {
@@ -56,8 +58,7 @@ class NetInfoViewModel @Inject constructor(
             netInfo?.let {
                 _countryCode.value = Result.success(it.countryCode)
             }?: run {
-                val countryCode = Locale.getDefault().country
-                _countryCode.value = Result.success(countryCode)
+                _countryCode.value = Result.success(app.currentCountryCode)
             }
         }
     }
