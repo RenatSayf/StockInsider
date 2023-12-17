@@ -18,23 +18,19 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.utils.getParcelableCompat
-import com.renatsayf.stockinsider.utils.printIfDebug
 import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.startBrowserSearch
 import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -59,10 +55,8 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
     private val netInfoVM by activityViewModels<NetInfoViewModel>()
 
     private val yandexAdVM: YandexAdsViewModel by viewModels()
-    private var yandexIntersAd: InterstitialAd? = null
 
     private val adMobVM: AdMobViewModel by viewModels()
-    private var googleIntersAd: com.google.android.gms.ads.interstitial.InterstitialAd? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -80,15 +74,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
                 result.onSuccess { code ->
                     if (FireBaseConfig.sanctionsList.contains(code)) {
-                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : YandexAdsViewModel.InterstitialAdListener {
-                            override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                                yandexIntersAd = ad
-                            }
-
-                            override fun onAdFailed(error: AdRequestError) {
-                                "************** ${error.description} *******************".printIfDebug()
-                            }
-                        })
+                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
                     }
                     else {
                         adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
@@ -97,9 +83,15 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             }
         }
 
+        yandexAdVM.interstitialAd.observe(viewLifecycleOwner) { result ->
+            result.onSuccess { ad ->
+                ad.show(requireActivity())
+            }
+        }
+
         adMobVM.interstitialAd.observe(viewLifecycleOwner) { result ->
             result.onSuccess { ad ->
-                googleIntersAd = ad
+                ad.show(requireActivity())
             }
         }
 
@@ -220,22 +212,10 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         super.onResume()
 
         binding.toolBar.setNavigationOnClickListener {
-            if (yandexIntersAd != null) {
-                showInterstitialAd(yandexIntersAd!!)
-            }
-            else if (googleIntersAd != null) {
-                googleIntersAd!!.show(requireActivity())
-            }
             findNavController().popBackStack()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                if (yandexIntersAd != null) {
-                    showInterstitialAd(yandexIntersAd!!)
-                }
-                else if (googleIntersAd != null) {
-                    googleIntersAd!!.show(requireActivity())
-                }
                 findNavController().popBackStack()
             }
         })
@@ -243,7 +223,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
     private fun transitionToCompanyDeals(deal: Deal) {
         binding.includedProgress.loadProgressBar.setVisible(true)
-        deal.ticker?.let { t ->
+        deal.ticker?.let { ticker ->
 
             findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
                 putString(
@@ -255,7 +235,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                     TradingByTickerFragment.ARG_COMPANY_NAME,
                     binding.companyNameTV.text.toString()
                 )
-                putString(TradingByTickerFragment.ARG_TICKER, t)
+                putString(TradingByTickerFragment.ARG_TICKER, ticker)
             })
         }
     }

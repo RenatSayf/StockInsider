@@ -9,11 +9,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
-import com.yandex.mobile.ads.common.AdError
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.common.ImpressionData
-import com.yandex.mobile.ads.interstitial.InterstitialAd
-import com.yandex.mobile.ads.interstitial.InterstitialAdEventListener
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -54,38 +49,7 @@ class YandexAdsViewModelTest {
             activity.appPref.edit().putBoolean(KEY_IS_AD_DISABLED, false).apply()
             Thread.sleep(5000)
 
-            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID, listener = object: YandexAdsViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(ad: InterstitialAd) {
-                    Assert.assertTrue(true)
-                    ad.apply {
-                        show(activity)
-                        setAdEventListener(object : InterstitialAdEventListener {
-                            override fun onAdShown() {
-                                println("******************* Ad is shown *****************************")
-                                Assert.assertTrue(true)
-                                isRunning = false
-                            }
-
-                            override fun onAdFailedToShow(p0: AdError) {
-                                println("******************* AdRequestError: ${p0.description} *****************************")
-                                Assert.assertTrue(false)
-                                isRunning = false
-                            }
-
-                            override fun onAdDismissed() {}
-
-                            override fun onAdClicked() {}
-
-                            override fun onAdImpression(p0: ImpressionData?) {}
-                        })
-                    }
-                }
-                override fun onAdFailed(error: AdRequestError) {
-                    println("******************* AdRequestError: ${error.description} **********************")
-                    Assert.assertTrue(false)
-                    isRunning = false
-                }
-            })
+            viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID)
         }
         while (isRunning) {
             Thread.sleep(100)

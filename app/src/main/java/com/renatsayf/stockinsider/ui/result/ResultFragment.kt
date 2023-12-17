@@ -42,10 +42,7 @@ import com.renatsayf.stockinsider.utils.getValuesSize
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInfoDialog
-import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.showSnackBar
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -72,7 +69,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         DealListAdapter(this)
     }
 
-    private val adVM: YandexAdsViewModel by activityViewModels()
+    private val yandexAdVM: YandexAdsViewModel by activityViewModels()
     private val adMobVM by viewModels<AdMobViewModel>()
 
 
@@ -95,18 +92,17 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
                 result.onSuccess { code ->
                     if (FireBaseConfig.sanctionsList.contains(code)) {
-                        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, object : YandexAdsViewModel.InterstitialAdListener {
-                            override fun onInterstitialAdLoaded(
-                                ad: InterstitialAd
-                            ) {
-                                showInterstitialAd(ad)
-                            }
-                            override fun onAdFailed(error: AdRequestError) {}
-                        })
+                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2)
                     }
                     else {
                         adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
                     }
+                }
+            }
+
+            yandexAdVM.interstitialAd.observe(viewLifecycleOwner) { result ->
+                result.onSuccess { ad ->
+                    ad.show(requireActivity())
                 }
             }
 

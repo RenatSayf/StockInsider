@@ -33,8 +33,8 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -46,8 +46,6 @@ import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -85,7 +83,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val yandexVM: YandexAdsViewModel by viewModels()
-    private var rewardedAd: RewardedAd? = null
     private var yandexIntersAd: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     private val adMobVM: AdMobViewModel by viewModels()
@@ -113,23 +110,18 @@ class MainActivity : AppCompatActivity() {
             result.onSuccess { code ->
                 if (FireBaseConfig.sanctionsList.contains(code)) {
                     yandexVM.yandexAdsInitialize()
-                    yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, listener = object : YandexAdsViewModel.InterstitialAdListener {
-                        override fun onInterstitialAdLoaded(
-                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd
-                        ) {
-                            yandexIntersAd = ad
-                        }
-
-                        override fun onAdFailed(error: AdRequestError) {
-                            yandexIntersAd = null
-                            "************* ${error.description} ****************".printIfDebug()
-                        }
-                    })
+                    yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1)
                 }
                 else {
                     adMobVM.googleAdsInitialize()
                     adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_1)
                 }
+            }
+        }
+
+        yandexVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                yandexIntersAd = ad
             }
         }
 
@@ -361,7 +353,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         item == 6 && subItem == 1 -> {
                             if (yandexIntersAd != null) {
-                                showInterstitialAd(yandexIntersAd!!)
+                                yandexIntersAd!!.show(this@MainActivity)
                             }
                             else if (googleIntersAd != null) {
                                 googleIntersAd!!.show(this@MainActivity)

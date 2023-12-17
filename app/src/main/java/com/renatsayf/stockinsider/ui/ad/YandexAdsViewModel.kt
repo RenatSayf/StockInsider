@@ -4,6 +4,8 @@ package com.renatsayf.stockinsider.ui.ad
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
 import com.renatsayf.stockinsider.utils.appPref
@@ -37,7 +39,7 @@ class YandexAdsViewModel @Inject constructor(
         })
     }
 
-    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1, listener: InterstitialAdListener) {
+    fun loadInterstitialAd(adId: AdsId = AdsId.INTERSTITIAL_1) {
         if (!isDisabled) {
 
             InterstitialAdLoader(app.applicationContext).apply {
@@ -49,11 +51,11 @@ class YandexAdsViewModel @Inject constructor(
                 val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
                 setAdLoadListener(object : InterstitialAdLoadListener {
                     override fun onAdLoaded(ad: InterstitialAd) {
-                        listener.onInterstitialAdLoaded(ad)
+                        _interstitialAd.value = Result.success(ad)
                     }
 
                     override fun onAdFailedToLoad(error: AdRequestError) {
-                        listener.onAdFailed(error)
+                        _interstitialAd.value = Result.failure(Throwable(error.description))
                         "*************** loadInterstitialAd() ${error.description} ***************".printIfDebug()
                     }
                 })
@@ -61,9 +63,12 @@ class YandexAdsViewModel @Inject constructor(
             }
         }
         else {
-            listener.onAdFailed(AdRequestError(-1, "Ads are disabled"))
+            _interstitialAd.value = Result.failure(Throwable("********** Ads are disabled ************"))
         }
     }
+
+    private var _interstitialAd = MutableLiveData<Result<InterstitialAd>>()
+    val interstitialAd: LiveData<Result<InterstitialAd>> = _interstitialAd
 
     fun loadRewardedAd(adId: AdsId, isOnExit: Boolean = false, listener: RewardedAdListener) {
         if (!isDisabled) {
