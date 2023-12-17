@@ -97,8 +97,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     if (FireBaseConfig.sanctionsList.contains(code)) {
                         adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, object : YandexAdsViewModel.InterstitialAdListener {
                             override fun onInterstitialAdLoaded(
-                                ad: InterstitialAd,
-                                isOnExit: Boolean
+                                ad: InterstitialAd
                             ) {
                                 showInterstitialAd(ad)
                             }

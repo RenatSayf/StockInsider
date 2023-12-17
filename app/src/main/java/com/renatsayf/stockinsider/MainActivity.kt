@@ -115,8 +115,7 @@ class MainActivity : AppCompatActivity() {
                     yandexVM.yandexAdsInitialize()
                     yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, listener = object : YandexAdsViewModel.InterstitialAdListener {
                         override fun onInterstitialAdLoaded(
-                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd,
-                            isOnExit: Boolean
+                            ad: com.yandex.mobile.ads.interstitial.InterstitialAd
                         ) {
                             yandexIntersAd = ad
                         }
