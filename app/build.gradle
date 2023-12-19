@@ -77,15 +77,15 @@ dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'androidx.appcompat:appcompat:1.6.1'
     implementation 'androidx.core:core-ktx:1.12.0'
-    implementation 'com.google.android.material:material:1.10.0'
+    implementation 'com.google.android.material:material:1.11.0'
 
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.5'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.5'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.6'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.7.6'
 
     //Hint Enable multidex. Step 1 (https://developer.android.com/studio/build/multidex)
     implementation 'androidx.multidex:multidex:2.0.1'
@@ -177,7 +177,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-ads:22.6.0'
 
     //Yandex ads
-    implementation 'com.yandex.android:mobileads:6.2.0'
+    implementation 'com.yandex.android:mobileads:6.3.0'
 
     //Splashscreen
     implementation 'androidx.core:core-splashscreen:1.0.1'

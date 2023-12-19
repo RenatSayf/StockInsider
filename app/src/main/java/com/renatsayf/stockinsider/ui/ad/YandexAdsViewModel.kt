@@ -7,8 +7,7 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
-import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.printIfDebug
 import com.yandex.mobile.ads.common.AdRequestConfiguration
 import com.yandex.mobile.ads.common.AdRequestError
@@ -29,7 +28,7 @@ class YandexAdsViewModel @Inject constructor(
     private val app: Application
 ): AndroidViewModel(app) {
 
-    private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
+    private val isDisabled = app.isAdsDisabled
 
     fun yandexAdsInitialize() {
         MobileAds.initialize(app.applicationContext, object : InitializationListener {
@@ -70,7 +69,7 @@ class YandexAdsViewModel @Inject constructor(
     private var _interstitialAd = MutableLiveData<Result<InterstitialAd>>()
     val interstitialAd: LiveData<Result<InterstitialAd>> = _interstitialAd
 
-    fun loadRewardedAd(adId: AdsId, isOnExit: Boolean = false, listener: RewardedAdListener) {
+    fun loadRewardedAd(adId: AdsId = AdsId.REWARDED_1) {
         if (!isDisabled) {
             RewardedAdLoader(app.applicationContext).apply {
                 val id = if (BuildConfig.DEBUG) {
@@ -80,31 +79,24 @@ class YandexAdsViewModel @Inject constructor(
                 }
                 val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
                 setAdLoadListener(object : RewardedAdLoadListener {
-                    override fun onAdLoaded(p0: RewardedAd) {
-                        listener.onRewardedAdLoaded(p0, isOnExit)
+                    override fun onAdLoaded(ad: RewardedAd) {
+                        _rewardedAd.value = Result.success(ad)
                     }
 
-                    override fun onAdFailedToLoad(p0: AdRequestError) {
-                        listener.onAdFailed(p0)
-                        "*************** loadRewardedAd() ${p0.description} ***************".printIfDebug()
+                    override fun onAdFailedToLoad(error: AdRequestError) {
+                        _rewardedAd.value = Result.failure(Throwable(error.description))
+                        "*************** loadRewardedAd() ${error.description} ***************".printIfDebug()
                     }
                 })
                 loadAd(adRequestConfiguration)
             }
         }
         else {
-            listener.onAdFailed(AdRequestError(-1, "Ads are disabled"))
+            _rewardedAd.value = Result.failure(Throwable("************** Ads are disabled ***************"))
         }
     }
 
-    interface InterstitialAdListener {
-        fun onInterstitialAdLoaded(ad: InterstitialAd)
-        fun onAdFailed(error: AdRequestError)
-    }
-
-    interface RewardedAdListener {
-        fun onRewardedAdLoaded(ad: RewardedAd, isOnExit: Boolean)
-        fun onAdFailed(error: AdRequestError)
-    }
+    private var _rewardedAd = MutableLiveData<Result<RewardedAd>>()
+    val rewardedAd: LiveData<Result<RewardedAd>> = _rewardedAd
 
 }

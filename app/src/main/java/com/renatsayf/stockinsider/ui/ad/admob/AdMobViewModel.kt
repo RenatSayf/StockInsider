@@ -11,8 +11,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
-import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.printIfDebug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -24,7 +23,7 @@ class AdMobViewModel @Inject constructor(
     private val app: Application
 ) : AndroidViewModel(app) {
 
-    private val isDisabled = app.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
+    private val isDisabled = app.isAdsDisabled
     private var adRequest = AdRequest.Builder().build()
 
     fun googleAdsInitialize() {

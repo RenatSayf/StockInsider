@@ -10,7 +10,6 @@ import com.renatsayf.stockinsider.ui.settings.KEY_IS_AD_DISABLED
 import com.renatsayf.stockinsider.ui.testing.TestActivity
 import com.renatsayf.stockinsider.utils.appPref
 import org.junit.After
-import org.junit.Assert
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -50,6 +49,16 @@ class YandexAdsViewModelTest {
             Thread.sleep(5000)
 
             viewModel.loadInterstitialAd(adId = AdsId.TEST_INTERSTITIAL_AD_ID)
+            viewModel.interstitialAd.observe(activity) { result ->
+                result.onSuccess { ad ->
+                    ad.show(activity)
+                    Thread.sleep(5000)
+                    isRunning = false
+                }
+                result.onFailure { exception ->
+                    throw exception
+                }
+            }
         }
         while (isRunning) {
             Thread.sleep(100)

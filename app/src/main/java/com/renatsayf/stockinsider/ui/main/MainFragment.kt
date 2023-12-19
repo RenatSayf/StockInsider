@@ -13,6 +13,7 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
@@ -23,7 +24,9 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
+import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
 import com.renatsayf.stockinsider.utils.setVisible
@@ -41,6 +44,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
         }
     }
+    private val donateVM: DonateViewModel by activityViewModels()
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
@@ -58,6 +62,12 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
 
         binding = FragmentHomeBinding.bind(view)
+
+        donateVM.purchases.observe(viewLifecycleOwner) { result ->
+            result.onSuccess {
+                requireContext().isAdsDisabled = true
+            }
+        }
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog.getInstance().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
