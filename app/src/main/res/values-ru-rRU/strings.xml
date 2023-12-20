@@ -84,7 +84,7 @@
     <string name="text_yes">Да</string>
     <string name="text_no">Нет</string>
     <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
-    <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
+    <string name="text_thanks">Любое пожертвование отключает рекламу.\n Спасибо, что пользуетесь приложением</string>
     <string name="text_select_sum">Выберете сумму:</string>
     <string name="text_to_support">Поддержать</string>
     <string name="text_support_project">Поддержать проект</string>

@@ -58,8 +58,8 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
     fun queryProductDetails(billingClient: BillingClient) {
 
 
-        val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
-        billingClient.queryProductDetailsAsync(params.build()) { billingResult, products ->
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
+        billingClient.queryProductDetailsAsync(params) { billingResult, products ->
             //val code = billingResult.responseCode
             if (products.isNotEmpty()) {
                 products.sortByDescending { p -> p.oneTimePurchaseOfferDetails?.formattedPrice }
@@ -148,6 +148,7 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
             billingClient.queryPurchaseHistoryAsync(params, object : PurchaseHistoryResponseListener {
                 private val jsonParser = Json {
                     ignoreUnknownKeys = true
+                    isLenient = true
                 }
 
                 override fun onPurchaseHistoryResponse(

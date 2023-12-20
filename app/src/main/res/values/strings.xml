@@ -85,9 +85,9 @@
     <string name="text_yes">Yes</string>
     <string name="text_no">No</string>
     <string name="text_donate">Hi!\nIf this app has helped you earn money…, you can support my project by making a small donation.</string>
-    <string name="text_thanks">Thank you for using the app </string>
+    <string name="text_thanks">Any donation disables advertising.\n Thank you for using the app</string>
     <string name="text_select_sum">Select the amount:</string>
-    <string name="text_to_support">Make a donation</string>
+    <string name="text_to_support">Donate</string>
     <string name="text_support_project">Support the project</string>
     <string name="text_purchase_canceled">The transaction has been canceled. I\'m sorry you changed your mind</string>
     <string name="text_thanks_for_donating">Thank you for your support!!!</string>
