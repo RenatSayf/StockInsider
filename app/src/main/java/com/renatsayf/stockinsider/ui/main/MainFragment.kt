@@ -79,7 +79,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             when (state) {
                 is MainViewModel.State.Initial -> {
                     val set = state.set
-                    mainVM.setSearchSet(set)
                     with(binding) {
                         general.tickerET.setText("")
                         general.tickerET.setText(set.ticker)

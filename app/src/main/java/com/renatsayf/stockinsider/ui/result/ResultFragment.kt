@@ -301,7 +301,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
-                                        title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                        title = getString(R.string.saving_error), message = res.message, status = InfoDialog.DialogStatus.ERROR
                                     )
                                 }
                                 is ResultData.Success -> {
