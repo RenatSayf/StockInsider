@@ -25,6 +25,7 @@ import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.getParcelableCompat
 import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
@@ -65,11 +66,13 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
             netInfoVM.countryCode.observe(this) { result ->
                 result.onSuccess { code ->
-                    if (FireBaseConfig.sanctionsList.contains(code)) {
-                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
-                    }
-                    else {
-                        adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
+                    if (!requireContext().isAdsDisabled) {
+                        if (FireBaseConfig.sanctionsList.contains(code)) {
+                            yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
+                        }
+                        else {
+                            adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
+                        }
                     }
                 }
             }
