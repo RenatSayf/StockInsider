@@ -69,9 +69,37 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         DealListAdapter(this)
     }
 
-    private val yandexAdVM: YandexAdsViewModel by activityViewModels()
+    private val yandexAdVM: YandexAdsViewModel by viewModels()
     private val adMobVM by viewModels<AdMobViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            netInfoVM.countryCode.observe(this) { result ->
+                result.onSuccess { code ->
+                    if (FireBaseConfig.sanctionsList.contains(code)) {
+                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2)
+                    }
+                    else {
+                        adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
+                    }
+                }
+            }
+
+            yandexAdVM.interstitialAd.observe(this) { result ->
+                result.onSuccess { ad ->
+                    ad.show(requireActivity())
+                }
+            }
+
+            adMobVM.interstitialAd.observe(this) { result ->
+                result.onSuccess { ad ->
+                    ad.show(requireActivity())
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -88,31 +116,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding = FragmentResultBinding.bind(view)
 
         if (savedInstanceState == null) {
-
-            netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { code ->
-                    if (FireBaseConfig.sanctionsList.contains(code)) {
-                        yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2)
-                    }
-                    else {
-                        adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
-                    }
-                }
-            }
-
-            yandexAdVM.interstitialAd.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { ad ->
-                    ad.show(requireActivity())
-                }
-            }
-
-            adMobVM.interstitialAd.observe(viewLifecycleOwner) { result ->
-                result.onSuccess { ad ->
-                    ad.show(requireActivity())
-                }
-            }
-
-
 
             val title = arguments?.getString(ARG_TITLE)
             binding.toolBar.title = title

@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -63,9 +64,9 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         binding = FragmentHomeBinding.bind(view)
 
-        donateVM.purchases.observe(viewLifecycleOwner) { result ->
+        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
-                requireContext().isAdsDisabled = true
+                requireContext().isAdsDisabled = !BuildConfig.DEBUG
             }
         }
 

@@ -347,8 +347,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         item == 6 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
-                                DonateDialog.getInstance()
-                                    .show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {

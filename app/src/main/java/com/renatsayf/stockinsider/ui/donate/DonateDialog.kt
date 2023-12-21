@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
+import com.android.billingclient.api.BillingClient
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
@@ -27,7 +28,7 @@ class DonateDialog : DialogFragment()
         private var instance: DonateDialog? = null
         fun getInstance() = if (instance == null) {
             instance = DonateDialog()
-            instance
+            instance!!
         } else {
             instance!!
         }
@@ -101,18 +102,21 @@ class DonateDialog : DialogFragment()
                 }
             }
 
-            viewModel.eventPurchased.observe(viewLifecycleOwner) { event ->
-                if (!event.hasBeenHandled) {
-                    val layout = (activity as? MainActivity)?.drawerLayout
-                    if (!event.getContent().isNullOrEmpty()) {
-                        requireContext().isAdsDisabled = true
-                        layout?.showSnackBar(getString(R.string.text_thanks_for_donating))
-                        dismiss()
+            viewModel.donationIsDone.observe(viewLifecycleOwner) { result ->
+                val layout = (activity as? MainActivity)?.drawerLayout
+                result.onSuccess<String> {
+                    requireContext().isAdsDisabled = true
+                    layout?.showSnackBar("${getString(R.string.hugging_emoji)}  ${getString(R.string.text_thanks_for_donating)}")
+                    dismiss()
+                }
+                result.onError { message, code ->
+                    if (code == BillingClient.BillingResponseCode.USER_CANCELED) {
+                        layout?.showSnackBar("${getString(R.string.unamused_emoji)}  ${getString(R.string.text_purchase_canceled)}")
                     }
                     else {
-                        layout?.showSnackBar(getString(R.string.text_purchase_canceled))
-                        dismiss()
+                        layout?.showSnackBar(message)
                     }
+                    dismiss()
                 }
             }
         }

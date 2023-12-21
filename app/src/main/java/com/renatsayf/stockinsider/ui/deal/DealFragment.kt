@@ -58,20 +58,12 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
     private val adMobVM: AdMobViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_deal, container, false)
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentDealBinding.bind(view)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
 
-            netInfoVM.countryCode.observe(viewLifecycleOwner) { result ->
+            netInfoVM.countryCode.observe(this) { result ->
                 result.onSuccess { code ->
                     if (FireBaseConfig.sanctionsList.contains(code)) {
                         yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
@@ -83,17 +75,29 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             }
         }
 
-        yandexAdVM.interstitialAd.observe(viewLifecycleOwner) { result ->
+        yandexAdVM.interstitialAd.observe(this) { result ->
             result.onSuccess { ad ->
                 ad.show(requireActivity())
             }
         }
 
-        adMobVM.interstitialAd.observe(viewLifecycleOwner) { result ->
+        adMobVM.interstitialAd.observe(this) { result ->
             result.onSuccess { ad ->
                 ad.show(requireActivity())
             }
         }
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View? {
+        return inflater.inflate(R.layout.fragment_deal, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        binding = FragmentDealBinding.bind(view)
 
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
         if (savedInstanceState == null) {

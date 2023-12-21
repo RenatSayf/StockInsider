@@ -7,10 +7,23 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.android.billingclient.api.*
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchaseHistoryRecord
+import com.android.billingclient.api.PurchaseHistoryResponseListener
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchaseHistoryParams
+import com.android.billingclient.api.acknowledgePurchase
+import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.ui.settings.BILLING_CLIENT_IS_NOT_READY
 import com.renatsayf.stockinsider.ui.settings.PURCHASES_NOT_FOUND
-import com.renatsayf.stockinsider.utils.Event
 import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
@@ -23,7 +36,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(app), PurchasesUpdatedListener {
 
-    val eventPurchased : MutableLiveData<Event<String>> = MutableLiveData()
+    private var _donationIsDone = MutableLiveData<ResultData<String>>(ResultData.Init)
+    val donationIsDone : LiveData<ResultData<String>> = _donationIsDone
 
     private val productList = listOf(
         buildProduct("user_donation_50"),
@@ -116,11 +130,16 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
                             .build()
                         viewModelScope.launch {
                             withContext(Dispatchers.IO) {
-                                billingClient.acknowledgePurchase(acknowledgePurchaseParams)
+                                val result = billingClient.acknowledgePurchase(acknowledgePurchaseParams)
+                                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                                    _donationIsDone.postValue(ResultData.Success(outToken))
+                                }
+                                else {
+                                    _donationIsDone.postValue(ResultData.Error(result.debugMessage, result.responseCode))
+                                }
                             }
                         }
                     }
-                    eventPurchased.postValue(Event(outToken))
                 }
                 return@consumeAsync
             }
@@ -133,7 +152,7 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
                 handlePurchase(billingClient, purchase)
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            eventPurchased.postValue(Event(null))
+            _donationIsDone.postValue(ResultData.Error(billingResult.debugMessage, billingResult.responseCode))
         }
     }
 
@@ -168,13 +187,13 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
                             it.productId.contains("user_donation", ignoreCase = true)
                         }
                         if (purchases.isNotEmpty()) {
-                            _purchases.postValue(Result.success(purchases))
+                            _pastDonations.postValue(Result.success(purchases))
                         }
                         else {
-                            _purchases.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
+                            _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
                         }
                     }?: run {
-                        _purchases.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
+                        _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
                     }
                 }
             })
@@ -182,12 +201,12 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
         else {
             val exception = Exception(BILLING_CLIENT_IS_NOT_READY)
             exception.printStackTraceIfDebug()
-            _purchases.value = Result.failure(exception)
+            _pastDonations.value = Result.failure(exception)
         }
     }
 
-    private var _purchases = MutableLiveData<Result<List<UserPurchase>>>()
-    val purchases: LiveData<Result<List<UserPurchase>>> = _purchases
+    private var _pastDonations = MutableLiveData<Result<List<UserPurchase>>>()
+    val pastDonations: LiveData<Result<List<UserPurchase>>> = _pastDonations
 
 
 }
