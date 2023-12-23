@@ -25,12 +25,8 @@ class DonateDialog : DialogFragment()
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
-        private var instance: DonateDialog? = null
-        fun getInstance() = if (instance == null) {
-            instance = DonateDialog()
-            instance!!
-        } else {
-            instance!!
+        fun getInstance(): DonateDialog {
+            return DonateDialog()
         }
     }
 

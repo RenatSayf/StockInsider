@@ -40,13 +40,14 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
     val donationIsDone : LiveData<ResultData<String>> = _donationIsDone
 
     private val productList = listOf(
-        buildProduct("user_donation_50"),
         buildProduct("user_donation100"),
         buildProduct("user_donation200"),
         buildProduct("user_donation300"),
         buildProduct("user_donation400"),
         buildProduct("user_donation_500"),
-        buildProduct("user_donation_1000")
+        buildProduct("user_donation_1000"),
+        buildProduct("user_donation_2000"),
+        buildProduct("user_donation_5000")
     )
 
     val billingClient = BillingClient.newBuilder(app)
