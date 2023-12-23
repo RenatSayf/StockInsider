@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="hi_emoji" translatable="false">👋🙂</string>
+    <string name="hugging_emoji" translatable="false">🤗</string>
+    <string name="unamused_emoji" translatable="false">😒</string>
+</resources>

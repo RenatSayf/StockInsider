@@ -22,18 +22,15 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
-import com.renatsayf.stockinsider.ui.ad.AdsId
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
+import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
 import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showInterstitialAd
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -48,8 +45,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
         }
     }
-    private val adVM: AdViewModel by activityViewModels()
-    var interstitialAd: InterstitialAd? = null
+    private val donateVM: DonateViewModel by activityViewModels()
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
@@ -68,30 +64,21 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         binding = FragmentHomeBinding.bind(view)
 
-        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
-        if (!isAgree) WebViewDialog().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
+        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
+            result.onSuccess {
+                requireContext().isAdsDisabled = !BuildConfig.DEBUG
+            }
+        }
 
-        binding.searchButton.setVisible(false)
-        adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1, false, object : AdViewModel.InterstitialAdListener {
-            override fun onInterstitialAdLoaded(
-                ad: InterstitialAd,
-                isOnExit: Boolean
-            ) {
-                interstitialAd = ad
-                binding.searchButton.setVisible(true)
-            }
-            override fun onAdFailed(error: AdRequestError) {
-                interstitialAd = null
-                binding.searchButton.setVisible(true)
-                if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
-            }
-        })
+        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
+        if (!isAgree) WebViewDialog.getInstance().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
+
+        binding.searchButton.setVisible(true)
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MainViewModel.State.Initial -> {
                     val set = state.set
-                    mainVM.setSearchSet(set)
                     with(binding) {
                         general.tickerET.setText("")
                         general.tickerET.setText(set.ticker)
@@ -157,7 +144,7 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         binding.searchButton.setOnClickListener {
 
-            showInterstitialAd(interstitialAd)
+            //showInterstitialAd(interstitialAd)
 
             val set = scanScreen()
             (requireActivity() as MainActivity).hideKeyBoard(it)

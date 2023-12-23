@@ -35,7 +35,7 @@ abstract class AppDataBase : RoomDatabase() {
 
         private fun buildDataBase(context: Context): AppDataBase {
 
-            val migration = object : Migration(18, DB_VERSION) {
+            val migration18to19 = object : Migration(18, 19) {
                 override fun migrate(db: SupportSQLiteDatabase) {
                     val version = db.version
                     if (version < 19) {
@@ -54,7 +54,7 @@ abstract class AppDataBase : RoomDatabase() {
 }
 
 
-private const val query = """INSERT INTO search_set (
+private const val QUERY = """INSERT INTO search_set (
 set_name, 
 company_name, 
 ticker, 
@@ -77,5 +77,5 @@ is_default) VALUES (
  "AXP AMGN AAPL BA CAT CSCO CVX GS HD HON IBM INTC JNJ KO JPM MCD MMM MRK MSFT NKE PG TRV UNH CRM VZ V WBA WMT DIS DOW",
  1, 3, 1, 0, "", "", 1, 1, 1, 0, 3, "tracking", 1, 1)"""
 
-private const val query17 =
+private const val QUERY17 =
     """UPDATE search_set SET set_name = 'NASDAQ top 10 stocks' WHERE set_name == 'Top 10 NASDAQ stocks'"""

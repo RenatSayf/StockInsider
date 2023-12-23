@@ -23,14 +23,18 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
 import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.dp
@@ -39,10 +43,7 @@ import com.renatsayf.stockinsider.utils.getValuesSize
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInfoDialog
-import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.showSnackBar
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -62,14 +63,46 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val mainViewModel : MainViewModel by viewModels()
     private val sortingVM: SortingViewModel by viewModels()
     private val trackingVM: TrackingListViewModel by viewModels()
+    private val netInfoVM by activityViewModels<NetInfoViewModel>()
     private var roomSearchSet: RoomSearchSet? = null
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this)
     }
 
-    private val adVM: AdViewModel by activityViewModels()
-    private var yandexAd2: InterstitialAd? = null
+    private val yandexAdVM: YandexAdsViewModel by viewModels()
+    private val adMobVM by viewModels<AdMobViewModel>()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+            netInfoVM.countryCode.observe(this) { result ->
+                result.onSuccess { code ->
+                    if (!requireContext().isAdsDisabled) {
+                        if (FireBaseConfig.sanctionsList.contains(code)) {
+                            yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2)
+                        }
+                        else {
+                            adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
+                        }
+                    }
+                }
+            }
+
+            yandexAdVM.interstitialAd.observe(this) { result ->
+                result.onSuccess { ad ->
+                    ad.show(requireActivity())
+                }
+            }
+
+            adMobVM.interstitialAd.observe(this) { result ->
+                result.onSuccess { ad ->
+                    ad.show(requireActivity())
+                }
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -86,17 +119,6 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         binding = FragmentResultBinding.bind(view)
 
         if (savedInstanceState == null) {
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2, false, object : AdViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(
-                    ad: InterstitialAd,
-                    isOnExit: Boolean
-                ) {
-                    yandexAd2= ad
-                }
-                override fun onAdFailed(error: AdRequestError) {
-                    yandexAd2 = null
-                }
-            })
 
             val title = arguments?.getString(ARG_TITLE)
             binding.toolBar.title = title
@@ -282,7 +304,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
-                                        title = "Saving error...", message = res.message, status = InfoDialog.DialogStatus.ERROR
+                                        title = getString(R.string.saving_error), message = res.message, status = InfoDialog.DialogStatus.ERROR
                                     )
                                 }
                                 is ResultData.Success -> {

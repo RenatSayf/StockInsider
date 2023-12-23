@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.deal
 
-import android.graphics.drawable.Drawable
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,12 +48,6 @@ class DealViewModel @Inject constructor(
     var deal: LiveData<Deal> = _deal
     fun setDeal(value: Deal) {
         _deal.value = value
-    }
-
-    private var _chart = MutableLiveData<Drawable>()
-    var chart: LiveData<Drawable> = _chart
-    fun setChart(chart: Drawable) {
-        _chart.value = chart
     }
 
     fun getDealsByTicker(ticker: String) {

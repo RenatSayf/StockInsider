@@ -10,6 +10,7 @@
 
     <domain-config cleartextTrafficPermitted="true">
         <domain includeSubdomains="true">http://openinsider.com</domain>
+        <domain includeSubdomains="true">https://www.profitspi.com</domain>
     </domain-config>
 
 </network-security-config>

@@ -35,14 +35,6 @@ class MainViewModel @Inject constructor(
         _state.value = state
     }
 
-    private var _searchSet = MutableLiveData<RoomSearchSet>().apply {
-        value = searchSet?.value
-    }
-    var searchSet: LiveData<RoomSearchSet>? = _searchSet
-    fun setSearchSet(set: RoomSearchSet) {
-        _searchSet.value = set
-    }
-
     private suspend fun getUserSearchSets(): MutableList<RoomSearchSet> {
         return repository.getUserSearchSetsFromDbAsync() as MutableList<RoomSearchSet>
     }

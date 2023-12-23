@@ -21,27 +21,33 @@ import androidx.core.content.edit
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.ui.*
 import com.google.android.gms.ads.*
+import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.AlarmReceiver
+import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
+import com.renatsayf.stockinsider.ui.common.TimerViewModel
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
+import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.*
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.rewarded.RewardedAd
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 
 @AndroidEntryPoint
@@ -66,8 +72,22 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
-    private val adVM: AdViewModel by viewModels()
-    private var rewardedAd: RewardedAd? = null
+    private val netInfoVM: NetInfoViewModel by lazy {
+        ViewModelProvider(this)[NetInfoViewModel::class.java]
+    }
+
+    private val timerVM: TimerViewModel by viewModels()
+
+    private val hardwareReceiver: HardwareButtonsReceiver by lazy {
+        HardwareButtonsReceiver()
+    }
+
+    private val yandexVM: YandexAdsViewModel by viewModels()
+    private var yandexIntersAd: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
+
+    private val adMobVM: AdMobViewModel by viewModels()
+    private var googleIntersAd: InterstitialAd? = null
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -83,18 +103,32 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             FireBaseConfig
-            adVM.loadRewardedAd(adId = AdsId.REWARDED_1, false, object : AdViewModel.RewardedAdListener {
-                override fun onRewardedAdLoaded(
-                    ad: RewardedAd,
-                    isOnExit: Boolean
-                ) {
-                    rewardedAd = ad
+            netInfoVM.getCountryCode()
+        }
+
+        netInfoVM.countryCode.observe(this@MainActivity) { result ->
+            result.onSuccess { code ->
+                if (FireBaseConfig.sanctionsList.contains(code)) {
+                    yandexVM.yandexAdsInitialize()
+                    yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1)
                 }
-                override fun onAdFailed(error: AdRequestError) {
-                    rewardedAd = null
-                    if (BuildConfig.DEBUG) println("************* ${error.description} ****************")
+                else {
+                    adMobVM.googleAdsInitialize()
+                    adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_1)
                 }
-            })
+            }
+        }
+
+        yandexVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                yandexIntersAd = ad
+            }
+        }
+
+        adMobVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                googleIntersAd = ad
+            }
         }
 
         binding.appBarMain.contentMain.included.loadProgressBar.setVisible(false)
@@ -313,12 +347,16 @@ class MainActivity : AppCompatActivity() {
                         }
                         item == 6 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
-                                DonateDialog.getInstance()
-                                    .show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 6 && subItem == 1 -> {
-                            showRewardedAd(rewardedAd)
+                            if (yandexIntersAd != null) {
+                                yandexIntersAd!!.show(this@MainActivity)
+                            }
+                            else if (googleIntersAd != null) {
+                                googleIntersAd!!.show(this@MainActivity)
+                            }
                         }
                     }
                     drawerLayout.closeDrawer(GravityCompat.START)
@@ -347,6 +385,47 @@ class MainActivity : AppCompatActivity() {
         }
 
 
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        registerHardWareReceiver(hardwareReceiver)
+
+        lifecycleScope.launch {
+            hardwareReceiver.isHomeClicked.collect { result ->
+                result.onSuccess {
+                    "************ Start timer *******************".printIfDebug()
+                    timerVM.startTimer()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            hardwareReceiver.isRecentClicked.collect { result ->
+                result.onSuccess {
+                    "************ App go to finish *******************".printIfDebug()
+                    finish()
+                }
+            }
+        }
+        lifecycleScope.launch {
+            timerVM.timeIsUp.collect { result ->
+                result.onSuccess {
+                    "***************** App go to finish ****************".printIfDebug()
+                    finish()
+                }
+            }
+        }
+    }
+
+    override fun onPause() {
+
+        try {
+            unregisterReceiver(hardwareReceiver)
+        } catch (e: Exception) {
+            e.printStackTraceIfDebug()
+        }
+        super.onPause()
     }
 
     private fun createSpannableMessage() : SpannableStringBuilder
@@ -392,7 +471,7 @@ class MainActivity : AppCompatActivity() {
         return NavigationUI.navigateUp(navController, drawerLayout)
     }
 
-    override fun onStop() {
+    override fun onDestroy() {
 
         val count = trackedVM.getTrackedCountSync()
         if (count > 0) {
@@ -406,7 +485,7 @@ class MainActivity : AppCompatActivity() {
                 ServiceNotification.notify(this@MainActivity, message, null)
             }
         }
-        super.onStop()
+        super.onDestroy()
     }
 
 }

@@ -8,10 +8,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.activityViewModels
+import com.android.billingclient.api.BillingClient
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,15 +25,12 @@ class DonateDialog : DialogFragment()
 
     companion object {
         val TAG = "${this::class.java.simpleName}.TAG"
-        private var instance: DonateDialog? = null
-        fun getInstance() = if (instance == null) {
-            DonateDialog()
-        } else {
-            instance as DonateDialog
+        fun getInstance(): DonateDialog {
+            return DonateDialog()
         }
     }
 
-    private val viewModel: DonateViewModel by viewModels()
+    private val viewModel: DonateViewModel by activityViewModels()
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
@@ -55,55 +54,70 @@ class DonateDialog : DialogFragment()
     {
         super.onViewCreated(view, savedInstanceState)
 
-        viewModel.donateList.observe(viewLifecycleOwner) { list ->
-            if (list.isNotEmpty()) {
-                val products = list.toMutableList()
-                val priceList = mutableListOf<String>()
-                products.forEach { p ->
-                    val price = p.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
-                    priceList.add(price)
+        with(binding) {
+            viewModel.donateList.observe(viewLifecycleOwner) { list ->
+                if (list.isNotEmpty()) {
+                    val products = list.toMutableList()
+                    val priceList = mutableListOf<String>()
+                    products.forEach { p ->
+                        val price = p.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
+                        priceList.add(price)
+                    }
+                    val adapter = ArrayAdapter(
+                        requireContext(),
+                        R.layout.app_spinner_item,
+                        priceList
+                    )
+                    sumSpinnerView.adapter = adapter
                 }
-                val adapter = ArrayAdapter(
-                    requireContext(),
-                    R.layout.app_spinner_item,
-                    priceList
-                )
-                binding.sumSpinnerView.adapter = adapter
             }
-        }
 
-        val thanksText = requireContext().getString(R.string.text_thanks).plus(" ")
-            .plus(requireContext().getString(R.string.app_name))
-        binding.thanksTView.text = thanksText
+            val donateText = "${getString(R.string.hi_emoji)} ${getString(R.string.text_donate)}"
+            doDonateTView.text = donateText
 
-        binding.btnCancel.setOnClickListener {
-            dismiss()
-        }
+            val thanksText = requireContext().getString(R.string.text_thanks).plus(" ")
+                .plus(requireContext().getString(R.string.app_name))
+            thanksTView.text = thanksText
 
-        binding.btnDoDonate.setOnClickListener {
-            val selectedPrice = binding.sumSpinnerView.selectedItem as? String
-            if (selectedPrice != null) {
-                viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
-                    if (params != null) {
-                        viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+            val cancelText = "${getString(R.string.unamused_emoji)}  ${getString(R.string.text_cancel)}"
+            btnCancel.text = cancelText
+            btnCancel.setOnClickListener {
+                dismiss()
+            }
+
+            val doDonateText = "${getString(R.string.text_to_support)}  ${getString(R.string.hugging_emoji)}"
+            btnDoDonate.text = doDonateText
+            btnDoDonate.setOnClickListener {
+                val selectedPrice = sumSpinnerView.selectedItem as? String
+                if (selectedPrice != null) {
+                    viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
+                        if (params != null) {
+                            viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+                        }
                     }
                 }
             }
-        }
 
-        viewModel.eventPurchased.observe(viewLifecycleOwner) { event ->
-            if (!event.hasBeenHandled) {
+            viewModel.donationIsDone.observe(viewLifecycleOwner) { result ->
                 val layout = (activity as? MainActivity)?.drawerLayout
-                if (!event.getContent().isNullOrEmpty()) {
-                    layout?.showSnackBar(getString(R.string.text_thanks_for_donating))
+                result.onSuccess<String> {
+                    requireContext().isAdsDisabled = true
+                    layout?.showSnackBar("${getString(R.string.hugging_emoji)}  ${getString(R.string.text_thanks_for_donating)}")
                     dismiss()
                 }
-                else {
-                    layout?.showSnackBar(getString(R.string.text_purchase_canceled))
+                result.onError { message, code ->
+                    if (code == BillingClient.BillingResponseCode.USER_CANCELED) {
+                        layout?.showSnackBar("${getString(R.string.unamused_emoji)}  ${getString(R.string.text_purchase_canceled)}")
+                    }
+                    else {
+                        layout?.showSnackBar(message)
+                    }
                     dismiss()
                 }
             }
         }
+
+
     }
 
 }

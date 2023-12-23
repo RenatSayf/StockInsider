@@ -3,7 +3,6 @@
 package com.renatsayf.stockinsider.ui.deal
 
 import android.content.Intent
-import android.graphics.drawable.Drawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -11,29 +10,28 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.bumptech.glide.Glide
-import com.bumptech.glide.load.DataSource
-import com.bumptech.glide.load.engine.GlideException
-import com.bumptech.glide.request.RequestListener
-import com.bumptech.glide.request.target.Target
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.ui.ad.AdViewModel
 import com.renatsayf.stockinsider.ui.ad.AdsId
+import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
+import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
+import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
+import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.getParcelableCompat
 import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showInterstitialAd
 import com.renatsayf.stockinsider.utils.startBrowserSearch
-import com.yandex.mobile.ads.common.AdRequestError
-import com.yandex.mobile.ads.interstitial.InterstitialAd
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -54,9 +52,44 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
     private val viewModel: DealViewModel by lazy {
         ViewModelProvider(this)[DealViewModel::class.java]
     }
-    private val adVM: AdViewModel by viewModels()
 
-    private var interstitialAd: InterstitialAd? = null
+    private val netInfoVM by activityViewModels<NetInfoViewModel>()
+
+    private val yandexAdVM: YandexAdsViewModel by viewModels()
+
+    private val adMobVM: AdMobViewModel by viewModels()
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        if (savedInstanceState == null) {
+
+            netInfoVM.countryCode.observe(this) { result ->
+                result.onSuccess { code ->
+                    if (!requireContext().isAdsDisabled) {
+                        if (FireBaseConfig.sanctionsList.contains(code)) {
+                            yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
+                        }
+                        else {
+                            adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
+                        }
+                    }
+                }
+            }
+        }
+
+        yandexAdVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                ad.show(requireActivity())
+            }
+        }
+
+        adMobVM.interstitialAd.observe(this) { result ->
+            result.onSuccess { ad ->
+                ad.show(requireActivity())
+            }
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
@@ -69,57 +102,30 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
         binding = FragmentDealBinding.bind(view)
 
-        if (savedInstanceState == null) {
-            adVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3, listener = object : AdViewModel.InterstitialAdListener {
-                override fun onInterstitialAdLoaded(ad: InterstitialAd, isOnExit: Boolean) {
-                    interstitialAd = ad
-                }
-
-                override fun onAdFailed(error: AdRequestError) {
-                    if (BuildConfig.DEBUG) println("************** ${error.description} *******************")
-                }
-            })
-        }
-
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
         if (savedInstanceState == null) {
             deal?.let { viewModel.setDeal(it) }
         }
 
         binding.chartImagView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(deal?.tickerRefer))
-            activity?.startActivity(intent)
+            val ticker = binding.tickerTV.text.toString().lowercase().trim()
+            val url = "$MARKET_WATCH_URL$ticker"
+            startBrowserSearch(url)
         }
 
         viewModel.deal.observe(viewLifecycleOwner) { value ->
             with(binding) {
 
                 val uri = Uri.parse(value?.tickerRefer)
-                Glide.with(this@DealFragment).load(uri)
-                    .listener(object : RequestListener<Drawable> {
-                        override fun onLoadFailed(
-                            e: GlideException?,
-                            model: Any?,
-                            target: Target<Drawable>,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            binding.imgLoadProgBar.setVisible(false)
-                            return true
-                        }
+                Picasso.get().load(uri).into(binding.chartImagView, object : Callback {
+                    override fun onSuccess() {
+                        imgLoadProgBar.setVisible(false)
+                    }
 
-                        override fun onResourceReady(
-                            resource: Drawable,
-                            model: Any,
-                            target: Target<Drawable>?,
-                            dataSource: DataSource,
-                            isFirstResource: Boolean
-                        ): Boolean {
-                            viewModel.setChart(resource)
-                            binding.imgLoadProgBar.setVisible(false)
-                            return true
-                        }
-
-                    }).into(binding.chartImagView)
+                    override fun onError(e: Exception?) {
+                        imgLoadProgBar.setVisible(false)
+                    }
+                })
 
                 value?.let { mainDealLayout.setBackgroundColor(it.color) }
 
@@ -201,10 +207,6 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             }
         }
 
-        viewModel.chart.observe(viewLifecycleOwner) {
-            binding.chartImagView.setImageDrawable(it)
-        }
-
         binding.layoutMarketWatch.setOnClickListener {
             val ticker = binding.tickerTV.text.toString().lowercase().trim()
             val url = "$MARKET_WATCH_URL$ticker"
@@ -217,12 +219,10 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
         super.onResume()
 
         binding.toolBar.setNavigationOnClickListener {
-            showInterstitialAd(interstitialAd)
             findNavController().popBackStack()
         }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                showInterstitialAd(interstitialAd)
                 findNavController().popBackStack()
             }
         })
@@ -230,7 +230,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
     private fun transitionToCompanyDeals(deal: Deal) {
         binding.includedProgress.loadProgressBar.setVisible(true)
-        deal.ticker?.let { t ->
+        deal.ticker?.let { ticker ->
 
             findNavController().navigate(R.id.nav_trading_by_ticker, Bundle().apply {
                 putString(
@@ -242,7 +242,7 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
                     TradingByTickerFragment.ARG_COMPANY_NAME,
                     binding.companyNameTV.text.toString()
                 )
-                putString(TradingByTickerFragment.ARG_TICKER, t)
+                putString(TradingByTickerFragment.ARG_TICKER, ticker)
             })
         }
     }

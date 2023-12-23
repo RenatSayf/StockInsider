@@ -44,4 +44,12 @@ class MockApi(private val context: Context): IApi {
         val document = Jsoup.parse(stringFromFile)
         return Response.success(document)
     }
+
+    override suspend fun getNetworkInfo(url: String): Response<String> {
+        return Response.success("""{"status":"success","country":"Russia","countryCode":"RU",
+            |"region":"SVE","regionName":"Sverdlovsk Oblast","city":"Yekaterinburg","zip":"620000",
+            |"lat":00.000,"lon":00.00,"timezone":"Asia/Yekaterinburg","isp":"Rostelecom networks",
+            |"org":"Dynamic distribution IPs for broadband services","as":"AS5555 PJSC Rostelecom",
+            |"query":"175.55.55.55"}""".trimMargin())
+    }
 }

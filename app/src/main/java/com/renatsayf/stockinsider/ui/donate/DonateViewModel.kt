@@ -1,3 +1,5 @@
+@file:Suppress("ObjectLiteralToLambda", "UNUSED_ANONYMOUS_PARAMETER")
+
 package com.renatsayf.stockinsider.ui.donate
 
 import android.app.Application
@@ -5,19 +7,49 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
-import com.android.billingclient.api.*
-import com.renatsayf.stockinsider.utils.Event
+import com.android.billingclient.api.AcknowledgePurchaseParams
+import com.android.billingclient.api.BillingClient
+import com.android.billingclient.api.BillingClientStateListener
+import com.android.billingclient.api.BillingFlowParams
+import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.Purchase
+import com.android.billingclient.api.PurchaseHistoryRecord
+import com.android.billingclient.api.PurchaseHistoryResponseListener
+import com.android.billingclient.api.PurchasesUpdatedListener
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryPurchaseHistoryParams
+import com.android.billingclient.api.acknowledgePurchase
+import com.renatsayf.stockinsider.models.ResultData
+import com.renatsayf.stockinsider.ui.settings.BILLING_CLIENT_IS_NOT_READY
+import com.renatsayf.stockinsider.ui.settings.PURCHASES_NOT_FOUND
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.json.Json
 import javax.inject.Inject
 
 
 @HiltViewModel
 class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(app), PurchasesUpdatedListener {
 
-    val eventPurchased : MutableLiveData<Event<String>> = MutableLiveData()
+    private var _donationIsDone = MutableLiveData<ResultData<String>>(ResultData.Init)
+    val donationIsDone : LiveData<ResultData<String>> = _donationIsDone
+
+    private val productList = listOf(
+        buildProduct("user_donation100"),
+        buildProduct("user_donation200"),
+        buildProduct("user_donation300"),
+        buildProduct("user_donation400"),
+        buildProduct("user_donation_500"),
+        buildProduct("user_donation_1000"),
+        buildProduct("user_donation_2000"),
+        buildProduct("user_donation_5000")
+    )
+
     val billingClient = BillingClient.newBuilder(app)
         .setListener(this)
         .enablePendingPurchases()
@@ -29,6 +61,7 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
             override fun onBillingSetupFinished(result: BillingResult) {
                 if (result.responseCode == BillingClient.BillingResponseCode.OK) {
                     queryProductDetails(billingClient)
+                    getPurchasesHistory()
                 }
             }
             override fun onBillingServiceDisconnected() {
@@ -39,18 +72,10 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
 
     fun queryProductDetails(billingClient: BillingClient) {
 
-        val productList = listOf(
-            buildProduct("user_donation_50"),
-            buildProduct("user_donation100"),
-            buildProduct("user_donation200"),
-            buildProduct("user_donation300"),
-            buildProduct("user_donation400"),
-            buildProduct("user_donation_500"),
-            buildProduct("user_donation_1000")
-        )
-        val params = QueryProductDetailsParams.newBuilder().setProductList(productList)
-        billingClient.queryProductDetailsAsync(params.build()) { billingResult, products ->
-            val code = billingResult.responseCode
+
+        val params = QueryProductDetailsParams.newBuilder().setProductList(productList).build()
+        billingClient.queryProductDetailsAsync(params) { billingResult, products ->
+            //val code = billingResult.responseCode
             if (products.isNotEmpty()) {
                 products.sortByDescending { p -> p.oneTimePurchaseOfferDetails?.formattedPrice }
                 _donateList.postValue(products)
@@ -103,13 +128,19 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
                     if (!purchase.isAcknowledged) {
                         val acknowledgePurchaseParams = AcknowledgePurchaseParams.newBuilder()
                             .setPurchaseToken(purchase.purchaseToken)
+                            .build()
                         viewModelScope.launch {
                             withContext(Dispatchers.IO) {
-                                billingClient.acknowledgePurchase(acknowledgePurchaseParams.build())
+                                val result = billingClient.acknowledgePurchase(acknowledgePurchaseParams)
+                                if (result.responseCode == BillingClient.BillingResponseCode.OK) {
+                                    _donationIsDone.postValue(ResultData.Success(outToken))
+                                }
+                                else {
+                                    _donationIsDone.postValue(ResultData.Error(result.debugMessage, result.responseCode))
+                                }
                             }
                         }
                     }
-                    eventPurchased.postValue(Event(outToken))
                 }
                 return@consumeAsync
             }
@@ -122,7 +153,61 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
                 handlePurchase(billingClient, purchase)
             }
         } else if (billingResult.responseCode == BillingClient.BillingResponseCode.USER_CANCELED) {
-            eventPurchased.postValue(Event(null))
+            _donationIsDone.postValue(ResultData.Error(billingResult.debugMessage, billingResult.responseCode))
         }
     }
+
+    fun getPurchasesHistory() {
+
+        val params = QueryPurchaseHistoryParams.newBuilder()
+            .setProductType(BillingClient.ProductType.INAPP)
+            .build()
+
+        val ready = billingClient.isReady
+        if (ready) {
+            billingClient.queryPurchaseHistoryAsync(params, object : PurchaseHistoryResponseListener {
+                private val jsonParser = Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                }
+
+                override fun onPurchaseHistoryResponse(
+                    result: BillingResult,
+                    historyRecords: MutableList<PurchaseHistoryRecord>?
+                ) {
+                    historyRecords?.let{ records ->
+                        val purchases = records.mapNotNull {
+                            val json = it.originalJson
+                            try {
+                                jsonParser.decodeFromString<UserPurchase>(json)
+                            } catch (e: Exception) {
+                                e.printStackTraceIfDebug()
+                                null
+                            }
+                        }.filter {
+                            it.productId.contains("user_donation", ignoreCase = true)
+                        }
+                        if (purchases.isNotEmpty()) {
+                            _pastDonations.postValue(Result.success(purchases))
+                        }
+                        else {
+                            _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
+                        }
+                    }?: run {
+                        _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
+                    }
+                }
+            })
+        }
+        else {
+            val exception = Exception(BILLING_CLIENT_IS_NOT_READY)
+            exception.printStackTraceIfDebug()
+            _pastDonations.value = Result.failure(exception)
+        }
+    }
+
+    private var _pastDonations = MutableLiveData<Result<List<UserPurchase>>>()
+    val pastDonations: LiveData<Result<List<UserPurchase>>> = _pastDonations
+
+
 }

@@ -84,7 +84,7 @@
     <string name="text_yes">Да</string>
     <string name="text_no">Нет</string>
     <string name="text_donate">Привет!\n Если это приложение помогло Вам заработать денег…, Вы можете поддержать мой проект, сделав небольшое пожертвование.</string>
-    <string name="text_thanks">Спасибо, что пользуетесь приложением </string>
+    <string name="text_thanks">Любое пожертвование отключает рекламу.\n Спасибо, что пользуетесь приложением</string>
     <string name="text_select_sum">Выберете сумму:</string>
     <string name="text_to_support">Поддержать</string>
     <string name="text_support_project">Поддержать проект</string>
@@ -253,5 +253,6 @@
     <string name="base_url">http://openinsider.com/</string>
     <string name="text_for_notification_permission">Для того чтобы уведомить Вас о новых сделках, Вы должны разрешить приложению показывать уведомления. Перейти в настройки?</string>
     <string name="unknown_error">Ой! Что то пошло не так…</string>
+    <string name="saving_error">Ошибка сохранения…</string>
 
 </resources>
