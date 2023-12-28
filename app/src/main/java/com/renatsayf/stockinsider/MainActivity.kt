@@ -24,8 +24,8 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
-import androidx.navigation.ui.*
-import com.google.android.gms.ads.*
+import androidx.navigation.ui.NavigationUI
+import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
@@ -45,7 +45,16 @@ import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.doShare
+import com.renatsayf.stockinsider.utils.isNetworkAvailable
+import com.renatsayf.stockinsider.utils.printIfDebug
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
+import com.renatsayf.stockinsider.utils.registerHardWareReceiver
+import com.renatsayf.stockinsider.utils.setAlarm
+import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -391,6 +400,8 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
 
         registerHardWareReceiver(hardwareReceiver)
+
+        timerVM.stopTimer()
 
         lifecycleScope.launch {
             hardwareReceiver.isHomeClicked.collect { result ->

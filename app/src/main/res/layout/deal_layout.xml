@@ -39,7 +39,11 @@
             app:layout_constraintEnd_toStartOf="@id/tickerTV"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/company_name_barier"
-            tools:text="International Flavors &amp; Fragrances Inc" />
+            tools:text="International Flavors &amp; Fragrances Inc"
+            android:textIsSelectable="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:enabled="true"/>
 
         <TextView
             android:id="@+id/tickerTV"
@@ -51,7 +55,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/companyNameTV"
             app:layout_constraintTop_toBottomOf="@id/company_name_barier"
-            tools:text="@string/text_ticker" />
+            tools:text="@string/text_ticker"
+            android:textIsSelectable="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:enabled="true"/>
 
         <View
             android:id="@+id/filing_date_barier"
@@ -139,6 +147,10 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="@string/text_insider_name"
+                android:textIsSelectable="true"
+                android:focusable="true"
+                android:longClickable="true"
+                android:enabled="true"
                 />
 
             <TextView
