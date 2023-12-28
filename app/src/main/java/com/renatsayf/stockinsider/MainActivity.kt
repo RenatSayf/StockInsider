@@ -392,6 +392,8 @@ class MainActivity : AppCompatActivity() {
 
         registerHardWareReceiver(hardwareReceiver)
 
+        timerVM.stopTimer()
+
         lifecycleScope.launch {
             hardwareReceiver.isHomeClicked.collect { result ->
                 result.onSuccess {
