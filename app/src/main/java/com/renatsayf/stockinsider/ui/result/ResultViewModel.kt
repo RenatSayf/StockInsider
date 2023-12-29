@@ -8,6 +8,7 @@ import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import com.renatsayf.stockinsider.utils.getTimeOffsetIfWeekEnd
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -33,6 +34,10 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
     fun getDealListFromNet(set: SearchSet) {
         viewModelScope.launch {
             try {
+                if (set.filingPeriod.toInt() < 4) {
+                    set.filingPeriod = getTimeOffsetIfWeekEnd(set.filingPeriod.toInt()).toString()
+                    set.tradePeriod = getTimeOffsetIfWeekEnd(set.tradePeriod.toInt()).toString()
+                }
                 val result = repositoryImpl.getTradingListFromNetAsync(set).await()
                 result.onSuccess { list ->
                     _state.value = State.DataReceived(list)

@@ -212,7 +212,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             is IndexOutOfBoundsException -> {
                                 with(binding) {
                                     resultTV.text = "0"
-                                    noResult.noResultLayout.visibility = View.VISIBLE
+                                    noResult.noResultLayout.setVisible(true)
                                 }
                             }
                             else -> {
@@ -222,7 +222,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                     with(binding) {
                                         resultTV.text = 0.toString()
                                         noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                        noResult.noResultLayout.visibility = View.VISIBLE
+                                        noResult.noResultLayout.setVisible(true)
                                         showSnackBar(getString(R.string.text_inet_not_connection))
                                     }
                                 }

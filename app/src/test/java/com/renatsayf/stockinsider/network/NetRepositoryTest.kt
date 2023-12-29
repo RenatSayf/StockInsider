@@ -3,7 +3,6 @@ package com.renatsayf.stockinsider.network
 import android.content.Context
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
-import androidx.work.testing.TestScheduler
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.utils.getStringFromFile
 import kotlinx.coroutines.runBlocking
@@ -36,8 +35,6 @@ class NetRepositoryTest {
 
     private val repository = NetRepository(createRetrofit())
 
-    private lateinit var testScheduler: TestScheduler
-
     private val testSet = RoomSearchSet(
         queryName = "XXX",
         companyName = "",
@@ -59,7 +56,6 @@ class NetRepositoryTest {
 
     @Before
     fun setUp() {
-        testScheduler = TestScheduler(context)
     }
 
     @After
