@@ -10,9 +10,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
@@ -34,6 +36,7 @@ import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
+import com.renatsayf.stockinsider.ui.main.SearchDialog
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
@@ -60,7 +63,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     private lateinit var binding: FragmentResultBinding
     private val resultVM : ResultViewModel by viewModels()
-    private val mainViewModel : MainViewModel by viewModels()
+    private val mainVM : MainViewModel by lazy {
+        ViewModelProvider(requireActivity())[MainViewModel::class.java].apply {
+            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@ResultFragment) {
+                mainVM.setState(MainViewModel.State.Initial(it))
+            }
+        }
+    }
     private val sortingVM: SortingViewModel by viewModels()
     private val trackingVM: TrackingListViewModel by viewModels()
     private val netInfoVM by activityViewModels<NetInfoViewModel>()
@@ -69,6 +78,8 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this)
     }
+
+    private val searchDialog: SearchDialog = SearchDialog()
 
     private val yandexAdVM: YandexAdsViewModel by viewModels()
     private val adMobVM by viewModels<AdMobViewModel>()
@@ -169,15 +180,20 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             })
         }
 
-        resultVM.state.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                is ResultViewModel.State.Initial -> {
+        mainVM.state.observe(viewLifecycleOwner) { state ->
+            when(state) {
+                is MainViewModel.State.Initial -> {
                     binding.noResult.noResultLayout.setVisible(false)
                     binding.includedProgress.setVisible(true)
                     binding.btnAddToTracking.setVisible(false)
-                    roomSearchSet?.let {
-                        resultVM.getDealListFromNet(it.toSearchSet())
-                    }
+                    resultVM.getDealListFromNet(state.set.toSearchSet())
+                }
+            }
+        }
+
+        resultVM.state.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is ResultViewModel.State.Initial -> {
                 }
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
@@ -266,11 +282,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            parentFragmentManager.popBackStack()
+            requireActivity().finish()
         }
 
+        val drawerLayout = (requireActivity() as MainActivity).drawerLayout
         binding.toolBar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+            val isOpen = drawerLayout.isDrawerOpen(GravityCompat.END)
+            if (isOpen) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            else {
+                drawerLayout.openDrawer(GravityCompat.END)
+            }
         }
     }
 
@@ -300,7 +323,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 count?.let { c ->
                     if (c < FireBaseConfig.requestsCount) {
                         set.isTracked = !FireBaseConfig.problemDevices.contains(Build.MANUFACTURER.uppercase())
-                        mainViewModel.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
+                        mainVM.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
@@ -332,7 +355,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         set.let {
                             it.target = null
                             it.isTracked = false
-                            mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                            mainVM.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
                                 when(res) {
                                     ResultData.Init -> {}
                                     is ResultData.Error -> {

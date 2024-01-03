@@ -107,7 +107,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
             binding.general.tickerET.setAdapter(tickersAdapter)
             binding.general.tickerET.clearFocus()
-            //hideKeyBoard(binding.root)
         }
 
         var tickerText = ""
@@ -143,9 +142,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         }
 
         binding.searchButton.setOnClickListener {
-
-            //showInterstitialAd(interstitialAd)
-
             val set = scanScreen()
             (requireActivity() as MainActivity).hideKeyBoard(it)
 
