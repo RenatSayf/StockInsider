@@ -305,7 +305,15 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            requireActivity().finish()
+            showInfoDialog(
+                title = getString(R.string.question_on_exit),
+                status = InfoDialog.DialogStatus.WARNING,
+                callback = {res ->
+                    if (res > 0) {
+                        requireActivity().finish()
+                    }
+                }
+            )
         }
 
         val drawerLayout = (requireActivity() as MainActivity).drawerLayout

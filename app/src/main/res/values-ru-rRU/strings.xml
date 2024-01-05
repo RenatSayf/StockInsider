@@ -254,5 +254,6 @@
     <string name="text_for_notification_permission">Для того чтобы уведомить Вас о новых сделках, Вы должны разрешить приложению показывать уведомления. Перейти в настройки?</string>
     <string name="unknown_error">Ой! Что то пошло не так…</string>
     <string name="saving_error">Ошибка сохранения…</string>
+    <string name="question_on_exit">Вы действительно хотите выйти из приложения</string>
 
 </resources>

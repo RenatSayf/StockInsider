@@ -255,5 +255,6 @@
     <string name="text_for_notification_permission">In order to notify you of new deals, you must allow the app to show notifications. Go to Settings?</string>
     <string name="unknown_error">Ouch! Something went wrong…</string>
     <string name="saving_error">Saving error...</string>
+    <string name="question_on_exit">Do you really want to exit the app</string>
 
 </resources>
