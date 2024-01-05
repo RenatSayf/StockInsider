@@ -20,6 +20,8 @@
         app:navigationIcon="@drawable/ic_hamburger_white"
         app:title="@string/text_trading_screen"
         app:titleTextColor="@color/colorWhite"
+        tools:subtitle="Purchases in the last 3 days"
+        app:subtitleTextColor="@color/colorGold"
         android:background="@drawable/app_bar_background"/>
 
     <LinearLayout
@@ -129,26 +131,52 @@
         tools:visibility="visible"
         />
 
-    <Button
-        android:id="@+id/btn_add_to_tracking"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutBottomButtons"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="4dp"
+        android:gravity="center"
         tools:layout_marginBottom="46dp"
+        android:layout_marginBottom="-50dp"
         android:visibility="gone"
         tools:visibility="visible"
-        android:contentDescription="@string/app_name"
-        android:text="@string/text_add_to_tracking"
-        android:textAllCaps="false"
-        android:background="@drawable/bg_ripple_default"
-        android:drawableStart="@drawable/ic_add"
-        android:drawableEnd="@drawable/ic_visibility"
-        android:drawablePadding="8dp"
-        android:textColor="@color/colorWhite"
-        android:layout_marginBottom="-50dp"
-        />
+        >
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btnSearchConfig"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="16dp"
+            android:src="@drawable/tuning_icon"
+            app:layout_constraintStart_toEndOf="@id/searchButton"
+            app:layout_constraintTop_toBottomOf="@id/includeSorting"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintHorizontal_chainStyle="packed"
+            android:layout_margin="16dp"
+            android:contentDescription="@string/text_title_home"
+            android:background="@drawable/bg_ripple_round_primary"
+            />
+
+        <Button
+            android:id="@+id/btnAddToTracking"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:contentDescription="@string/text_add_to_tracking"
+            android:text="@string/text_add_to_tracking"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_ripple_default"
+            android:drawableStart="@drawable/ic_add"
+            android:drawableEnd="@drawable/ic_visibility"
+            android:drawablePadding="8dp"
+            android:textColor="@color/colorWhite"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.models
 
-import com.renatsayf.stockinsider.db.RoomSearchSet
 import java.io.Serializable
 
 data class SearchSet(var searchName : String?): Serializable

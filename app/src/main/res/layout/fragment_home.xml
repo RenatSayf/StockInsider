@@ -13,7 +13,7 @@
         app:layout_constraintTop_toTopOf="parent"
         android:background="@drawable/app_bar_background"
         android:theme="@style/AppTheme.PopupOverlay"
-        app:navigationIcon="@drawable/ic_hamburger_white"
+        app:navigationIcon="@drawable/ic_arrow_back_white"
         app:title="@string/text_title_home"
         app:titleTextColor="@color/colorWhite"
         app:menu="@menu/main"
@@ -128,7 +128,6 @@
         android:layout_marginBottom="16dp"
         android:contentDescription="@string/app_name"
         android:background="@drawable/bg_ripple_round_primary"
-
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

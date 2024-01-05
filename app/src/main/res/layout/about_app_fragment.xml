@@ -23,9 +23,9 @@
             app:titleTextColor="@color/colorWhite"
             />
 
-        <Space
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="1" />
 
         <ImageView
@@ -97,9 +97,9 @@
             android:text="@string/text_evaluate"
             android:textColor="@drawable/selector_color_gold_to_white" />
 
-        <Space
+        <View
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="0dp"
             android:layout_weight="0.5" />
 
         <TextView

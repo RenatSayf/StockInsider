@@ -52,7 +52,7 @@
     <string name="text_group_and_sort">Группировка и сортировка</string>
     <string name="text_sort_by">Сортировка по</string>
     <string name="text_trade_date">Дата сделки</string>
-    <string name="text_trading_screen">Торговый экран</string>
+    <string name="text_trading_screen">Отчеты об инсайдерской торговле</string>
     <string name="text_deal_value">Объем сделки $</string>
     <string name="text_company_name">Компания</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>

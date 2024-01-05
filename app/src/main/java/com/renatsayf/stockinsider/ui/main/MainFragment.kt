@@ -13,10 +13,9 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -24,20 +23,20 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
-import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
-import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
-import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.setVisible
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainFragment : Fragment(R.layout.fragment_home) {
+class MainFragment : Fragment() {
+
+    companion object {
+        val TAG = "${MainFragment::class.simpleName}.1111"
+    }
 
     private lateinit var binding: FragmentHomeBinding
+
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
             getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
@@ -45,7 +44,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
         }
     }
-    private val donateVM: DonateViewModel by activityViewModels()
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
@@ -55,32 +53,19 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentHomeBinding.bind(view)
-
-        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
-            result.onSuccess {
-                requireContext().isAdsDisabled = !BuildConfig.DEBUG
-            }
-        }
-
-        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
-        if (!isAgree) WebViewDialog.getInstance().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
-
-        binding.searchButton.setVisible(true)
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MainViewModel.State.Initial -> {
                     val set = state.set
                     with(binding) {
-                        general.tickerET.setText("")
                         general.tickerET.setText(set.ticker)
                         date.filingDateSpinner.setSelection(set.filingPeriod)
                         date.tradeDateSpinner.setSelection(set.tradePeriod)
@@ -143,13 +128,13 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         binding.searchButton.setOnClickListener {
             val set = scanScreen()
-            (requireActivity() as MainActivity).hideKeyBoard(it)
-
-            val bundle = Bundle().apply {
-                putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+            set.queryName = getString(R.string.text_current_set_name)
+            mainVM.saveSearchSet(set)
+            mainVM.setState(MainViewModel.State.Initial(set))
+            this.setFragmentResult(TAG, Bundle().apply {
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
-            }
-            findNavController().navigate(R.id.nav_result, bundle)
+            })
+            findNavController().navigate(R.id.nav_result)
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener =
@@ -216,17 +201,17 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                requireActivity().finish()
+                findNavController().popBackStack()
             }
         })
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     override fun onPause() {
         (requireActivity() as MainActivity).drawerLayout.isEnabled = false
-        val set = scanScreen()
-        set.queryName = getString(R.string.text_current_set_name)
-        mainVM.saveSearchSet(set)
-        mainVM.setState(MainViewModel.State.Initial(set))
+
         super.onPause()
     }
 
