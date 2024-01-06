@@ -23,11 +23,42 @@
         android:foreground="?android:selectableItemBackground"
         >
 
-        <View
-            android:id="@+id/company_name_barier"
-            android:layout_width="match_parent"
-            android:layout_height="0.1dp"
-            app:layout_constraintTop_toTopOf="parent" />
+        <androidx.appcompat.widget.AppCompatImageView
+            android:id="@+id/ivStockChart"
+            android:layout_width="109dp"
+            android:layout_height="85dp"
+            android:src="@drawable/image_area_chart_144dp"
+            app:layout_constraintBottom_toTopOf="@+id/tickerTV"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck" />
+
+        <ProgressBar
+            android:id="@+id/progressChart"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            app:layout_constraintStart_toStartOf="@id/ivStockChart"
+            app:layout_constraintTop_toTopOf="@id/ivStockChart"
+            app:layout_constraintEnd_toEndOf="@id/ivStockChart"
+            app:layout_constraintBottom_toBottomOf="@id/ivStockChart"
+            android:indeterminateTint="@color/colorGold"/>
+
+        <TextView
+            android:id="@+id/tickerTV"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/ivStockChart"
+            app:layout_constraintTop_toBottomOf="@id/ivStockChart"
+            app:layout_constraintEnd_toEndOf="@id/ivStockChart"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="@string/text_ticker"
+            android:textColor="@color/colorPrimaryDark"
+            android:textIsSelectable="true"
+            android:focusable="true"
+            android:longClickable="true"
+            android:enabled="true"/>
 
         <TextView
             android:id="@+id/companyNameTV"
@@ -36,133 +67,115 @@
             android:layout_weight="1"
             android:textSize="18sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toStartOf="@id/tickerTV"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/company_name_barier"
+            app:layout_constraintStart_toEndOf="@id/ivStockChart"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/filingDateTV"
+            android:layout_marginStart="12dp"
             tools:text="International Flavors &amp; Fragrances Inc"
+            android:textColor="@color/colorPrimaryDark"
             android:textIsSelectable="true"
             android:focusable="true"
             android:longClickable="true"
             android:enabled="true"/>
 
         <TextView
-            android:id="@+id/tickerTV"
-            android:layout_width="80dp"
+            android:id="@+id/filingDateTV"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textAlignment="textEnd"
-            android:textSize="18sp"
-            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
+            app:layout_constraintTop_toBottomOf="@+id/companyNameTV"
+            app:layout_constraintBottom_toTopOf="@id/insiderNameTV"
+            android:text="@string/text_date_20_20_2020"
+            android:textAlignment="textStart"
+            />
+
+
+        <TextView
+            android:id="@+id/tradeTypeTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@+id/filingDateTV"
+            app:layout_constraintTop_toTopOf="@id/filingDateTV"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@id/companyNameTV"
-            app:layout_constraintTop_toBottomOf="@id/company_name_barier"
-            tools:text="@string/text_ticker"
+            app:layout_constraintBottom_toBottomOf="@+id/filingDateTV"
+            android:text="@string/text_p_purchase"
+            android:textAlignment="textEnd"
+            />
+
+        <TextView
+            android:id="@+id/insiderNameTV"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/filingDateTV"
+            app:layout_constraintTop_toBottomOf="@id/filingDateTV"
+            app:layout_constraintBottom_toTopOf="@id/dealValueTitle"
+            android:text="@string/text_insider_name"
             android:textIsSelectable="true"
             android:focusable="true"
             android:longClickable="true"
-            android:enabled="true"/>
+            android:enabled="true"
+            />
 
-        <View
-            android:id="@+id/filing_date_barier"
-            android:layout_width="match_parent"
-            android:layout_height="5dp"
-            app:layout_constraintTop_toBottomOf="@id/companyNameTV" />
-
-        <LinearLayout
-            android:id="@+id/filing_date_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/insiderTitleTV"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@+id/filing_date_barier"
-            app:layout_constraintBottom_toTopOf="@+id/deal_value_layout"
-            >
+            app:layout_constraintStart_toEndOf="@id/insiderNameTV"
+            app:layout_constraintTop_toTopOf="@id/insiderNameTV"
+            app:layout_constraintBottom_toBottomOf="@+id/insiderNameTV"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:text="@string/text_insider_title"
+            android:textAlignment="textEnd"
+            />
 
-            <TextView
-                android:id="@+id/filig_date_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="0.7"
-                android:text="@string/text_filing_date"
-                />
-
-            <TextView
-                android:id="@+id/filingDateTV"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/text_date_20_20_2020"
-                android:textAlignment="textStart"
-                />
-
-            <TextView
-                android:id="@+id/tradeTypeTV"
-                android:layout_width="0dp"
-                android:layout_weight="0.7"
-                android:layout_height="wrap_content"
-                android:text="@string/text_p_purchase"
-                android:textAlignment="textEnd"
-                />
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/deal_value_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/dealValueTitle"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            app:layout_constraintTop_toBottomOf="@id/filing_date_layout"
-            app:layout_constraintBottom_toBottomOf="@id/insider_title_layout">
+            app:layout_constraintStart_toStartOf="@id/insiderNameTV"
+            app:layout_constraintTop_toBottomOf="@id/insiderNameTV"
+            app:layout_constraintBottom_toTopOf="@+id/tvPriceTitle"
+            android:text="@string/text_deal_value"
+            />
 
-            <TextView
-                android:id="@+id/deal_value_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/text_deal_value"
-                />
-
-            <TextView
-                android:id="@+id/dealValueTV"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/text_10000000"
-                android:textAlignment="textEnd"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                />
-
-        </LinearLayout>
-
-        <LinearLayout
-            android:id="@+id/insider_title_layout"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/dealValueTV"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="5dp"
-            app:layout_constraintTop_toBottomOf="@id/deal_value_layout"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintStart_toEndOf="@id/dealValueTitle"
+            app:layout_constraintTop_toTopOf="@id/dealValueTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="@+id/dealValueTitle"
+            tools:text="@string/text_10000000"
+            android:textColor="@color/colorPrimaryDark"
+            android:textAlignment="textEnd"
+            android:textStyle="bold"
+            />
 
-            <TextView
-                android:id="@+id/insiderNameTV"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/text_insider_name"
-                android:textIsSelectable="true"
-                android:focusable="true"
-                android:longClickable="true"
-                android:enabled="true"
-                />
+        <TextView
+            android:id="@+id/tvPriceTitle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@id/dealValueTitle"
+            app:layout_constraintTop_toBottomOf="@id/dealValueTitle"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:text="@string/text_title_price"
+            />
 
-            <TextView
-                android:id="@+id/insiderTitleTV"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/text_insider_title"
-                android:textAlignment="textEnd"
-                />
-
-        </LinearLayout>
+        <TextView
+            android:id="@+id/tvPriceValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toEndOf="@id/tvPriceTitle"
+            app:layout_constraintTop_toTopOf="@id/tvPriceTitle"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            tools:text="$12.46"
+            android:textColor="@color/colorPrimaryDark"
+            android:textAlignment="textEnd"
+            android:textStyle="bold"
+            />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

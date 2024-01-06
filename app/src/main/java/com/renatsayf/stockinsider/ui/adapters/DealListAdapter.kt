@@ -4,6 +4,7 @@ package com.renatsayf.stockinsider.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -19,6 +20,9 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.GroupHead
 import com.renatsayf.stockinsider.models.Skeleton
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
+import com.renatsayf.stockinsider.utils.setVisible
+import com.squareup.picasso.Callback
+import com.squareup.picasso.Picasso
 import java.text.NumberFormat
 import java.util.*
 
@@ -149,64 +153,80 @@ class DealListAdapter(
 
         fun bindToDeal(deal: BaseDeal) {
             if (binding is DealLayoutBinding) {
-                deal as Deal
-                binding.filingDateTV.text = deal.filingDate
-                binding.tickerTV.text = deal.ticker
-                binding.companyNameTV.text = deal.company
-                binding.tradeTypeTV.text = deal.tradeType
-                val numberFormat = NumberFormat.getInstance(Locale.getDefault())
-                val formattedVolume = numberFormat.format(deal.volume)
-                binding.dealValueTV.text = formattedVolume
-                binding.insiderNameTV.text = deal.insiderName
-                binding.insiderTitleTV.text = deal.insiderTitle
+                with(binding){
+                    deal as Deal
+                    filingDateTV.text = deal.filingDate
+                    tickerTV.text = deal.ticker
+                    companyNameTV.text = deal.company
+                    tradeTypeTV.text = deal.tradeType
+                    val numberFormat = NumberFormat.getInstance(Locale.getDefault())
+                    val formattedVolume = numberFormat.format(deal.volume)
+                    dealValueTV.text = formattedVolume
+                    insiderNameTV.text = deal.insiderName
+                    insiderTitleTV.text = deal.insiderTitle
+                    tvPriceValue.text = deal.price
 
-                val context = binding.dealConstraintLayout.context
+                    val context = dealConstraintLayout.context
 
-                if (deal.tradeTypeInt > 0) {
-                    if (deal.volume <= 999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000))
-                    }
-                    if (deal.volume > 999 && deal.volume <= 9999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy10000))
-                    }
-                    if (deal.volume > 9999 && deal.volume <= 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy100000))
-                    }
-                    if (deal.volume > 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000000))
-                    }
-                } else if (deal.tradeTypeInt == -1) {
-                    if (deal.volume <= 999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000))
-                    }
-                    if (deal.volume > 999 && deal.volume <= 9999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale10000))
-                    }
-                    if (deal.volume > 9999 && deal.volume <= 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale100000))
-                    }
-                    if (deal.volume > 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000000))
-                    }
-                } else if (deal.tradeTypeInt == -2) {
-                    if (deal.volume <= 999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000))
-                    }
-                    if (deal.volume > 999 && deal.volume <= 9999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe10000))
-                    }
-                    if (deal.volume > 9999 && deal.volume <= 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe100000))
-                    }
-                    if (deal.volume > 99999) {
-                        binding.dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000000))
-                    }
-                }
+                    val uri = Uri.parse(deal.tickerRefer)
+                    Picasso.get().load(uri)
+                        .placeholder(R.drawable.image_area_chart_144dp)
+                        .into(ivStockChart, object : Callback {
+                        override fun onSuccess() {
+                            progressChart.setVisible(false)
+                        }
 
-                binding.dealConstraintLayout.setOnClickListener {
-                    val defaultColor = binding.dealCardView.cardBackgroundColor.defaultColor
-                    deal.color = defaultColor
-                    listener?.onRecyclerViewItemClick(deal)
+                        override fun onError(e: java.lang.Exception?) {
+                            progressChart.setVisible(false)
+                        }
+                    })
+
+                    if (deal.tradeTypeInt > 0) {
+                        if (deal.volume <= 999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000))
+                        }
+                        if (deal.volume > 999 && deal.volume <= 9999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.buy10000))
+                        }
+                        if (deal.volume > 9999 && deal.volume <= 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.buy100000))
+                        }
+                        if (deal.volume > 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.buy1000000))
+                        }
+                    } else if (deal.tradeTypeInt == -1) {
+                        if (deal.volume <= 999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000))
+                        }
+                        if (deal.volume > 999 && deal.volume <= 9999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale10000))
+                        }
+                        if (deal.volume > 9999 && deal.volume <= 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale100000))
+                        }
+                        if (deal.volume > 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale1000000))
+                        }
+                    } else if (deal.tradeTypeInt == -2) {
+                        if (deal.volume <= 999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000))
+                        }
+                        if (deal.volume > 999 && deal.volume <= 9999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe10000))
+                        }
+                        if (deal.volume > 9999 && deal.volume <= 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe100000))
+                        }
+                        if (deal.volume > 99999) {
+                            dealCardView.setCardBackgroundColor(context.getColor(R.color.sale_oe1000000))
+                        }
+                    }
+
+                    dealConstraintLayout.setOnClickListener {
+                        val defaultColor = dealCardView.cardBackgroundColor.defaultColor
+                        deal.color = defaultColor
+                        listener?.onRecyclerViewItemClick(deal)
+                    }
                 }
             }
         }

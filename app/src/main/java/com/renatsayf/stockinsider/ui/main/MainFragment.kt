@@ -205,12 +205,6 @@ class MainFragment : Fragment() {
         }
     }
 
-    override fun onPause() {
-        (requireActivity() as MainActivity).drawerLayout.isEnabled = false
-
-        super.onPause()
-    }
-
     private fun scanScreen(): RoomSearchSet {
 
         with(binding) {
