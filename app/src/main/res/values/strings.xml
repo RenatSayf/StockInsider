@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--    don't translate-->
     <string name="app_name">Stock Insider</string>
@@ -18,9 +18,9 @@
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
 
     <string-array name="yandex_ads">
-        <item>R-M-711877-1</item>
-        <item>R-M-711877-2</item>
-        <item>R-M-711877-3</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-1</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-2</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-3</item>
     </string-array>
     <string name="yandex_demo_ad_id">demo-interstitial-yandex</string>
 
@@ -256,5 +256,8 @@
     <string name="unknown_error">Ouch! Something went wrong…</string>
     <string name="saving_error">Saving error...</string>
     <string name="question_on_exit">Do you really want to exit the app</string>
+    <string name="text_purchases_and_sales">Purchases and Sales</string>
+    <string name="text_purchases">Purchases</string>
+    <string name="text_sales">Sales</string>
 
 </resources>

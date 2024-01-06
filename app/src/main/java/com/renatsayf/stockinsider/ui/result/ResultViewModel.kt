@@ -1,9 +1,11 @@
 package com.renatsayf.stockinsider.ui.result
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
@@ -15,7 +17,10 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
-class ResultViewModel @Inject constructor(private val repositoryImpl: DataRepositoryImpl) : ViewModel() {
+class ResultViewModel @Inject constructor(
+    private val app: Application,
+    private val repositoryImpl: DataRepositoryImpl
+) : AndroidViewModel(app) {
 
     sealed class State {
         data class Initial(val set: RoomSearchSet) : State()
@@ -64,6 +69,36 @@ class ResultViewModel @Inject constructor(private val repositoryImpl: DataReposi
                 _state.value = State.DataError(e)
             }
         }
+    }
+
+    fun getDisplayedQueryName(set: RoomSearchSet): String {
+        val actions = when {
+            set.isPurchase && set.isSale -> app.getString(R.string.text_purchases_and_sales)
+            !set.isPurchase && !set.isSale -> app.getString(R.string.text_purchases_and_sales)
+            set.isPurchase && !set.isSale -> app.getString(R.string.text_purchases)
+            else -> app.getString(R.string.text_sales)
+        }
+        val array = app.resources.getStringArray(R.array.list_for_filing_date)
+        val period = when (set.filingPeriod) {
+            0 -> array[0]
+            1 -> array[1]
+            2 -> array[2]
+            3 -> array[3]
+            4 -> array[3]
+            5 -> array[3]
+            6 -> array[3]
+            7 -> array[4]
+            14 -> array[5]
+            30 -> array[6]
+            60 -> array[7]
+            90 -> array[8]
+            180 -> array[9]
+            365 -> array[10]
+            730 -> array[11]
+            1461 -> array[12]
+            else -> ""
+        }
+        return "$actions. $period."
     }
 
 }

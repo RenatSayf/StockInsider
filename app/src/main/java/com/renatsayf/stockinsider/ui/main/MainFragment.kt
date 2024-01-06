@@ -13,7 +13,6 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.MainActivity
@@ -129,12 +128,9 @@ class MainFragment : Fragment() {
         binding.searchButton.setOnClickListener {
             val set = scanScreen()
             set.queryName = getString(R.string.text_current_set_name)
-            mainVM.saveSearchSet(set)
-            mainVM.setState(MainViewModel.State.Initial(set))
-            this.setFragmentResult(TAG, Bundle().apply {
+            findNavController().navigate(R.id.nav_result, Bundle().apply {
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
             })
-            findNavController().navigate(R.id.nav_result)
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener =
@@ -218,12 +214,17 @@ class MainFragment : Fragment() {
     private fun scanScreen(): RoomSearchSet {
 
         with(binding) {
+
+            val datePeriodValues = resources.getIntArray(R.array.value_for_filing_date)
+            val fillingPeriod = datePeriodValues[date.filingDateSpinner.selectedItemPosition]
+            val tradePeriod = datePeriodValues[date.tradeDateSpinner.selectedItemPosition]
+
             return RoomSearchSet(
                 queryName = getString(R.string.text_current_set_name),
                 "",
-                general.tickerET.text.toString(),
-                date.filingDateSpinner.selectedItemPosition,
-                date.tradeDateSpinner.selectedItemPosition,
+                ticker = general.tickerET.text.toString(),
+                filingPeriod = fillingPeriod,
+                tradePeriod = tradePeriod,
                 traded.purchaseCheckBox.isChecked,
                 traded.saleCheckBox.isChecked,
                 traded.tradedMinET.text.toString().trim(),

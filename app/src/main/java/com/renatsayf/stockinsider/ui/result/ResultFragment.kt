@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -149,31 +150,37 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             val searchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
             if (searchSet != null) {
                 resultVM.setState(ResultViewModel.State.Initial(searchSet))
+                if (title == null) {
+                    binding.toolBar.subtitle = resultVM.getDisplayedQueryName(searchSet)
+                }
+                mainVM.saveSearchSet(searchSet)
             }
             else {
                 mainVM.getSearchSetByName(getString(R.string.text_current_set_name)).observe(viewLifecycleOwner) { set ->
                     resultVM.setState(ResultViewModel.State.Initial(set))
+                    if (title == null) {
+                        binding.toolBar.subtitle = resultVM.getDisplayedQueryName(set)
+                    }
                 }
             }
         }
-
-//        setFragmentResultListener(requestKey = MainFragment.TAG, listener = {requestKey, bundle ->
-//            if (requestKey == MainFragment.TAG) {
-//                val title = bundle.getString(ARG_TITLE)
-//                binding.toolBar.subtitle = title
-//
-//                val searchSet = bundle.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
-//                if (searchSet != null) {
-//                    resultVM.setState(ResultViewModel.State.Initial(searchSet))
-//                }
-//            }
-//        })
 
         resultVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is ResultViewModel.State.Initial -> {
                     binding.noResult.noResultLayout.setVisible(false)
                     binding.includedProgress.setVisible(true)
+                    when {
+                        (state.set.isSale && state.set.isPurchase) || (!state.set.isSale && !state.set.isPurchase) -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.colorGold, null))
+                        }
+                        state.set.isSale && !state.set.isPurchase -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.salePressed, null))
+                        }
+                        state.set.isPurchase && !state.set.isSale -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.buyPressed, null))
+                        }
+                    }
                     resultVM.getDealListFromNet(state.set.toSearchSet())
                 }
                 is ResultViewModel.State.DataReceived -> {
@@ -318,7 +325,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
         val drawerLayout = (requireActivity() as MainActivity).drawerLayout
         binding.toolBar.setNavigationOnClickListener {
-            val isOpen = drawerLayout.isDrawerOpen(GravityCompat.END)
+            val isOpen = drawerLayout.isDrawerOpen(GravityCompat.START)
             if (isOpen) {
                 drawerLayout.closeDrawer(GravityCompat.START)
             }

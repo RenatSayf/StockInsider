@@ -255,5 +255,8 @@
     <string name="unknown_error">Ой! Что то пошло не так…</string>
     <string name="saving_error">Ошибка сохранения…</string>
     <string name="question_on_exit">Вы действительно хотите выйти из приложения</string>
+    <string name="text_purchases_and_sales">Покупки и продажи</string>
+    <string name="text_purchases">Покупки</string>
+    <string name="text_sales">Продажи</string>
 
 </resources>
