@@ -71,20 +71,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:contentDescription="@string/app_name"
-                    tools:src="@drawable/stock_charts"
-                    android:foreground="?android:selectableItemBackgroundBorderless"
                     android:clickable="true"
+                    android:contentDescription="@string/app_name"
                     android:focusable="true"
+                    android:foreground="?android:selectableItemBackgroundBorderless"
                     android:scaleType="fitXY"
                     android:visibility="visible"
-                    />
+                    tools:ignore="ImageContrastCheck"
+                    tools:src="@drawable/image_area_chart_144dp" />
 
                 <ProgressBar
                     android:id="@+id/imgLoadProgBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:indeterminateTint="@color/colorGold"
                     />
 
             </androidx.cardview.widget.CardView>

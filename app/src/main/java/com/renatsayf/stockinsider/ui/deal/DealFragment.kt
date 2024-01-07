@@ -34,11 +34,11 @@ import com.squareup.picasso.Callback
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 
 
 @AndroidEntryPoint
-class DealFragment : Fragment(R.layout.fragment_deal) {
+class DealFragment : Fragment() {
     private lateinit var binding: FragmentDealBinding
 
     companion object {
@@ -93,14 +93,13 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_deal, container, false)
+    ): View {
+        binding = FragmentDealBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentDealBinding.bind(view)
 
         val deal = arguments?.getParcelableCompat<Deal>(ARG_DEAL)
         if (savedInstanceState == null) {
@@ -117,7 +116,10 @@ class DealFragment : Fragment(R.layout.fragment_deal) {
             with(binding) {
 
                 val uri = Uri.parse(value?.tickerRefer)
-                Picasso.get().load(uri).into(binding.chartImagView, object : Callback {
+                Picasso.get()
+                    .load(uri)
+                    .placeholder(R.drawable.image_area_chart_144dp)
+                    .into(binding.chartImagView, object : Callback {
                     override fun onSuccess() {
                         imgLoadProgBar.setVisible(false)
                     }
