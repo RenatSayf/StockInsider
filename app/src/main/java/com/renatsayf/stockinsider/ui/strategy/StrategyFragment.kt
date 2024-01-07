@@ -53,6 +53,10 @@ class StrategyFragment : Fragment(R.layout.fragment_strategy)
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
             findNavController().popBackStack()
         }
+
+        binding.toolBar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
 }
