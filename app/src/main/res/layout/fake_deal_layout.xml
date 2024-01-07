@@ -21,14 +21,29 @@
         android:visibility="visible"
         tools:ignore="SpeakableTextPresentCheck">
 
-        <View
+        <ImageView
             android:id="@+id/viewChart"
             android:layout_width="109dp"
             android:layout_height="85dp"
             android:layout_weight="2"
             android:background="@drawable/bg_skeleton_row"
+            android:contentDescription="@string/text_insider_deals"
+            android:src="@drawable/image_area_chart_144dp"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:ignore="ImageContrastCheck" />
+
+        <View
+            android:id="@+id/viewChartForeground"
+            android:layout_width="109dp"
+            android:layout_height="85dp"
+            android:layout_weight="2"
+            android:background="@drawable/bg_skeleton_row"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/viewChart"
+            app:layout_constraintBottom_toBottomOf="@+id/viewChart"
+            android:src="@drawable/image_area_chart_144dp"/>
 
         <View
             android:id="@+id/viewHeader"
