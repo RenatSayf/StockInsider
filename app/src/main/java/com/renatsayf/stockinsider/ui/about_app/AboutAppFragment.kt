@@ -16,7 +16,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
+class AboutAppFragment : Fragment() {
     private lateinit var binding: AboutAppFragmentBinding
 
     companion object {
@@ -27,14 +27,13 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.about_app_fragment, container, false)
+    ): View {
+        binding = AboutAppFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = AboutAppFragmentBinding.bind(view)
 
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
         val versionName = "v.${packageInfo.versionName}"
