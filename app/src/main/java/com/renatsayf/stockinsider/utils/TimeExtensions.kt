@@ -54,21 +54,19 @@ fun getTimeOffsetIfWeekEnd(
 
     val millisInDay = 86_400_000L
     var daysShift = daysAgo
+    val millisAgo = daysShift * millisInDay
     val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/New_York")).apply {
-        timeInMillis = startTime
+        timeInMillis = startTime - millisAgo
     }
-    val todayInMillis = calendar.timeInMillis
-    var daysAgoInMillis = todayInMillis - daysShift * millisInDay
-    calendar.timeInMillis = daysAgoInMillis
     var dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
 
     while(dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
         daysShift++
-        daysAgoInMillis -= millisInDay
-        calendar.timeInMillis = daysAgoInMillis
+        calendar.timeInMillis -= millisInDay
         dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == Calendar.FRIDAY) break
     }
-    return daysShift
+    return daysShift + 1
 }
 
 
