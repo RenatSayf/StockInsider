@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#043A75</color>
+    <color name="colorPrimaryTransp">#99073B74</color>
+    <color name="colorPrimaryliteTransp">#99051F3E</color>
     <color name="colorPrimaryPressed">#469EFD</color>
     <color name="colorPrimarylite">#1A60AC</color>
     <color name="colorPrimaryDark">#022245</color>

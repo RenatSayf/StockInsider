@@ -22,6 +22,7 @@
         app:titleTextColor="@color/colorWhite"
         tools:subtitle="Purchases in the last 3 days"
         app:subtitleTextColor="@color/colorGold"
+        android:background="@color/colorSemitransparent"
         />
 
     <LinearLayout
@@ -33,6 +34,7 @@
         android:padding="0dp"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
+        android:background="@color/colorSemitransparent"
         >
 
         <TextView
@@ -75,7 +77,8 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:background="@color/colorSemitransparent">
 
         <TextView
             android:id="@+id/titleTView"
@@ -109,6 +112,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/fake_deal_layout"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:contentDescription="@string/text_insider_deals"
         />
 
     <include
