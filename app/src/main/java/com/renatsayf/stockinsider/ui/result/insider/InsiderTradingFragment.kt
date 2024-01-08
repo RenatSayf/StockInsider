@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,7 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener {
+class InsiderTradingFragment : Fragment(), DealListAdapter.Listener {
     private lateinit var binding: FragmentResultBinding
 
     private val dealVM: DealViewModel by viewModels()
@@ -40,20 +41,20 @@ class InsiderTradingFragment : Fragment(R.layout.fragment_result), DealListAdapt
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_result, container, false)
+    ): View {
+        binding = FragmentResultBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentResultBinding.bind(view)
-
         with(binding) {
 
             toolBar.apply {
                 title = arguments?.getString(ARG_TOOL_BAR_TITLE)
+                navigationIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_arrow_back_white)
                 setNavigationOnClickListener {
                     findNavController().popBackStack()
                 }
