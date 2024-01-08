@@ -55,7 +55,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener,
+class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Listener,
     SortingDialog.Listener {
 
     companion object
@@ -118,15 +118,14 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_result, container, false)
+    ): View {
+        binding = FragmentResultBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentResultBinding.bind(view)
 
         donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
             result.onSuccess {
