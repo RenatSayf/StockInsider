@@ -316,16 +316,6 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
         }
     }
 
-    override fun onStart() {
-        super.onStart()
-        (activity as MainActivity).supportActionBar?.hide()
-    }
-
-    override fun onStop() {
-        (activity as MainActivity).supportActionBar?.show()
-        super.onStop()
-    }
-
     private fun enableEditing(flag: Boolean) {
         with(binding){
 

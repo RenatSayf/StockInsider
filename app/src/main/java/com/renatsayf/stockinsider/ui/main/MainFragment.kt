@@ -66,8 +66,23 @@ class MainFragment : Fragment() {
                     val set = state.set
                     with(binding) {
                         general.tickerET.setText(set.ticker)
-                        date.filingDateSpinner.setSelection(set.filingPeriod)
-                        date.tradeDateSpinner.setSelection(set.tradePeriod)
+
+                        val fillingPeriods = resources.getIntArray(R.array.value_for_filing_date)
+                        val fillingIndex = fillingPeriods.indexOf(set.filingPeriod)
+                        if (fillingIndex >= 0) {
+                            date.filingDateSpinner.setSelection(fillingIndex)
+                        } else {
+                            date.filingDateSpinner.setSelection(1)
+                        }
+
+                        val tradePeriods = resources.getIntArray(R.array.value_for_filing_date)
+                        val tradeIndex = tradePeriods.indexOf(set.filingPeriod)
+                        if (tradeIndex >= 0) {
+                            date.tradeDateSpinner.setSelection(tradeIndex)
+                        } else {
+                            date.tradeDateSpinner.setSelection(1)
+                        }
+
                         traded.purchaseCheckBox.isChecked = set.isPurchase
                         traded.saleCheckBox.isChecked = set.isSale
                         traded.tradedMinET.setText(set.tradedMin)

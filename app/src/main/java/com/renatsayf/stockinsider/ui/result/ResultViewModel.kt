@@ -98,7 +98,7 @@ class ResultViewModel @Inject constructor(
             1461 -> array[12]
             else -> ""
         }
-        return "$actions. $period."
+        return "$actions ${period.lowercase()}."
     }
 
 }

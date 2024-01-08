@@ -349,12 +349,15 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        val newSet = resultVM.dbSearchSet?.apply {
-            queryName = searchName
+        val newSet = resultVM.dbSearchSet?.copy(
+            queryName = searchName,
+            filingPeriod = 1,
+            tradePeriod = 3,
+        )
+        newSet?.apply {
             target = Target.Tracking
-            filingPeriod = 1
-            tradePeriod = 3
             isDefault = false
+            isTracked = true
         }
         newSet?.let { set ->
             trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
