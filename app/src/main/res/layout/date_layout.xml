@@ -26,14 +26,14 @@
         android:id="@+id/date_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
-        android:padding="2.8dp"
+        android:padding="3dp"
         android:text="@string/text_filing_date"
         android:textColor="@color/colorSectionItemTitle"
         app:layout_constraintEnd_toStartOf="@id/filingDateSpinner"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/section_date_title"
+        app:layout_constraintTop_toTopOf="@+id/filingDateSpinner"
+        app:layout_constraintBottom_toBottomOf="@+id/filingDateSpinner"
         tools:ignore="TextContrastCheck" />
 
     <Spinner
@@ -63,7 +63,7 @@
     <View
         android:id="@+id/barier1"
         android:layout_width="match_parent"
-        android:layout_height="25dp"
+        android:layout_height="16dp"
         app:layout_constraintTop_toBottomOf="@id/filingDateSpinner"
         app:layout_constraintStart_toStartOf="parent"/>
 
@@ -71,13 +71,14 @@
         android:id="@+id/trade_title"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:padding="2.8dp"
+        android:padding="3dp"
         android:text="@string/text_trade_date"
         android:textColor="@color/colorSectionItemTitle"
         app:layout_constraintEnd_toStartOf="@id/tradeDateSpinner"
         app:layout_constraintHorizontal_weight="3"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/barier1"
+        app:layout_constraintTop_toTopOf="@+id/tradeDateSpinner"
+        app:layout_constraintBottom_toBottomOf="@+id/tradeDateSpinner"
         tools:ignore="TextContrastCheck" />
 
     <Spinner
