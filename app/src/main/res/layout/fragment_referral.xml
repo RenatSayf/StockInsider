@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:background="@drawable/background_2"
+    tools:context=".ui.referral.ReferralFragment">
+
+    <FrameLayout
+        android:id="@+id/layoutForeground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/colorTransparent50"/>
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        app:navigationIcon="@drawable/ic_arrow_back_white"
+        app:title="Stock Exchange Brokers"
+        app:titleTextColor="@color/colorWhite"
+        android:background="@color/colorTransparent50"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvPartners"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@+id/toolBar"
+        android:layout_margin="16dp"
+        tools:listitem="@layout/item_partner"
+        tools:itemCount="3"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
