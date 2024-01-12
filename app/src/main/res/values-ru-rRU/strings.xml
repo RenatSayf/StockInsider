@@ -258,5 +258,8 @@
     <string name="text_purchases_and_sales">Покупки и продажи</string>
     <string name="text_purchases">Покупки</string>
     <string name="text_sales">Продажи</string>
+    <string name="text_need_open_account">Для того чтобы начать торговать, вам необходимо открыть счет у брокера</string>
+    <string name="text_broker_list_load_error">Не удалось загрузить список брокеров</string>
+    <string name="text_start_trading">Начать торговать</string>
 
 </resources>

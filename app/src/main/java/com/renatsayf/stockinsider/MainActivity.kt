@@ -184,15 +184,19 @@ class MainActivity : AppCompatActivity() {
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        7 -> {
-                            navController.navigate(R.id.nav_about_app)
+                        6 -> {
+                            navController.navigate(R.id.referralFragment)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         8 -> {
-                            this@MainActivity.doShare()
+                            navController.navigate(R.id.nav_about_app)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         9 -> {
+                            this@MainActivity.doShare()
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                        }
+                        10 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
                             finish()
                         }
@@ -354,12 +358,12 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        item == 6 && subItem == 0 -> {
+                        item == 7 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
                                 DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
-                        item == 6 && subItem == 1 -> {
+                        item == 7 && subItem == 1 -> {
                             if (yandexIntersAd != null) {
                                 yandexIntersAd!!.show(this@MainActivity)
                             }

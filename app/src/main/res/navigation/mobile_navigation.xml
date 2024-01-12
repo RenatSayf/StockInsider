@@ -92,6 +92,11 @@
         android:name="com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment"
         android:label="companies_fragment"
         tools:layout="@layout/companies_fragment" />
+    <fragment
+        android:id="@+id/referralFragment"
+        android:name="com.renatsayf.stockinsider.ui.referral.ReferralFragment"
+        android:label="fragment_referral"
+        tools:layout="@layout/fragment_referral" />
 
 
 </navigation>

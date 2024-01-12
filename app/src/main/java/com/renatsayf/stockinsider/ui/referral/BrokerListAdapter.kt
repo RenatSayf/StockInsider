@@ -1,0 +1,81 @@
+package com.renatsayf.stockinsider.ui.referral
+
+import android.net.Uri
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.core.text.HtmlCompat
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
+import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.databinding.ItemPartnerBinding
+import com.renatsayf.stockinsider.models.ResultData
+import com.renatsayf.stockinsider.ui.referral.models.Broker
+import com.squareup.picasso.Picasso
+
+class BrokerListAdapter private constructor(): ListAdapter<Broker, BrokerListAdapter.ViewHolder>(object : DiffUtil.ItemCallback<Broker>() {
+    override fun areItemsTheSame(oldItem: Broker, newItem: Broker): Boolean {
+        return oldItem == newItem
+    }
+
+    override fun areContentsTheSame(oldItem: Broker, newItem: Broker): Boolean {
+        return oldItem.name == newItem.name
+    }
+
+}) {
+
+    companion object {
+        private var instance: BrokerListAdapter? = null
+
+        fun getInstance(): BrokerListAdapter {
+
+            return if (instance == null) {
+                instance = BrokerListAdapter()
+                instance!!
+            }
+            else {
+                instance!!
+            }
+        }
+    }
+
+    private var _brokerReference = MutableLiveData<ResultData<String>>(ResultData.Init)
+    val brokerReference: LiveData<ResultData<String>> = _brokerReference
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val binding = ItemPartnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return ViewHolder(binding)
+    }
+
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val broker = currentList[position]
+        holder.bind(broker)
+    }
+
+
+    inner class ViewHolder(private val binding: ViewBinding): RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(broker: Broker) {
+
+            with(binding as ItemPartnerBinding) {
+
+                val logoUri = Uri.parse(broker.logo)
+                Picasso.get().load(logoUri)
+                    .placeholder(R.drawable.image_area_chart_144dp)
+                    .into(ivPartnerLogo)
+
+                tvPartnerName.text = HtmlCompat.fromHtml(broker.name, HtmlCompat.FROM_HTML_MODE_LEGACY)
+                tvHeader.text = broker.header
+                tvDescription.text = broker.description
+                btnOpenAccount.text = broker.buttonText
+                btnOpenAccount.setOnClickListener {
+                    _brokerReference.value = ResultData.Success(broker.reference)
+                }
+            }
+        }
+    }
+
+}
