@@ -8,7 +8,7 @@
         app:showAsAction="never"
         android:visible="false"/>
 
-    <group android:id="@+id/menu_main_group">
+    <group android:id="@+id/group_main">
         <item
             android:id="@+id/action_my_search"
             android:title="@string/text_my_search"
@@ -22,6 +22,15 @@
             app:showAsAction="withText"
             android:orderInCategory="4"
             android:visible="true" />
+    </group>
+
+    <group android:id="@+id/group_referral">
+        <item
+            android:id="@+id/action_start_trading"
+            android:title="@string/text_start_trading"
+            android:orderInCategory="5"
+            app:showAsAction="withText"
+            android:icon="@drawable/buy"/>
     </group>
 
 </menu>

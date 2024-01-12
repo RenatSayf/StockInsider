@@ -189,6 +189,9 @@ class MainFragment : Fragment() {
                             }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
                         }
                     }
+                    R.id.action_start_trading -> {
+                        findNavController().navigate(R.id.referralFragment)
+                    }
                 }
                 return false
             }

@@ -215,6 +215,10 @@ class DealFragment : Fragment() {
             startBrowserSearch(url)
         }
 
+        binding.btnOpenAccount.setOnClickListener {
+            findNavController().navigate(R.id.referralFragment)
+        }
+
     }
 
     override fun onResume() {
