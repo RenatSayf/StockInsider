@@ -6,9 +6,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -47,6 +51,7 @@ class DealFragment : Fragment() {
         val ARG_TITLE = "${this::class.java.simpleName}.title"
 
         private const val MARKET_WATCH_URL = "https://www.marketwatch.com/investing/stock/"
+        private const val GOOGLE_SEARCH_URL = "https://www.google.com/search?q="
     }
 
     private val viewModel: DealViewModel by lazy {
@@ -146,7 +151,7 @@ class DealFragment : Fragment() {
                                         "RegExpDuplicateCharacterInClass"
                                     )
                                     val name = value.company?.replace(Regex("[:punct:]"), "")
-                                    val url = "https://www.google.com/search?q=$name"
+                                    val url = "$GOOGLE_SEARCH_URL$name"
                                     startBrowserSearch(url)
                                     dismiss()
                                 }
@@ -188,7 +193,7 @@ class DealFragment : Fragment() {
                                         "RegExpDuplicateCharacterInClass"
                                     )
                                     val name = value.insiderName?.replace(Regex("[:punct:]"), "")
-                                    val url = "https://www.google.com/search?q=$name"
+                                    val url = "$GOOGLE_SEARCH_URL$name"
                                     startBrowserSearch(url)
                                     dismiss()
                                 }
@@ -218,6 +223,47 @@ class DealFragment : Fragment() {
         binding.btnOpenAccount.setOnClickListener {
             findNavController().navigate(R.id.referralFragment)
         }
+
+        binding.toolBar.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
+
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                when(menuItem.itemId) {
+                    R.id.company_deals -> {
+                        viewModel.deal.value?.let {
+                            transitionToCompanyDeals(it)
+                        }
+                    }
+                    R.id.company_info -> {
+                        @Suppress("RegExpDuplicateCharacterInClass")
+                        val name = viewModel.deal.value?.company?.replace(Regex("[:punct:]"), "")
+                        val url = "$GOOGLE_SEARCH_URL$name"
+                        startBrowserSearch(url)
+                    }
+                    R.id.insider_deals -> {
+                        viewModel.deal.value?.let {
+                            transitionToInsiderDeals(it)
+                        }
+                    }
+                    R.id.insider_info -> {
+                        @Suppress("RegExpDuplicateCharacterInClass")
+                        val name = viewModel.deal.value?.insiderName?.replace(Regex("[:punct:]"), "")
+                        val url = "$GOOGLE_SEARCH_URL$name"
+                        startBrowserSearch(url)
+                    }
+                    R.id.market_watch -> {
+                        val ticker = binding.tickerTV.text.toString().lowercase().trim()
+                        val url = "$MARKET_WATCH_URL$ticker"
+                        startBrowserSearch(url)
+                    }
+                    R.id.start_trading -> {
+                        findNavController().navigate(R.id.referralFragment)
+                    }
+                }
+                return false
+            }
+
+        }, viewLifecycleOwner)
 
     }
 

@@ -11,9 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_arrow_back_white"
+        android:theme="@style/AppTheme.PopupOverlay"
         app:title="@string/text_deal_details"
         app:titleTextColor="@color/colorWhite"
-        android:background="@drawable/app_bar_background"/>
+        android:background="@drawable/app_bar_background"
+        app:menu="@menu/common_deal_menu"
+        />
 
     <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent"
