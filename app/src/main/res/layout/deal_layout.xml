@@ -76,11 +76,8 @@
             android:layout_marginStart="12dp"
             tools:text="International Flavors &amp; Fragrances Inc"
             android:textColor="@color/colorPrimaryDark"
-            android:textIsSelectable="true"
-            android:focusable="true"
-            android:longClickable="true"
             android:duplicateParentState="true"
-            android:enabled="true"/>
+            />
 
         <View
             android:id="@+id/barrier_0"
@@ -139,10 +136,6 @@
             app:layout_constraintEnd_toStartOf="@+id/insiderTitleTV"
             app:layout_constraintBottom_toTopOf="@id/barrier_2"
             tools:text="Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-            android:textIsSelectable="true"
-            android:focusable="true"
-            android:longClickable="true"
-            android:enabled="true"
             android:duplicateParentState="true"
             />
 
