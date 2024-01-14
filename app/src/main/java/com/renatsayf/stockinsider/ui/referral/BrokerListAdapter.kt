@@ -4,15 +4,12 @@ import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.core.text.HtmlCompat
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.ItemPartnerBinding
-import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.ui.referral.models.Broker
 import com.squareup.picasso.Picasso
 
@@ -24,7 +21,6 @@ class BrokerListAdapter private constructor(): ListAdapter<Broker, BrokerListAda
     override fun areContentsTheSame(oldItem: Broker, newItem: Broker): Boolean {
         return oldItem.name == newItem.name
     }
-
 }) {
 
     companion object {
@@ -42,8 +38,10 @@ class BrokerListAdapter private constructor(): ListAdapter<Broker, BrokerListAda
         }
     }
 
-    private var _brokerReference = MutableLiveData<ResultData<String>>(ResultData.Init)
-    val brokerReference: LiveData<ResultData<String>> = _brokerReference
+    private var listener: Listener? = null
+    fun setOnItemClickListener(listener: Listener?) {
+        this.listener = listener
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPartnerBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -72,10 +70,14 @@ class BrokerListAdapter private constructor(): ListAdapter<Broker, BrokerListAda
                 tvDescription.text = broker.description
                 btnOpenAccount.text = broker.buttonText
                 btnOpenAccount.setOnClickListener {
-                    _brokerReference.value = ResultData.Success(broker.reference)
+                    listener!!.onBrokerListItemClick(broker.reference)
                 }
             }
         }
+    }
+
+    interface Listener {
+        fun onBrokerListItemClick(reference: String)
     }
 
 }

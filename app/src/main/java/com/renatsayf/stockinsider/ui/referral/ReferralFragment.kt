@@ -55,11 +55,11 @@ class ReferralFragment : Fragment() {
                     tvPageDescription.text = getString(R.string.text_broker_list_load_error)
                 }
             }
-            brokerListAdapter.brokerReference.observe(viewLifecycleOwner) { res ->
-                res.onSuccess<String> { ref ->
-                    startBrowserSearch(ref)
+            brokerListAdapter.setOnItemClickListener(object : BrokerListAdapter.Listener {
+                override fun onBrokerListItemClick(reference: String) {
+                    startBrowserSearch(reference)
                 }
-            }
+            })
         }
     }
 
