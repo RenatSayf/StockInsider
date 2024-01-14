@@ -156,12 +156,7 @@
             android:layout_height="48dp"
             android:padding="16dp"
             android:src="@drawable/tuning_icon"
-            app:layout_constraintStart_toEndOf="@id/searchButton"
-            app:layout_constraintTop_toBottomOf="@id/includeSorting"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintHorizontal_chainStyle="packed"
-            android:layout_margin="16dp"
+            android:layout_marginEnd="16dp"
             android:contentDescription="@string/text_title_home"
             android:background="@drawable/bg_ripple_round_primary"
             />
