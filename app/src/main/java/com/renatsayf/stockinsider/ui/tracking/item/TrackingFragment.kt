@@ -26,7 +26,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.databinding.TrackingFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.models.Target.Tracking
+import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SetNameDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
@@ -285,11 +285,8 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
             }
 
             btnSave.setOnClickListener {
-                val newSet = trackingVM.newSet
+                val newSet = trackingVM.newSet?.copy()
                 newSet?.let {
-                    it.queryName = includeSetName.etSetName.text.toString()
-                    it.target = Tracking
-                    it.isTracked = true
                     SetNameDialog.newInstance(it, listener = this@TrackingFragment).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
                 }
             }
@@ -388,12 +385,14 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
     }
 
     override fun onSetNameDialogPositiveClick(name: String) {
-        val newSet = trackingVM.newSet
-        newSet?.let {
-            it.queryName = name
+        val newSet = trackingVM.newSet?.copy()
+        newSet?.let { set ->
+            set.queryName = name
+            set.isTracked = true
+            set.target = Target.Tracking
 
             lifecycleScope.launch {
-                mainVM.saveSearchSet(it).asFlow().collectLatest { id ->
+                mainVM.saveSearchSet(set).asFlow().collectLatest { id ->
                     when {
                         id != null && id > 0L -> {
                             trackingVM.setState(TrackingViewModel.State.OnSave(newSet))

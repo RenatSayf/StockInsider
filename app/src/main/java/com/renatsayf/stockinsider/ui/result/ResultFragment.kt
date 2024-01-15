@@ -156,9 +156,11 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
             }
             else {
                 mainVM.getSearchSetByName(getString(R.string.text_current_set_name)).observe(viewLifecycleOwner) { set ->
-                    resultVM.setState(ResultViewModel.State.Initial(set))
-                    if (title == null) {
-                        binding.toolBar.subtitle = resultVM.getDisplayedQueryName(set)
+                    if (set != null) {
+                        resultVM.setState(ResultViewModel.State.Initial(set))
+                        if (title == null) {
+                            binding.toolBar.subtitle = resultVM.getDisplayedQueryName(set)
+                        }
                     }
                 }
             }
@@ -352,6 +354,7 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
             queryName = searchName,
             filingPeriod = 1,
             tradePeriod = 3,
+            id = 0
         )
         newSet?.apply {
             target = Target.Tracking

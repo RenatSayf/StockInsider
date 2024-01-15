@@ -38,8 +38,10 @@ class MainFragment : Fragment() {
 
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
-            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
-                this.setState(MainViewModel.State.Initial(it))
+            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) { set ->
+                if (set != null) {
+                    this.setState(MainViewModel.State.Initial(set))
+                }
             }
         }
     }
