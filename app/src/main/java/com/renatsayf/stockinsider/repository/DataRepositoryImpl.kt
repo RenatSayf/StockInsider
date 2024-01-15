@@ -140,7 +140,7 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
 
     @Throws(Exception::class)
     override suspend fun insertCompanies(list: List<Company>) {
-        CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.IO) {
             db.insertCompanies(list)
         }
     }
