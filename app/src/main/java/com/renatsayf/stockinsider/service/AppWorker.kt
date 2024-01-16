@@ -4,7 +4,10 @@ package com.renatsayf.stockinsider.service
 
 import android.content.Context
 import androidx.annotation.VisibleForTesting
-import androidx.work.*
+import androidx.work.CoroutineWorker
+import androidx.work.Data
+import androidx.work.ForegroundInfo
+import androidx.work.WorkerParameters
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.db.AppDao
 import com.renatsayf.stockinsider.db.RoomSearchSet
@@ -17,9 +20,12 @@ import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.getNextStartTime
+import com.renatsayf.stockinsider.utils.printIfDebug
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
-import kotlinx.coroutines.*
-import java.util.*
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.delay
 
 
 class AppWorker (
@@ -69,7 +75,7 @@ class AppWorker (
         state = State.Started
         return try
         {
-            if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Start background work ********************")
+            "******************** ${this.javaClass.simpleName}: Start background work ********************".printIfDebug()
 
             setForeground(getForegroundInfo())
 
@@ -100,7 +106,7 @@ class AppWorker (
             val data = Data.Builder().apply {
                 putBooleanArray("result", array)
             }.build()
-            if (BuildConfig.DEBUG) println("******************** ${this.javaClass.simpleName}: Background work completed successfully ********************")
+            "******************** ${this.javaClass.simpleName}: Background work completed successfully ********************".printIfDebug()
             state = State.Completed
             Result.success(data)
         }
@@ -111,7 +117,7 @@ class AppWorker (
             val errorData = Data.Builder().apply {
                 putString("error", "*********** $message *************")
             }.build()
-            if (BuildConfig.DEBUG) println("********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************")
+            "********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************".printIfDebug()
             state = State.Failed
             Result.failure(errorData)
         }
