@@ -145,6 +145,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                 res > 0 -> {
                                     mainVM.getSearchSetsByTarget(Target.Tracking).asFlow().collectLatest { list ->
                                         trackingVM.setState(TrackingListViewModel.State.Initial(list))
+                                        val trackedList = list.filter { it.isTracked }
+                                        if (trackedList.isEmpty()) {
+                                            val scheduler = Scheduler(requireContext().applicationContext)
+                                            scheduler.isAlarmSetup(false)?.cancel()
+                                            showSnackBar(getString(R.string.text_tracking_disabled))
+                                        }
                                     }
                                 }
                                 res == 0 -> {
