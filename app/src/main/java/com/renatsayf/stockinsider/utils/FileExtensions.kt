@@ -1,25 +1,30 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
+import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.File
 import java.io.FileOutputStream
+import java.io.FileReader
 import java.io.FileWriter
 import java.io.OutputStreamWriter
 
+
+const val FILE_NAME = "insider-logs.txt"
+
 fun Context.createTextFile(fileName: String, content: String) {
     try {
-        // Открываем или создаем файл
+        // Opening or creating a file
         val file = File(this.filesDir, fileName)
 
-        // Открываем поток для записи в файл
+        // Opening the stream to write to a file
         val fileOutputStream = FileOutputStream(file)
         val outputStreamWriter = OutputStreamWriter(fileOutputStream)
 
-        // Записываем содержимое файла
+        // Writing down the contents of the file
         outputStreamWriter.write(content)
 
-        // Закрываем потоки
+        // Closing the streams
         outputStreamWriter.close()
         fileOutputStream.close()
 
@@ -33,20 +38,20 @@ fun Context.createTextFile(fileName: String, content: String) {
 
 fun Context.appendTextToFile(fileName: String, content: String) {
     try {
-        // Открываем файл для добавления данных
+        // Opening the file to add data
         val file = File(this.filesDir, fileName)
 
-        // Создаем FileWriter с параметром true для добавления данных в конец файла
+        // Creating a FileWriter with the true parameter to add data to the end of the file
         val fileWriter = FileWriter(file, true)
 
-        // Создаем BufferedWriter для эффективной записи
+        // Creating a BufferedWriter for efficient writing
         val bufferedWriter = BufferedWriter(fileWriter)
 
-        // Записываем новую строку в конец файла
+        // Writing a new line to the end of the file
         bufferedWriter.write(content)
         bufferedWriter.newLine()
 
-        // Закрываем потоки
+        // Closing the streams
         bufferedWriter.close()
         fileWriter.close()
 
@@ -59,17 +64,62 @@ fun Context.appendTextToFile(fileName: String, content: String) {
 
 fun Context.isFileExists(
     fileName: String,
-    isExists: () -> Unit = {},
+    isExists: (file: File) -> Unit = {},
     notExists: () -> Unit = {}
 ): Boolean {
     val file = File(this.filesDir, fileName)
     val exists = file.exists()
     if (exists) {
-        isExists.invoke()
+        isExists.invoke(file)
     }
     else {
         notExists.invoke()
     }
     return exists
 }
+
+fun Context.reduceFileSize(fileName: String, maxSizeInBytes: Long) {
+    try {
+        val file = File(this.filesDir, fileName)
+
+        // We check if the file does not exist or its size does not exceed the maximum size
+        if (!file.exists() || file.length() <= maxSizeInBytes) {
+            "************** The file does not need to be reduced in size *****************".printIfDebug()
+            return
+        }
+
+        // Reading all the lines from the file
+        val fileReader = FileReader(file)
+        val bufferedReader = BufferedReader(fileReader)
+        val lines = ArrayList<String>()
+        var line = bufferedReader.readLine()
+        while (line != null) {
+            lines.add(line)
+            line = bufferedReader.readLine()
+        }
+        bufferedReader.close()
+
+        // We determine how many old records need to be deleted
+        val linesToRemove = lines.size - (maxSizeInBytes / 1024).toInt()
+
+        // Deleting old records
+        if (linesToRemove > 0) {
+            lines.subList(0, linesToRemove).clear()
+        }
+
+        // Overwriting the file with the updated contents
+        val fileWriter = FileWriter(file)
+        val bufferedWriter = BufferedWriter(fileWriter)
+        for (updatedLine in lines) {
+            bufferedWriter.write(updatedLine)
+            bufferedWriter.newLine()
+        }
+        bufferedWriter.close()
+        "The size of the $fileName file has been successfully reduced.".printIfDebug()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        "Error when reducing the file size: ${e.message}".printIfDebug()
+    }
+}
+
 

@@ -20,11 +20,13 @@ import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.FILE_NAME
 import com.renatsayf.stockinsider.utils.appendTextToFile
 import com.renatsayf.stockinsider.utils.createTextFile
 import com.renatsayf.stockinsider.utils.getNextStartTime
 import com.renatsayf.stockinsider.utils.isFileExists
 import com.renatsayf.stockinsider.utils.printIfDebug
+import com.renatsayf.stockinsider.utils.reduceFileSize
 import com.renatsayf.stockinsider.utils.timeToFormattedString
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import kotlinx.coroutines.Deferred
@@ -145,12 +147,15 @@ class AppWorker (
     }
 
     private fun writeLogToFile(message: String) {
-        val fileName = "insider-logs.txt"
+        val fileName = FILE_NAME
         val time = System.currentTimeMillis().timeToFormattedString()
         val newString = "$time - $message\n"
         context.isFileExists(
             fileName,
-            isExists = {
+            isExists = { file ->
+                if (file.length() >= 1024 * 100L) {
+                    context.reduceFileSize(fileName, 1024 * 20L)
+                }
                 context.appendTextToFile(fileName, newString)
             },
             notExists = {
