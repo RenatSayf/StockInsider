@@ -89,9 +89,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         binding.addButton.setOnClickListener {
 
-            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
-                count?.let {
-                    if (it < FireBaseConfig.requestsCount) {
+            trackingVM.getTrackedCountAsync(
+                onSuccess = { count ->
+                    if (count < FireBaseConfig.requestsCount) {
                         val set = RoomSearchSet(
                             queryName = "",
                             companyName = "",
@@ -119,7 +119,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         )
                     }
                 }
-            }
+            )
         }
 
     }
@@ -197,8 +197,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
-                        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
-                            result.onSuccess { count ->
+                        trackingVM.getTrackedCountAsync(
+                            onSuccess = {count ->
                                 if (count == 0) {
                                     val scheduler = Scheduler(requireContext().applicationContext)
                                     val pendingIntent = scheduler.isAlarmSetup(false)
@@ -207,7 +207,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -267,8 +267,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     fun checkNotificationPermission(
         onChecked: () -> Unit
     ) {
-        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
-            result.onSuccess { count ->
+        trackingVM.getTrackedCountAsync(
+            onSuccess = {count ->
                 if (count > 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         askForPermission(
@@ -300,11 +300,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 else {
                     onChecked.invoke()
                 }
-            }
-            result.onFailure {
+            },
+            onError = {
                 onChecked.invoke()
             }
-        }
+        )
     }
 
 }

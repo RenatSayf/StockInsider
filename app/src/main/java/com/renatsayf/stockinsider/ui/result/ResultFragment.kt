@@ -353,7 +353,7 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
         val newSet = resultVM.dbSearchSet?.copy(
             queryName = searchName,
             filingPeriod = 1,
-            tradePeriod = 3,
+            tradePeriod = 7,
             id = 0
         )
         newSet?.apply {
@@ -362,9 +362,10 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
             isTracked = true
         }
         newSet?.let { set ->
-            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
-                count?.let { c ->
-                    if (c < FireBaseConfig.requestsCount) {
+
+            trackingVM.getTrackedCountAsync(
+                onSuccess = {count ->
+                    if (count < FireBaseConfig.requestsCount) {
                         set.isTracked = !FireBaseConfig.problemDevices.contains(Build.MANUFACTURER.uppercase())
                         mainVM.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
                             when(res) {
@@ -427,7 +428,7 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
                         }
                     }
                 }
-            }
+            )
         }
 
     }

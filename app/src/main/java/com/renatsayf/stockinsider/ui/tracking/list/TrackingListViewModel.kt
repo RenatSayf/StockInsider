@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -25,30 +26,24 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
         _state.value = state
     }
 
-    fun getTrackedCount(): LiveData<Result<Int>> {
-        val result: MutableLiveData<Result<Int>> = MutableLiveData()
-        viewModelScope.launch {
-            try {
-                val count = repository.getTrackedCountAsync().await()
-                result.postValue(Result.success(count))
-            } catch (e: Exception) {
-                result.postValue(Result.failure(e))
-            }
-        }
-        return result
-    }
-
-    fun targetCount(): LiveData<Int?> {
-        val result: MutableLiveData<Int?> = MutableLiveData(null)
-        viewModelScope.launch {
-            result.value = repository.getTargetCountAsync().await()
-        }
-        return result
-    }
-
     fun getTrackedCountSync(): Int {
         return runBlocking {
             repository.getTrackedCountAsync().await()
+        }
+    }
+
+    fun getTrackedCountAsync(
+        onSuccess: (Int) -> Unit,
+        onError: (Exception) -> Unit = {}
+    ) {
+        viewModelScope.launch {
+            try {
+                val count = repository.getTrackedCountAsync().await()
+                onSuccess.invoke(count)
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                onError.invoke(e)
+            }
         }
     }
 

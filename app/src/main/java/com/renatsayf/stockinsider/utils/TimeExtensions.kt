@@ -64,9 +64,9 @@ fun getTimeOffsetIfWeekEnd(
         daysShift++
         calendar.timeInMillis -= millisInDay
         dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
-        if (dayOfWeek == Calendar.FRIDAY) break
+        if (dayOfWeek == Calendar.FRIDAY) return daysShift + 1
     }
-    return daysShift + 1
+    return daysShift
 }
 
 

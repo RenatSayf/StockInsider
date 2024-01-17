@@ -3,6 +3,7 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -19,8 +20,12 @@ import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
+import com.renatsayf.stockinsider.utils.appendTextToFile
+import com.renatsayf.stockinsider.utils.createTextFile
 import com.renatsayf.stockinsider.utils.getNextStartTime
+import com.renatsayf.stockinsider.utils.isFileExists
 import com.renatsayf.stockinsider.utils.printIfDebug
+import com.renatsayf.stockinsider.utils.timeToFormattedString
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -100,6 +105,9 @@ class AppWorker (
                         }
                     }
                 }
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && BuildConfig.DEBUG) {
+                    writeLogToFile(message)
+                }
                 deals.isNotEmpty()
             }?.toBooleanArray()?: booleanArrayOf()
 
@@ -134,6 +142,22 @@ class AppWorker (
         object Started: State()
         object Completed: State()
         object Failed: State()
+    }
+
+    private fun writeLogToFile(message: String) {
+        val fileName = "insider-logs.txt"
+        val time = System.currentTimeMillis().timeToFormattedString()
+        val newString = "$time - $message\n"
+        context.isFileExists(
+            fileName,
+            isExists = {
+                context.appendTextToFile(fileName, newString)
+            },
+            notExists = {
+                context.createTextFile(fileName, "******************************")
+                context.appendTextToFile(fileName, newString)
+            }
+        )
     }
 
 }
