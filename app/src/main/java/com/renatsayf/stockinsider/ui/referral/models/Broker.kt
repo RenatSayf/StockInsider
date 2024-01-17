@@ -8,6 +8,8 @@ import kotlinx.serialization.Serializable
 data class Broker(
     @SerialName("button_text")
     val buttonText: String,
+    @SerialName("button_color")
+    val buttonColor: String,
     val description: String,
     val header: String,
     val logo: String,

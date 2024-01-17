@@ -1,5 +1,6 @@
 package com.renatsayf.stockinsider.ui.referral
 
+import android.graphics.Color
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -69,6 +70,7 @@ class BrokerListAdapter private constructor(): ListAdapter<Broker, BrokerListAda
                 tvHeader.text = broker.header
                 tvDescription.text = broker.description
                 btnOpenAccount.text = broker.buttonText
+                btnOpenAccount.setBackgroundColor(Color.parseColor(broker.buttonColor))
                 btnOpenAccount.setOnClickListener {
                     listener!!.onBrokerListItemClick(broker.reference)
                 }
