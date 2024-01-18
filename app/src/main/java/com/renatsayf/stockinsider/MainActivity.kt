@@ -39,6 +39,7 @@ import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.common.TimerViewModel
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
@@ -53,6 +54,7 @@ import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import com.renatsayf.stockinsider.utils.registerHardWareReceiver
 import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import dagger.hilt.android.AndroidEntryPoint
@@ -198,7 +200,15 @@ class MainActivity : AppCompatActivity() {
                         }
                         10 -> {
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            finish()
+                            showInfoDialog(
+                                title = getString(R.string.question_on_exit),
+                                status = InfoDialog.DialogStatus.WARNING,
+                                callback = {res ->
+                                    if (res > 0) {
+                                        finish()
+                                    }
+                                }
+                            )
                         }
                     }
                     return false

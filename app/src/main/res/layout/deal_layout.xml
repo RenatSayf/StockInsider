@@ -135,20 +135,20 @@
             app:layout_constraintTop_toBottomOf="@id/barrier_1"
             app:layout_constraintEnd_toStartOf="@+id/insiderTitleTV"
             app:layout_constraintBottom_toTopOf="@id/barrier_2"
-            tools:text="Xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+            tools:text="Control Empresarial De Capitales S.A. De C.V."
             android:duplicateParentState="true"
             />
 
         <TextView
             android:id="@+id/insiderTitleTV"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintStart_toEndOf="@id/insiderNameTV"
             app:layout_constraintTop_toBottomOf="@id/barrier_1"
             app:layout_constraintBottom_toBottomOf="@+id/barrier_2"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginStart="4dp"
-            android:text="@string/text_insider_title"
+            tools:text="Add'l Rep. Persons-see Ex.99-1, 10%"
             android:textAlignment="textEnd"
             android:duplicateParentState="true"
             />

@@ -54,7 +54,7 @@
     <string name="text_sort_by">Sort by</string>
     <string name="text_trade_date">Transaction date</string>
     <string name="text_trading_screen">Insider trading reports</string>
-    <string name="text_deal_value">Transaction volume $</string>
+    <string name="text_deal_value">Volume, $</string>
     <string name="text_company_name">Company</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
     <string name="text_p_purchase">P - Purchase</string>

@@ -130,19 +130,19 @@ class DealListAdapter(
                 when (sorting?.groupingBy) {
                     SortingViewModel.Sorting.GroupingBy.FILLING_DATE -> {
                         context?.let {
-                            val text = "${it.getString(R.string.text_filing_date)}: $title"
+                            val text = "${it.getString(R.string.text_filing_date)}: ${title.trim()}"
                             tvTitle.text = text
                         }
                     }
                     SortingViewModel.Sorting.GroupingBy.TICKER -> {
                         context?.let {
-                            val text = "${it.getString(R.string.text_ticker)}: $title"
+                            val text = "${it.getString(R.string.text_ticker)}: ${title.trim()}"
                             tvTitle.text = text
                         }
                     }
                     SortingViewModel.Sorting.GroupingBy.INSIDER -> {
                         context?.let {
-                            val text = "${it.getString(R.string.text_insider)} $title"
+                            val text = "${it.getString(R.string.text_insider)} ${title.trim()}"
                             tvTitle.text = text
                         }
                     }
@@ -155,16 +155,16 @@ class DealListAdapter(
             if (binding is DealLayoutBinding) {
                 with(binding){
                     deal as Deal
-                    filingDateTV.text = deal.filingDate
-                    tickerTV.text = deal.ticker
-                    companyNameTV.text = deal.company
-                    tradeTypeTV.text = deal.tradeType
+                    filingDateTV.text = deal.filingDate?.trim()
+                    tickerTV.text = deal.ticker?.trim()
+                    companyNameTV.text = deal.company?.trim()
+                    tradeTypeTV.text = deal.tradeType?.trim()
                     val numberFormat = NumberFormat.getInstance(Locale.getDefault())
                     val formattedVolume = numberFormat.format(deal.volume)
-                    dealValueTV.text = formattedVolume
-                    insiderNameTV.text = deal.insiderName
-                    insiderTitleTV.text = deal.insiderTitle
-                    tvPriceValue.text = deal.price
+                    dealValueTV.text = formattedVolume.trim()
+                    insiderNameTV.text = deal.insiderName?.trim()
+                    insiderTitleTV.text = deal.insiderTitle?.trim()
+                    tvPriceValue.text = deal.price?.trim()
 
                     val context = dealConstraintLayout.context
 
