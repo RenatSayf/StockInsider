@@ -72,159 +72,150 @@
             app:layout_constraintStart_toEndOf="@id/ivStockChart"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/barrier_0"
+            app:layout_constraintBottom_toTopOf="@+id/layoutDate"
             android:layout_marginStart="12dp"
             tools:text="International Flavors &amp; Fragrances Inc"
             android:textColor="@color/colorPrimaryDark"
             android:duplicateParentState="true"
             />
 
-        <View
-            android:id="@+id/barrier_0"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutDate"
             android:layout_width="0dp"
-            android:layout_height="0.01dp"
-            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/companyNameTV"
             app:layout_constraintTop_toBottomOf="@+id/companyNameTV"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/filingDateTV"
+            app:layout_constraintBottom_toTopOf="@id/layoutInsider"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/filingDateTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="@string/text_date_20_20_2020"
+                android:textAlignment="textStart"
+                android:duplicateParentState="true"
+                />
+
+            <TextView
+                android:id="@+id/tradeTypeTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                tools:text="P - Purchase"
+                android:textAlignment="textEnd"
+                android:duplicateParentState="true"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutInsider"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/companyNameTV"
+            app:layout_constraintTop_toBottomOf="@+id/layoutDate"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/layoutDealValue"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/insiderNameTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                tools:text="Control Empresarial De Capitales S.A. De C.V."
+                android:duplicateParentState="true"
+                />
+
+            <TextView
+                android:id="@+id/insiderTitleTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                tools:text="Add'l Rep. Persons-see Ex.99-1, 10%"
+                android:textAlignment="textEnd"
+                android:duplicateParentState="true"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutDealValue"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/companyNameTV"
+            app:layout_constraintTop_toBottomOf="@id/layoutInsider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintBottom_toTopOf="@+id/layoutDealPrice"
             android:layout_marginTop="4dp"
-            />
+            >
 
-        <TextView
-            android:id="@+id/filingDateTV"
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/dealValueTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/text_deal_value"
+                android:duplicateParentState="true"
+                />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/dealValueTV"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                tools:text="100000000000 $"
+                android:textColor="@color/colorPrimaryDark"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:duplicateParentState="true"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/layoutDealPrice"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
-            app:layout_constraintTop_toBottomOf="@+id/barrier_0"
-            app:layout_constraintEnd_toStartOf="@+id/tradeTypeTV"
-            app:layout_constraintBottom_toTopOf="@id/barrier_1"
-            android:text="@string/text_date_20_20_2020"
-            android:textAlignment="textStart"
-            android:duplicateParentState="true"
-            />
-
-        <TextView
-            android:id="@+id/tradeTypeTV"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@+id/filingDateTV"
-            app:layout_constraintTop_toBottomOf="@id/barrier_0"
+            android:orientation="horizontal"
+            app:layout_constraintStart_toStartOf="@id/companyNameTV"
+            app:layout_constraintTop_toBottomOf="@+id/layoutDealValue"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toBottomOf="@id/barrier_1"
-            android:layout_marginStart="4dp"
-            tools:text="P - Purchase"
-            android:textAlignment="textEnd"
-            android:duplicateParentState="true"
-            />
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="4dp">
 
-        <View
-            android:id="@+id/barrier_1"
-            android:layout_width="0dp"
-            android:layout_height="0.01dp"
-            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
-            app:layout_constraintTop_toBottomOf="@+id/filingDateTV"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@id/insiderNameTV"
-            />
+            <TextView
+                android:id="@+id/tvPriceTitle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/text_title_price"
+                android:duplicateParentState="true"
+                />
 
-        <TextView
-            android:id="@+id/insiderNameTV"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/filingDateTV"
-            app:layout_constraintTop_toBottomOf="@id/barrier_1"
-            app:layout_constraintEnd_toStartOf="@+id/insiderTitleTV"
-            app:layout_constraintBottom_toTopOf="@id/barrier_2"
-            tools:text="Control Empresarial De Capitales S.A. De C.V."
-            android:duplicateParentState="true"
-            />
+            <TextView
+                android:id="@+id/tvPriceValue"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="4dp"
+                tools:text="$12.46"
+                android:textColor="@color/colorPrimaryDark"
+                android:textAlignment="textEnd"
+                android:textStyle="bold"
+                android:duplicateParentState="true"
+                />
 
-        <TextView
-            android:id="@+id/insiderTitleTV"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/insiderNameTV"
-            app:layout_constraintTop_toBottomOf="@id/barrier_1"
-            app:layout_constraintBottom_toBottomOf="@+id/barrier_2"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="4dp"
-            tools:text="Add'l Rep. Persons-see Ex.99-1, 10%"
-            android:textAlignment="textEnd"
-            android:duplicateParentState="true"
-            />
-
-        <View
-            android:id="@+id/barrier_2"
-            android:layout_width="0dp"
-            android:layout_height="0.01dp"
-            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
-            app:layout_constraintTop_toBottomOf="@+id/insiderNameTV"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/dealValueTitle"
-            />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/dealValueTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/insiderNameTV"
-            app:layout_constraintTop_toBottomOf="@id/barrier_2"
-            app:layout_constraintEnd_toStartOf="@+id/dealValueTV"
-            app:layout_constraintBottom_toTopOf="@+id/barrier_3"
-            android:text="@string/text_deal_value"
-            android:duplicateParentState="true"
-            />
-
-        <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/dealValueTV"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/dealValueTitle"
-            app:layout_constraintTop_toBottomOf="@id/barrier_2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/barrier_3"
-            tools:text="1000 $"
-            android:textColor="@color/colorPrimaryDark"
-            android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:duplicateParentState="true"
-            />
-
-        <View
-            android:id="@+id/barrier_3"
-            android:layout_width="0dp"
-            android:layout_height="0.01dp"
-            app:layout_constraintStart_toStartOf="@+id/companyNameTV"
-            app:layout_constraintTop_toBottomOf="@+id/dealValueTV"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintBottom_toTopOf="@+id/tvPriceTitle"
-            />
-
-        <TextView
-            android:id="@+id/tvPriceTitle"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toStartOf="@id/dealValueTitle"
-            app:layout_constraintTop_toBottomOf="@id/barrier_3"
-            app:layout_constraintEnd_toStartOf="@id/tvPriceValue"
-            android:text="@string/text_title_price"
-            android:duplicateParentState="true"
-            />
-
-        <TextView
-            android:id="@+id/tvPriceValue"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            app:layout_constraintStart_toEndOf="@id/tvPriceTitle"
-            app:layout_constraintTop_toBottomOf="@id/barrier_3"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginStart="4dp"
-            tools:text="$12.46"
-            android:textColor="@color/colorPrimaryDark"
-            android:textAlignment="textEnd"
-            android:textStyle="bold"
-            android:duplicateParentState="true"
-            />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
