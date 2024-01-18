@@ -107,7 +107,7 @@ class AppWorker (
                         }
                     }
                 }
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q && BuildConfig.DEBUG) {
+                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
                     writeLogToFile(message)
                 }
                 deals.isNotEmpty()
