@@ -1,3 +1,5 @@
+@file:Suppress("MoveVariableDeclarationIntoWhen")
+
 package com.renatsayf.stockinsider.ui.main
 
 import android.os.Bundle
@@ -153,12 +155,16 @@ class MainFragment : Fragment() {
         binding.date.filingDateSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
-                    val selectedItem = array[p2]
-                    when {
-                        selectedItem < 3 && selectedItem != 0 -> binding.date.tradeDateSpinner.setSelection(3)
-                        selectedItem == 0 -> binding.date.tradeDateSpinner.setSelection(0)
-                        else -> binding.date.tradeDateSpinner.setSelection(p2)
+                    with(binding){
+                        val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
+                        val selectedItem = array[p2]
+                        when (selectedItem) {
+                            0 -> date.tradeDateSpinner.setSelection(0)
+                            1, 2, 3 -> date.tradeDateSpinner.setSelection(4)
+                            7 -> date.tradeDateSpinner.setSelection(5)
+                            14 -> date.tradeDateSpinner.setSelection(6)
+                            else -> date.tradeDateSpinner.setSelection(p2)
+                        }
                     }
                 }
                 override fun onNothingSelected(p0: AdapterView<*>?) {}

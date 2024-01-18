@@ -126,16 +126,16 @@
 
             <TextView
                 android:id="@+id/insiderNameTV"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="2"
+                android:layout_weight="1"
                 tools:text="Control Empresarial De Capitales S.A. De C.V."
                 android:duplicateParentState="true"
                 />
 
             <TextView
                 android:id="@+id/insiderTitleTV"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_marginStart="4dp"
