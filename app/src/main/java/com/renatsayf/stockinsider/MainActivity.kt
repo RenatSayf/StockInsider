@@ -46,7 +46,9 @@ import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.appendTextToFile
 import com.renatsayf.stockinsider.utils.doShare
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.printIfDebug
@@ -56,6 +58,7 @@ import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.timeToFormattedString
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -505,9 +508,9 @@ class MainActivity : AppCompatActivity() {
                 periodInMinute = FireBaseConfig.trackingPeriod
             )
             if (nextTime != null) {
-                val message =
-                    "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
                 ServiceNotification.notify(this@MainActivity, message, null)
+                this.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")
             }
         }
         super.onDestroy()

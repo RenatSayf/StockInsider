@@ -20,11 +20,11 @@ import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.utils.AppCalendar
-import com.renatsayf.stockinsider.utils.FILE_NAME
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appendTextToFile
 import com.renatsayf.stockinsider.utils.createTextFile
 import com.renatsayf.stockinsider.utils.getNextStartTime
-import com.renatsayf.stockinsider.utils.isFileExists
+import com.renatsayf.stockinsider.utils.isLogsFileExists
 import com.renatsayf.stockinsider.utils.printIfDebug
 import com.renatsayf.stockinsider.utils.reduceFileSize
 import com.renatsayf.stockinsider.utils.timeToFormattedString
@@ -82,7 +82,11 @@ class AppWorker (
         state = State.Started
         return try
         {
-            "******************** ${this.javaClass.simpleName}: Start background work ********************".printIfDebug()
+            val startMessage = "${this.javaClass.simpleName}: Start background work **********"
+            startMessage.printIfDebug()
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                writeLogToFile(startMessage)
+            }
 
             setForeground(getForegroundInfo())
 
@@ -107,27 +111,35 @@ class AppWorker (
                         }
                     }
                 }
-                if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                    writeLogToFile(message)
-                }
+                context.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")
                 deals.isNotEmpty()
             }?.toBooleanArray()?: booleanArrayOf()
 
             val data = Data.Builder().apply {
                 putBooleanArray("result", array)
             }.build()
-            "******************** ${this.javaClass.simpleName}: Background work completed successfully ********************".printIfDebug()
+
+            val successMessage = "${System.currentTimeMillis().timeToFormattedString()} ->> ${this.javaClass.simpleName}: Background work completed successfully ********"
+            successMessage.printIfDebug()
+            context.appendTextToFile(LOGS_FILE_NAME, successMessage)
+
             state = State.Completed
             Result.success(data)
         }
         catch (e: Exception)
         {
             if (BuildConfig.DEBUG) e.printStackTrace()
-            val message = e.message ?: "********** Unknown error **********"
+            val errorMessage = e.message ?: "********** Unknown error **********"
             val errorData = Data.Builder().apply {
-                putString("error", "*********** $message *************")
+                putString("error", "*********** $errorMessage *************")
             }.build()
+
+            context.appendTextToFile(
+                LOGS_FILE_NAME,
+                content = "${System.currentTimeMillis().timeToFormattedString()} ->> Background work failed: $errorMessage"
+            )
             "********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************".printIfDebug()
+
             state = State.Failed
             Result.failure(errorData)
         }
@@ -147,18 +159,18 @@ class AppWorker (
     }
 
     private fun writeLogToFile(message: String) {
-        val fileName = FILE_NAME
+        val fileName = LOGS_FILE_NAME
         val time = System.currentTimeMillis().timeToFormattedString()
-        val newString = "$time - $message\n"
-        context.isFileExists(
+        val newString = "$time ->> $message\n"
+        context.isLogsFileExists(
             fileName,
-            isExists = { file ->
+            onExists = { file ->
                 if (file.length() >= 1024 * 100L) {
                     context.reduceFileSize(fileName, 1024 * 20L)
                 }
                 context.appendTextToFile(fileName, newString)
             },
-            notExists = {
+            onNotExists = {
                 context.createTextFile(fileName, "******************************")
                 context.appendTextToFile(fileName, newString)
             }

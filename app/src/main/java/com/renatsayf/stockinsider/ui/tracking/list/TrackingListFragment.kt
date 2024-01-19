@@ -97,7 +97,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                             companyName = "",
                             ticker = "",
                             filingPeriod = 1,
-                            tradePeriod = 3,
+                            tradePeriod = 7,
                             tradedMin = "",
                             tradedMax = "",
                             isOfficer = true,

@@ -4,14 +4,21 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.AboutAppFragmentBinding
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.goToAppStore
+import com.renatsayf.stockinsider.utils.isLogsFileExists
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -38,19 +45,36 @@ class AboutAppFragment : Fragment() {
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
         val versionName = "v.${packageInfo.versionName}"
 
-        binding.versionNameView.text = versionName
+        with(binding){
+            versionNameView.text = versionName
 
-        binding.btnEvaluate.setOnClickListener {
-            requireContext().goToAppStore()
-        }
+            btnEvaluate.setOnClickListener {
+                requireContext().goToAppStore()
+            }
 
-        binding.privacyPolicyLinkView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
-            startActivity(intent)
-        }
+            privacyPolicyLinkView.setOnClickListener {
+                val intent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
+                startActivity(intent)
+            }
 
-        binding.toolBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            toolBar.addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    when(menuItem.itemId) {
+                        R.id.menu_open_logs -> {
+                            findNavController().navigate(R.id.logsFragment)
+                        }
+                    }
+                    return false
+                }
+
+            }, viewLifecycleOwner)
+
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
     }
 

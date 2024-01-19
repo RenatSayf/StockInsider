@@ -23,6 +23,8 @@
             app:titleTextColor="@color/colorWhite"
             app:title="@string/text_about_app"
             android:background="@color/colorSemitransparent"
+            app:menu="@menu/about_app_menu"
+            android:theme="@style/AppTheme.PopupOverlay"
             />
 
         <View

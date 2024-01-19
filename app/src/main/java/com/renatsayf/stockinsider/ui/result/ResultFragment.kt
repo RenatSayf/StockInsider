@@ -43,13 +43,13 @@ import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
-import com.renatsayf.stockinsider.utils.FILE_NAME
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.createTextFile
 import com.renatsayf.stockinsider.utils.dp
 import com.renatsayf.stockinsider.utils.getSerializableCompat
 import com.renatsayf.stockinsider.utils.getValuesSize
-import com.renatsayf.stockinsider.utils.isFileExists
+import com.renatsayf.stockinsider.utils.isLogsFileExists
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showInfoDialog
@@ -115,10 +115,10 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
                 }
             }
 
-            requireContext().isFileExists(
-                fileName = FILE_NAME,
-                notExists = {
-                    requireContext().createTextFile(FILE_NAME, "********************")
+            requireContext().isLogsFileExists(
+                fileName = LOGS_FILE_NAME,
+                onNotExists = {
+                    requireContext().createTextFile(LOGS_FILE_NAME, "********************")
                 }
             )
         }

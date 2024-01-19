@@ -261,5 +261,7 @@
     <string name="text_need_open_account">Для того чтобы начать торговать, вам необходимо открыть счет у брокера</string>
     <string name="text_broker_list_load_error">Не удалось загрузить список брокеров</string>
     <string name="text_start_trading">Начать торговать</string>
+    <string name="text_view_logs">Просмотр логов</string>
+    <string name="text_clear_logs">Очистить логи</string>
 
 </resources>

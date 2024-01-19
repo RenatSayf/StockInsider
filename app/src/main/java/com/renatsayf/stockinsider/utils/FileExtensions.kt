@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
+import android.os.Build
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.File
@@ -10,7 +11,7 @@ import java.io.FileWriter
 import java.io.OutputStreamWriter
 
 
-const val FILE_NAME = "insider-logs.txt"
+const val LOGS_FILE_NAME = "insider-logs.txt"
 
 fun Context.createTextFile(fileName: String, content: String) {
     try {
@@ -37,43 +38,47 @@ fun Context.createTextFile(fileName: String, content: String) {
 
 
 fun Context.appendTextToFile(fileName: String, content: String) {
-    try {
-        // Opening the file to add data
-        val file = File(this.filesDir, fileName)
 
-        // Creating a FileWriter with the true parameter to add data to the end of the file
-        val fileWriter = FileWriter(file, true)
+    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+        try {
+            // Opening the file to add data
+            val file = File(this.filesDir, fileName)
 
-        // Creating a BufferedWriter for efficient writing
-        val bufferedWriter = BufferedWriter(fileWriter)
+            // Creating a FileWriter with the true parameter to add data to the end of the file
+            val fileWriter = FileWriter(file, true)
 
-        // Writing a new line to the end of the file
-        bufferedWriter.write(content)
-        bufferedWriter.newLine()
+            // Creating a BufferedWriter for efficient writing
+            val bufferedWriter = BufferedWriter(fileWriter)
 
-        // Closing the streams
-        bufferedWriter.close()
-        fileWriter.close()
+            // Writing a new line to the end of the file
+            bufferedWriter.newLine()
+            bufferedWriter.newLine()
+            bufferedWriter.write(content)
 
-        "******************** The entry was successfully added to the $fileName file. ***********".printIfDebug()
-    } catch (e: Exception) {
-        e.printStackTrace()
-        "************* Error when adding an entry to a file: ${e.message} ************".printIfDebug()
+            // Closing the streams
+            bufferedWriter.close()
+            fileWriter.close()
+
+            "******************** The entry was successfully added to the $fileName file. ***********".printIfDebug()
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "************* Error when adding an entry to a file: ${e.message} ************".printIfDebug()
+        }
     }
 }
 
-fun Context.isFileExists(
+fun Context.isLogsFileExists(
     fileName: String,
-    isExists: (file: File) -> Unit = {},
-    notExists: () -> Unit = {}
+    onExists: (file: File) -> Unit = {},
+    onNotExists: () -> Unit = {}
 ): Boolean {
     val file = File(this.filesDir, fileName)
     val exists = file.exists()
     if (exists) {
-        isExists.invoke(file)
+        onExists.invoke(file)
     }
     else {
-        notExists.invoke()
+        onNotExists.invoke()
     }
     return exists
 }

@@ -26,7 +26,7 @@
 
     <string name="text_default_set_name">default_set</string>
     <string name="text_current_set_name">current_set</string>
-    
+
     <string name="ya_metrica_api_key" translatable="false">31a17f0a-3956-4e9f-8edf-debdc1059e68</string>
 
 
@@ -262,5 +262,9 @@
     <string name="text_need_open_account">In order to start trading, you need to open an account with a broker</string>
     <string name="text_broker_list_load_error">The list of brokers could not be loaded</string>
     <string name="text_start_trading">Start trading</string>
+    <string name="text_view_logs">View logs</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_clear_logs">Clear logs</string>
 
 </resources>
