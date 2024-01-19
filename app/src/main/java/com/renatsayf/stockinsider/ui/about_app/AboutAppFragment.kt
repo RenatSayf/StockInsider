@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.ui.about_app
 
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -15,10 +16,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.AboutAppFragmentBinding
-import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.goToAppStore
-import com.renatsayf.stockinsider.utils.isLogsFileExists
-import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -58,19 +56,23 @@ class AboutAppFragment : Fragment() {
                 startActivity(intent)
             }
 
-            toolBar.addMenuProvider(object : MenuProvider {
-                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
-
-                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                    when(menuItem.itemId) {
-                        R.id.menu_open_logs -> {
-                            findNavController().navigate(R.id.logsFragment)
-                        }
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+                toolBar.addMenuProvider(object : MenuProvider {
+                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                        menuInflater.inflate(R.menu.about_app_menu, menu)
                     }
-                    return false
-                }
 
-            }, viewLifecycleOwner)
+                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                        when(menuItem.itemId) {
+                            R.id.menu_open_logs -> {
+                                findNavController().navigate(R.id.logsFragment)
+                            }
+                        }
+                        return false
+                    }
+
+                }, viewLifecycleOwner)
+            }
 
             toolBar.setNavigationOnClickListener {
                 findNavController().popBackStack()
