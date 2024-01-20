@@ -24,6 +24,7 @@
             app:title="@string/text_about_app"
             android:background="@color/colorSemitransparent"
             android:theme="@style/AppTheme.PopupOverlay"
+            app:menu="@menu/about_app_menu"
             />
 
         <View

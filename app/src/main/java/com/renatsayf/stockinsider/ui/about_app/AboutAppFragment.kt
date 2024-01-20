@@ -2,7 +2,6 @@ package com.renatsayf.stockinsider.ui.about_app
 
 import android.content.Intent
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -56,23 +55,19 @@ class AboutAppFragment : Fragment() {
                 startActivity(intent)
             }
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                toolBar.addMenuProvider(object : MenuProvider {
-                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                        menuInflater.inflate(R.menu.about_app_menu, menu)
-                    }
+            toolBar.addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
 
-                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                        when(menuItem.itemId) {
-                            R.id.menu_open_logs -> {
-                                findNavController().navigate(R.id.logsFragment)
-                            }
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    when(menuItem.itemId) {
+                        R.id.menu_open_logs -> {
+                            findNavController().navigate(R.id.logsFragment)
                         }
-                        return false
                     }
+                    return false
+                }
 
-                }, viewLifecycleOwner)
-            }
+            }, viewLifecycleOwner)
 
             toolBar.setNavigationOnClickListener {
                 findNavController().popBackStack()

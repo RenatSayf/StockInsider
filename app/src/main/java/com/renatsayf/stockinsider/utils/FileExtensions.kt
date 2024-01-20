@@ -39,7 +39,7 @@ fun Context.createTextFile(fileName: String, content: String) {
 
 fun Context.appendTextToFile(fileName: String, content: String) {
 
-    if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
+    if (true) {
         try {
             // Opening the file to add data
             val file = File(this.filesDir, fileName)

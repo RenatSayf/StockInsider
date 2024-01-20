@@ -17,7 +17,8 @@
         app:title="@string/text_view_logs"
         app:titleTextColor="@color/colorWhite"
         android:background="@color/colorPrimaryDark"
-        android:theme="@style/AppTheme.PopupOverlay"/>
+        android:theme="@style/AppTheme.PopupOverlay"
+        app:menu="@menu/logs_menu"/>
 
     <TextView
         android:id="@+id/tvLogs"

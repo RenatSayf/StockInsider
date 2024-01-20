@@ -1,6 +1,5 @@
 package com.renatsayf.stockinsider.ui.about_app
 
-import android.os.Build
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -47,29 +46,25 @@ class LogsFragment : Fragment() {
                 }
             )
 
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                toolBar.addMenuProvider(object : MenuProvider {
-                    override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
-                        menuInflater.inflate(R.menu.logs_menu, menu)
-                    }
+            toolBar.addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
 
-                    override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
-                        when(menuItem.itemId) {
-                            R.id.menu_clear_logs -> {
-                                requireContext().isLogsFileExists(
-                                    LOGS_FILE_NAME,
-                                    onExists = {file ->
-                                        file.writeText("********************")
-                                        val text = file.readText()
-                                        tvLogs.text = text
-                                    }
-                                )
-                            }
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    when(menuItem.itemId) {
+                        R.id.menu_clear_logs -> {
+                            requireContext().isLogsFileExists(
+                                LOGS_FILE_NAME,
+                                onExists = {file ->
+                                    file.writeText("********************")
+                                    val text = file.readText()
+                                    tvLogs.text = text
+                                }
+                            )
                         }
-                        return false
                     }
-                }, viewLifecycleOwner)
-            }
+                    return false
+                }
+            }, viewLifecycleOwner)
         }
 
     }
