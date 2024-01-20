@@ -1,7 +1,6 @@
 package com.renatsayf.stockinsider.utils
 
 import android.content.Context
-import android.os.Build
 import java.io.BufferedReader
 import java.io.BufferedWriter
 import java.io.File
@@ -39,31 +38,29 @@ fun Context.createTextFile(fileName: String, content: String) {
 
 fun Context.appendTextToFile(fileName: String, content: String) {
 
-    if (true) {
-        try {
-            // Opening the file to add data
-            val file = File(this.filesDir, fileName)
+    try {
+        // Opening the file to add data
+        val file = File(this.filesDir, fileName)
 
-            // Creating a FileWriter with the true parameter to add data to the end of the file
-            val fileWriter = FileWriter(file, true)
+        // Creating a FileWriter with the true parameter to add data to the end of the file
+        val fileWriter = FileWriter(file, true)
 
-            // Creating a BufferedWriter for efficient writing
-            val bufferedWriter = BufferedWriter(fileWriter)
+        // Creating a BufferedWriter for efficient writing
+        val bufferedWriter = BufferedWriter(fileWriter)
 
-            // Writing a new line to the end of the file
-            bufferedWriter.newLine()
-            bufferedWriter.newLine()
-            bufferedWriter.write(content)
+        // Writing a new line to the end of the file
+        bufferedWriter.newLine()
+        bufferedWriter.newLine()
+        bufferedWriter.write(content)
 
-            // Closing the streams
-            bufferedWriter.close()
-            fileWriter.close()
+        // Closing the streams
+        bufferedWriter.close()
+        fileWriter.close()
 
-            "******************** The entry was successfully added to the $fileName file. ***********".printIfDebug()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            "************* Error when adding an entry to a file: ${e.message} ************".printIfDebug()
-        }
+        "******************** The entry was successfully added to the $fileName file. ***********".printIfDebug()
+    } catch (e: Exception) {
+        e.printStackTrace()
+        "************* Error when adding an entry to a file: ${e.message} ************".printIfDebug()
     }
 }
 
