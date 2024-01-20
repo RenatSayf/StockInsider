@@ -39,9 +39,10 @@ open class AlarmReceiver : BroadcastReceiver() {
                 scheduler.scheduleOne(nextFillingTime, randomOverTime)
                 context.startOneTimeBackgroundWork(System.currentTimeMillis())
 
+                val nextCheckTime = nextFillingTime + randomOverTime
                 context.appendTextToFile(
                     LOGS_FILE_NAME,
-                    content = "${System.currentTimeMillis().timeToFormattedString()} ->> next check time ${nextFillingTime.timeToFormattedString()}"
+                    content = "${System.currentTimeMillis().timeToFormattedString()} ->> next check time ${nextCheckTime.timeToFormattedString()}"
                 )
             }
         }
