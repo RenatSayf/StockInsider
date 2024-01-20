@@ -145,10 +145,10 @@ fun Context.startOneTimeBackgroundWork(startTime: Long): Operation {
     return run {
         val workRequest = WorkTask().createOneTimeTask(
             context = this,
-            name = "${this.packageName}.Task",
+            name = "${this.packageName}.${WorkTask::class.simpleName}.Task",
             startTime = startTime
         )
-        workManager.enqueueUniqueWork(WorkTask.TAG, ExistingWorkPolicy.KEEP, workRequest)
+        workManager.enqueue(workRequest)
     }
 }
 

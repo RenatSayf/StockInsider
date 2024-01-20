@@ -100,6 +100,9 @@ class AppWorkerUiTest {
         while (state != AppWorker.State.Completed && state != AppWorker.State.Failed) {
             Thread.sleep(2000)
             state = AppWorker.state
+            if (state is AppWorker.State.Failed) {
+                Assert.assertTrue(false)
+            }
         }
         val pendingIntent = scheduler.isAlarmSetup(false)
         Assert.assertTrue(pendingIntent != null)

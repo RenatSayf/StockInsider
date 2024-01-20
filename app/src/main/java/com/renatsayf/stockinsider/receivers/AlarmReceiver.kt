@@ -5,7 +5,6 @@ package com.renatsayf.stockinsider.receivers
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
