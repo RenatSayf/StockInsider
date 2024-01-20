@@ -20,72 +20,72 @@ class AppCalendar(
             return TimeZone.getTimeZone("America/New_York")
         }
 
-    private var calendar = Calendar.getInstance()
-    private var withWeekend = true
-    private var withFillingTime = true
+    private var _calendar = Calendar.getInstance()
+    private var _withWeekend = true
+    private var _withFillingTime = true
 
     init {
         val defaultOffset = TimeZone.getDefault().rawOffset
         val newYorkOffset = timeZoneNY.rawOffset
-        calendar.apply {
+        _calendar.apply {
             timeInMillis = initTime - defaultOffset + newYorkOffset
         }
     }
 
     fun getCurrentTime(): Long {
-        return calendar.timeInMillis
+        return _calendar.timeInMillis
     }
 
     val isWeekEnd: Boolean
         get() {
-            calendar.timeInMillis.timeToFormattedString()
-            return calendar.isWeekend
+            _calendar.timeInMillis.timeToFormattedString()
+            return _calendar.isWeekend
         }
 
     val isFillingTime: Boolean
         get() {
-            val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-            return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !calendar.isWeekend
+            val currentHour = _calendar.get(Calendar.HOUR_OF_DAY)
+            return currentHour in (START_FILLING_HOUR + 1)..END_FILLING_HOUR && !_calendar.isWeekend
         }
 
     fun getNextFillingTime(periodInMinute: Long): Long {
 
-        val nextTime = calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(periodInMinute))
-        println("**************** workerPeriod: $periodInMinute *******************")
-        println("**************** nextTime: ${nextTime.timeToFormattedString()} *******************")
+        val nextTime = _calendar.timeInMillis + (TimeUnit.MINUTES.toMillis(periodInMinute))
+        "**************** workerPeriod: $periodInMinute *******************".printIfDebug()
+        "**************** nextTime: ${nextTime.timeToFormattedString()} *******************".printIfDebug()
 
-        val newCalendar = calendar
+        val newCalendar = _calendar
         newCalendar.timeInMillis = nextTime
 
-        if (withWeekend) {
+        if (_withWeekend) {
             while (isWeekEnd) {
                 newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
                 val postWeekendTime = newCalendar.timeInMillis.timeToFormattedString()
-                println("**************** postWeekendTime: $postWeekendTime ***********************")
+                "**************** postWeekendTime: $postWeekendTime ***********************".printIfDebug()
             }
         }
-        if (withFillingTime) {
+        if (_withFillingTime) {
             while (!isFillingTime) {
                 newCalendar.timeInMillis += TimeUnit.HOURS.toMillis(1L)
                 val nextFillingTime = newCalendar.timeInMillis.timeToFormattedString()
-                println("******************* nextFillingTime: $nextFillingTime *********************")
+                "******************* nextFillingTime: $nextFillingTime *********************".printIfDebug()
             }
         }
-        println("******************* newCalendar.time (America/New_York): ${newCalendar.timeInMillis.timeToFormattedString()} *********************")
+        "******************* newCalendar.time (America/New_York): ${newCalendar.timeInMillis.timeToFormattedString()} *********************".printIfDebug()
         return newCalendar.timeInMillis
     }
 
     fun getNextFillingTimeByDefaultTimeZone(periodInMinute: Long): Long {
-        withWeekend = true
-        withFillingTime = true
+        _withWeekend = true
+        _withFillingTime = true
         val utcOffset = timeZoneNY.rawOffset
         val defaultOffset = TimeZone.getDefault().rawOffset
         return getNextFillingTime(periodInMinute) - utcOffset + defaultOffset
     }
 
     fun getNextTestTimeByDefaultTimeZone(periodInMinute: Long): Long {
-        withWeekend = false
-        withFillingTime = false
+        _withWeekend = false
+        _withFillingTime = false
         val utcOffset = timeZoneNY.rawOffset
         val defaultOffset = TimeZone.getDefault().rawOffset
         return getNextFillingTime(periodInMinute) - utcOffset + defaultOffset

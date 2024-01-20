@@ -52,6 +52,9 @@ android {
         localhost {
             buildConfigField 'String', 'DATA_SOURCE', '\"LOCALHOST\"'
         }
+        timePeriod {
+            buildConfigField 'String', 'DATA_SOURCE', '\"TEST_TIME_PERIOD\"'
+        }
     }
 
     buildFeatures {

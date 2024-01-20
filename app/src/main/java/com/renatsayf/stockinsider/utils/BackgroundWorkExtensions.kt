@@ -4,8 +4,9 @@ import android.content.Context
 import androidx.fragment.app.Fragment
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.ui.settings.Constants
 
-fun Context.setAlarm(scheduler: Scheduler, periodInMinute: Long, isTest: Boolean = false): Long? {
+fun Context.setAlarm(scheduler: Scheduler, periodInMinute: Long, isTest: Boolean = Constants.TEST_MODE): Long? {
     val pendingIntent = scheduler.isAlarmSetup(false)
     return if (pendingIntent == null) {
         val nextFillingTime = AppCalendar().getNextStartTime(periodInMinute, isTestMode = isTest)

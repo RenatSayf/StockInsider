@@ -3,6 +3,7 @@ package com.renatsayf.stockinsider.di.modules
 import android.content.Context
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.models.Source
 import com.renatsayf.stockinsider.network.*
 import dagger.Module
 import dagger.Provides
@@ -48,7 +49,7 @@ object NetRepositoryModule {
             .client(okHttpClient).build()
 
         return when (BuildConfig.DATA_SOURCE) {
-            "NETWORK" -> retrofit.create(IApi::class.java)
+            Source.NETWORK.name, Source.TEST_TIME_PERIOD.name -> retrofit.create(IApi::class.java)
             else -> MockApi(context)
         }
     }
