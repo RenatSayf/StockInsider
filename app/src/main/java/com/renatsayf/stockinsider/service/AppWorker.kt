@@ -19,6 +19,7 @@ import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.network.INetRepository
 import com.renatsayf.stockinsider.service.notifications.RequestNotification
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
+import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.AppCalendar
 import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appendTextToFile
@@ -37,7 +38,8 @@ import kotlinx.coroutines.delay
 
 class AppWorker (
     private val context: Context,
-    parameters: WorkerParameters): CoroutineWorker(context, parameters) {
+    parameters: WorkerParameters
+): CoroutineWorker(context, parameters) {
 
     companion object {
         val TAG = this::class.java.simpleName.plus(".Tag")
@@ -47,12 +49,12 @@ class AppWorker (
         var state: State = State.Initial
         private set
 
-        private lateinit var db: AppDao
-        private lateinit var net: INetRepository
-        private var searchSets: List<RoomSearchSet>? = null
-        private var function: ((Context, String, RoomSearchSet) -> Unit)? = ServiceNotification.notify
-        private var trackingPeriodInMinutes: Long = FireBaseConfig.trackingPeriod
-        private var isTestMode: Boolean = false
+        private lateinit var _db: AppDao
+        private lateinit var _net: INetRepository
+        private var _searchSets: List<RoomSearchSet>? = null
+        private var _function: ((Context, String, RoomSearchSet) -> Unit)? = ServiceNotification.notify
+        private var _trackingPeriodInMinutes: Long = FireBaseConfig.trackingPeriod
+        private var _isTestMode: Boolean = Constants.TEST_MODE
 
         @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
         fun injectDependenciesToTest(
@@ -60,15 +62,15 @@ class AppWorker (
             trackingPeriodInMinutes: Long,
             isTestMode: Boolean
         ) {
-            this.searchSets = searchSets
-            this.trackingPeriodInMinutes = trackingPeriodInMinutes
-            this.isTestMode = isTestMode
+            this._searchSets = searchSets
+            this._trackingPeriodInMinutes = trackingPeriodInMinutes
+            this._isTestMode = isTestMode
         }
     }
 
     init {
-        db = RoomDataBaseModule.provideRoomDataBase(context)
-        net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
+        _db = RoomDataBaseModule.provideRoomDataBase(context)
+        _net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {
@@ -90,24 +92,24 @@ class AppWorker (
 
             setForeground(getForegroundInfo())
 
-            if (searchSets == null) searchSets = getTrackingSetsAsync().await()
-            val array = searchSets?.map { set ->
+            if (_searchSets == null) _searchSets = getTrackingSetsAsync().await()
+            val array = _searchSets?.map { set ->
                 val duration = (10..20).random()
                 delay(duration * 1000L)
                 val params = set.toSearchSet()
-                val deals = net.getDealsListAsync(params).await()
+                val deals = _net.getDealsListAsync(params).await()
 
-                val nextFillingTime = AppCalendar().getNextStartTime(trackingPeriodInMinutes, isTestMode).timeToFormattedStringWithoutSeconds()
+                val nextFillingTime = AppCalendar().getNextStartTime(_trackingPeriodInMinutes, _isTestMode).timeToFormattedStringWithoutSeconds()
                 val message = context.getString(com.renatsayf.stockinsider.R.string.text_by_search) +
                             " ${set.queryName}, ${deals.size} ${context.getString(com.renatsayf.stockinsider.R.string.text_results_were_found)}\n" +
                             "${context.getString(com.renatsayf.stockinsider.R.string.text_next_check_will_be_at)} $nextFillingTime"
                 when {
                     BuildConfig.DEBUG -> {
-                        function?.invoke(context, message, set)
+                        _function?.invoke(context, message, set)
                     }
                     else -> {
                         if (deals.isNotEmpty()) {
-                            function?.invoke(context, message, set)
+                            _function?.invoke(context, message, set)
                         }
                     }
                 }
@@ -147,7 +149,7 @@ class AppWorker (
 
     private suspend fun getTrackingSetsAsync() : Deferred<List<RoomSearchSet>?> = coroutineScope {
         async {
-            db.getTrackedSets(target = Target.Tracking, isTracked = 1)
+            _db.getTrackedSets(target = Target.Tracking, isTracked = 1)
         }
     }
 

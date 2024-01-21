@@ -1,12 +1,11 @@
 package com.renatsayf.stockinsider.ui.settings
 
 import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Source
 
 object Constants {
-    val TEST_MODE: Boolean = BuildConfig.DATA_SOURCE == Source.TEST_TIME_PERIOD.name
-    val TEST_TRACKING_PERIOD_IN_MINUTES: Long = FireBaseConfig.trackingPeriod
+    val TEST_MODE: Boolean = (BuildConfig.DATA_SOURCE == Source.TEST_TIME_PERIOD.name)
+    const val TEST_TRACKING_PERIOD_IN_MINUTES: Long = 60
 }
 
 const val KEY_APP_STORE_LINK = "link"

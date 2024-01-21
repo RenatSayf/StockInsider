@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.ui.about_app
 
 import android.os.Bundle
+import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
@@ -34,6 +35,8 @@ class LogsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
+
+            tvLogs.movementMethod = ScrollingMovementMethod()
 
             requireContext().isLogsFileExists(
                 LOGS_FILE_NAME,
