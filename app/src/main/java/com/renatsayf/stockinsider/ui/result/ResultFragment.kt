@@ -165,14 +165,18 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
                 mainVM.saveSearchSet(searchSet)
             }
             else {
-                mainVM.getSearchSetByName(getString(R.string.text_current_set_name)).observe(viewLifecycleOwner) { set ->
-                    if (set != null) {
+                mainVM.getSearchSetByName(
+                    getString(R.string.text_current_set_name),
+                    onSuccess = {set ->
                         resultVM.setState(ResultViewModel.State.Initial(set))
                         if (title == null) {
                             binding.toolBar.subtitle = resultVM.getDisplayedQueryName(set)
                         }
+                    },
+                    onFailed = { exception ->
+                        resultVM.setState(ResultViewModel.State.DataError(exception))
                     }
-                }
+                )
             }
         }
 

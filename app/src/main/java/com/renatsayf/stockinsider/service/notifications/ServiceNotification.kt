@@ -36,7 +36,6 @@ class ServiceNotification @Inject constructor() : Notification()
                     .setGraph(R.navigation.mobile_navigation)
                     .setDestination(R.id.nav_result)
                     .setArguments(Bundle().apply {
-                        putString(ResultFragment.ARG_TITLE, context.getString(R.string.text_trading_screen))
                         putSerializable(ResultFragment.ARG_SEARCH_SET, set)
                         putInt(ARG_ID, notificationId)
                     })
