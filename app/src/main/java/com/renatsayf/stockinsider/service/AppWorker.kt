@@ -3,7 +3,6 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
-import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -84,11 +83,9 @@ class AppWorker (
         state = State.Started
         return try
         {
-            val startMessage = "${this.javaClass.simpleName}: Start background work **********"
+            val startMessage = "${System.currentTimeMillis().timeToFormattedString()} ->> The search has been started **********"
             startMessage.printIfDebug()
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.Q) {
-                writeLogToFile(startMessage)
-            }
+            writeLogToFile(startMessage)
 
             setForeground(getForegroundInfo())
 
