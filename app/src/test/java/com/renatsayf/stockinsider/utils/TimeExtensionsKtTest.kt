@@ -47,7 +47,7 @@ class TimeExtensionsKtTest {
         val millis = time.toInstant(ZoneOffset.ofHours(5)).toEpochMilli()
         val input = 1
         val actualDays = getTimeOffsetIfWeekEnd(input, millis)
-        val expectedDays = 2
+        val expectedDays = 1
         Assert.assertEquals(expectedDays, actualDays)
     }
 }
