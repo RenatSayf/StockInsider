@@ -27,7 +27,7 @@ open class AlarmReceiver : BroadcastReceiver() {
 
         if (context != null && intent != null) {
 
-            val message = "${System.currentTimeMillis().timeToFormattedString()} ->> ${this::class.java.simpleName}.onReceive has been triggered ******"
+            val message = "${System.currentTimeMillis().timeToFormattedString()} ->> Alarm has been triggered ******"
             message.printIfDebug()
             context.appendTextToFile(LOGS_FILE_NAME, message)
 

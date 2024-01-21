@@ -121,7 +121,7 @@ class AppWorker (
                 putBooleanArray("result", array)
             }.build()
 
-            val successMessage = "${System.currentTimeMillis().timeToFormattedString()} ->> ${this.javaClass.simpleName}: Background work completed successfully ********"
+            val successMessage = "${System.currentTimeMillis().timeToFormattedString()} ->> The search was completed successfully."
             successMessage.printIfDebug()
             context.appendTextToFile(LOGS_FILE_NAME, successMessage)
 
@@ -138,7 +138,7 @@ class AppWorker (
 
             context.appendTextToFile(
                 LOGS_FILE_NAME,
-                content = "${System.currentTimeMillis().timeToFormattedString()} ->> Background work failed: $errorMessage"
+                content = "${System.currentTimeMillis().timeToFormattedString()} ->> The search was completed with an error: $errorMessage"
             )
             "********************** ${this.javaClass.simpleName}: catch block - Background work failed *****************************".printIfDebug()
 

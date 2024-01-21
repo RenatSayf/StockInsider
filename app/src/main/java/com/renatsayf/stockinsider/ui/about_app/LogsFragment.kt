@@ -1,13 +1,15 @@
+@file:Suppress("RedundantSamConstructor")
+
 package com.renatsayf.stockinsider.ui.about_app
 
 import android.os.Bundle
-import android.text.method.ScrollingMovementMethod
 import android.view.LayoutInflater
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ScrollView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
@@ -36,13 +38,14 @@ class LogsFragment : Fragment() {
 
         with(binding) {
 
-            tvLogs.movementMethod = ScrollingMovementMethod()
-
             requireContext().isLogsFileExists(
                 LOGS_FILE_NAME,
                 onExists = { file ->
                     val text = file.readText()
                     tvLogs.text = text
+                    tvLogs.post(Runnable {
+                        svLogs.fullScroll(ScrollView.FOCUS_DOWN)
+                    })
                 },
                 onNotExists = {
                     showSnackBar("$LOGS_FILE_NAME not found")
