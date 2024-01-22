@@ -56,6 +56,7 @@ import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import com.renatsayf.stockinsider.utils.registerHardWareReceiver
 import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
 import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
 import com.renatsayf.stockinsider.utils.timeToFormattedString
@@ -181,10 +182,7 @@ class MainActivity : AppCompatActivity() {
                                         context.getString(R.string.text_read),
                                         context.getString(R.string.text_close),
                                         context.getString(R.string.text_not_show_again)
-                                    ).show(
-                                        supportFragmentManager.beginTransaction(),
-                                        AppDialog.TAG
-                                    )
+                                    ).showIfNotAdded(supportFragmentManager)
                                 }
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
@@ -373,7 +371,7 @@ class MainActivity : AppCompatActivity() {
                         }
                         item == 7 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
-                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().showIfNotAdded(supportFragmentManager)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 7 && subItem == 1 -> {

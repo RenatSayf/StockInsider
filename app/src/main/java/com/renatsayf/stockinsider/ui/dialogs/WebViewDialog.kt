@@ -20,13 +20,9 @@ class WebViewDialog : DialogFragment() {
 
     companion object {
         val TAG = this::class.java.simpleName.plus(".tag")
-        private var instance: WebViewDialog? = null
 
         fun getInstance(): WebViewDialog {
-            if (instance == null) {
-                instance = WebViewDialog()
-            }
-            return instance!!
+            return WebViewDialog()
         }
     }
 

@@ -287,7 +287,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
             btnSave.setOnClickListener {
                 val newSet = trackingVM.newSet?.copy()
                 newSet?.let {
-                    SetNameDialog.newInstance(it, listener = this@TrackingFragment).show(requireActivity().supportFragmentManager, SetNameDialog.TAG)
+                    SetNameDialog.newInstance(it, listener = this@TrackingFragment).showIfNotAdded(parentFragmentManager)
                 }
             }
         }

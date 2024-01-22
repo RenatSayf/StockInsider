@@ -7,7 +7,6 @@ import android.app.Dialog
 import android.content.DialogInterface
 import android.os.Bundle
 import android.text.SpannableStringBuilder
-import android.view.LayoutInflater
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -30,14 +29,12 @@ class AppDialog : DialogFragment()
         private var negativeText: String? = null
         private var neutralText: String? = null
         private var dialogTag: String = ""
-        private var instance: AppDialog? = null
 
         fun getInstance(tag: String,
                         message: SpannableStringBuilder,
                         positiveText: String = "OK",
                         negativeText: String? = "Cancel",
-                        neutralText: String? = null): AppDialog = if (instance == null)
-        {
+                        neutralText: String? = null): AppDialog = run {
             this.dialogTag = tag
             this.message = message
             this.positiveText = positiveText
@@ -45,7 +42,6 @@ class AppDialog : DialogFragment()
             this.neutralText = neutralText
             AppDialog()
         }
-        else instance as AppDialog
     }
 
     override fun onCreate(savedInstanceState: Bundle?)

@@ -52,6 +52,7 @@ import com.renatsayf.stockinsider.utils.getValuesSize
 import com.renatsayf.stockinsider.utils.isLogsFileExists
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
 import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
@@ -144,7 +145,7 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
         }
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
-        if (!isAgree) WebViewDialog.getInstance().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
+        if (!isAgree) WebViewDialog.getInstance().showIfNotAdded(parentFragmentManager)
 
         if (savedInstanceState == null) {
 
@@ -307,12 +308,12 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
         binding.btnAddToTracking.setOnClickListener {
             val name = resultVM.dbSearchSet?.generateQueryName()
             name?.let { n ->
-                SaveSearchDialog.getInstance(n, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+                SaveSearchDialog.getInstance(n, listener = this).showIfNotAdded(parentFragmentManager)
             }
         }
         binding.btnSorting.apply {
             setOnClickListener {
-                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
+                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).showIfNotAdded(parentFragmentManager)
             }
         }
         binding.btnSearchConfig.setOnClickListener {

@@ -161,7 +161,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     }
                 }
             }
-        ).show(requireActivity().supportFragmentManager, ConfirmationDialog.TAG)
+        ).showIfNotAdded(requireActivity().supportFragmentManager)
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
@@ -226,7 +226,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         val queryName = set.queryName
         val infoText = "${getString(R.string.text_tracking_description)} $queryName"
         InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO).let { dialog ->
-            dialog.show(requireActivity().supportFragmentManager, dialog.tag)
+            dialog.showIfNotAdded(requireActivity().supportFragmentManager)
         }
     }
 
@@ -286,7 +286,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                             onChecked.invoke()
                                         }
                                     }
-                                ).show(parentFragmentManager, InfoDialog.TAG)
+                                ).showIfNotAdded(parentFragmentManager)
                             },
                             onGranted = {
                                 onChecked.invoke()

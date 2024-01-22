@@ -20,7 +20,9 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.LiveData
 import androidx.work.*
 import com.google.android.material.snackbar.Snackbar
@@ -260,7 +262,7 @@ fun AppCompatActivity.showInfoDialog(
     callback: (Int) -> Unit = {}
 ) {
     val dialog = InfoDialog.newInstance(title, message, status, callback)
-    dialog.show(this.supportFragmentManager, InfoDialog.TAG)
+    dialog.showIfNotAdded(this.supportFragmentManager)
 }
 
 fun Fragment.showInfoDialog(
@@ -336,6 +338,12 @@ fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
     }
     else {
         this.registerReceiver(receiver, intentFilter)
+    }
+}
+
+fun DialogFragment.showIfNotAdded(fragmentManager: FragmentManager) {
+    if (!this.isAdded) {
+        this.show(fragmentManager.beginTransaction(), "${this::class.java.simpleName}.TAG")
     }
 }
 
