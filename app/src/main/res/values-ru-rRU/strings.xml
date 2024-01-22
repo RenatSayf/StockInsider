@@ -61,7 +61,7 @@
     <string name="text_insider_name">Имя инсайдера</string>
     <string name="text_nothing_found">Ничего не найдено</string>
     <string name="text_change_parameters">Попробуйте изменить ваши поисковые параметры</string>
-    <string name="text_back_to_search">Назад к поиску</string>
+    <string name="text_back_to_search">Изменить параметры поиска</string>
     <string name="text_0">0</string>
     <string name="text_results">Найдено</string>
     <string name="text_deal_details">Детали сделки</string>

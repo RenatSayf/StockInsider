@@ -62,7 +62,7 @@
     <string name="text_insider_name">Insider\'s Name</string>
     <string name="text_nothing_found">Nothing found</string>
     <string name="text_change_parameters">Try changing your search parameters</string>
-    <string name="text_back_to_search">Back to search</string>
+    <string name="text_back_to_search">Change the search parameters</string>
     <string name="text_0">0</string>
     <string name="text_results">Found</string>
     <string name="text_deal_details">Transaction Details</string>
