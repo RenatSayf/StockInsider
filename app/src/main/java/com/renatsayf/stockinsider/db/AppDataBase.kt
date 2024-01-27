@@ -5,8 +5,6 @@ import androidx.room.AutoMigration
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 
 private const val DB_VERSION = 19
 
@@ -30,21 +28,32 @@ abstract class AppDataBase : RoomDatabase() {
                 buildDataBase(context).also {
                     instance = it
                 }
+            }.apply {
+                val version = this.openHelper.writableDatabase.version
+                if (version == 19) {
+                    updateFilingPeriods(this)
+                }
             }
         }
 
         private fun buildDataBase(context: Context): AppDataBase {
 
-            val migration18to19 = object : Migration(18, 19) {
-                override fun migrate(db: SupportSQLiteDatabase) {
-                    val version = db.version
-                    if (version < 19) {
-                        context.deleteDatabase(DATABASE)
-                    }
-                }
-            }
+//            val migration18to19 = object : Migration(18, 19) {
+//                override fun migrate(db: SupportSQLiteDatabase) {
+//                    val version = db.version
+//                    if (version < 19) {
+//                        context.deleteDatabase(DATABASE)
+//                    }
+//                }
+//            }
+//
+//            val migration19to20 = object : Migration(19, 20) {
+//                override fun migrate(db: SupportSQLiteDatabase) {
+//                    db.execSQL(updateFilingPeriod_3)
+//                }
+//            }
+
             return Room.databaseBuilder(context, AppDataBase::class.java, DATABASE).apply {
-                //addMigrations(migration)
                 createFromAsset("database/$DATABASE")
                 allowMainThreadQueries()
             }.build()
@@ -53,6 +62,24 @@ abstract class AppDataBase : RoomDatabase() {
 
 }
 
+private fun updateFilingPeriods(appDataBase: AppDataBase) {
+    val database = appDataBase.openHelper.writableDatabase
+    database.execSQL(updateFilingPeriod_3)
+    database.execSQL(updateFilingPeriod_7)
+    database.execSQL(updateFilingPeriod_14)
+}
+
+private const val updateFilingPeriod_3 = """UPDATE search_set SET 
+filing_period = 3, trade_period = 7 
+WHERE set_name = 'pur_more1_for_3' OR set_name = 'pur_more5_for_3' OR set_name = 'sale_more1_for_3' OR set_name = 'sale_more5_for_3'"""
+
+private const val updateFilingPeriod_7 = """UPDATE search_set SET 
+filing_period = 7, trade_period = 11 
+WHERE set_name = 'purchases_more_1' OR set_name = 'purchases_more_5' OR set_name = 'sales_more_1' OR set_name = 'sales_more_5'"""
+
+private const val updateFilingPeriod_14 = """UPDATE search_set SET 
+filing_period = 14, trade_period = 18 
+WHERE set_name = 'pur_more1_for_14' OR set_name = 'pur_more5_for_14' OR set_name = 'sale_more1_for_14' OR set_name = 'sale_more5_for_14'"""
 
 private const val QUERY = """INSERT INTO search_set (
 set_name, 

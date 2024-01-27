@@ -4,9 +4,13 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
+import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
@@ -16,7 +20,7 @@ import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
+class AboutAppFragment : Fragment() {
     private lateinit var binding: AboutAppFragmentBinding
 
     companion object {
@@ -27,31 +31,47 @@ class AboutAppFragment : Fragment(R.layout.about_app_fragment) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.about_app_fragment, container, false)
+    ): View {
+        binding = AboutAppFragmentBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = AboutAppFragmentBinding.bind(view)
-
         val packageInfo = requireActivity().packageManager.getPackageInfo(requireActivity().packageName, 0)
         val versionName = "v.${packageInfo.versionName}"
 
-        binding.versionNameView.text = versionName
+        with(binding){
+            versionNameView.text = versionName
 
-        binding.btnEvaluate.setOnClickListener {
-            requireContext().goToAppStore()
-        }
+            btnEvaluate.setOnClickListener {
+                requireContext().goToAppStore()
+            }
 
-        binding.privacyPolicyLinkView.setOnClickListener {
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
-            startActivity(intent)
-        }
+            privacyPolicyLinkView.setOnClickListener {
+                val intent =
+                    Intent(Intent.ACTION_VIEW, Uri.parse(getString(R.string.privacy_policy_link)))
+                startActivity(intent)
+            }
 
-        binding.toolBar.setNavigationOnClickListener {
-            findNavController().popBackStack()
+            toolBar.addMenuProvider(object : MenuProvider {
+                override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {}
+
+                override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                    when(menuItem.itemId) {
+                        R.id.menu_open_logs -> {
+                            findNavController().navigate(R.id.logsFragment)
+                        }
+                    }
+                    return false
+                }
+
+            }, viewLifecycleOwner)
+
+            toolBar.setNavigationOnClickListener {
+                findNavController().popBackStack()
+            }
         }
     }
 

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/insider_deals"
+        android:title="@string/text_insider_deals"/>
+
+    <item
+        android:id="@+id/insider_info"
+        android:title="@string/text_insider_info"/>
+
+    <item
+        android:id="@+id/company_deals"
+        android:title="@string/text_company_deals"/>
+
+    <item
+        android:id="@+id/company_info"
+        android:title="@string/text_company_info"/>
+
+    <item android:id="@+id/market_watch"
+        android:title="@string/marketwatch"/>
+
+    <item
+        android:id="@+id/start_trading"
+        android:title="@string/text_start_trading"
+        />
+
+</menu>

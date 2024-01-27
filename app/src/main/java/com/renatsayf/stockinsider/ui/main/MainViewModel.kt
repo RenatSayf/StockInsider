@@ -12,6 +12,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -46,6 +47,22 @@ class MainViewModel @Inject constructor(
             set.value = searchSet
         }
         return set
+    }
+
+    fun getSearchSetByName(
+        setName: String,
+        onSuccess: (set: RoomSearchSet) -> Unit,
+        onFailed: (Exception) -> Unit = {}
+    ) {
+        try {
+            viewModelScope.launch {
+                val set = repository.getSearchSetFromDbAsync(setName)
+                onSuccess.invoke(set)
+            }
+        } catch (e: Exception) {
+            e.printStackTraceIfDebug()
+            onFailed.invoke(e)
+        }
     }
 
     fun getSearchSetList(): LiveData<List<RoomSearchSet>> {

@@ -11,9 +11,12 @@
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
         app:navigationIcon="@drawable/ic_arrow_back_white"
+        android:theme="@style/AppTheme.PopupOverlay"
         app:title="@string/text_deal_details"
         app:titleTextColor="@color/colorWhite"
-        android:background="@drawable/app_bar_background"/>
+        android:background="@drawable/app_bar_background"
+        app:menu="@menu/common_deal_menu"
+        />
 
     <ScrollView android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -71,20 +74,21 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:contentDescription="@string/app_name"
-                    tools:src="@drawable/stock_charts"
-                    android:foreground="?android:selectableItemBackgroundBorderless"
                     android:clickable="true"
+                    android:contentDescription="@string/app_name"
                     android:focusable="true"
+                    android:foreground="?android:selectableItemBackgroundBorderless"
                     android:scaleType="fitXY"
                     android:visibility="visible"
-                    />
+                    tools:ignore="ImageContrastCheck"
+                    tools:src="@drawable/image_area_chart_144dp" />
 
                 <ProgressBar
                     android:id="@+id/imgLoadProgBar"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:indeterminateTint="@color/colorGold"
                     />
 
             </androidx.cardview.widget.CardView>
@@ -481,10 +485,10 @@
                 android:id="@+id/layout_market_watch"
                 android:layout_width="110dp"
                 android:layout_height="32dp"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/btnOpenAccount"
                 app:layout_constraintTop_toBottomOf="@id/value_bottom"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="0dp"
+                android:layout_marginTop="8dp"
                 android:visibility="visible"
                 tools:visibility="visible"
                 >
@@ -498,6 +502,23 @@
                     />
 
             </FrameLayout>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/btnOpenAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="32dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/layout_market_watch"
+                app:layout_constraintEnd_toStartOf="@+id/layout_market_watch"
+                app:layout_constraintBottom_toBottomOf="@+id/layout_market_watch"
+                android:gravity="center"
+                android:text="@string/text_start_trading"
+                android:textColor="@color/colorPrimaryDark"
+                android:textStyle="bold"
+                android:textSize="18sp"
+                android:drawableStart="@drawable/buy"
+                android:drawablePadding="8dp"
+                android:foreground="?android:selectableItemBackgroundBorderless"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

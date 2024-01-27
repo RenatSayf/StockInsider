@@ -89,15 +89,15 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
         binding.addButton.setOnClickListener {
 
-            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
-                count?.let {
-                    if (it < FireBaseConfig.requestsCount) {
+            trackingVM.getTrackedCountAsync(
+                onSuccess = { count ->
+                    if (count < FireBaseConfig.requestsCount) {
                         val set = RoomSearchSet(
                             queryName = "",
                             companyName = "",
                             ticker = "",
                             filingPeriod = 1,
-                            tradePeriod = 3,
+                            tradePeriod = 7,
                             tradedMin = "",
                             tradedMax = "",
                             isOfficer = true,
@@ -119,7 +119,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         )
                     }
                 }
-            }
+            )
         }
 
     }
@@ -145,6 +145,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                 res > 0 -> {
                                     mainVM.getSearchSetsByTarget(Target.Tracking).asFlow().collectLatest { list ->
                                         trackingVM.setState(TrackingListViewModel.State.Initial(list))
+                                        val trackedList = list.filter { it.isTracked }
+                                        if (trackedList.isEmpty()) {
+                                            val scheduler = Scheduler(requireContext().applicationContext)
+                                            scheduler.isAlarmSetup(false)?.cancel()
+                                            showSnackBar(getString(R.string.text_tracking_disabled))
+                                        }
                                     }
                                 }
                                 res == 0 -> {
@@ -155,7 +161,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     }
                 }
             }
-        ).show(requireActivity().supportFragmentManager, ConfirmationDialog.TAG)
+        ).showIfNotAdded(requireActivity().supportFragmentManager)
     }
 
     override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
@@ -191,8 +197,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
-                        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
-                            result.onSuccess { count ->
+                        trackingVM.getTrackedCountAsync(
+                            onSuccess = {count ->
                                 if (count == 0) {
                                     val scheduler = Scheduler(requireContext().applicationContext)
                                     val pendingIntent = scheduler.isAlarmSetup(false)
@@ -201,7 +207,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                     }
                                 }
                             }
-                        }
+                        )
                     }
                 }
             }
@@ -220,7 +226,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         val queryName = set.queryName
         val infoText = "${getString(R.string.text_tracking_description)} $queryName"
         InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO).let { dialog ->
-            dialog.show(requireActivity().supportFragmentManager, dialog.tag)
+            dialog.showIfNotAdded(requireActivity().supportFragmentManager)
         }
     }
 
@@ -261,8 +267,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     fun checkNotificationPermission(
         onChecked: () -> Unit
     ) {
-        trackingVM.getTrackedCount().observe(viewLifecycleOwner) { result ->
-            result.onSuccess { count ->
+        trackingVM.getTrackedCountAsync(
+            onSuccess = {count ->
                 if (count > 0) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                         askForPermission(
@@ -280,7 +286,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                             onChecked.invoke()
                                         }
                                     }
-                                ).show(parentFragmentManager, InfoDialog.TAG)
+                                ).showIfNotAdded(parentFragmentManager)
                             },
                             onGranted = {
                                 onChecked.invoke()
@@ -294,11 +300,11 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 else {
                     onChecked.invoke()
                 }
-            }
-            result.onFailure {
+            },
+            onError = {
                 onChecked.invoke()
             }
-        }
+        )
     }
 
 }

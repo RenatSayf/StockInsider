@@ -1,10 +1,11 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
-import androidx.work.*
-import com.renatsayf.stockinsider.BuildConfig
-import com.renatsayf.stockinsider.utils.timeToFormattedString
-import java.util.*
+import androidx.work.Constraints
+import androidx.work.Data
+import androidx.work.NetworkType
+import androidx.work.OneTimeWorkRequest
+import androidx.work.PeriodicWorkRequest
 import java.util.concurrent.TimeUnit
 
 
@@ -22,22 +23,10 @@ class WorkTask : IWorkTask {
 
     override fun createOneTimeTask(context: Context, name: String, startTime: Long): OneTimeWorkRequest {
 
-        val currentTimeInMillis = Calendar.getInstance().apply {
-            timeInMillis += TimeZone.getDefault().rawOffset
-        }.timeInMillis
-        val delay = TimeUnit.MILLISECONDS.toMinutes(startTime - currentTimeInMillis)
-
         val request = OneTimeWorkRequest.Builder(AppWorker::class.java).apply {
-            setInitialDelay(delay, TimeUnit.MINUTES)
             setConstraints(constraints)
             addTag(TAG)
         }.build()
-
-        if (BuildConfig.DEBUG) {
-            println("******************** ${this::class.java.simpleName}.createOneTimeTask() currentTime: ${currentTimeInMillis.timeToFormattedString()} ***********************")
-            println("******************** ${this::class.java.simpleName}.createOneTimeTask() startTime: ${startTime.timeToFormattedString()} ***********************")
-            println("******************** ${this::class.java.simpleName}.createOneTimeTask() delay : $delay *********************")
-        }
 
         return request
     }

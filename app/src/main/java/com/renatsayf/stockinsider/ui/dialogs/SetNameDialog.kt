@@ -1,3 +1,5 @@
+@file:Suppress("UNUSED_ANONYMOUS_PARAMETER")
+
 package com.renatsayf.stockinsider.ui.dialogs
 
 import android.app.AlertDialog

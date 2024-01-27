@@ -22,7 +22,6 @@ class InfoDialog private constructor() : DialogFragment() {
         private var message: String = ""
         private var status: DialogStatus = DialogStatus.INFO
         private var callback: (Int) -> Unit = {}
-        private var instance: InfoDialog? = null
 
         fun newInstance(
             title: String = "",
@@ -34,7 +33,7 @@ class InfoDialog private constructor() : DialogFragment() {
             this.message = message
             this.status = status
             this.callback = callback
-            return if (instance == null) InfoDialog() else instance!!
+            return InfoDialog()
         }
     }
 

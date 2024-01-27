@@ -1,3 +1,5 @@
+@file:Suppress("MoveVariableDeclarationIntoWhen")
+
 package com.renatsayf.stockinsider.ui.main
 
 import android.os.Bundle
@@ -13,10 +15,8 @@ import androidx.core.view.GravityCompat
 import androidx.core.view.MenuProvider
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentHomeBinding
@@ -24,28 +24,30 @@ import com.renatsayf.stockinsider.databinding.TickerLayoutBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.ui.adapters.TickersListAdapter
 import com.renatsayf.stockinsider.ui.dialogs.SearchListDialog
-import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
-import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
-import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
-import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.hideKeyBoard
-import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class MainFragment : Fragment(R.layout.fragment_home) {
+class MainFragment : Fragment() {
+
+    companion object {
+        val TAG = "${MainFragment::class.simpleName}.1111"
+    }
 
     private lateinit var binding: FragmentHomeBinding
+
     private val mainVM : MainViewModel by lazy {
         ViewModelProvider(this)[MainViewModel::class.java].apply {
-            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) {
-                this.setState(MainViewModel.State.Initial(it))
+            getSearchSetByName(getString(R.string.text_current_set_name)).observe(this@MainFragment) { set ->
+                if (set != null) {
+                    this.setState(MainViewModel.State.Initial(set))
+                }
             }
         }
     }
-    private val donateVM: DonateViewModel by activityViewModels()
 
     private val tickersAdapter: TickersListAdapter by lazy {
         TickersListAdapter(requireContext())
@@ -55,35 +57,37 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding = FragmentHomeBinding.bind(view)
-
-        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
-            result.onSuccess {
-                requireContext().isAdsDisabled = !BuildConfig.DEBUG
-            }
-        }
-
-        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
-        if (!isAgree) WebViewDialog.getInstance().show(requireActivity().supportFragmentManager, WebViewDialog.TAG)
-
-        binding.searchButton.setVisible(true)
 
         mainVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is MainViewModel.State.Initial -> {
                     val set = state.set
                     with(binding) {
-                        general.tickerET.setText("")
                         general.tickerET.setText(set.ticker)
-                        date.filingDateSpinner.setSelection(set.filingPeriod)
-                        date.tradeDateSpinner.setSelection(set.tradePeriod)
+
+                        val fillingPeriods = resources.getIntArray(R.array.value_for_filing_date)
+                        val fillingIndex = fillingPeriods.indexOf(set.filingPeriod)
+                        if (fillingIndex >= 0) {
+                            date.filingDateSpinner.setSelection(fillingIndex)
+                        } else {
+                            date.filingDateSpinner.setSelection(1)
+                        }
+
+                        val tradePeriods = resources.getIntArray(R.array.value_for_filing_date)
+                        val tradeIndex = tradePeriods.indexOf(set.filingPeriod)
+                        if (tradeIndex >= 0) {
+                            date.tradeDateSpinner.setSelection(tradeIndex)
+                        } else {
+                            date.tradeDateSpinner.setSelection(1)
+                        }
+
                         traded.purchaseCheckBox.isChecked = set.isPurchase
                         traded.saleCheckBox.isChecked = set.isSale
                         traded.tradedMinET.setText(set.tradedMin)
@@ -107,7 +111,6 @@ class MainFragment : Fragment(R.layout.fragment_home) {
             }
             binding.general.tickerET.setAdapter(tickersAdapter)
             binding.general.tickerET.clearFocus()
-            //hideKeyBoard(binding.root)
         }
 
         var tickerText = ""
@@ -143,28 +146,26 @@ class MainFragment : Fragment(R.layout.fragment_home) {
         }
 
         binding.searchButton.setOnClickListener {
-
-            //showInterstitialAd(interstitialAd)
-
             val set = scanScreen()
-            (requireActivity() as MainActivity).hideKeyBoard(it)
-
-            val bundle = Bundle().apply {
-                putString(ResultFragment.ARG_TITLE, getString(R.string.text_trading_screen))
+            set.queryName = getString(R.string.text_current_set_name)
+            findNavController().navigate(R.id.nav_result, Bundle().apply {
                 putSerializable(ResultFragment.ARG_SEARCH_SET, set)
-            }
-            findNavController().navigate(R.id.nav_result, bundle)
+            })
         }
 
         binding.date.filingDateSpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
-                    val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
-                    val selectedItem = array[p2]
-                    when {
-                        selectedItem < 3 && selectedItem != 0 -> binding.date.tradeDateSpinner.setSelection(3)
-                        selectedItem == 0 -> binding.date.tradeDateSpinner.setSelection(0)
-                        else -> binding.date.tradeDateSpinner.setSelection(p2)
+                    with(binding){
+                        val array = requireContext().resources.getIntArray(R.array.value_for_filing_date)
+                        val selectedItem = array[p2]
+                        when (selectedItem) {
+                            0 -> date.tradeDateSpinner.setSelection(0)
+                            1, 2, 3 -> date.tradeDateSpinner.setSelection(4)
+                            7 -> date.tradeDateSpinner.setSelection(5)
+                            14 -> date.tradeDateSpinner.setSelection(6)
+                            else -> date.tradeDateSpinner.setSelection(p2)
+                        }
                     }
                 }
                 override fun onNothingSelected(p0: AdapterView<*>?) {}
@@ -194,8 +195,11 @@ class MainFragment : Fragment(R.layout.fragment_home) {
                                 override fun onSearchDialogDeleteClick(roomSearchSet: RoomSearchSet) {
                                     mainVM.deleteSearchSet(roomSearchSet)
                                 }
-                            }).show(requireActivity().supportFragmentManager, SearchListDialog.TAG)
+                            }).showIfNotAdded(parentFragmentManager)
                         }
+                    }
+                    R.id.action_start_trading -> {
+                        findNavController().navigate(R.id.referralFragment)
                     }
                 }
                 return false
@@ -220,29 +224,28 @@ class MainFragment : Fragment(R.layout.fragment_home) {
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                requireActivity().finish()
+                findNavController().popBackStack()
             }
         })
-    }
-
-    override fun onPause() {
-        (requireActivity() as MainActivity).drawerLayout.isEnabled = false
-        val set = scanScreen()
-        set.queryName = getString(R.string.text_current_set_name)
-        mainVM.saveSearchSet(set)
-        mainVM.setState(MainViewModel.State.Initial(set))
-        super.onPause()
+        binding.toolbar.setNavigationOnClickListener {
+            findNavController().popBackStack()
+        }
     }
 
     private fun scanScreen(): RoomSearchSet {
 
         with(binding) {
+
+            val datePeriodValues = resources.getIntArray(R.array.value_for_filing_date)
+            val fillingPeriod = datePeriodValues[date.filingDateSpinner.selectedItemPosition]
+            val tradePeriod = datePeriodValues[date.tradeDateSpinner.selectedItemPosition]
+
             return RoomSearchSet(
                 queryName = getString(R.string.text_current_set_name),
                 "",
-                general.tickerET.text.toString(),
-                date.filingDateSpinner.selectedItemPosition,
-                date.tradeDateSpinner.selectedItemPosition,
+                ticker = general.tickerET.text.toString(),
+                filingPeriod = fillingPeriod,
+                tradePeriod = tradePeriod,
                 traded.purchaseCheckBox.isChecked,
                 traded.saleCheckBox.isChecked,
                 traded.tradedMinET.text.toString().trim(),

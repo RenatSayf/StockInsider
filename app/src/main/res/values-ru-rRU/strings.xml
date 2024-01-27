@@ -52,8 +52,8 @@
     <string name="text_group_and_sort">Группировка и сортировка</string>
     <string name="text_sort_by">Сортировка по</string>
     <string name="text_trade_date">Дата сделки</string>
-    <string name="text_trading_screen">Торговый экран</string>
-    <string name="text_deal_value">Объем сделки $</string>
+    <string name="text_trading_screen">Отчеты об инсайдерской торговле</string>
+    <string name="text_deal_value">Объем, $</string>
     <string name="text_company_name">Компания</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
     <string name="text_p_purchase">P - Покупка</string>
@@ -61,7 +61,7 @@
     <string name="text_insider_name">Имя инсайдера</string>
     <string name="text_nothing_found">Ничего не найдено</string>
     <string name="text_change_parameters">Попробуйте изменить ваши поисковые параметры</string>
-    <string name="text_back_to_search">Назад к поиску</string>
+    <string name="text_back_to_search">Изменить параметры поиска</string>
     <string name="text_0">0</string>
     <string name="text_results">Найдено</string>
     <string name="text_deal_details">Детали сделки</string>
@@ -254,5 +254,14 @@
     <string name="text_for_notification_permission">Для того чтобы уведомить Вас о новых сделках, Вы должны разрешить приложению показывать уведомления. Перейти в настройки?</string>
     <string name="unknown_error">Ой! Что то пошло не так…</string>
     <string name="saving_error">Ошибка сохранения…</string>
+    <string name="question_on_exit">Вы действительно хотите выйти из приложения</string>
+    <string name="text_purchases_and_sales">Покупки и продажи</string>
+    <string name="text_purchases">Покупки</string>
+    <string name="text_sales">Продажи</string>
+    <string name="text_need_open_account">Для того чтобы начать торговать, вам необходимо открыть счет у брокера</string>
+    <string name="text_broker_list_load_error">Не удалось загрузить список брокеров</string>
+    <string name="text_start_trading">Начать торговать</string>
+    <string name="text_view_logs">Просмотр логов</string>
+    <string name="text_clear_logs">Очистить логи</string>
 
 </resources>

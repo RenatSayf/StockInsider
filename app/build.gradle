@@ -8,13 +8,12 @@ apply plugin: 'com.google.firebase.crashlytics'
 
 android {
     compileSdk 34
-    buildToolsVersion = "33.0.1"
     defaultConfig {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
         targetSdkVersion 34
-        versionCode 31      //Hint The latest versionCode at store is 30
-        versionName '3.5'   //Hint The latest versionName at store is 3.4
+        versionCode 33      //Hint The latest versionCode at store is 32
+        versionName '4.1'   //Hint The latest versionName at store is 4.0
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
@@ -52,6 +51,9 @@ android {
         }
         localhost {
             buildConfigField 'String', 'DATA_SOURCE', '\"LOCALHOST\"'
+        }
+        timePeriod {
+            buildConfigField 'String', 'DATA_SOURCE', '\"TEST_TIME_PERIOD\"'
         }
     }
 
@@ -91,8 +93,8 @@ dependencies {
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.2'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.6.2'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
     implementation 'androidx.test.ext:junit-ktx:1.1.5'
 
     //Hint Hilt step 3
@@ -103,11 +105,11 @@ dependencies {
     kapt 'androidx.hilt:hilt-compiler:1.1.0'
 
     //jsoup
-    implementation 'org.jsoup:jsoup:1.17.1'
+    implementation 'org.jsoup:jsoup:1.17.2'
 
     // Retrofit
     implementation "com.squareup.retrofit2:retrofit:2.9.0"
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.3'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 
     //room
     implementation 'androidx.room:room-runtime:2.6.1'
@@ -160,7 +162,7 @@ dependencies {
     testImplementation 'org.robolectric:annotations:4.11.1'
 
     // MockWebServer
-    testImplementation 'com.squareup.okhttp3:mockwebserver:4.10.0'
+    testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 
     // For Robolectric tests.
     testImplementation 'com.google.dagger:hilt-android-testing:2.50'

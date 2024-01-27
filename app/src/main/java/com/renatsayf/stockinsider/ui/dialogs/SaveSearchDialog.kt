@@ -10,25 +10,22 @@ import androidx.fragment.app.DialogFragment
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.SaveSearchLayoutBinding
 
-class SaveSearchDialog : DialogFragment()
+class SaveSearchDialog private constructor(): DialogFragment()
 {
     private lateinit var binding: SaveSearchLayoutBinding
 
     companion object
     {
         val TAG = this::class.java.simpleName.plus("_tag")
-        private var instance: SaveSearchDialog? = null
         private var listener: Listener? = null
         private var name: String? = null
 
-        fun getInstance(name: String, listener: Listener? = null): SaveSearchDialog = if (instance == null)
+        fun getInstance(name: String, listener: Listener? = null): SaveSearchDialog
         {
             this.name = name
             this.listener = listener
-            SaveSearchDialog()
+            return SaveSearchDialog()
         }
-        else instance as SaveSearchDialog
-
     }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog

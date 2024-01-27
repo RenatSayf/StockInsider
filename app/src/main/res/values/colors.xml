@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="colorPrimary">#043A75</color>
+    <color name="colorPrimaryTransp">#99073B74</color>
+    <color name="colorPrimaryTransp80">#CC043A75</color>
+    <color name="colorPrimaryliteTransp">#99051F3E</color>
     <color name="colorPrimaryPressed">#469EFD</color>
     <color name="colorPrimarylite">#1A60AC</color>
     <color name="colorPrimaryDark">#022245</color>
@@ -8,6 +11,7 @@
     <color name="colorTransparent">#00FFFFFF</color>
     <color name="colorSemitransparent">#20000000</color>
     <color name="colorTransparent70">#B3000000</color>
+    <color name="colorTransparent50">#80000000</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="pagebackground">#f5f9fc</color>
     <color name="buy1000000">#e1ffe1</color>

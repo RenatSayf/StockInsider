@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/nav_home">
+    app:startDestination="@+id/nav_result">
 
     <fragment
         android:id="@+id/nav_home"
@@ -92,6 +92,16 @@
         android:name="com.renatsayf.stockinsider.ui.tracking.companies.CompaniesFragment"
         android:label="companies_fragment"
         tools:layout="@layout/companies_fragment" />
+    <fragment
+        android:id="@+id/referralFragment"
+        android:name="com.renatsayf.stockinsider.ui.referral.ReferralFragment"
+        android:label="fragment_referral"
+        tools:layout="@layout/fragment_referral" />
+    <fragment
+        android:id="@+id/logsFragment"
+        android:name="com.renatsayf.stockinsider.ui.about_app.LogsFragment"
+        android:label="fragment_logs"
+        tools:layout="@layout/fragment_logs" />
 
 
 </navigation>

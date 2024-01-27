@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".ui.result.ResultFragment"
-    android:background="@color/colorPrimary"
+    android:background="@drawable/background_1"
     >
 
     <androidx.appcompat.widget.Toolbar
@@ -17,10 +17,13 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toTopOf="@+id/resultsNumberLayout"
-        app:navigationIcon="@drawable/ic_arrow_back_white"
+        app:navigationIcon="@drawable/ic_hamburger_white"
         app:title="@string/text_trading_screen"
         app:titleTextColor="@color/colorWhite"
-        android:background="@drawable/app_bar_background"/>
+        tools:subtitle="Purchases in the last 3 days"
+        app:subtitleTextColor="@color/colorGold"
+        android:background="@color/colorSemitransparent"
+        />
 
     <LinearLayout
         android:id="@+id/resultsNumberLayout"
@@ -31,7 +34,8 @@
         android:padding="0dp"
         android:paddingStart="5dp"
         android:paddingEnd="5dp"
-        android:background="@color/colorPrimary">
+        android:background="@color/colorSemitransparent"
+        >
 
         <TextView
             android:layout_width="wrap_content"
@@ -73,7 +77,8 @@
         android:paddingStart="12dp"
         android:paddingEnd="12dp"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:background="@color/colorSemitransparent">
 
         <TextView
             android:id="@+id/titleTView"
@@ -107,6 +112,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         tools:listitem="@layout/fake_deal_layout"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        android:contentDescription="@string/text_insider_deals"
         />
 
     <include
@@ -129,26 +135,50 @@
         tools:visibility="visible"
         />
 
-    <Button
-        android:id="@+id/btn_add_to_tracking"
-        android:layout_width="wrap_content"
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/layoutBottomButtons"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:padding="4dp"
-        tools:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="12dp"
+        tools:layout_marginBottom="46dp"
+        android:layout_marginBottom="-50dp"
         android:visibility="gone"
         tools:visibility="visible"
-        android:contentDescription="@string/app_name"
-        android:text="@string/text_add_to_tracking"
-        android:textAllCaps="false"
-        android:background="@drawable/bg_ripple_default"
-        android:drawableStart="@drawable/ic_add"
-        android:drawableEnd="@drawable/ic_visibility"
-        android:drawablePadding="8dp"
-        android:textColor="@color/colorWhite"
-        android:layout_marginBottom="-50dp"
-        />
+        >
+
+        <androidx.appcompat.widget.AppCompatImageButton
+            android:id="@+id/btnSearchConfig"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="16dp"
+            android:src="@drawable/tuning_icon"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/text_title_home"
+            android:background="@drawable/bg_ripple_round_primary"
+            />
+
+        <Button
+            android:id="@+id/btnAddToTracking"
+            android:layout_width="wrap_content"
+            android:layout_height="48dp"
+            android:maxWidth="230dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
+            android:contentDescription="@string/text_add_to_tracking"
+            android:text="@string/text_add_to_tracking"
+            android:textAllCaps="false"
+            android:background="@drawable/bg_ripple_default"
+            android:drawableStart="@drawable/ic_add"
+            android:drawableEnd="@drawable/ic_visibility"
+            android:drawablePadding="8dp"
+            android:textColor="@color/colorWhite"
+            />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

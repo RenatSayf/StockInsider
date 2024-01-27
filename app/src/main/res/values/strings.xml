@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!--    don't translate-->
     <string name="app_name">Stock Insider</string>
@@ -18,15 +18,15 @@
     <string name="test_interstitial_ads_id">ca-app-pub-3940256099942544/1033173712</string>
 
     <string-array name="yandex_ads">
-        <item>R-M-711877-1</item>
-        <item>R-M-711877-2</item>
-        <item>R-M-711877-3</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-1</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-2</item>
+        <item tools:ignore="TypographyDashes">R-M-711877-3</item>
     </string-array>
     <string name="yandex_demo_ad_id">demo-interstitial-yandex</string>
 
     <string name="text_default_set_name">default_set</string>
     <string name="text_current_set_name">current_set</string>
-    
+
     <string name="ya_metrica_api_key" translatable="false">31a17f0a-3956-4e9f-8edf-debdc1059e68</string>
 
 
@@ -53,8 +53,8 @@
     <string name="text_group_and_sort">Grouping and sorting</string>
     <string name="text_sort_by">Sort by</string>
     <string name="text_trade_date">Transaction date</string>
-    <string name="text_trading_screen">Trading Screen</string>
-    <string name="text_deal_value">Transaction volume $</string>
+    <string name="text_trading_screen">Insider trading reports</string>
+    <string name="text_deal_value">Volume, $</string>
     <string name="text_company_name">Company</string>
     <string name="text_date_20_20_2020">2020–04–22 09:22:09</string>
     <string name="text_p_purchase">P - Purchase</string>
@@ -62,7 +62,7 @@
     <string name="text_insider_name">Insider\'s Name</string>
     <string name="text_nothing_found">Nothing found</string>
     <string name="text_change_parameters">Try changing your search parameters</string>
-    <string name="text_back_to_search">Back to search</string>
+    <string name="text_back_to_search">Change the search parameters</string>
     <string name="text_0">0</string>
     <string name="text_results">Found</string>
     <string name="text_deal_details">Transaction Details</string>
@@ -255,5 +255,16 @@
     <string name="text_for_notification_permission">In order to notify you of new deals, you must allow the app to show notifications. Go to Settings?</string>
     <string name="unknown_error">Ouch! Something went wrong…</string>
     <string name="saving_error">Saving error...</string>
+    <string name="question_on_exit">Do you really want to exit the app</string>
+    <string name="text_purchases_and_sales">Purchases and Sales</string>
+    <string name="text_purchases">Purchases</string>
+    <string name="text_sales">Sales</string>
+    <string name="text_need_open_account">In order to start trading, you need to open an account with a broker</string>
+    <string name="text_broker_list_load_error">The list of brokers could not be loaded</string>
+    <string name="text_start_trading">Start trading</string>
+    <string name="text_view_logs">View logs</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="text_clear_logs">Clear logs</string>
 
 </resources>

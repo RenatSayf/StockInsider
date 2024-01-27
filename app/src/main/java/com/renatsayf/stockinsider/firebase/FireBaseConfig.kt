@@ -8,6 +8,7 @@ import com.google.firebase.remoteconfig.ktx.remoteConfig
 import com.google.firebase.remoteconfig.ktx.remoteConfigSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
+import com.renatsayf.stockinsider.ui.referral.models.Brokers
 import com.renatsayf.stockinsider.ui.settings.Constants
 import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import kotlinx.serialization.json.Json
@@ -17,8 +18,13 @@ object FireBaseConfig {
 
     val userAgent: String
         get() {
-            val value = Firebase.remoteConfig.getString("user_agent")
-            return value.ifEmpty { "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36" }
+            return try {
+                val value = Firebase.remoteConfig.getString("user_agent")
+                value
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36"
+            }
         }
     val trackingPeriod: Long
         get() {
@@ -63,8 +69,21 @@ object FireBaseConfig {
             return value
         }
 
+    val partners: Brokers
+        get() {
+            val value = try {
+                val json = Firebase.remoteConfig.getString("partners")
+                val brokers = Json.decodeFromString<Brokers>(json)
+                brokers
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                Brokers(listOf())
+            }
+            return value
+        }
+
     private val configSettings = remoteConfigSettings {
-        minimumFetchIntervalInSeconds = 3600
+        minimumFetchIntervalInSeconds = 300
     }
 
     init {

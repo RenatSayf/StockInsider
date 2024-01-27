@@ -46,3 +46,44 @@ fun String.formattedStringToLong(locale: Locale = Locale.US): Long {
 fun Long.timeToFormattedStringWithoutSeconds(): String =
     SimpleDateFormat(DateFormats.DATE_TIME_YY_MM_FORMAT.format, Locale.getDefault())
         .format(this).replace("T", " ")
+
+fun getTimeOffsetIfWeekEnd(
+    daysAgo: Int,
+    startTime: Long = System.currentTimeMillis()
+): Int {
+
+    val millisInDay = 86_400_000L
+    var daysShift = daysAgo
+    val millisAgo = daysShift * millisInDay
+    val calendar = Calendar.getInstance(TimeZone.getTimeZone("America/New_York")).apply {
+        timeInMillis = startTime - millisAgo
+    }
+    var dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+
+    while(dayOfWeek == Calendar.SUNDAY || dayOfWeek == Calendar.SATURDAY) {
+        daysShift++
+        calendar.timeInMillis -= millisInDay
+        dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        if (dayOfWeek == Calendar.FRIDAY) return daysShift + 1
+    }
+    return daysShift
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

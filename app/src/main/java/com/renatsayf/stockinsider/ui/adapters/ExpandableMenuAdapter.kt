@@ -27,6 +27,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataHeader.add(context.getString(R.string.text_deals_for_14_days))
         listDataHeader.add(context.getString(R.string.text_tracking_list))
         listDataHeader.add(context.getString(R.string.text_trading_strategy))
+        listDataHeader.add(context.getString(R.string.text_start_trading))
         listDataHeader.add(context.getString(R.string.text_support_project))
         listDataHeader.add(context.getString(R.string.text_about_app))
         listDataHeader.add(context.getString(R.string.text_share))
@@ -39,6 +40,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         ContextCompat.getDrawable(context, R.drawable.ic_calendar_14)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_visibility)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_trending_up)?.let { listDataIcons.add(it) }
+        ContextCompat.getDrawable(context, R.drawable.buy)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_thumb_up_alt)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_info)?.let { listDataIcons.add(it) }
         ContextCompat.getDrawable(context, R.drawable.ic_share)?.let { listDataIcons.add(it) }
@@ -51,6 +53,7 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
                                                           context.getString(R.string.text_latest_sales_5))
         val trackingListHeader: ArrayList<String> = arrayListOf()
         val strategyHeader: ArrayList<String> = arrayListOf()
+        val startTradingHeader: List<String> = listOf()
         val supportHeader: ArrayList<String> = arrayListOf(context.getString(R.string.text_financial_support),context.getString(R.string.text_watch_ads))
         val exitHeader: ArrayList<String> = arrayListOf()
 
@@ -60,10 +63,11 @@ class ExpandableMenuAdapter(private val context: Context) : BaseExpandableListAd
         listDataChild.put(listDataHeader[3], latestHeader)
         listDataChild.put(listDataHeader[4], trackingListHeader)
         listDataChild.put(listDataHeader[5], strategyHeader)
-        listDataChild.put(listDataHeader[6], supportHeader)
-        listDataChild.put(listDataHeader[7], arrayListOf())
+        listDataChild.put(listDataHeader[6], startTradingHeader)
+        listDataChild.put(listDataHeader[7], supportHeader)
         listDataChild.put(listDataHeader[8], arrayListOf())
-        listDataChild.put(listDataHeader[9], exitHeader)
+        listDataChild.put(listDataHeader[9], arrayListOf())
+        listDataChild.put(listDataHeader[10], exitHeader)
     }
 
     override fun getGroupCount(): Int

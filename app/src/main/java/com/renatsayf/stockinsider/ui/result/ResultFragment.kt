@@ -10,10 +10,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.addCallback
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -32,23 +36,30 @@ import com.renatsayf.stockinsider.ui.deal.DealFragment
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
+import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
+import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.createTextFile
 import com.renatsayf.stockinsider.utils.dp
 import com.renatsayf.stockinsider.utils.getSerializableCompat
 import com.renatsayf.stockinsider.utils.getValuesSize
+import com.renatsayf.stockinsider.utils.isLogsFileExists
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
 import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
 @AndroidEntryPoint
-class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Listener, SaveSearchDialog.Listener,
+class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Listener,
     SortingDialog.Listener {
 
     companion object
@@ -59,12 +70,15 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
     }
 
     private lateinit var binding: FragmentResultBinding
+
     private val resultVM : ResultViewModel by viewModels()
-    private val mainViewModel : MainViewModel by viewModels()
+    private val mainVM : MainViewModel by lazy {
+        ViewModelProvider(requireActivity())[MainViewModel::class.java]
+    }
     private val sortingVM: SortingViewModel by viewModels()
     private val trackingVM: TrackingListViewModel by viewModels()
     private val netInfoVM by activityViewModels<NetInfoViewModel>()
-    private var roomSearchSet: RoomSearchSet? = null
+    private val donateVM: DonateViewModel by activityViewModels()
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this)
@@ -101,6 +115,13 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                     ad.show(requireActivity())
                 }
             }
+
+            requireContext().isLogsFileExists(
+                fileName = LOGS_FILE_NAME,
+                onNotExists = {
+                    requireContext().createTextFile(LOGS_FILE_NAME, "********************")
+                }
+            )
         }
     }
 
@@ -108,65 +129,56 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        return inflater.inflate(R.layout.fragment_result, container, false)
+    ): View {
+        binding = FragmentResultBinding.inflate(inflater, container, false)
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
 
-        binding = FragmentResultBinding.bind(view)
+        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
+            result.onSuccess {
+                requireContext().isAdsDisabled = !BuildConfig.DEBUG
+            }
+        }
+
+        val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
+        if (!isAgree) WebViewDialog.getInstance().showIfNotAdded(parentFragmentManager)
 
         if (savedInstanceState == null) {
-
-            val title = arguments?.getString(ARG_TITLE)
-            binding.toolBar.title = title
 
             val notificationId = arguments?.getInt(ServiceNotification.ARG_ID)
             notificationId?.let { id ->
                 ServiceNotification.cancelNotifications(requireContext(), id)
             }
-            roomSearchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
-        }
 
-        binding.tradeListRV.apply {
+            val title = arguments?.getString(ARG_TITLE)
+            binding.toolBar.subtitle = title
 
-            adapter = dealsAdapter.apply {
-                showSkeleton()
-            }
-
-            setOnScrollChangeListener(object : View.OnScrollChangeListener {
-                override fun onScrollChange(
-                    v: View?,
-                    scrollX: Int,
-                    scrollY: Int,
-                    oldScrollX: Int,
-                    oldScrollY: Int
-                ) {
-                    if (oldScrollY > scrollY) {
-                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
-                        val bottomMargin = layoutParams.bottomMargin
-                        binding.btnAddToTracking.setVisible(true)
-                        ValueAnimator.ofInt(bottomMargin, 64.dp).apply {
-                            addUpdateListener {
-                                layoutParams.bottomMargin = it.animatedValue as Int
-                                binding.btnAddToTracking.layoutParams = layoutParams
-                            }
-                        }.setDuration(300).start()
-                    }
-                    else {
-                        val layoutParams = binding.btnAddToTracking.layoutParams as ConstraintLayout.LayoutParams
-                        val bottomMargin = layoutParams.bottomMargin
-                        ValueAnimator.ofInt(bottomMargin, -138).apply {
-                            addUpdateListener {
-                                layoutParams.bottomMargin = it.animatedValue as Int
-                                binding.btnAddToTracking.layoutParams = layoutParams
-                            }
-                        }.setDuration(300).start()
-                    }
+            val searchSet = arguments?.getSerializableCompat(ARG_SEARCH_SET, RoomSearchSet::class.java)
+            if (searchSet != null) {
+                resultVM.setState(ResultViewModel.State.Initial(searchSet))
+                if (title == null) {
+                    binding.toolBar.subtitle = resultVM.getDisplayedQueryName(searchSet)
                 }
-            })
+                mainVM.saveSearchSet(searchSet)
+            }
+            else {
+                mainVM.getSearchSetByName(
+                    getString(R.string.text_current_set_name),
+                    onSuccess = {set ->
+                        resultVM.setState(ResultViewModel.State.Initial(set))
+                        if (title == null) {
+                            binding.toolBar.subtitle = resultVM.getDisplayedQueryName(set)
+                        }
+                    },
+                    onFailed = { exception ->
+                        resultVM.setState(ResultViewModel.State.DataError(exception))
+                    }
+                )
+            }
         }
 
         resultVM.state.observe(viewLifecycleOwner) { state ->
@@ -174,10 +186,18 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                 is ResultViewModel.State.Initial -> {
                     binding.noResult.noResultLayout.setVisible(false)
                     binding.includedProgress.setVisible(true)
-                    binding.btnAddToTracking.setVisible(false)
-                    roomSearchSet?.let {
-                        resultVM.getDealListFromNet(it.toSearchSet())
+                    when {
+                        (state.set.isSale && state.set.isPurchase) || (!state.set.isSale && !state.set.isPurchase) -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.colorGold, null))
+                        }
+                        state.set.isSale && !state.set.isPurchase -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.salePressed, null))
+                        }
+                        state.set.isPurchase && !state.set.isSale -> {
+                            binding.toolBar.setSubtitleTextColor(ResourcesCompat.getColor(resources, R.color.buyPressed, null))
+                        }
                     }
+                    resultVM.getDealListFromNet(state.set.toSearchSet())
                 }
                 is ResultViewModel.State.DataReceived -> {
                     state.deals.let { list ->
@@ -212,7 +232,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                             is IndexOutOfBoundsException -> {
                                 with(binding) {
                                     resultTV.text = "0"
-                                    noResult.noResultLayout.visibility = View.VISIBLE
+                                    noResult.noResultLayout.setVisible(true)
                                 }
                             }
                             else -> {
@@ -222,7 +242,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                                     with(binding) {
                                         resultTV.text = 0.toString()
                                         noResult.recommendationsTV.text = requireContext().getString(R.string.text_data_not_avalible)
-                                        noResult.noResultLayout.visibility = View.VISIBLE
+                                        noResult.noResultLayout.setVisible(true)
                                         showSnackBar(getString(R.string.text_inet_not_connection))
                                     }
                                 }
@@ -242,20 +262,62 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
             }
         }
 
+        binding.tradeListRV.apply {
+
+            adapter = dealsAdapter.apply {
+                showSkeleton()
+            }
+
+            setOnScrollChangeListener(object : View.OnScrollChangeListener {
+                override fun onScrollChange(
+                    v: View?,
+                    scrollX: Int,
+                    scrollY: Int,
+                    oldScrollX: Int,
+                    oldScrollY: Int
+                ) {
+                    if (oldScrollY > scrollY) {
+                        val layoutParams = binding.layoutBottomButtons.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
+                        binding.layoutBottomButtons.setVisible(true)
+                        ValueAnimator.ofInt(bottomMargin, 64.dp).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.layoutBottomButtons.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
+                    }
+                    else {
+                        val layoutParams = binding.layoutBottomButtons.layoutParams as ConstraintLayout.LayoutParams
+                        val bottomMargin = layoutParams.bottomMargin
+                        ValueAnimator.ofInt(bottomMargin, -138).apply {
+                            addUpdateListener {
+                                layoutParams.bottomMargin = it.animatedValue as Int
+                                binding.layoutBottomButtons.layoutParams = layoutParams
+                            }
+                        }.setDuration(300).start()
+                    }
+                }
+            })
+        }
+
         binding.noResult.backButton.setOnClickListener {
-            findNavController().popBackStack()
+            findNavController().navigate(R.id.nav_home)
         }
 
         binding.btnAddToTracking.setOnClickListener {
-            val name = roomSearchSet?.generateQueryName()
+            val name = resultVM.dbSearchSet?.generateQueryName()
             name?.let { n ->
-                SaveSearchDialog.getInstance(n, listener = this).show(requireActivity().supportFragmentManager, SaveSearchDialog.TAG)
+                SaveSearchDialog.getInstance(n, listener = this).showIfNotAdded(parentFragmentManager)
             }
         }
         binding.btnSorting.apply {
             setOnClickListener {
-                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).show(childFragmentManager, SortingDialog.TAG)
+                SortingDialog.instance(sortingVM.sorting, this@ResultFragment).showIfNotAdded(parentFragmentManager)
             }
+        }
+        binding.btnSearchConfig.setOnClickListener {
+            findNavController().navigate(R.id.nav_home)
         }
 
     }
@@ -266,11 +328,26 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
         (requireActivity() as MainActivity).supportActionBar?.hide()
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner){
-            parentFragmentManager.popBackStack()
+            showInfoDialog(
+                title = getString(R.string.question_on_exit),
+                status = InfoDialog.DialogStatus.WARNING,
+                callback = {res ->
+                    if (res > 0) {
+                        requireActivity().finish()
+                    }
+                }
+            )
         }
 
+        val drawerLayout = (requireActivity() as MainActivity).drawerLayout
         binding.toolBar.setNavigationOnClickListener {
-            parentFragmentManager.popBackStack()
+            val isOpen = drawerLayout.isDrawerOpen(GravityCompat.START)
+            if (isOpen) {
+                drawerLayout.closeDrawer(GravityCompat.START)
+            }
+            else {
+                drawerLayout.openDrawer(GravityCompat.START)
+            }
         }
     }
 
@@ -288,19 +365,24 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
 
     override fun onSaveSearchDialogPositiveClick(searchName: String) {
 
-        val newSet = roomSearchSet?.apply {
-            queryName = searchName
+        val newSet = resultVM.dbSearchSet?.copy(
+            queryName = searchName,
+            filingPeriod = 1,
+            tradePeriod = 7,
+            id = 0
+        )
+        newSet?.apply {
             target = Target.Tracking
-            filingPeriod = 1
-            tradePeriod = 3
             isDefault = false
+            isTracked = true
         }
         newSet?.let { set ->
-            trackingVM.targetCount().observe(viewLifecycleOwner) { count ->
-                count?.let { c ->
-                    if (c < FireBaseConfig.requestsCount) {
+
+            trackingVM.getTrackedCountAsync(
+                onSuccess = {count ->
+                    if (count < FireBaseConfig.requestsCount) {
                         set.isTracked = !FireBaseConfig.problemDevices.contains(Build.MANUFACTURER.uppercase())
-                        mainViewModel.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
+                        mainVM.addNewSearchSet(set).observe(viewLifecycleOwner) { res ->
                             when(res) {
                                 is ResultData.Error -> {
                                     showInfoDialog(
@@ -332,7 +414,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         set.let {
                             it.target = null
                             it.isTracked = false
-                            mainViewModel.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
+                            mainVM.addNewSearchSet(it).observe(viewLifecycleOwner) { res ->
                                 when(res) {
                                     ResultData.Init -> {}
                                     is ResultData.Error -> {
@@ -361,7 +443,7 @@ class ResultFragment : Fragment(R.layout.fragment_result), DealListAdapter.Liste
                         }
                     }
                 }
-            }
+            )
         }
 
     }

@@ -35,7 +35,7 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     }
 
     override suspend fun getAllSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
-        withContext(Dispatchers.Main) {
+        withContext(Dispatchers.IO) {
             db.getSearchSets()
         }
     }
@@ -49,13 +49,13 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     }
 
     override suspend fun getUserSearchSetsFromDbAsync(): List<RoomSearchSet> = coroutineScope {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             db.getUserSearchSets()
         }
     }
 
     override suspend fun getSearchSetFromDbAsync(setName: String): RoomSearchSet = coroutineScope {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             db.getSetByName(setName)
         }
     }
@@ -97,13 +97,13 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     }
 
     override suspend fun getCompaniesFromDbAsync(): Array<Company>? = coroutineScope {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             db.getAllCompanies()?.toTypedArray()
         }
     }
 
     override suspend fun getSearchSetsByTarget(target: String): List<RoomSearchSet> = coroutineScope {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             db.getSearchSetsByTarget(target)
         }
     }
@@ -125,7 +125,7 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
     }
 
     override suspend fun getCompanyByTicker(list: List<String>): List<Company> = coroutineScope {
-        withContext(Dispatchers.Default) {
+        withContext(Dispatchers.IO) {
             val companyByTicker = db.getCompanyByTicker(list)
             val sortByAnotherList = sortByAnotherList(companyByTicker, list)
             sortByAnotherList
@@ -140,7 +140,7 @@ open class DataRepositoryImpl @Inject constructor(private val network: INetRepos
 
     @Throws(Exception::class)
     override suspend fun insertCompanies(list: List<Company>) {
-        CoroutineScope(Dispatchers.IO).launch {
+        withContext(Dispatchers.IO) {
             db.insertCompanies(list)
         }
     }

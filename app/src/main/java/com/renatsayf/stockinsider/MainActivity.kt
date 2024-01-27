@@ -39,13 +39,16 @@ import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
 import com.renatsayf.stockinsider.ui.common.TimerViewModel
+import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
+import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.appendTextToFile
 import com.renatsayf.stockinsider.utils.doShare
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.printIfDebug
@@ -53,7 +56,10 @@ import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import com.renatsayf.stockinsider.utils.registerHardWareReceiver
 import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
+import com.renatsayf.stockinsider.utils.showInfoDialog
 import com.renatsayf.stockinsider.utils.showSnackBar
+import com.renatsayf.stockinsider.utils.timeToFormattedString
 import com.renatsayf.stockinsider.utils.timeToFormattedStringWithoutSeconds
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
@@ -176,25 +182,34 @@ class MainActivity : AppCompatActivity() {
                                         context.getString(R.string.text_read),
                                         context.getString(R.string.text_close),
                                         context.getString(R.string.text_not_show_again)
-                                    ).show(
-                                        supportFragmentManager.beginTransaction(),
-                                        AppDialog.TAG
-                                    )
+                                    ).showIfNotAdded(supportFragmentManager)
                                 }
                             }
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
-                        7 -> {
-                            navController.navigate(R.id.nav_about_app)
+                        6 -> {
+                            navController.navigate(R.id.referralFragment)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         8 -> {
-                            this@MainActivity.doShare()
+                            navController.navigate(R.id.nav_about_app)
                             drawerLayout.closeDrawer(GravityCompat.START)
                         }
                         9 -> {
+                            this@MainActivity.doShare()
                             drawerLayout.closeDrawer(GravityCompat.START)
-                            finish()
+                        }
+                        10 -> {
+                            drawerLayout.closeDrawer(GravityCompat.START)
+                            showInfoDialog(
+                                title = getString(R.string.question_on_exit),
+                                status = InfoDialog.DialogStatus.WARNING,
+                                callback = {res ->
+                                    if (res > 0) {
+                                        finish()
+                                    }
+                                }
+                            )
                         }
                     }
                     return false
@@ -354,12 +369,12 @@ class MainActivity : AppCompatActivity() {
                                     }.run { navController.navigate(R.id.nav_result, this) }
                                 }
                         }
-                        item == 6 && subItem == 0 -> {
+                        item == 7 && subItem == 0 -> {
                             if (this@MainActivity.isNetworkAvailable()) {
-                                DonateDialog.getInstance().show(supportFragmentManager, DonateDialog.TAG)
+                                DonateDialog.getInstance().showIfNotAdded(supportFragmentManager)
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
-                        item == 6 && subItem == 1 -> {
+                        item == 7 && subItem == 1 -> {
                             if (yandexIntersAd != null) {
                                 yandexIntersAd!!.show(this@MainActivity)
                             }
@@ -491,9 +506,9 @@ class MainActivity : AppCompatActivity() {
                 periodInMinute = FireBaseConfig.trackingPeriod
             )
             if (nextTime != null) {
-                val message =
-                    "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
+                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
                 ServiceNotification.notify(this@MainActivity, message, null)
+                this.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")
             }
         }
         super.onDestroy()

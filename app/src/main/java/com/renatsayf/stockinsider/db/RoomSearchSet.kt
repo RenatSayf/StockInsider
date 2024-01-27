@@ -78,8 +78,8 @@ data class RoomSearchSet(
         fun toSearchSet(): SearchSet {
                 return SearchSet(queryName).apply {
                         ticker = formatTicker(this@RoomSearchSet.ticker)
-                        filingPeriod = getFilingOrTradeValue(this@RoomSearchSet.filingPeriod)
-                        tradePeriod = getFilingOrTradeValue(this@RoomSearchSet.tradePeriod)
+                        filingPeriod = this@RoomSearchSet.filingPeriod.toString()
+                        tradePeriod = this@RoomSearchSet.tradePeriod.toString()
                         isPurchase = booleanToString(this@RoomSearchSet.isPurchase)
                         isSale = booleanToString(this@RoomSearchSet.isSale)
                         excludeDerivRelated = "1"
@@ -114,22 +114,6 @@ data class RoomSearchSet(
         {
                 val pattern = Regex("\\s")
                 return string.trim().replace(pattern, "+")
-        }
-
-        private fun getFilingOrTradeValue(position: Int) : String
-        {
-                val timePeriods = listOf(0, 1, 2, 3, 7, 14, 30, 60, 90, 180, 365, 730, 1461)
-                val filingValue : String
-                return try
-                {
-                        filingValue = timePeriods[position].toString()
-                        filingValue
-                }
-                catch (e: Exception)
-                {
-                        e.printStackTrace()
-                        ""
-                }
         }
 
         private fun booleanToString(value: Boolean) : String
