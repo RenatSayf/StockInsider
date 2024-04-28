@@ -11,5 +11,5 @@
    * Asynchrony: Coroutines, RXJava
    * Unit tests: JUnit, MockWebServer
    * UI tests: Espresso
-   * Other libraries: Jsoup, Glide, Gson
+   * Other libraries: Jsoup, Picasso, Kotlin Serialization
    * Monetization: AdMob, Yandex mobilead, Billing Play Library
