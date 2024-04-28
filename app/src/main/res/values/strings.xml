@@ -254,7 +254,7 @@
     <string name="base_url">http://openinsider.com/</string>
     <string name="text_for_notification_permission">In order to notify you of new deals, you must allow the app to show notifications. Go to Settings?</string>
     <string name="unknown_error">Ouch! Something went wrong…</string>
-    <string name="saving_error">Saving error...</string>
+    <string name="saving_error">Saving error…</string>
     <string name="question_on_exit">Do you really want to exit the app</string>
     <string name="text_purchases_and_sales">Purchases and Sales</string>
     <string name="text_purchases">Purchases</string>
@@ -264,7 +264,7 @@
     <string name="text_start_trading">Start trading</string>
     <string name="text_view_logs">View logs</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_blank_fragment" translatable="false">Hello blank fragment</string>
     <string name="text_clear_logs">Clear logs</string>
 
 </resources>

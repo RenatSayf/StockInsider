@@ -44,8 +44,8 @@ class YandexAdsViewModel @Inject constructor(
             }
             val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
             setAdLoadListener(object : InterstitialAdLoadListener {
-                override fun onAdLoaded(ad: InterstitialAd) {
-                    _interstitialAd.value = Result.success(ad)
+                override fun onAdLoaded(interstitialAd: InterstitialAd) {
+                    _interstitialAd.value = Result.success(interstitialAd)
                 }
 
                 override fun onAdFailedToLoad(error: AdRequestError) {
@@ -69,8 +69,8 @@ class YandexAdsViewModel @Inject constructor(
             }
             val adRequestConfiguration = AdRequestConfiguration.Builder(id).build()
             setAdLoadListener(object : RewardedAdLoadListener {
-                override fun onAdLoaded(ad: RewardedAd) {
-                    _rewardedAd.value = Result.success(ad)
+                override fun onAdLoaded(rewarded: RewardedAd) {
+                    _rewardedAd.value = Result.success(rewarded)
                 }
 
                 override fun onAdFailedToLoad(error: AdRequestError) {
