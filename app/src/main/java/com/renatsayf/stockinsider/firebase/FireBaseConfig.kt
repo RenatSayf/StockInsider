@@ -2,6 +2,7 @@
 
 package com.renatsayf.stockinsider.firebase
 
+import android.webkit.WebSettings
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -82,6 +83,28 @@ object FireBaseConfig {
             return value
         }
 
+    val isBillingEnabled: Boolean
+        get() {
+            return try {
+                Firebase.remoteConfig.getBoolean("is_billing_enabled")
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                false
+            }
+        }
+
+    val donateUrl: String
+        get() {
+            val initUrl = "https://yoomoney.ru/to/41001119345605"
+            return try {
+                val url = Firebase.remoteConfig.getString("donate_link")
+                url.ifEmpty { initUrl }
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                initUrl
+            }
+        }
+
     private val configSettings = remoteConfigSettings {
         minimumFetchIntervalInSeconds = 300
     }
@@ -93,7 +116,7 @@ object FireBaseConfig {
             fetchAndActivate()
                 .addOnFailureListener(object : OnFailureListener {
                     override fun onFailure(e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
+                        e.printStackTraceIfDebug()
                     }
                 })
         }
