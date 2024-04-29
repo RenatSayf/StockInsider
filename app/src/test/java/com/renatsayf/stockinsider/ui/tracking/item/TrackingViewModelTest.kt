@@ -46,7 +46,7 @@ class TrackingViewModelTest {
             .build()
         dao = db.appDao()
 
-        repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
+        repository = DataRepositoryImpl(NetRepository(MockApi(context), ""), dao)
         trackingVM = TrackingViewModel(repository)
     }
 

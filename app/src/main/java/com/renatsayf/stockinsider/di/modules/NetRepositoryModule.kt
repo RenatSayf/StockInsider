@@ -1,6 +1,7 @@
 package com.renatsayf.stockinsider.di.modules
 
 import android.content.Context
+import android.webkit.WebSettings
 import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.models.Source
@@ -24,8 +25,12 @@ import java.util.concurrent.TimeUnit
 @Module
 object NetRepositoryModule {
     @Provides
-    fun provideSearchRequest(api: IApi): INetRepository {
-        return NetRepository(api)
+    fun provideSearchRequest(
+        @ApplicationContext context: Context,
+        api: IApi
+    ): INetRepository {
+        val userAgent = provideUserAgentString(context)
+        return NetRepository(api, userAgent)
     }
 
     @Provides
@@ -52,6 +57,11 @@ object NetRepositoryModule {
             Source.NETWORK.name, Source.TEST_TIME_PERIOD.name -> retrofit.create(IApi::class.java)
             else -> MockApi(context)
         }
+    }
+
+    @Provides
+    fun provideUserAgentString(@ApplicationContext context: Context): String {
+        return WebSettings.getDefaultUserAgent(context)
     }
 
     class CacheInterceptor : Interceptor {

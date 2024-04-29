@@ -56,7 +56,7 @@ class MainViewModelTest {
             .allowMainThreadQueries()
             .build()
         val dao = db.appDao()
-        val repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
+        val repository = DataRepositoryImpl(NetRepository(MockApi(context), ""), dao)
         mainVm = MainViewModel(repository, null)
     }
 

@@ -2,7 +2,6 @@
 
 package com.renatsayf.stockinsider.firebase
 
-import android.webkit.WebSettings
 import com.google.android.gms.tasks.OnFailureListener
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.remoteconfig.ktx.remoteConfig
@@ -17,16 +16,6 @@ import kotlinx.serialization.json.Json
 
 object FireBaseConfig {
 
-    val userAgent: String
-        get() {
-            return try {
-                val value = Firebase.remoteConfig.getString("user_agent")
-                value
-            } catch (e: Exception) {
-                e.printStackTraceIfDebug()
-                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36"
-            }
-        }
     val trackingPeriod: Long
         get() {
             return try {
