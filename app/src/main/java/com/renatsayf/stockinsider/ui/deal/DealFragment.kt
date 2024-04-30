@@ -1,4 +1,4 @@
-@file:Suppress("RedundantSamConstructor")
+@file:Suppress("RedundantSamConstructor", "ObjectLiteralToLambda")
 
 package com.renatsayf.stockinsider.ui.deal
 
@@ -11,8 +11,10 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.MenuProvider
+import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -138,6 +140,7 @@ class DealFragment : Fragment() {
 
                 companyNameTV.text = value.company
                 companyNameTV.setOnClickListener {
+                    (it as TextView).setTextIsSelectable(true)
                     it.setPopUpMenu(R.menu.company_deals_menu).apply {
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
@@ -167,6 +170,7 @@ class DealFragment : Fragment() {
                 }
                 tickerTV.text = value.ticker
                 tickerTV.setOnClickListener {
+                    (it as TextView).setTextIsSelectable(true)
                     value?.let { d -> transitionToCompanyDeals(d) }
                 }
 
@@ -179,6 +183,7 @@ class DealFragment : Fragment() {
                 insiderNameTV.text = value.insiderName
                 insiderNameTV.setOnClickListener {
 
+                    (it as TextView).setTextIsSelectable(true)
                     it.setPopUpMenu(R.menu.insider_deals_menu).apply {
                         setOnMenuItemClickListener { item ->
                             when (item.itemId) {
@@ -201,7 +206,6 @@ class DealFragment : Fragment() {
                             true
                         }
                     }.show()
-
                 }
 
                 insiderTitleTV.text = value.insiderTitle
@@ -264,6 +268,18 @@ class DealFragment : Fragment() {
             }
 
         }, viewLifecycleOwner)
+
+        binding.root.forEach { child ->
+            if (child is TextView) {
+                child.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+                    override fun onFocusChange(p0: View?, p1: Boolean) {
+                        if (!p1) {
+                            (p0 as TextView).setTextIsSelectable(false)
+                        }
+                    }
+                })
+            }
+        }
 
     }
 

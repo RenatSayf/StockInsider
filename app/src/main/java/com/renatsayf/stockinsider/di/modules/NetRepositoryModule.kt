@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 @Module
 object NetRepositoryModule {
     @Provides
-    fun provideSearchRequest(
+    fun provideNetRepository(
         @ApplicationContext context: Context,
         api: IApi
     ): INetRepository {
@@ -34,7 +34,7 @@ object NetRepositoryModule {
     }
 
     @Provides
-    fun api(@ApplicationContext context: Context): IApi {
+    fun provideApi(@ApplicationContext context: Context): IApi {
         val loggingInterceptor = HttpLoggingInterceptor()
         loggingInterceptor.level = HttpLoggingInterceptor.Level.BASIC
 
