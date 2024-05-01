@@ -2,7 +2,6 @@ package com.renatsayf.stockinsider.network
 
 import com.renatsayf.stockinsider.db.Company
 import com.renatsayf.stockinsider.db.RoomSearchSet
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import kotlinx.coroutines.Deferred
@@ -12,22 +11,13 @@ import org.jsoup.nodes.Document
 import org.jsoup.nodes.Element
 import javax.inject.Inject
 
-class NetRepository @Inject constructor(private val api: IApi) : INetRepository
+class NetRepository @Inject constructor(
+    private val api: IApi,
+    private val userAgent: String
+) : INetRepository
 {
     private var searchTicker : String = ""
 
-    private val userAgent = try {
-        FireBaseConfig.userAgent
-    }
-    catch (e: ExceptionInInitializerError) {
-        okhttp3.internal.userAgent
-    }
-    catch (e: NoClassDefFoundError) {
-        okhttp3.internal.userAgent
-    }
-    catch (e: Exception) {
-        okhttp3.internal.userAgent
-    }
     override suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
         return coroutineScope {
             async {
@@ -93,7 +83,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
             {
                 val table = it[0]
                 var trIndex = 1
-                table?.children()?.forEach { element: Element? ->
+                table.children().forEach { element: Element? ->
                     val filingDate = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.text()
                     val deal = Deal(filingDate)
                     deal.filingDateRefer = element?.select("tr:nth-child($trIndex) > td:nth-child(2) > div > a")?.attr("href")
@@ -103,6 +93,7 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
                         searchTicker.isNotEmpty() && !searchTicker.contains("+") -> {
                             -1
                         }
+
                         else -> 0
                     }
                     var company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
@@ -301,10 +292,11 @@ class NetRepository @Inject constructor(private val api: IApi) : INetRepository
         return if (size > 0) {
             val table = tableBody?.get(0)
             table?.children()?.forEach { element ->
-                val ticker = element?.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a")?.text()
+                val ticker = element.select("tr:nth-child($trIndex) > td:nth-child(4) > b > a").text()
                 val tdIndex =  0
-                val company = element?.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")?.text()
-                if (ticker != null && company != null) {
+                val company = element.select("tr:nth-child($trIndex) > td:nth-child(${tdIndex + 5}) > a")
+                    .text()
+                if (ticker.isNotEmpty() && company.isNotEmpty()) {
                     companySet.add(Company(ticker, company))
                 }
                 trIndex++

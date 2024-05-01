@@ -69,7 +69,7 @@ class AppWorker (
 
     init {
         _db = RoomDataBaseModule.provideRoomDataBase(context)
-        _net = NetRepositoryModule.provideSearchRequest(NetRepositoryModule.api(context))
+        _net = NetRepositoryModule.provideNetRepository(context, NetRepositoryModule.provideApi(context))
     }
 
     override suspend fun getForegroundInfo(): ForegroundInfo {

@@ -33,7 +33,7 @@ class NetRepositoryTest {
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
 
-    private val repository = NetRepository(createRetrofit())
+    private val repository = NetRepository(createRetrofit(), "")
 
     private val testSet = RoomSearchSet(
         queryName = "XXX",

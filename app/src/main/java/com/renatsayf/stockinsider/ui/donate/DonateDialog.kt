@@ -13,7 +13,10 @@ import com.android.billingclient.api.BillingClient
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
+import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
+import com.renatsayf.stockinsider.utils.goToUrl
+import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,6 +34,9 @@ class DonateDialog : DialogFragment()
     }
 
     private val viewModel: DonateViewModel by activityViewModels()
+    private val isBillingEnabled: Boolean by lazy {
+        FireBaseConfig.isBillingEnabled
+    }
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog
     {
@@ -72,6 +78,12 @@ class DonateDialog : DialogFragment()
                 }
             }
 
+            if (isBillingEnabled) {
+                thanksTView.setVisible(true)
+                selectSumTView.setVisible(true)
+                sumSpinnerView.setVisible(true)
+            }
+
             val donateText = "${getString(R.string.hi_emoji)} ${getString(R.string.text_donate)}"
             doDonateTView.text = donateText
 
@@ -88,13 +100,21 @@ class DonateDialog : DialogFragment()
             val doDonateText = "${getString(R.string.text_to_support)}  ${getString(R.string.hugging_emoji)}"
             btnDoDonate.text = doDonateText
             btnDoDonate.setOnClickListener {
-                val selectedPrice = sumSpinnerView.selectedItem as? String
-                if (selectedPrice != null) {
-                    viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
-                        if (params != null) {
-                            viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+                if (isBillingEnabled) {
+                    val selectedPrice = sumSpinnerView.selectedItem as? String
+                    if (selectedPrice != null) {
+                        viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
+                            if (params != null) {
+                                viewModel.billingClient.launchBillingFlow(requireActivity(), params)
+                            }
                         }
                     }
+                } else {
+                    val donateUrl = FireBaseConfig.donateUrl
+                    if (donateUrl.isNotEmpty()) {
+                        requireContext().goToUrl(donateUrl)
+                    }
+                    dismiss()
                 }
             }
 

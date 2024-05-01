@@ -311,6 +311,12 @@ fun Context.goToAppStore() {
     startActivity(intent)
 }
 
+fun Context.goToUrl(url: String) {
+    val intent = Intent(Intent.ACTION_VIEW)
+    intent.data = Uri.parse(url)
+    startActivity(intent)
+}
+
 fun String.printIfDebug() {
     if (BuildConfig.DEBUG) {
         println(this)

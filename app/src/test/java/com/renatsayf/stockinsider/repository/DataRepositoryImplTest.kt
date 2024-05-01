@@ -53,7 +53,7 @@ internal class DataRepositoryImplTest {
             .allowMainThreadQueries()
             .build()
         dao = db.appDao()
-        repository = DataRepositoryImpl(NetRepository(MockApi(context)), dao)
+        repository = DataRepositoryImpl(NetRepository(MockApi(context), ""), dao)
     }
 
     @After

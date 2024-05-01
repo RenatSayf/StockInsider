@@ -16,16 +16,6 @@ import kotlinx.serialization.json.Json
 
 object FireBaseConfig {
 
-    val userAgent: String
-        get() {
-            return try {
-                val value = Firebase.remoteConfig.getString("user_agent")
-                value
-            } catch (e: Exception) {
-                e.printStackTraceIfDebug()
-                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.6099.43 Mobile Safari/537.36"
-            }
-        }
     val trackingPeriod: Long
         get() {
             return try {
@@ -82,6 +72,28 @@ object FireBaseConfig {
             return value
         }
 
+    val isBillingEnabled: Boolean
+        get() {
+            return try {
+                Firebase.remoteConfig.getBoolean("is_billing_enabled")
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                false
+            }
+        }
+
+    val donateUrl: String
+        get() {
+            val initUrl = "https://yoomoney.ru/to/41001119345605"
+            return try {
+                val url = Firebase.remoteConfig.getString("donate_link")
+                url.ifEmpty { initUrl }
+            } catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                initUrl
+            }
+        }
+
     private val configSettings = remoteConfigSettings {
         minimumFetchIntervalInSeconds = 300
     }
@@ -93,7 +105,7 @@ object FireBaseConfig {
             fetchAndActivate()
                 .addOnFailureListener(object : OnFailureListener {
                     override fun onFailure(e: Exception) {
-                        if (BuildConfig.DEBUG) e.printStackTrace()
+                        e.printStackTraceIfDebug()
                     }
                 })
         }

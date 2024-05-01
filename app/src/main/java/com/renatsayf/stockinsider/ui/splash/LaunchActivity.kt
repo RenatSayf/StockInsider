@@ -8,7 +8,9 @@ import androidx.lifecycle.lifecycleScope
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.ui.settings.KEY_APP_STORE_LINK
+import com.renatsayf.stockinsider.ui.settings.KEY_URL
 import com.renatsayf.stockinsider.utils.goToAppStore
+import com.renatsayf.stockinsider.utils.goToUrl
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -22,6 +24,12 @@ class LaunchActivity : AppCompatActivity() {
         val appStoreLink = extras?.getString(KEY_APP_STORE_LINK)
         if (!appStoreLink.isNullOrEmpty()) {
             goToAppStore()
+            finish()
+        }
+
+        val url = extras?.getString(KEY_URL)
+        if (!url.isNullOrEmpty()) {
+            goToUrl(url)
             finish()
         }
 
