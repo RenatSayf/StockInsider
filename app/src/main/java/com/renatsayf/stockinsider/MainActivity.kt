@@ -4,7 +4,6 @@ package com.renatsayf.stockinsider
 
 import android.content.Intent
 import android.graphics.Color
-import android.net.Uri
 import android.os.Bundle
 import android.text.Spannable
 import android.text.SpannableString
@@ -18,6 +17,7 @@ import android.widget.ExpandableListView
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.edit
+import androidx.core.net.toUri
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.lifecycle.ViewModelProvider
@@ -33,8 +33,6 @@ import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.AdsId
-import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.ExpandableMenuAdapter
@@ -42,7 +40,6 @@ import com.renatsayf.stockinsider.ui.common.TimerViewModel
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.donate.DonateDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.ResultFragment
 import com.renatsayf.stockinsider.ui.strategy.AppDialog
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
@@ -87,18 +84,11 @@ class MainActivity : AppCompatActivity() {
         ViewModelProvider(this)[TrackingListViewModel::class.java]
     }
 
-    private val netInfoVM: NetInfoViewModel by lazy {
-        ViewModelProvider(this)[NetInfoViewModel::class.java]
-    }
-
     private val timerVM: TimerViewModel by viewModels()
 
     private val hardwareReceiver: HardwareButtonsReceiver by lazy {
         HardwareButtonsReceiver()
     }
-
-    private val yandexVM: YandexAdsViewModel by viewModels()
-    private var yandexIntersAd: com.yandex.mobile.ads.interstitial.InterstitialAd? = null
 
     private val adMobVM: AdMobViewModel by viewModels()
     private var googleIntersAd: InterstitialAd? = null
@@ -118,27 +108,10 @@ class MainActivity : AppCompatActivity() {
 
         if (savedInstanceState == null) {
             FireBaseConfig
-            netInfoVM.getCountryCode()
         }
 
-        netInfoVM.countryCode.observe(this@MainActivity) { result ->
-            result.onSuccess { code ->
-                if (FireBaseConfig.sanctionsList.contains(code)) {
-                    yandexVM.yandexAdsInitialize()
-                    yandexVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_1)
-                }
-                else {
-                    adMobVM.googleAdsInitialize()
-                    adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_1)
-                }
-            }
-        }
-
-        yandexVM.interstitialAd.observe(this) { result ->
-            result.onSuccess { ad ->
-                yandexIntersAd = ad
-            }
-        }
+        adMobVM.googleAdsInitialize()
+        adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_1)
 
         adMobVM.interstitialAd.observe(this) { result ->
             result.onSuccess { ad ->
@@ -375,10 +348,7 @@ class MainActivity : AppCompatActivity() {
                             } else binding.expandMenu.showSnackBar(getString(R.string.text_inet_not_connection))
                         }
                         item == 7 && subItem == 1 -> {
-                            if (yandexIntersAd != null) {
-                                yandexIntersAd!!.show(this@MainActivity)
-                            }
-                            else if (googleIntersAd != null) {
+                            if (googleIntersAd != null) {
                                 googleIntersAd!!.show(this@MainActivity)
                             }
                         }
@@ -460,7 +430,7 @@ class MainActivity : AppCompatActivity() {
         {
             override fun onClick(p0: View)
             {
-                val intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.fxmag.ru/"))
+                val intent = Intent(Intent.ACTION_VIEW, "https://www.fxmag.ru/".toUri())
                 startActivity(intent)
             }
         }

@@ -3,7 +3,6 @@
 package com.renatsayf.stockinsider.ui.deal
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.Menu
@@ -13,22 +12,18 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
+import androidx.core.net.toUri
 import androidx.core.view.MenuProvider
 import androidx.core.view.forEach
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
-import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Deal
-import com.renatsayf.stockinsider.ui.ad.AdsId
-import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
-import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.result.insider.InsiderTradingFragment
 import com.renatsayf.stockinsider.ui.result.ticker.TradingByTickerFragment
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
@@ -60,10 +55,6 @@ class DealFragment : Fragment() {
         ViewModelProvider(this)[DealViewModel::class.java]
     }
 
-    private val netInfoVM by activityViewModels<NetInfoViewModel>()
-
-    private val yandexAdVM: YandexAdsViewModel by viewModels()
-
     private val adMobVM: AdMobViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,23 +62,8 @@ class DealFragment : Fragment() {
 
         if (savedInstanceState == null) {
 
-            netInfoVM.countryCode.observe(this) { result ->
-                result.onSuccess { code ->
-                    if (!requireContext().isAdsDisabled) {
-                        if (FireBaseConfig.sanctionsList.contains(code)) {
-                            yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_3)
-                        }
-                        else {
-                            adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
-                        }
-                    }
-                }
-            }
-        }
-
-        yandexAdVM.interstitialAd.observe(this) { result ->
-            result.onSuccess { ad ->
-                ad.show(requireActivity())
+            if (!requireContext().isAdsDisabled) {
+                adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_3)
             }
         }
 
@@ -122,7 +98,7 @@ class DealFragment : Fragment() {
         viewModel.deal.observe(viewLifecycleOwner) { value ->
             with(binding) {
 
-                val uri = Uri.parse(value?.tickerRefer)
+                val uri = value?.tickerRefer?.toUri()
                 Picasso.get()
                     .load(uri)
                     .placeholder(R.drawable.image_area_chart_144dp)
@@ -176,7 +152,7 @@ class DealFragment : Fragment() {
 
                 filingDateTV.text = value.filingDate
                 filingDateTV.setOnClickListener {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(value?.filingDateRefer))
+                    val intent = Intent(Intent.ACTION_VIEW, value?.filingDateRefer?.toUri())
                     activity?.startActivity(intent)
                 }
                 tradeDateTV.text = value.tradeDate
@@ -271,13 +247,13 @@ class DealFragment : Fragment() {
 
         binding.root.forEach { child ->
             if (child is TextView) {
-                child.setOnFocusChangeListener(object : View.OnFocusChangeListener {
+                child.onFocusChangeListener = object : View.OnFocusChangeListener {
                     override fun onFocusChange(p0: View?, p1: Boolean) {
                         if (!p1) {
                             (p0 as TextView).setTextIsSelectable(false)
                         }
                     }
-                })
+                }
             }
         }
 

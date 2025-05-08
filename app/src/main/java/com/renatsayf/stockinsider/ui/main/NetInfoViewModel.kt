@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
 import com.renatsayf.stockinsider.models.NetInfo
 import com.renatsayf.stockinsider.network.IApi
-import com.renatsayf.stockinsider.utils.currentCountryCode
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.async
@@ -58,7 +57,7 @@ class NetInfoViewModel @Inject constructor(
             netInfo?.let {
                 _countryCode.value = Result.success(it.countryCode)
             }?: run {
-                _countryCode.value = Result.success(app.currentCountryCode)
+
             }
         }
     }
