@@ -13,14 +13,14 @@ import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
 import com.android.billingclient.api.ConsumeParams
+import com.android.billingclient.api.PendingPurchasesParams
 import com.android.billingclient.api.ProductDetails
 import com.android.billingclient.api.Purchase
-import com.android.billingclient.api.PurchaseHistoryRecord
-import com.android.billingclient.api.PurchaseHistoryResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchaseHistoryParams
 import com.android.billingclient.api.acknowledgePurchase
+import com.android.billingclient.api.queryPurchaseHistory
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.ui.settings.BILLING_CLIENT_IS_NOT_READY
 import com.renatsayf.stockinsider.ui.settings.PURCHASES_NOT_FOUND
@@ -52,7 +52,9 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
 
     val billingClient = BillingClient.newBuilder(app)
         .setListener(this)
-        .enablePendingPurchases()
+        .enablePendingPurchases(
+            PendingPurchasesParams.newBuilder().enableOneTimeProducts().build()
+        )
         .build()
 
     init {
@@ -165,39 +167,35 @@ class DonateViewModel @Inject constructor(app: Application) : AndroidViewModel(a
 
         val ready = billingClient.isReady
         if (ready) {
-            billingClient.queryPurchaseHistoryAsync(params, object : PurchaseHistoryResponseListener {
-                private val jsonParser = Json {
+            viewModelScope.launch {
+                val purchaseHistory = billingClient.queryPurchaseHistory(params)
+                val historyRecordList = purchaseHistory.purchaseHistoryRecordList
+                val jsonParser = Json {
                     ignoreUnknownKeys = true
                     isLenient = true
                 }
-
-                override fun onPurchaseHistoryResponse(
-                    result: BillingResult,
-                    historyRecords: MutableList<PurchaseHistoryRecord>?
-                ) {
-                    historyRecords?.let{ records ->
-                        val purchases = records.mapNotNull {
-                            val json = it.originalJson
-                            try {
-                                jsonParser.decodeFromString<UserPurchase>(json)
-                            } catch (e: Exception) {
-                                e.printStackTraceIfDebug()
-                                null
-                            }
-                        }.filter {
-                            it.productId.contains("user_donation", ignoreCase = true)
+                historyRecordList?.let { records ->
+                    val purchases = records.mapNotNull {
+                        val json = it.originalJson
+                        try {
+                            jsonParser.decodeFromString<UserPurchase>(json)
+                        } catch (e: Exception) {
+                            e.printStackTraceIfDebug()
+                            null
                         }
-                        if (purchases.isNotEmpty()) {
-                            _pastDonations.postValue(Result.success(purchases))
-                        }
-                        else {
-                            _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
-                        }
-                    }?: run {
+                    }.filter {
+                        it.productId.contains("user_donation", ignoreCase = true)
+                    }
+                    if (purchases.isNotEmpty()) {
+                        _pastDonations.postValue(Result.success(purchases))
+                    }
+                    else {
                         _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
                     }
+                }?: run {
+                    _pastDonations.postValue(Result.failure(Throwable(PURCHASES_NOT_FOUND)))
                 }
-            })
+            }
         }
         else {
             val exception = Exception(BILLING_CLIENT_IS_NOT_READY)

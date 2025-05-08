@@ -7,11 +7,11 @@ apply plugin: 'org.jetbrains.kotlin.plugin.serialization'
 apply plugin: 'com.google.firebase.crashlytics'
 
 android {
-    compileSdk 34
+    compileSdk 35
     defaultConfig {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 24
-        targetSdkVersion 34
+        targetSdkVersion 35
         versionCode 35      //Hint The latest versionCode at store is 34
         versionName '4.3'   //Hint The latest versionName at store is 4.2
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -66,9 +66,10 @@ android {
         targetCompatibility JavaVersion.VERSION_17
     }
 
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.1.0-beta04"
+    kotlinOptions {
+        jvmTarget = "17"
     }
+
     testOptions {
         unitTests.includeAndroidResources = true
     }
@@ -77,50 +78,50 @@ android {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation 'androidx.appcompat:appcompat:1.6.1'
-    implementation 'androidx.core:core-ktx:1.13.0'
-    implementation 'com.google.android.material:material:1.11.0'
+    implementation 'androidx.appcompat:appcompat:1.7.0'
+    implementation 'androidx.core:core-ktx:1.16.0'
+    implementation 'com.google.android.material:material:1.12.0'
 
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+    implementation 'androidx.constraintlayout:constraintlayout:2.2.1'
 
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.0'
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
-    implementation 'androidx.navigation:navigation-fragment-ktx:2.7.7'
-    implementation 'androidx.navigation:navigation-ui-ktx:2.7.7'
+    implementation 'androidx.navigation:navigation-fragment-ktx:2.9.0'
+    implementation 'androidx.navigation:navigation-ui-ktx:2.9.0'
 
     //Hint Enable multidex. Step 1 (https://developer.android.com/studio/build/multidex)
     implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
-    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
-    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
-    implementation 'androidx.test.ext:junit-ktx:1.1.5'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.9.0'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.9.0'
+    implementation 'androidx.test.ext:junit-ktx:1.2.1'
 
     //Hint Hilt step 3
-    implementation 'com.google.dagger:hilt-android:2.50'
-    kapt 'com.google.dagger:hilt-compiler:2.50'
+    implementation 'com.google.dagger:hilt-android:2.56.2'
+    kapt 'com.google.dagger:hilt-compiler:2.56.2'
     implementation 'androidx.hilt:hilt-work:1.2.0'
     // When using Kotlin.
     kapt 'androidx.hilt:hilt-compiler:1.2.0'
 
     //jsoup
-    implementation 'org.jsoup:jsoup:1.17.2'
+    implementation 'org.jsoup:jsoup:1.20.1'
 
     // Retrofit
-    implementation "com.squareup.retrofit2:retrofit:2.9.0"
+    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
 
     //room
-    implementation 'androidx.room:room-runtime:2.6.1'
-    annotationProcessor "androidx.room:room-compiler:2.6.1"
+    implementation 'androidx.room:room-runtime:2.7.1'
+    annotationProcessor "androidx.room:room-compiler:2.7.1"
     //noinspection KaptUsageInsteadOfKsp
-    kapt "androidx.room:room-compiler:2.6.1"
-    implementation 'androidx.room:room-ktx:2.6.1'
+    kapt "androidx.room:room-compiler:2.7.1"
+    implementation 'androidx.room:room-ktx:2.7.1'
     testImplementation "android.arch.persistence.room:testing:1.1.1"
 
     //WorkManager library
-    def work_version = "2.9.0"
+    def work_version = "2.10.1"
     // Kotlin + coroutines
     implementation "androidx.work:work-runtime-ktx:$work_version"
     // optional - GCMNetworManager support
@@ -129,13 +130,13 @@ dependencies {
     testImplementation "androidx.work:work-testing:$work_version"
 
     // Picasso
-    implementation 'com.squareup.picasso:picasso:2.8'
+    implementation 'com.squareup.picasso:picasso:2.71828'
 
     //Google Play Billing Library
-    implementation 'com.android.billingclient:billing-ktx:6.2.1'
+    implementation 'com.android.billingclient:billing-ktx:7.1.1'
 
     //Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:32.8.1')
+    implementation platform('com.google.firebase:firebase-bom:33.13.0')
     implementation 'com.google.firebase:firebase-config-ktx'
     implementation 'com.google.firebase:firebase-messaging-ktx'
     implementation 'com.google.firebase:firebase-analytics-ktx'
@@ -144,49 +145,43 @@ dependencies {
     //Testing
     testImplementation 'junit:junit:4.13.2'
     testImplementation "android.arch.core:core-testing:1.1.1"
-    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3'
-    testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.12.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.12.2'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.12.2'
 
-    testImplementation "androidx.test:runner:1.5.2"
-    testImplementation 'androidx.test.ext:junit:1.1.5'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
-    androidTestImplementation 'androidx.test:rules:1.5.0'
-    androidTestImplementation 'androidx.test:core:1.5.0'
-    androidTestImplementation 'androidx.fragment:fragment-testing:1.6.2'
-    androidTestImplementation 'com.google.truth:truth:1.4.1'
+    testImplementation "androidx.test:runner:1.6.2"
+    testImplementation 'androidx.test.ext:junit:1.2.1'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.6.1'
+    androidTestImplementation 'androidx.test:rules:1.6.1'
+    androidTestImplementation 'androidx.test:core:1.6.1'
+    androidTestImplementation 'androidx.fragment:fragment-testing:1.8.6'
+    androidTestImplementation 'com.google.truth:truth:1.4.4'
 
     //Robolectric
-    testImplementation 'org.robolectric:robolectric:4.11.1'
-    testImplementation 'org.robolectric:annotations:4.11.1'
+    testImplementation 'org.robolectric:robolectric:4.14.1'
+    testImplementation 'org.robolectric:annotations:4.14.1'
 
     // MockWebServer
     testImplementation 'com.squareup.okhttp3:mockwebserver:4.12.0'
 
     // For Robolectric tests.
-    testImplementation 'com.google.dagger:hilt-android-testing:2.50'
+    testImplementation 'com.google.dagger:hilt-android-testing:2.56.2'
     // ...with Kotlin.
     kaptTest 'com.google.dagger:hilt-android-compiler:2.50'
 
     // For instrumented tests.
-    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.50'
+    androidTestImplementation 'com.google.dagger:hilt-android-testing:2.56.2'
     // ...with Kotlin.
-    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.50'
+    kaptAndroidTest 'com.google.dagger:hilt-android-compiler:2.56.2'
 
     // Google AdMob
-    implementation 'com.google.android.gms:play-services-ads:23.0.0'
-
-    //Yandex ads
-    implementation 'com.yandex.android:mobileads:7.0.1'
+    implementation 'com.google.android.gms:play-services-ads:24.2.0'
 
     //Splashscreen
     implementation 'androidx.core:core-splashscreen:1.0.1'
 
-    // AppMetrica SDK.
-    implementation 'io.appmetrica.analytics:analytics:6.2.1'
-
     //Kotlin Serialization
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.6.3'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.8.1'
 
 }

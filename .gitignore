@@ -21,3 +21,4 @@ app/build
 /app/keystore/private_key.pepk
 app/libs/
 app/release/
+/.kotlin/sessions/kotlin-compiler-4289662379073304374.salive

@@ -27,8 +27,6 @@ import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.ResultData
 import com.renatsayf.stockinsider.models.Target
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
-import com.renatsayf.stockinsider.ui.ad.AdsId
-import com.renatsayf.stockinsider.ui.ad.YandexAdsViewModel
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
 import com.renatsayf.stockinsider.ui.adapters.DealListAdapter
@@ -39,7 +37,6 @@ import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
 import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.main.MainViewModel
-import com.renatsayf.stockinsider.ui.main.NetInfoViewModel
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
@@ -77,37 +74,21 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
     }
     private val sortingVM: SortingViewModel by viewModels()
     private val trackingVM: TrackingListViewModel by viewModels()
-    private val netInfoVM by activityViewModels<NetInfoViewModel>()
     private val donateVM: DonateViewModel by activityViewModels()
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this)
     }
 
-    private val yandexAdVM: YandexAdsViewModel by viewModels()
     private val adMobVM by viewModels<AdMobViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         if (savedInstanceState == null) {
-            netInfoVM.countryCode.observe(this) { result ->
-                result.onSuccess { code ->
-                    if (!requireContext().isAdsDisabled) {
-                        if (FireBaseConfig.sanctionsList.contains(code)) {
-                            yandexAdVM.loadInterstitialAd(adId = AdsId.INTERSTITIAL_2)
-                        }
-                        else {
-                            adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
-                        }
-                    }
-                }
-            }
 
-            yandexAdVM.interstitialAd.observe(this) { result ->
-                result.onSuccess { ad ->
-                    ad.show(requireActivity())
-                }
+            if (!requireContext().isAdsDisabled) {
+                adMobVM.loadInterstitialAd(AdMobIds.INTERSTITIAL_2)
             }
 
             adMobVM.interstitialAd.observe(this) { result ->
