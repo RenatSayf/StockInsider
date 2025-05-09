@@ -36,6 +36,7 @@ import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.core.view.isVisible
 
 
 @AndroidEntryPoint
@@ -297,7 +298,7 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 val heightDiff: Int = binding.root.rootView.height - binding.root.height
                 val threshold: Int = 200.px
                 val result = heightDiff > threshold
-                if (!result && binding.btnSave.visibility == View.VISIBLE) {
+                if (!result && binding.btnSave.isVisible) {
                     binding.scrollView.smoothScrollTo(0, binding.btnSave.bottom)
                 }
             }
@@ -348,7 +349,9 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
         with(binding) {
 
             includeSetName.etSetName.apply {
-                setText(set.queryName)
+                val queryName = set.queryName
+                setText(queryName)
+                setSelection(queryName.length)
             }
 
             includeTickersView.contentTextView.apply {
