@@ -3,6 +3,7 @@
 package com.renatsayf.stockinsider.service
 
 import android.content.Context
+import android.os.Build
 import androidx.annotation.VisibleForTesting
 import androidx.work.CoroutineWorker
 import androidx.work.Data
@@ -87,7 +88,9 @@ class AppWorker (
             startMessage.printIfDebug()
             writeLogToFile(startMessage)
 
-            setForeground(getForegroundInfo())
+            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.S) {
+                setForeground(getForegroundInfo())
+            }
 
             if (_searchSets == null) _searchSets = getTrackingSetsAsync().await()
             val array = _searchSets?.map { set ->

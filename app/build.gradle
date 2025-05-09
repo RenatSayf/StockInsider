@@ -10,10 +10,10 @@ android {
     compileSdk 35
     defaultConfig {
         applicationId "com.renatsayf.stockinsider"
-        minSdkVersion 24
+        minSdkVersion 26
         targetSdkVersion 35
-        versionCode 35      //Hint The latest versionCode at store is 34
-        versionName '4.3'   //Hint The latest versionName at store is 4.2
+        versionCode 36      //Hint The latest versionCode at store is 35
+        versionName '4.4'   //Hint The latest versionName at store is 4.3
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
