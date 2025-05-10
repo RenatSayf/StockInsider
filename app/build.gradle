@@ -12,8 +12,8 @@ android {
         applicationId "com.renatsayf.stockinsider"
         minSdkVersion 26
         targetSdkVersion 35
-        versionCode 37      //Hint The latest versionCode at store is 36
-        versionName '4.5'   //Hint The latest versionName at store is 4.4
+        versionCode 38      //Hint The latest versionCode at store is 37
+        versionName '4.5'   //Hint The latest versionName at store is 4.5
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
 
