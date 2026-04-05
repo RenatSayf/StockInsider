@@ -107,10 +107,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 traded.root.forEach {
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-                            override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
+                            override fun onCheckedChanged(p0: CompoundButton, isChecked: Boolean) {
                                 val newSet = trackingVM.newSet
                                 newSet?.let { set ->
-                                    when(p0?.id) {
+                                    when(p0.id) {
                                         R.id.purchaseCheckBox -> {
                                             set.isPurchase = isChecked
                                         }
@@ -134,10 +134,10 @@ class TrackingFragment : Fragment(R.layout.tracking_fragment), SetNameDialog.Lis
                 insider.root.forEach {
                     if (it is CheckBox) {
                         it.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-                            override fun onCheckedChanged(p0: CompoundButton?, isChecked: Boolean) {
+                            override fun onCheckedChanged(p0: CompoundButton, isChecked: Boolean) {
                                 val newSet = trackingVM.newSet
                                 newSet?.let { set ->
-                                    when(p0?.id) {
+                                    when(p0.id) {
                                         R.id.officer_CheBox -> {
                                             set.isOfficer = isChecked
                                         }

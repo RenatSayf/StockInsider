@@ -29,7 +29,7 @@ class TrackingAdapter(
     interface Listener {
         fun onTrackingAdapterEditButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterDeleteButtonClick(set: RoomSearchSet, position: Int)
-        fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int)
+        fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, isChecked: Boolean, position: Int)
         fun onTrackingAdapterVisibilityButtonClick(set: RoomSearchSet, position: Int)
         fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet)
     }
@@ -40,36 +40,16 @@ class TrackingAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val set = currentList[position]
+        val set = getItem(position)
         holder.bind(set, position)
     }
 
-    override fun getItemCount(): Int {
-        return currentList.size
-    }
-
-    inner class ViewHolder(private val binding: TrackingItemBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: TrackingItemBinding): RecyclerView.ViewHolder(binding.root) {
 
         fun bind(set: RoomSearchSet, position: Int) {
-
             with(binding) {
-                val context = trackerName.context
-
                 trackerName.text = set.queryName
-                val dealType = if (set.isPurchase && !set.isSale) {
-                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.buy1000000))
-                    context.getString(R.string.text_purchase)
-                }
-                else if (set.isSale && !set.isPurchase) {
-                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.sale1000000))
-                    context.getString(R.string.text_sale)
-                }
-                else {
-                    binding.layoutItem.setBackgroundColor(context.getColor(R.color.colorWhite))
-                    "${context.getString(R.string.text_purchase)} / ${context.getString(R.string.text_sale)}"
-                }
-
-                binding.dealType.text = dealType
+                dealType.text = set.ticker.ifEmpty { "ALL" }
 
                 trackingSwitcher.isChecked = set.isTracked
 
@@ -82,7 +62,7 @@ class TrackingAdapter(
                 }
 
                 trackingSwitcher.setOnCheckedChangeListener(object : CompoundButton.OnCheckedChangeListener {
-                    override fun onCheckedChanged(p0: CompoundButton?, p1: Boolean) {
+                    override fun onCheckedChanged(p0: CompoundButton, p1: Boolean) {
                         listener?.onTrackingAdapterSwitcherOnChange(set, p1, position)
                     }
                 })
@@ -96,7 +76,5 @@ class TrackingAdapter(
                 }
             }
         }
-
     }
-
 }

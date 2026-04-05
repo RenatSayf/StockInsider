@@ -88,7 +88,7 @@ class SortingDialog : DialogFragment() {
             }
 
             b.rgGrouping.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
-                override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+                override fun onCheckedChanged(group: RadioGroup, checkedId: Int) {
                     when(checkedId) {
                         R.id.rb_not_group -> {
                             sorting?.groupingBy = SortingViewModel.Sorting.GroupingBy.FILLING_DATE
@@ -103,7 +103,7 @@ class SortingDialog : DialogFragment() {
                 }
             })
             b.rgSorting.setOnCheckedChangeListener(object : RadioGroup.OnCheckedChangeListener {
-                override fun onCheckedChanged(group: RadioGroup?, checkedId: Int) {
+                override fun onCheckedChanged(group: RadioGroup, checkedId: Int) {
                     when(checkedId) {
                         R.id.rb_filling_date -> {
                             sorting?.sortingBy = SortingViewModel.Sorting.SortingBy.FILLING_DATE

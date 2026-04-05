@@ -24,7 +24,6 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
-import kotlin.system.exitProcess
 
 class LocationWorker(context: Context, params: WorkerParameters) : CoroutineWorker(context, params) {
 
