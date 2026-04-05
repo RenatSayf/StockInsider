@@ -14,6 +14,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentReferralBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.ui.referral.models.Brokers
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import com.renatsayf.stockinsider.utils.startBrowserSearch
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -52,6 +53,7 @@ class ReferralFragment : Fragment() {
                     brokerListAdapter.submitList(brokers.list)
                 }
                 res.onError { message, i ->
+                    Exception("Error: $message, errorCode: $i").printStackTraceIfDebug()
                     tvPageDescription.text = getString(R.string.text_broker_list_load_error)
                 }
             }

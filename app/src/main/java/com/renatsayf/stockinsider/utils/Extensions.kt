@@ -38,6 +38,7 @@ import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import java.io.Serializable
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.core.net.toUri
 
 const val KEY_FRAGMENT_RESULT = "KEY_FRAGMENT_RESULT"
 
@@ -228,7 +229,7 @@ fun View.setPopUpMenu(menuResource: Int): PopupMenu {
 }
 
 fun Activity.startBrowserSearch(url: String) {
-    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
+    val intent = Intent(Intent.ACTION_VIEW, url.toUri()).apply {
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     }
     this.startActivity(intent)
@@ -307,13 +308,13 @@ fun checkTestPort(): Boolean {
 
 fun Context.goToAppStore() {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(this.getString(R.string.app_link).plus(this.packageName))
+    intent.data = this.getString(R.string.app_link).plus(this.packageName).toUri()
     startActivity(intent)
 }
 
 fun Context.goToUrl(url: String) {
     val intent = Intent(Intent.ACTION_VIEW)
-    intent.data = Uri.parse(url)
+    intent.data = url.toUri()
     startActivity(intent)
 }
 

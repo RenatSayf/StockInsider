@@ -13,6 +13,7 @@ import com.renatsayf.stockinsider.models.SearchSet
 import com.renatsayf.stockinsider.repository.DataRepositoryImpl
 import com.renatsayf.stockinsider.utils.getTimeOffsetIfWeekEnd
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -42,7 +43,7 @@ class ResultViewModel @Inject constructor(
         private set
 
     fun getDealListFromNet(set: SearchSet) {
-        viewModelScope.launch {
+        viewModelScope.launch(context = Dispatchers.Main) {
             try {
 
                 if (set.filingPeriod.toInt() < 4) {

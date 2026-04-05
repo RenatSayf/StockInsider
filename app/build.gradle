@@ -15,7 +15,6 @@ android {
         versionCode 39      //Hint The latest versionCode at store is 38
         versionName '4.7'   //Hint The latest versionName at store is 4.5
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        multiDexEnabled true
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -87,9 +86,6 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
     implementation 'androidx.navigation:navigation-fragment-ktx:2.9.7'
     implementation 'androidx.navigation:navigation-ui-ktx:2.9.7'
-
-    //Hint Enable multidex. Step 1 (https://developer.android.com/studio/build/multidex)
-    implementation 'androidx.multidex:multidex:2.0.1'
 
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.10.0'

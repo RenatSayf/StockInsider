@@ -5,6 +5,7 @@ import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.SearchSet
 import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import org.jsoup.nodes.Document
@@ -20,7 +21,7 @@ class NetRepository @Inject constructor(
 
     override suspend fun getTradingListAsync(set: SearchSet): Deferred<Result<List<Deal>>> {
         return coroutineScope {
-            async {
+            async(context = Dispatchers.IO) {
                 try {
                     val response = api.getDealsListAsync(
                         set.ticker,
