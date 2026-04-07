@@ -32,6 +32,7 @@ import com.renatsayf.stockinsider.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
+import androidx.core.content.edit
 
 
 @AndroidEntryPoint
@@ -164,12 +165,12 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         ).showIfNotAdded(requireActivity().supportFragmentManager)
     }
 
-    override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, checked: Boolean, position: Int) {
+    override fun onTrackingAdapterSwitcherOnChange(set: RoomSearchSet, isChecked: Boolean, position: Int) {
 
-        set.isTracked = checked
+        set.isTracked = isChecked
         mainVM.saveSearchSet(set).observe(viewLifecycleOwner) { id ->
             if (id != null && id > 0) {
-                when (checked) {
+                when (isChecked) {
                     true -> {
                         showSnackBar(getString(R.string.text_tracking_enabled))
                         requireActivity().showOrNotInfoDialog {
@@ -184,11 +185,21 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                 callback = {
                                     when(it) {
                                         1 -> {
-                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                            appPref.edit {
+                                                putBoolean(
+                                                    InfoDialog.KEY_NOT_SHOW_AGAN,
+                                                    true
+                                                )
+                                            }
                                             this@TrackingListFragment.openAppSystemSettings()
                                         }
                                         0 -> {
-                                            appPref.edit().putBoolean(InfoDialog.KEY_NOT_SHOW_AGAN, true).apply()
+                                            appPref.edit {
+                                                putBoolean(
+                                                    InfoDialog.KEY_NOT_SHOW_AGAN,
+                                                    true
+                                                )
+                                            }
                                         }
                                     }
                                 }
@@ -225,9 +236,8 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     override fun onTrackingAdapterInfoButtonClick(set: RoomSearchSet) {
         val queryName = set.queryName
         val infoText = "${getString(R.string.text_tracking_description)} $queryName"
-        InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO).let { dialog ->
-            dialog.showIfNotAdded(requireActivity().supportFragmentManager)
-        }
+        InfoDialog.newInstance(title = getString(R.string.text_info), message = infoText, InfoDialog.DialogStatus.INFO)
+            .showIfNotAdded(requireActivity().supportFragmentManager)
     }
 
     override fun onResume() {

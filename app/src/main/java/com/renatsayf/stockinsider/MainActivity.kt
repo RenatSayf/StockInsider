@@ -1,4 +1,4 @@
-@file:Suppress("ObjectLiteralToLambda")
+@file:Suppress("ObjectLiteralToLambda", "IntroduceWhenSubject")
 
 package com.renatsayf.stockinsider
 
@@ -29,7 +29,6 @@ import androidx.navigation.ui.setupWithNavController
 import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.receivers.AlarmReceiver
 import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
 import com.renatsayf.stockinsider.schedule.Scheduler
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
@@ -92,6 +91,7 @@ class MainActivity : AppCompatActivity() {
 
     private val adMobVM: AdMobViewModel by viewModels()
     private var googleIntersAd: InterstitialAd? = null
+    private var nextTime: Long? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,7 +107,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         if (savedInstanceState == null) {
-            FireBaseConfig
+            FireBaseConfig.userAgent
         }
 
         adMobVM.googleAdsInitialize()
@@ -412,6 +412,15 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }
+
+
+        val count = trackedVM.getTrackedCountSync()
+        if (count > 0) {
+            nextTime = setAlarm(
+                scheduler = Scheduler(this@MainActivity),
+                periodInMinute = FireBaseConfig.trackingPeriod
+            )
+        }
     }
 
     override fun onPause() {
@@ -469,17 +478,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
 
-        val count = trackedVM.getTrackedCountSync()
-        if (count > 0) {
-            val nextTime = setAlarm(
-                scheduler = Scheduler(this@MainActivity, AlarmReceiver::class.java),
-                periodInMinute = FireBaseConfig.trackingPeriod
-            )
-            if (nextTime != null) {
-                val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime.timeToFormattedStringWithoutSeconds()}"
-                ServiceNotification.notify(this@MainActivity, message, null)
-                this.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")
-            }
+        if (nextTime != null) {
+            val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime!!.timeToFormattedStringWithoutSeconds()}"
+            ServiceNotification.notify(this@MainActivity, message, null)
+            this.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")
         }
         super.onDestroy()
     }

@@ -5,7 +5,6 @@ import androidx.test.core.app.ActivityScenario
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import com.renatsayf.stockinsider.ui.testing.TestActivity
-import com.renatsayf.stockinsider.ui.testing.TestReceiver
 import org.junit.*
 import org.junit.runner.RunWith
 
@@ -24,7 +23,7 @@ class SchedulerTest {
     fun setUp() {
         scenario = rule.scenario
         scenario.onActivity { activity ->
-            scheduler = Scheduler(activity.applicationContext, TestReceiver().javaClass)
+            scheduler = Scheduler(activity.applicationContext)
         }
     }
 
