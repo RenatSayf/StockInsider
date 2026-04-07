@@ -21,6 +21,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentDealBinding
+import com.renatsayf.stockinsider.di.modules.PicassoHttpModule
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
@@ -32,6 +33,7 @@ import com.renatsayf.stockinsider.utils.setPopUpMenu
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.startBrowserSearch
 import com.squareup.picasso.Callback
+import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -47,7 +49,7 @@ class DealFragment : Fragment() {
         val ARG_DEAL = "${this::class.java.simpleName}.deal"
         val ARG_TITLE = "${this::class.java.simpleName}.title"
 
-        private const val MARKET_WATCH_URL = "https://www.marketwatch.com/investing/stock/"
+        private const val MARKET_WATCH_URL = "https://stockcharts.com/sc3/ui/?s="
         private const val GOOGLE_SEARCH_URL = "https://www.google.com/search?q="
     }
 
@@ -99,9 +101,10 @@ class DealFragment : Fragment() {
             with(binding) {
 
                 val uri = value?.tickerRefer?.toUri()
-                Picasso.get()
-                    .load(uri)
-                    .placeholder(R.drawable.image_area_chart_144dp)
+                val picasso = Picasso.Builder(requireContext()).apply {
+                    downloader(OkHttp3Downloader(PicassoHttpModule.okHttpClient))
+                }.build()
+                picasso.load(uri).placeholder(R.drawable.image_area_chart_144dp)
                     .into(binding.chartImagView, object : Callback {
                     override fun onSuccess() {
                         imgLoadProgBar.setVisible(false)

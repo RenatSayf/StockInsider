@@ -2,6 +2,7 @@ package com.renatsayf.stockinsider.models
 
 import android.os.Parcel
 import android.os.Parcelable
+import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 
 
 data class Deal(var filingDate : String?) : Parcelable, BaseDeal()
@@ -12,7 +13,7 @@ data class Deal(var filingDate : String?) : Parcelable, BaseDeal()
         set(value)
         {
             field = value
-            tickerRefer = "https://www.profitspi.com/stock/stock-charts.ashx?chart=$value"
+            tickerRefer = "https://stockcharts.com/c-sc/sc?s=$value&p=W&b=5&g=1&i=p"
         }
     var tickerRefer : String? = ""
         private set
@@ -73,8 +74,8 @@ data class Deal(var filingDate : String?) : Parcelable, BaseDeal()
                     val strNum = value.replace(regex, "")
                     strNum.toDouble()
                 }
-                catch (e: Exception)
-                {
+                catch (e: Exception) {
+                    e.printStackTraceIfDebug()
                     0.0
                 }
             }

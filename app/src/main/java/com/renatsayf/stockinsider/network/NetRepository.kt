@@ -80,7 +80,7 @@ class NetRepository @Inject constructor(
         }
         val tableBody = body.select("#tablewrapper > table > tbody")
         tableBody.let {
-            if (it.size > 0)
+            if (it.isNotEmpty())
             {
                 val table = it[0]
                 var trIndex = 1
@@ -155,7 +155,7 @@ class NetRepository @Inject constructor(
     {
         val listDeal : ArrayList<Deal> = arrayListOf()
         val elements = document.select("$tagId > table > tbody")
-        if (elements.size > 0)
+        if (elements.isNotEmpty())
         {
             val tBody = elements[0]
             var trIndex = 1
@@ -302,7 +302,7 @@ class NetRepository @Inject constructor(
                 }
                 trIndex++
             }
-            return companySet
+            companySet
         }
         else setOf()
     }

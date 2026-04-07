@@ -4,10 +4,10 @@ package com.renatsayf.stockinsider.ui.adapters
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.net.toUri
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.Adapter
 import androidx.viewbinding.ViewBinding
@@ -15,6 +15,7 @@ import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DealLayoutBinding
 import com.renatsayf.stockinsider.databinding.FakeDealLayoutBinding
 import com.renatsayf.stockinsider.databinding.ItemGroupHeaderBinding
+import com.renatsayf.stockinsider.di.modules.PicassoHttpModule
 import com.renatsayf.stockinsider.models.BaseDeal
 import com.renatsayf.stockinsider.models.Deal
 import com.renatsayf.stockinsider.models.GroupHead
@@ -22,9 +23,10 @@ import com.renatsayf.stockinsider.models.Skeleton
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
 import com.renatsayf.stockinsider.utils.setVisible
 import com.squareup.picasso.Callback
+import com.squareup.picasso.OkHttp3Downloader
 import com.squareup.picasso.Picasso
 import java.text.NumberFormat
-import java.util.*
+import java.util.Locale
 
 
 class DealListAdapter(
@@ -38,6 +40,8 @@ class DealListAdapter(
     private val skeletonList = List(10, init = {
         Skeleton(it)
     })
+
+    private var picasso: Picasso? = null
 
     fun showSkeleton() {
         dealsList.clear()
@@ -79,6 +83,13 @@ class DealListAdapter(
 
     override fun onCreateViewHolder(parent : ViewGroup, viewType : Int) : ViewHolder
     {
+
+        if (picasso == null) {
+            picasso = Picasso.Builder(parent.context).apply {
+                downloader(OkHttp3Downloader(PicassoHttpModule.okHttpClient))
+            }.build()
+        }
+
         return when(viewType) {
             0 -> {
                 this.context = parent.context
@@ -168,10 +179,10 @@ class DealListAdapter(
 
                     val context = dealConstraintLayout.context
 
-                    val uri = Uri.parse(deal.tickerRefer)
-                    Picasso.get().load(uri)
-                        .placeholder(R.drawable.image_area_chart_144dp)
-                        .into(ivStockChart, object : Callback {
+                    val uri = deal.tickerRefer?.toUri()
+                    picasso?.load(uri)
+                        ?.placeholder(R.drawable.image_area_chart_144dp)
+                        ?.into(ivStockChart, object : Callback {
                         override fun onSuccess() {
                             progressChart.setVisible(false)
                         }

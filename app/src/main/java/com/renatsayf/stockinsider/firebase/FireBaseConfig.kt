@@ -54,6 +54,7 @@ object FireBaseConfig {
                 array
             }
             catch (e: Exception) {
+                e.printStackTraceIfDebug()
                 arrayOf("RU","BY","IR","CU","KP","SY","CN")
             }
             return value
@@ -91,6 +92,17 @@ object FireBaseConfig {
             } catch (e: Exception) {
                 e.printStackTraceIfDebug()
                 initUrl
+            }
+        }
+
+    val userAgent: String
+        get() {
+            return try {
+                Firebase.remoteConfig.getString("user_agent")
+            }
+            catch (e: Exception) {
+                e.printStackTraceIfDebug()
+                "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/146.0.7680.178 Mobile Safari/537.36"
             }
         }
 
