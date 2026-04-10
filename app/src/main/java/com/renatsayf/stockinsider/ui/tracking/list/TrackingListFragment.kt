@@ -1,9 +1,14 @@
 package com.renatsayf.stockinsider.ui.tracking.list
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.provider.Settings
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -21,20 +26,26 @@ import com.renatsayf.stockinsider.databinding.TrackingListFragmentBinding
 import com.renatsayf.stockinsider.db.RoomSearchSet
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.models.Target
-import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.schedule.cancelReminderAlarm
+import com.renatsayf.stockinsider.schedule.isReminderAlarmActive
+import com.renatsayf.stockinsider.schedule.setReminderAlarm
 import com.renatsayf.stockinsider.ui.adapters.TrackingAdapter
 import com.renatsayf.stockinsider.ui.dialogs.ConfirmationDialog
 import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.settings.askForPermission
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
-import com.renatsayf.stockinsider.utils.*
+import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.setVisible
+import com.renatsayf.stockinsider.utils.showIfNotAdded
+import com.renatsayf.stockinsider.utils.showInfoDialog
+import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import androidx.core.content.edit
 
 
+@SuppressLint("NotifyDataSetChanged")
 @AndroidEntryPoint
 class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
 
@@ -51,7 +62,35 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         TrackingAdapter(listener = this)
     }
     private val permissionLauncher: ActivityResultLauncher<String> by lazy {
-        this.registerForActivityResult(ActivityResultContracts.RequestPermission()) {}
+        this.registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
+            if (isGranted) {
+                requireContext().cancelReminderAlarm()
+                requireContext().setReminderAlarm(FireBaseConfig.trackingPeriod)
+            }
+            else {
+                requireContext().cancelReminderAlarm()
+                val sets = trackingVM.trackerList.map { item ->
+                    item.isTracked = false
+                    item
+                }
+                trackingAdapter.submitList(sets)
+                trackingAdapter.notifyDataSetChanged()
+
+                InfoDialog.newInstance(
+                    title = getString(R.string.text_warning),
+                    message = getString(R.string.text_for_notification_permission),
+                    status = InfoDialog.DialogStatus.WARNING,
+                    callback = {i ->
+                        if (i > 0) {
+                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                                data = Uri.fromParts("package", requireContext().packageName, null)
+                            }
+                            requireContext().startActivity(intent)
+                        }
+                    }
+                ).showIfNotAdded(parentFragmentManager)
+            }
+        }
     }
 
     override fun onCreateView(
@@ -62,6 +101,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         return binding.root
     }
 
+    @SuppressLint("InlinedApi")
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -81,7 +121,15 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         trackingVM.state.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is TrackingListViewModel.State.Initial -> {
-                    trackingAdapter.submitList(state.list as MutableList<RoomSearchSet>)
+                    var sets: List<RoomSearchSet> = state.list
+                    val permission = requireContext().checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+                    if (permission != PackageManager.PERMISSION_GRANTED) {
+                        sets = sets.map { item ->
+                            item.isTracked = false
+                            item
+                        }
+                    }
+                    trackingAdapter.submitList(sets as MutableList<RoomSearchSet>)
                     binding.includeProgress.loadProgressBar.setVisible(false)
                 }
                 else -> binding.includeProgress.loadProgressBar.setVisible(false)
@@ -148,8 +196,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                                         trackingVM.setState(TrackingListViewModel.State.Initial(list))
                                         val trackedList = list.filter { it.isTracked }
                                         if (trackedList.isEmpty()) {
-                                            val scheduler = Scheduler(requireContext().applicationContext)
-                                            scheduler.isAlarmSetup(false)?.cancel()
+                                            requireContext().cancelReminderAlarm()
                                             showSnackBar(getString(R.string.text_tracking_disabled))
                                         }
                                     }
@@ -173,48 +220,50 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                 when (isChecked) {
                     true -> {
                         showSnackBar(getString(R.string.text_tracking_enabled))
-                        requireActivity().showOrNotInfoDialog {
-                            showInfoDialog(
-                                title = getString(R.string.text_warning),
-                                message = "\"${getString(R.string.text_manufacturer_of_devices)} ${Build.MANUFACTURER}, ${
-                                    getString(
-                                        R.string.text_battery_restrictions_message
-                                    )
-                                }\"",
-                                status = InfoDialog.DialogStatus.EXTENDED_WARNING,
-                                callback = {
-                                    when(it) {
-                                        1 -> {
-                                            appPref.edit {
-                                                putBoolean(
-                                                    InfoDialog.KEY_NOT_SHOW_AGAN,
-                                                    true
-                                                )
-                                            }
-                                            this@TrackingListFragment.openAppSystemSettings()
+
+                        checkNotificationPermission(
+                            onRationale = {
+                                InfoDialog.newInstance(
+                                    title = getString(R.string.text_warning),
+                                    message = getString(R.string.text_for_notification_permission),
+                                    status = InfoDialog.DialogStatus.WARNING,
+                                    callback = {i ->
+                                        if (i > 0) {
+                                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                                         }
-                                        0 -> {
-                                            appPref.edit {
-                                                putBoolean(
-                                                    InfoDialog.KEY_NOT_SHOW_AGAN,
-                                                    true
-                                                )
+                                        else {
+                                            requireContext().cancelReminderAlarm()
+                                            var position = -1
+                                            val sets = trackingVM.trackerList.mapIndexed { index, item ->
+                                                if (set.id == item.id) {
+                                                    item.isTracked = false
+                                                    position = index
+                                                }
+                                                item
                                             }
+                                            trackingAdapter.submitList(sets)
+                                            trackingAdapter.notifyItemChanged(position)
                                         }
                                     }
-                                }
-                            )
-                        }
+                                ).showIfNotAdded(parentFragmentManager)
+                            },
+                            onGranted = {
+                                requireContext().cancelReminderAlarm()
+                                requireContext().setReminderAlarm(FireBaseConfig.trackingPeriod)
+                            },
+                            onDenied = {
+                                permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            }
+                        )
                     }
                     else -> {
                         showSnackBar(getString(R.string.text_tracking_disabled))
                         trackingVM.getTrackedCountAsync(
                             onSuccess = {count ->
                                 if (count == 0) {
-                                    val scheduler = Scheduler(requireContext().applicationContext)
-                                    val pendingIntent = scheduler.isAlarmSetup(false)
-                                    pendingIntent?.let {
-                                        scheduler.cancel(it)
+                                    val alarmActive = requireContext().isReminderAlarmActive()
+                                    if (alarmActive) {
+                                        requireContext().cancelReminderAlarm()
                                     }
                                 }
                             }
@@ -247,11 +296,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
         binding.includedToolBar.appToolbar.apply {
             title = getString(R.string.text_tracking_list)
             setNavigationOnClickListener {
-                checkNotificationPermission(
-                    onChecked = {
-                        parentFragmentManager.popBackStack()
-                    }
-                )
+                parentFragmentManager.popBackStack()
             }
         }
 
@@ -259,11 +304,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
             viewLifecycleOwner,
             object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
-                checkNotificationPermission(
-                    onChecked = {
-                        parentFragmentManager.popBackStack()
-                    }
-                )
+                parentFragmentManager.popBackStack()
             }
         })
     }
@@ -275,7 +316,9 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
     }
 
     fun checkNotificationPermission(
-        onChecked: () -> Unit
+        onRationale: () -> Unit,
+        onGranted: () -> Unit,
+        onDenied: () -> Unit
     ) {
         trackingVM.getTrackedCountAsync(
             onSuccess = {count ->
@@ -284,35 +327,23 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                         askForPermission(
                             Manifest.permission.POST_NOTIFICATIONS,
                             onInit = {
-                                InfoDialog.newInstance(
-                                    title = getString(R.string.text_warning),
-                                    message = getString(R.string.text_for_notification_permission),
-                                    status = InfoDialog.DialogStatus.WARNING,
-                                    callback = {i ->
-                                        if (i > 0) {
-                                            permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                                        }
-                                        else {
-                                            onChecked.invoke()
-                                        }
-                                    }
-                                ).showIfNotAdded(parentFragmentManager)
+                                onRationale.invoke()
                             },
                             onGranted = {
-                                onChecked.invoke()
+                                onGranted.invoke()
+                            },
+                            onDenied = {
+                                onDenied.invoke()
                             }
                         )
                     }
                     else {
-                        onChecked.invoke()
+                        onGranted.invoke()
                     }
                 }
-                else {
-                    onChecked.invoke()
-                }
             },
-            onError = {
-                onChecked.invoke()
+            onError = { exception ->
+                exception.printStackTrace()
             }
         )
     }

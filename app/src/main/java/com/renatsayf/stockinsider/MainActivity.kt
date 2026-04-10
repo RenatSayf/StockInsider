@@ -2,7 +2,10 @@
 
 package com.renatsayf.stockinsider
 
+import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Spannable
@@ -30,7 +33,9 @@ import com.google.android.gms.ads.interstitial.InterstitialAd
 import com.renatsayf.stockinsider.databinding.ActivityMainBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
 import com.renatsayf.stockinsider.receivers.HardwareButtonsReceiver
-import com.renatsayf.stockinsider.schedule.Scheduler
+import com.renatsayf.stockinsider.schedule.isReminderAlarmActive
+import com.renatsayf.stockinsider.schedule.setReminderAlarm
+import com.renatsayf.stockinsider.schedule.triggerTime
 import com.renatsayf.stockinsider.service.notifications.ServiceNotification
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobIds
 import com.renatsayf.stockinsider.ui.ad.admob.AdMobViewModel
@@ -45,12 +50,12 @@ import com.renatsayf.stockinsider.ui.tracking.list.TrackingListViewModel
 import com.renatsayf.stockinsider.utils.LOGS_FILE_NAME
 import com.renatsayf.stockinsider.utils.appPref
 import com.renatsayf.stockinsider.utils.appendTextToFile
+import com.renatsayf.stockinsider.utils.checkPermission
 import com.renatsayf.stockinsider.utils.doShare
 import com.renatsayf.stockinsider.utils.isNetworkAvailable
 import com.renatsayf.stockinsider.utils.printIfDebug
 import com.renatsayf.stockinsider.utils.printStackTraceIfDebug
 import com.renatsayf.stockinsider.utils.registerHardWareReceiver
-import com.renatsayf.stockinsider.utils.setAlarm
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showIfNotAdded
 import com.renatsayf.stockinsider.utils.showInfoDialog
@@ -94,6 +99,7 @@ class MainActivity : AppCompatActivity() {
     private var nextTime: Long? = null
 
 
+    @SuppressLint("InlinedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -378,6 +384,19 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+        triggerTime.observe(this) { value ->
+            nextTime = value
+        }
+
+        val count = trackedVM.getTrackedCountSync()
+        val alarmActive = this.isReminderAlarmActive()
+        if (count > 0 && !alarmActive) {
+            val permission = this.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS)
+            if (permission == PackageManager.PERMISSION_GRANTED) {
+                nextTime = this.setReminderAlarm(FireBaseConfig.trackingPeriod)
+            }
+        }
+
 
     }
 
@@ -411,15 +430,6 @@ class MainActivity : AppCompatActivity() {
                     finish()
                 }
             }
-        }
-
-
-        val count = trackedVM.getTrackedCountSync()
-        if (count > 0) {
-            nextTime = setAlarm(
-                scheduler = Scheduler(this@MainActivity),
-                periodInMinute = FireBaseConfig.trackingPeriod
-            )
         }
     }
 
@@ -478,7 +488,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onDestroy() {
 
-        if (nextTime != null) {
+        if (nextTime != null && nextTime!! > 0) {
             val message = "${getString(R.string.text_next_check_will_be_at)} ${nextTime!!.timeToFormattedStringWithoutSeconds()}"
             ServiceNotification.notify(this@MainActivity, message, null)
             this.appendTextToFile(LOGS_FILE_NAME, "${System.currentTimeMillis().timeToFormattedString()} ->> $message")

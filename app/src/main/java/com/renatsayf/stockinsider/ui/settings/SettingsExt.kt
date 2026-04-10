@@ -6,19 +6,27 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.renatsayf.stockinsider.MainActivity
+import androidx.core.content.edit
 
 fun Fragment.askForPermission(
     permission: String,
     onInit: () -> Unit = {},
-    onGranted: () -> Unit = {}
+    onGranted: () -> Unit = {},
+    onDenied: () -> Unit = {}
 ) {
     val isShould = this.shouldShowRequestPermissionRationale(permission)
+    if (isShould) {
+        onInit.invoke()
+        return
+    }
     val selfPermission = ContextCompat.checkSelfPermission(requireContext(), permission)
     if (selfPermission == PackageManager.PERMISSION_GRANTED) {
         onGranted.invoke()
+        return
     }
-    else if (selfPermission == PackageManager.PERMISSION_DENIED || isShould) {
-        onInit.invoke()
+    else if (selfPermission == PackageManager.PERMISSION_DENIED) {
+        onDenied.invoke()
+        return
     }
 }
 
@@ -32,5 +40,5 @@ var Context.isAdsDisabled: Boolean
         return this.appPref.getBoolean(KEY_IS_AD_DISABLED, false)
     }
     set(value) {
-        this.appPref.edit().putBoolean(KEY_IS_AD_DISABLED, value).apply()
+        this.appPref.edit { putBoolean(KEY_IS_AD_DISABLED, value) }
     }

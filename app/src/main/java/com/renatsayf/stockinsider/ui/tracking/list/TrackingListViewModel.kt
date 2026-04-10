@@ -20,10 +20,17 @@ class TrackingListViewModel @Inject constructor(private val repository: DataRepo
         data class Initial(val list: List<RoomSearchSet>): State()
     }
 
+    var trackerList: List<RoomSearchSet> = emptyList()
+        private set
+
     private var _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
+
     fun setState(state: State) {
         _state.value = state
+        if (state is State.Initial) {
+            trackerList = state.list
+        }
     }
 
     fun getTrackedCountSync(): Int {

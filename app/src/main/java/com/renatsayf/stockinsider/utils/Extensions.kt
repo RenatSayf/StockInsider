@@ -8,6 +8,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
+import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -16,10 +17,12 @@ import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.provider.Settings
+import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -104,23 +107,14 @@ val Int.dp: Int
 val Int.px: Int
     get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 
-@Suppress("UNCHECKED_CAST")
+@Suppress("UNCHECKED_CAST", "DEPRECATION")
 fun <T : Serializable?> Bundle.getSerializableCompat(key: String, clazz: Class<T>): T? {
     return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getSerializable(key, clazz)
     } else (getSerializable(key) as? T)
 }
 
-inline fun <reified T : Parcelable> Bundle.getParcelableArrayListCompat(key: String): ArrayList<T>? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayList(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableArrayList(key)
-}
-
-inline fun <reified T : Parcelable> Intent.getParcelableArrayListCompat(key: String): ArrayList<T>? = when {
-    Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelableArrayListExtra(key, T::class.java)
-    else -> @Suppress("DEPRECATION") getParcelableArrayListExtra(key)
-}
-
+@Suppress("DEPRECATION")
 inline fun <reified T : Parcelable> Bundle.getParcelableCompat(key: String): T? = when {
     Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU -> getParcelable(key, T::class.java)
     else -> {
@@ -138,10 +132,6 @@ fun Context.haveWorkTask(): Boolean {
     }
 }
 
-fun Fragment.haveWorkTask(): Boolean {
-    return requireContext().haveWorkTask()
-}
-
 fun Context.startOneTimeBackgroundWork(startTime: Long): Operation {
 
     val workManager = WorkManager.getInstance(this)
@@ -155,25 +145,17 @@ fun Context.startOneTimeBackgroundWork(startTime: Long): Operation {
     }
 }
 
-fun Fragment.startOneTimeBackgroundWork(startTime: Long): Operation {
-    return requireContext().startOneTimeBackgroundWork(startTime)
-}
-
 fun Context.cancelBackgroundWork(): LiveData<Operation.State> {
     val operation = WorkManager.getInstance(this).cancelAllWorkByTag(WorkTask.TAG)
     val result = operation.state
-    return operation.state
-}
-
-fun Fragment.cancelBackgroundWork(): LiveData<Operation.State> {
-    return requireActivity().cancelBackgroundWork()
+    return result
 }
 
 fun Activity.doShare()
 {
     val sharingIntent = Intent(Intent.ACTION_SEND)
     sharingIntent.type = "text/plain"
-    val shareBody = "http://play.google.com/store/apps/details?id=" + this.packageName
+    val shareBody = "https://play.google.com/store/apps/details?id=" + this.packageName
     sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody)
     startActivity(Intent.createChooser(sharingIntent, getString(R.string.text_share_using)))
 }
@@ -189,6 +171,7 @@ val Fragment.appPref: SharedPreferences
     }
 
 //region Hint Checking_internet_connection
+@Suppress("DEPRECATION")
 fun Context.isNetworkAvailable(): Boolean {
     val manager = getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
     return when {
@@ -277,7 +260,7 @@ fun Fragment.showInfoDialog(
 
 fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
     var size = 0
-    this.forEach { (t, u) ->
+    this.forEach { (_, u) ->
         size += u.size
     }
     return size
@@ -289,10 +272,6 @@ fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_
         data = Uri.fromParts("package", this@openAppSystemSettings.packageName, null)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
     })
-}
-
-fun Fragment.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-    requireActivity().openAppSystemSettings(action)
 }
 
 fun Long.timeToFormattedString(): String =
@@ -320,7 +299,7 @@ fun Context.goToUrl(url: String) {
 
 fun String.printIfDebug() {
     if (BuildConfig.DEBUG) {
-        println(this)
+        Log.d("${BuildConfig.APPLICATION_ID}.DEBUG", this)
     }
 }
 
@@ -336,6 +315,7 @@ fun Exception.printStackTraceIfDebug() {
     }
 }
 
+@Suppress("DEPRECATION")
 @SuppressLint("UnspecifiedRegisterReceiverFlag")
 fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
 
@@ -351,6 +331,18 @@ fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
 fun DialogFragment.showIfNotAdded(fragmentManager: FragmentManager) {
     if (!this.isAdded) {
         this.show(fragmentManager.beginTransaction(), "${this::class.java.simpleName}.TAG")
+    }
+}
+
+fun Context.checkPermission(permission: String): Int {
+    return when {
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
+            1
+        }
+        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED -> {
+            -1
+        }
+        else -> 0
     }
 }
 
