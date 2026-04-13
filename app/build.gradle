@@ -102,6 +102,7 @@ dependencies {
 
     //jsoup
     implementation 'org.jsoup:jsoup:1.22.1'
+    implementation 'com.google.re2j:re2j:1.8'
 
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.11.0'
