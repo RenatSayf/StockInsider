@@ -6,18 +6,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import androidx.fragment.app.DialogFragment
-import androidx.fragment.app.activityViewModels
-import com.android.billingclient.api.BillingClient
-import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.DonateFragmentBinding
 import com.renatsayf.stockinsider.firebase.FireBaseConfig
-import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.utils.goToUrl
 import com.renatsayf.stockinsider.utils.setVisible
-import com.renatsayf.stockinsider.utils.showSnackBar
 import dagger.hilt.android.AndroidEntryPoint
 
 
@@ -33,7 +27,6 @@ class DonateDialog : DialogFragment()
         }
     }
 
-    private val viewModel: DonateViewModel by activityViewModels()
     private val isBillingEnabled: Boolean by lazy {
         FireBaseConfig.isBillingEnabled
     }
@@ -61,22 +54,7 @@ class DonateDialog : DialogFragment()
         super.onViewCreated(view, savedInstanceState)
 
         with(binding) {
-            viewModel.donateList.observe(viewLifecycleOwner) { list ->
-                if (list.isNotEmpty()) {
-                    val products = list.toMutableList()
-                    val priceList = mutableListOf<String>()
-                    products.forEach { p ->
-                        val price = p.oneTimePurchaseOfferDetails?.formattedPrice ?: ""
-                        priceList.add(price)
-                    }
-                    val adapter = ArrayAdapter(
-                        requireContext(),
-                        R.layout.app_spinner_item,
-                        priceList
-                    )
-                    sumSpinnerView.adapter = adapter
-                }
-            }
+
 
             if (isBillingEnabled) {
                 thanksTView.setVisible(true)
@@ -100,40 +78,11 @@ class DonateDialog : DialogFragment()
             val doDonateText = "${getString(R.string.text_to_support)}  ${getString(R.string.hugging_emoji)}"
             btnDoDonate.text = doDonateText
             btnDoDonate.setOnClickListener {
-                if (isBillingEnabled) {
-                    val selectedPrice = sumSpinnerView.selectedItem as? String
-                    if (selectedPrice != null) {
-                        viewModel.buildBillingFlowParams(selectedPrice).observe(viewLifecycleOwner) { params ->
-                            if (params != null) {
-                                viewModel.billingClient.launchBillingFlow(requireActivity(), params)
-                            }
-                        }
-                    }
-                } else {
-                    val donateUrl = FireBaseConfig.donateUrl
-                    if (donateUrl.isNotEmpty()) {
-                        requireContext().goToUrl(donateUrl)
-                    }
-                    dismiss()
+                val donateUrl = FireBaseConfig.donateUrl
+                if (donateUrl.isNotEmpty()) {
+                    requireContext().goToUrl(donateUrl)
                 }
-            }
-
-            viewModel.donationIsDone.observe(viewLifecycleOwner) { result ->
-                val layout = (activity as? MainActivity)?.drawerLayout
-                result.onSuccess<String> {
-                    requireContext().isAdsDisabled = true
-                    layout?.showSnackBar("${getString(R.string.hugging_emoji)}  ${getString(R.string.text_thanks_for_donating)}")
-                    dismiss()
-                }
-                result.onError { message, code ->
-                    if (code == BillingClient.BillingResponseCode.USER_CANCELED) {
-                        layout?.showSnackBar("${getString(R.string.unamused_emoji)}  ${getString(R.string.text_purchase_canceled)}")
-                    }
-                    else {
-                        layout?.showSnackBar(message)
-                    }
-                    dismiss()
-                }
+                dismiss()
             }
         }
 

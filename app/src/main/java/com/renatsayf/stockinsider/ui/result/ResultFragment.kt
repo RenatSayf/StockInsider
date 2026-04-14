@@ -13,11 +13,9 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.renatsayf.stockinsider.BuildConfig
 import com.renatsayf.stockinsider.MainActivity
 import com.renatsayf.stockinsider.R
 import com.renatsayf.stockinsider.databinding.FragmentResultBinding
@@ -35,7 +33,6 @@ import com.renatsayf.stockinsider.ui.dialogs.InfoDialog
 import com.renatsayf.stockinsider.ui.dialogs.SaveSearchDialog
 import com.renatsayf.stockinsider.ui.dialogs.SortingDialog
 import com.renatsayf.stockinsider.ui.dialogs.WebViewDialog
-import com.renatsayf.stockinsider.ui.donate.DonateViewModel
 import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.settings.isAdsDisabled
 import com.renatsayf.stockinsider.ui.sorting.SortingViewModel
@@ -74,7 +71,6 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
     }
     private val sortingVM: SortingViewModel by viewModels()
     private val trackingVM: TrackingListViewModel by viewModels()
-    private val donateVM: DonateViewModel by activityViewModels()
 
     private val dealsAdapter: DealListAdapter by lazy {
         DealListAdapter(this)
@@ -118,12 +114,6 @@ class ResultFragment : Fragment(), DealListAdapter.Listener, SaveSearchDialog.Li
     override fun onViewCreated(view: View, savedInstanceState: Bundle?)
     {
         super.onViewCreated(view, savedInstanceState)
-
-        donateVM.pastDonations.observe(viewLifecycleOwner) { result ->
-            result.onSuccess {
-                requireContext().isAdsDisabled = !BuildConfig.DEBUG
-            }
-        }
 
         val isAgree = appPref.getBoolean(MainActivity.KEY_IS_AGREE, false)
         if (!isAgree) WebViewDialog.getInstance().showIfNotAdded(parentFragmentManager)

@@ -12,7 +12,7 @@ android {
         minSdkVersion 26
         //noinspection EditedTargetSdkVersion
         targetSdkVersion 36
-        versionCode 39      //Hint The latest versionCode at store is 38
+        versionCode 40      //Hint The latest versionCode at store is 38
         versionName '4.7'   //Hint The latest versionName at store is 4.5
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
 
@@ -105,8 +105,8 @@ dependencies {
     implementation 'com.google.re2j:re2j:1.8'
 
     // Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.11.0'
-    implementation 'com.squareup.okhttp3:logging-interceptor:4.12.0'
+    implementation 'com.squareup.retrofit2:retrofit:3.0.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:5.3.2'
 
     //room
     implementation 'androidx.room:room-runtime:2.8.4'
@@ -128,11 +128,8 @@ dependencies {
     // Picasso
     implementation 'com.squareup.picasso:picasso:2.71828'
 
-    //Google Play Billing Library
-    implementation 'com.android.billingclient:billing-ktx:7.1.1'
-
     //Firebase platform
-    implementation platform('com.google.firebase:firebase-bom:34.11.0')
+    implementation platform('com.google.firebase:firebase-bom:34.12.0')
     implementation 'com.google.firebase:firebase-config'
     implementation 'com.google.firebase:firebase-messaging'
     implementation 'com.google.firebase:firebase-analytics'
@@ -172,12 +169,12 @@ dependencies {
     kspAndroidTest 'com.google.dagger:hilt-android-compiler:2.59.2'
 
     // Google AdMob
-    implementation 'com.google.android.gms:play-services-ads:25.1.0'
+    implementation 'com.google.android.gms:play-services-ads:25.2.0'
 
     //Splashscreen
     implementation 'androidx.core:core-splashscreen:1.2.0'
 
     //Kotlin Serialization
-    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.10.0'
+    implementation 'org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.11.0'
 
 }

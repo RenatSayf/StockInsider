@@ -32,6 +32,7 @@ class ResultViewModel @Inject constructor(
 
     private var _state = MutableLiveData<State>()
     val state: LiveData<State> = _state
+
     fun setState(state: State) {
         _state.value = state
         if (state is State.Initial) {
