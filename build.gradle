@@ -11,8 +11,8 @@ buildscript {
 
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:9.1.0'
-        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:$kotlin_version-1.0.27"
+        classpath 'com.android.tools.build:gradle:9.1.1'
+        classpath "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.3.2"
         classpath 'com.google.gms:google-services:4.4.4'
 
         //Hint the version must be the same how to com.google.dagger:hilt-android (app module)

@@ -8,7 +8,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.SharedPreferences
-import android.content.pm.PackageManager
 import android.content.res.Resources
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
@@ -22,7 +21,6 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -266,8 +264,8 @@ fun <V, T> Map<V, List<T>>.getValuesSize(): Int {
     return size
 }
 
-fun Activity.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
-    startActivity(Intent().apply {
+fun Context.openAppSystemSettings(action: String = Settings.ACTION_APPLICATION_DETAILS_SETTINGS) {
+    this.startActivity(Intent().apply {
         this.action = action
         data = Uri.fromParts("package", this@openAppSystemSettings.packageName, null)
         addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
@@ -303,12 +301,6 @@ fun String.printIfDebug() {
     }
 }
 
-fun Exception.throwIfDebug() {
-    if (BuildConfig.DEBUG) {
-        throw this
-    }
-}
-
 fun Exception.printStackTraceIfDebug() {
     if (BuildConfig.DEBUG) {
         this.printStackTrace()
@@ -331,18 +323,6 @@ fun Context.registerHardWareReceiver(receiver: HardwareButtonsReceiver) {
 fun DialogFragment.showIfNotAdded(fragmentManager: FragmentManager) {
     if (!this.isAdded) {
         this.show(fragmentManager.beginTransaction(), "${this::class.java.simpleName}.TAG")
-    }
-}
-
-fun Context.checkPermission(permission: String): Int {
-    return when {
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED -> {
-            1
-        }
-        ContextCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_DENIED -> {
-            -1
-        }
-        else -> 0
     }
 }
 

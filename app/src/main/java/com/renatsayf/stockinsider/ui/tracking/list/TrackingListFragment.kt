@@ -36,6 +36,7 @@ import com.renatsayf.stockinsider.ui.main.MainViewModel
 import com.renatsayf.stockinsider.ui.settings.askForPermission
 import com.renatsayf.stockinsider.ui.tracking.item.TrackingFragment
 import com.renatsayf.stockinsider.utils.appPref
+import com.renatsayf.stockinsider.utils.openAppSystemSettings
 import com.renatsayf.stockinsider.utils.setVisible
 import com.renatsayf.stockinsider.utils.showIfNotAdded
 import com.renatsayf.stockinsider.utils.showInfoDialog
@@ -82,10 +83,7 @@ class TrackingListFragment : Fragment(), TrackingAdapter.Listener {
                     status = InfoDialog.DialogStatus.WARNING,
                     callback = {i ->
                         if (i > 0) {
-                            val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-                                data = Uri.fromParts("package", requireContext().packageName, null)
-                            }
-                            requireContext().startActivity(intent)
+                            requireContext().openAppSystemSettings()
                         }
                     }
                 ).showIfNotAdded(parentFragmentManager)
